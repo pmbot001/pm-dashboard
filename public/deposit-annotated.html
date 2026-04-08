@@ -241,12 +241,17 @@
       <span class="h-badge">USDT 特殊流程</span>
       <span class="h-badge">代客充值</span>
     </div>
+    <div class="stats-row" style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:900px;margin-left:auto;margin-right:auto">
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">46</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">支付類型</div></div>
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">3</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">通道模式</div></div>
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">4</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">限額層級</div></div>
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">5</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">優惠狀態</div></div>
+    </div>
   </div>
 
   <!-- Nav -->
   <div class="section-nav">
-    <button class="nav-btn active" data-target="overview">總覽</button>
-    <button class="nav-btn" data-target="flow">流程圖</button>
+    <button class="nav-btn active" data-target="flow">流程圖</button>
     <button class="nav-btn" data-target="main-page">主頁面</button>
     <button class="nav-btn" data-target="channel">通道模式</button>
     <button class="nav-btn" data-target="limits">限額規則</button>
@@ -257,25 +262,10 @@
     <button class="nav-btn" data-target="order">訂單狀態</button>
     <button class="nav-btn" data-target="dialogs">彈窗</button>
     <button class="nav-btn" data-target="service">代客充值</button>
+    <button class="nav-btn" data-target="overview">Figma 總覽</button>
   </div>
 
-  <!-- 1. Overview -->
-  <div class="section" id="overview">
-    <div class="section-title"><span class="num">1</span> 系統總覽</div>
-    <div class="section-desc">H5 存款頁面的完整業務規則，從 source code 直接提取</div>
-
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num">46</div><div class="stat-label">支付類型 (EPayType 0-45)</div></div>
-      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">通道模式 (Init/Merge/Expand)</div></div>
-      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">限額層級 (單筆/日/週/共用組)</div></div>
-      <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">優惠狀態 (隱藏/未達/日限/週限/可用)</div></div>
-      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">訂單狀態 (進行中/成功/失敗/取消)</div></div>
-    </div>
-
-    <img src="/images/deposit/section-1-basic.png" class="overview-img" alt="5.1.1 基本頁面">
-  </div>
-
-  <!-- 2. Flow -->
+  <!-- 1. Flow -->
   <div class="section" id="flow">
     <div class="section-title"><span class="num">2</span> 存款主流程</div>
     <div class="section-desc">從進入存款頁到訂單完成的完整決策路徑</div>
@@ -817,6 +807,13 @@
         <p>充值過程的狀態追蹤，顯示每個步驟的完成情況。</p>
       </div>
     </div>
+  </div>
+
+  <!-- Figma Overview (appendix) -->
+  <div class="section" id="overview">
+    <div class="section-title">Figma 總覽</div>
+    <div class="section-desc">Figma Section 5.1.1 基本頁面 全景截圖（僅供參考）</div>
+    <img src="/images/deposit/section-1-basic.png" class="overview-img" alt="5.1.1 基本頁面">
   </div>
 
   <!-- Footer -->
