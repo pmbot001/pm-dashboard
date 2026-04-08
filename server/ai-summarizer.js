@@ -1,17 +1,20 @@
 const Anthropic = require('@anthropic-ai/sdk');
 
-// Load API key from env file
+// Load API key from env file (local dev only)
 const fs = require('fs');
-const envPath = require('path').join(process.env.HOME, 'agents/.env');
-if (fs.existsSync(envPath)) {
-  const envContent = fs.readFileSync(envPath, 'utf-8');
-  envContent.split('\n').forEach(line => {
-    const match = line.match(/^export\s+(\w+)=(.+)$/);
-    if (match) process.env[match[1]] = match[2];
-  });
+const path = require('path');
+if (process.env.HOME) {
+  const envPath = path.join(process.env.HOME, 'agents/.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    envContent.split('\n').forEach(line => {
+      const match = line.match(/^export\s+(\w+)=(.+)$/);
+      if (match) process.env[match[1]] = match[2];
+    });
+  }
 }
 
-const client = new Anthropic();
+const client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
 
 const SYSTEM_PROMPT = `你是 MGTY 產品管理處的需求知識助手。你的任務是把搜尋到的原始資料整理成 PM 看得懂的功能說明。
 
@@ -40,6 +43,10 @@ const SYSTEM_PROMPT = `你是 MGTY 產品管理處的需求知識助手。你的
 - 如果搜尋結果中沒有足夠的流程資訊，不要硬畫，跳過即可`;
 
 async function summarizeQuery(query, searchResults, mode) {
+  if (!client) {
+    return { summary: 'AI 功能未啟用（缺少 ANTHROPIC_API_KEY）', usage: { input_tokens: 0, output_tokens: 0, cost_usd: 0 } };
+  }
+
   const prompts = {
     logic: buildLogicPrompt,
     feature: buildFeaturePrompt,
