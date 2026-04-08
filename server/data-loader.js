@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const PRODUCT_DATA = path.join(process.env.HOME, '.claude/shared-references/product-data');
+const PRODUCT_DATA = process.env.HOME
+  ? path.join(process.env.HOME, '.claude/shared-references/product-data')
+  : path.join(__dirname, '../data');
 
 function loadAllData() {
   return {
