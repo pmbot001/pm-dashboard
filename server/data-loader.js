@@ -23,6 +23,7 @@ function loadRpIndex() {
 // Knowledge base: parse each module .md file
 function loadKnowledgeBase() {
   const featuresDir = path.join(PRODUCT_DATA, 'features');
+  if (!fs.existsSync(featuresDir)) return [];
   const files = fs.readdirSync(featuresDir).filter(f => f.endsWith('.md') && f !== 'INDEX.md' && f !== 'design-rules.md' && f !== 'feature-knowledge-base.md');
 
   const entries = [];
