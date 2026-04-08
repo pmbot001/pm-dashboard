@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H5 存款頁面 — Figma + Source Code 標註</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .page-header {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border-bottom: 1px solid #334155;
+      padding: 12px 32px;
+    }
+    .page-header h1 { font-size: 20px; font-weight: 700; }
+    .page-header .sub { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+    .header-badges { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+    .h-badge {
+      font-size: 11px; padding: 2px 8px; border-radius: 12px;
+      background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3);
+    }
+
+    /* Nav */
+    .section-nav {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 10px 32px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-btn {
+      padding: 6px 16px; border: 1px solid #475569; background: transparent;
+      color: #94a3b8; border-radius: 20px; font-size: 13px; cursor: pointer;
+      white-space: nowrap; transition: all 0.2s;
+    }
+    .nav-btn:hover, .nav-btn.active { background: #6366f1; color: white; border-color: #6366f1; }
+
+    /* Section */
+    .section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 32px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .section-title {
+      font-size: 20px; font-weight: 700; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .num {
+      background: #6366f1; color: white; width: 28px; height: 28px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+    .section-desc { font-size: 14px; color: #94a3b8; margin-bottom: 24px; }
+
+    /* Screen + Annotation Layout */
+    .annotated-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 32px;
+      align-items: flex-start;
+    }
+    .screen-col {
+      flex: 0 0 auto;
+      position: relative;
+    }
+    .screen-col img {
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      max-height: 700px;
+      width: auto;
+    }
+    .screen-label {
+      font-size: 12px; color: #94a3b8; margin-top: 8px; text-align: center;
+    }
+
+    .rules-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Rule Card */
+    .rule-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      transition: border-color 0.2s;
+    }
+    .rule-card:hover { border-color: #6366f1; }
+    .rule-card .rule-tag {
+      display: inline-block;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 4px; margin-bottom: 6px;
+    }
+    .tag-logic { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .tag-validation { background: rgba(234,179,8,0.2); color: #fbbf24; }
+    .tag-risk { background: rgba(239,68,68,0.2); color: #f87171; }
+    .tag-flow { background: rgba(34,197,94,0.2); color: #4ade80; }
+    .tag-discount { background: rgba(168,85,247,0.2); color: #c084fc; }
+    .tag-ui { background: rgba(236,72,153,0.2); color: #f472b6; }
+    .tag-api { background: rgba(20,184,166,0.2); color: #2dd4bf; }
+
+    .rule-card h4 {
+      font-size: 14px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px;
+    }
+    .rule-card p {
+      font-size: 13px; color: #94a3b8; line-height: 1.6;
+    }
+    .rule-card code {
+      background: #0f172a; padding: 1px 6px; border-radius: 4px;
+      font-size: 12px; color: #fbbf24;
+    }
+    .rule-card .src {
+      font-size: 11px; color: #475569; margin-top: 6px;
+    }
+
+    /* Overview Image */
+    .overview-img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+
+    /* Rule Grid (for overview sections) */
+    .rule-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 12px;
+    }
+
+    /* Flow Diagram */
+    .flow-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    .flow-box h3 { font-size: 15px; margin-bottom: 12px; color: #e2e8f0; }
+    .flow-steps {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: nowrap;
+      min-width: max-content;
+    }
+    .flow-step {
+      padding: 8px 16px;
+      background: #334155;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+    .flow-step.highlight { background: #6366f1; color: white; }
+    .flow-step.risk { background: #dc2626; color: white; }
+    .flow-arrow { color: #475569; font-size: 18px; }
+
+    /* Type Table */
+    .type-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    .type-table th {
+      background: #0f172a;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #94a3b8;
+      border-bottom: 2px solid #334155;
+    }
+    .type-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+    .type-table tr:hover td { background: rgba(99,102,241,0.05); }
+    .type-table .yes { color: #4ade80; }
+    .type-table .no { color: #475569; }
+
+    /* Stats row */
+    .stats-row {
+      display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 14px 20px;
+      flex: 1;
+      min-width: 150px;
+    }
+    .stat-card .stat-num { font-size: 28px; font-weight: 700; color: #6366f1; }
+    .stat-card .stat-label { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+    /* Annotation markers */
+    .marker {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #6366f1; color: white; font-size: 11px; font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .annotated-row { flex-direction: column; }
+      .screen-col img { max-height: 500px; }
+      .rule-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="page-header">
+    <h1>H5 存款系統 — 視覺化業務規則標註</h1>
+    <div class="sub">Source: <code>mango2-h5/pages/deposit/</code> + Figma <code>xvqDn4NW3ljqw5xM1ES3gL</code></div>
+    <div class="header-badges">
+      <span class="h-badge">46 支付類型</span>
+      <span class="h-badge">3 通道模式</span>
+      <span class="h-badge">多層限額</span>
+      <span class="h-badge">優惠系統</span>
+      <span class="h-badge">風控攔截</span>
+      <span class="h-badge">USDT 特殊流程</span>
+      <span class="h-badge">代客充值</span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="section-nav">
+    <button class="nav-btn active" data-target="overview">總覽</button>
+    <button class="nav-btn" data-target="flow">流程圖</button>
+    <button class="nav-btn" data-target="main-page">主頁面</button>
+    <button class="nav-btn" data-target="channel">通道模式</button>
+    <button class="nav-btn" data-target="limits">限額規則</button>
+    <button class="nav-btn" data-target="discount">優惠系統</button>
+    <button class="nav-btn" data-target="form">表單驗證</button>
+    <button class="nav-btn" data-target="risk">風控攔截</button>
+    <button class="nav-btn" data-target="usdt">USDT 流程</button>
+    <button class="nav-btn" data-target="order">訂單狀態</button>
+    <button class="nav-btn" data-target="dialogs">彈窗</button>
+    <button class="nav-btn" data-target="service">代客充值</button>
+  </div>
+
+  <!-- 1. Overview -->
+  <div class="section" id="overview">
+    <div class="section-title"><span class="num">1</span> 系統總覽</div>
+    <div class="section-desc">H5 存款頁面的完整業務規則，從 source code 直接提取</div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">46</div><div class="stat-label">支付類型 (EPayType 0-45)</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">通道模式 (Init/Merge/Expand)</div></div>
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">限額層級 (單筆/日/週/共用組)</div></div>
+      <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">優惠狀態 (隱藏/未達/日限/週限/可用)</div></div>
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">訂單狀態 (進行中/成功/失敗/取消)</div></div>
+    </div>
+
+    <img src="/images/deposit/section-1-basic.png" class="overview-img" alt="5.1.1 基本頁面">
+  </div>
+
+  <!-- 2. Flow -->
+  <div class="section" id="flow">
+    <div class="section-title"><span class="num">2</span> 存款主流程</div>
+    <div class="section-desc">從進入存款頁到訂單完成的完整決策路徑</div>
+
+    <div class="flow-box">
+      <h3>主流程</h3>
+      <div class="flow-steps">
+        <div class="flow-step highlight">進入存款頁</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step risk">風控檢查<br><small>手機綁定？維護？</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">載入通道列表</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">推薦排序</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">選擇支付類型</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">通道模式判定<br><small>Merge / Expand</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">填寫表單</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step risk">驗證<br><small>限額+姓名+銀行</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">提交訂單</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">等待付款<br><small>倒計時 30min</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">上傳憑證</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">到帳</div>
+      </div>
+    </div>
+
+    <div class="flow-box">
+      <h3>通道模式分支</h3>
+      <div class="flow-steps">
+        <div class="flow-step highlight">選擇支付類型</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step" style="background:#334155">
+          Mode = <strong>Merge(1)</strong><br>
+          <small>單通道，自動選第一個<br>直接顯示表單</small>
+        </div>
+        <span class="flow-arrow" style="margin:0 12px">/</span>
+        <div class="flow-step" style="background:#334155">
+          Mode = <strong>Expand(2)</strong><br>
+          <small>多通道，顯示選擇列表<br>用戶選第三方後進表單</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-box">
+      <h3>USDT 快捷 (Type 26) 特殊流程</h3>
+      <div class="flow-steps">
+        <div class="flow-step highlight">USDT_DIY</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Expand 通道</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">選幣種地址</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">輸入金額(CNY)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">自動換算 USDT</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">提交</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">顯示付款資訊<br><small>30min 倒計時</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step" style="background:#22c55e;color:#fff">自動上傳憑證</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Main Page -->
+  <div class="section" id="main-page">
+    <div class="section-title"><span class="num">3</span> 主頁面 — 類型選擇與金額</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-main-deposit.png" alt="常用充值類型及金額">
+        <div class="screen-label">5.1.1.1.2 常用充值類型及金額</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4><span class="marker">A</span>Tab 切換列</h4>
+          <p>顯示 <code>存款</code> / <code>轉帳</code> / <code>幣商</code> 等 Tab。存款頁對應 <code>/deposit</code> 路由。</p>
+          <div class="src">composables/useDeposit/useRechargeType.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4><span class="marker">B</span>支付類型選擇</h4>
+          <p>水平可滑動列表，顯示所有可用的支付類型。後端回傳 <code>channelList</code>，前端按 <code>recommendPayTypeSortSwitch</code> 排序。推薦邏輯：<code>isHot</code>(後台熱門) → <code>isRec</code>(suggestType=1) → <code>isCommon</code>(suggestType=2/3 常用)。最多自動標記 2 個推薦。</p>
+          <div class="src">composables/useRecharge.ts → initChannelList()</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4><span class="marker">C</span>快捷金額按鈕</h4>
+          <p>從 <code>representative.goldList</code> 以逗號分隔取得預設金額選項。點選即填入金額欄位。若有優惠且金額 &ge; <code>minAmount/100</code>，按鈕下方顯示優惠百分比。</p>
+          <div class="src">deposit/components/payForm/NormalPayForm.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4><span class="marker">D</span>自動跳轉</h4>
+          <p>若用戶 store 有 <code>depositAutoJumpPayType</code>（非 -1），進入存款頁自動選擇該支付類型並顯示表單。離開頁面時重置為 -1。</p>
+          <div class="src">composables/useDeposit/useDepositSelectedChannel.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4><span class="marker">E</span>底部公告</h4>
+          <p>存款頁底部顯示 <code>Notice/sheet/content/bottom/common</code> 公告組件，內容由後端控制。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-first-deposit.png" alt="首存狀態">
+        <div class="screen-label">5.1.1.1.1 尚未首存</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-discount">優惠</span>
+          <h4>首存提示</h4>
+          <p>若 <code>firstPayConfig?.isActive === 1</code>，頁面頂部顯示 <code>FirstPayHintTab</code> 元件，引導用戶首次存款。可點擊查看首存規則彈窗 <code>FirstPayRule</code>。</p>
+          <div class="src">deposit/components/FirstPayHintTab.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>類型收合半屏</h4>
+          <p>當支付類型過多時，可收合為半屏選擇器 (5.1.1.1.3)，用戶點擊展開選擇。尚未首存的用戶看到的列表可能有首存專屬通道。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Channel Modes -->
+  <div class="section" id="channel">
+    <div class="section-title"><span class="num">4</span> 通道模式 (Channel Architecture)</div>
+    <div class="section-desc">通道模式決定了用戶選擇支付方式後看到的 UI 和流程差異</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-bank-select.png" alt="銀行卡選擇">
+        <div class="screen-label">5.1.1.3 銀行卡 — 請選擇存款銀行</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>Merge 模式 (code=1)</h4>
+          <p>單一合併通道。自動選擇第一個 representative，<strong>跳過選擇頁</strong>，直接顯示表單。適用大多數傳統支付（微信、支付寶、網銀等）。</p>
+          <p>對應元件：<code>mergeChannelPay.vue</code></p>
+          <div class="src">stores/recharge.ts → EChannelType.Merge = 1</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>Expand 模式 (code=2)</h4>
+          <p>多選通道。顯示多個第三方支付選項讓用戶選擇，選擇後再進入表單。適用 USDT 快捷等多幣種場景。若 <code>cryptoTypeSwitch === 1</code>，改為顯示加密幣種列表。</p>
+          <p>對應元件：<code>expandChannelPay.vue</code></p>
+          <div class="src">stores/recharge.ts → EChannelType.Expand = 2</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>銀行選擇交互</h4>
+          <p>銀行卡類型 (code 12, 14, 19, 24, 29, 30, 36) 需要額外選擇銀行。選擇前顯示 <code>bankPayTipsDialog</code> 提示用戶確認銀行資訊。</p>
+        </div>
+      </div>
+    </div>
+
+    <table class="type-table">
+      <thead>
+        <tr>
+          <th>代碼</th>
+          <th>類型</th>
+          <th>通道模式</th>
+          <th>需姓名</th>
+          <th>需銀行</th>
+          <th>需上傳</th>
+          <th>可取消</th>
+          <th>特殊</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0</td><td>代客充值 CUSTOMER</td><td>Direct</td><td class="no">-</td><td class="no">-</td><td class="no">-</td><td class="no">-</td><td>獨立流程</td></tr>
+        <tr><td>1</td><td>支付寶 ALIPAY</td><td>Merge</td><td class="yes">V</td><td class="no">-</td><td class="yes">V</td><td class="yes">V</td><td></td></tr>
+        <tr><td>2</td><td>微信 WECHAT</td><td>Merge</td><td class="yes">V</td><td class="no">-</td><td class="no">-</td><td class="yes">V</td><td></td></tr>
+        <tr><td>3</td><td>網銀 YL</td><td>Merge</td><td class="yes">V</td><td class="no">-</td><td class="no">-</td><td class="yes">V</td><td></td></tr>
+        <tr><td>10</td><td>快捷支付 FAST</td><td>Merge</td><td class="yes">V</td><td class="no">-</td><td class="yes">V</td><td class="no" style="color:#f87171">X 不可取消</td><td></td></tr>
+        <tr><td>12</td><td>銀行卡轉帳 KZK</td><td>Merge</td><td class="yes">V</td><td class="yes">V</td><td class="yes">V</td><td class="yes">V</td><td>訂單後上傳</td></tr>
+        <tr><td>13</td><td>USDT</td><td>Merge</td><td class="no">-</td><td class="no">-</td><td class="yes">V</td><td class="yes">V</td><td>匯率換算</td></tr>
+        <tr><td>19</td><td>銀行卡支付 YHZF</td><td>Merge</td><td class="yes">V</td><td class="yes">V</td><td class="yes">V</td><td class="yes">V</td><td></td></tr>
+        <tr><td>26</td><td>USDT快捷 USDT_DIY</td><td>Expand</td><td class="no">-</td><td class="no">-</td><td class="no">自動</td><td class="no" style="color:#f87171">X</td><td>多幣種選擇</td></tr>
+        <tr><td>40</td><td>DD錢包 DDP</td><td>Merge</td><td class="no">自動</td><td class="no">-</td><td class="no">-</td><td class="yes">V</td><td>需實名+餘額</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:#475569;margin-top:8px">* 僅列出主要類型，完整 46 種定義在 EPayType enum</p>
+  </div>
+
+  <!-- 5. Limits -->
+  <div class="section" id="limits">
+    <div class="section-title"><span class="num">5</span> 限額規則 (Amount Limits)</div>
+    <div class="section-desc">四層限額機制：單筆 → 每日次數 → 每週上限 → 共用組</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-limit-single.png" alt="單一類型限額">
+        <div class="screen-label">5.1.1.2.1 充值限制 — 單一類型</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-validation">驗證</span>
+          <h4>單筆限額</h4>
+          <p>每個通道有 <code>representative.minGold</code> (最低) 和 <code>representative.maxGold</code> (最高)。表單提交前驗證金額是否在此範圍內。</p>
+          <p>UI 顯示格式：<code>單筆限額：¥min - ¥max</code></p>
+          <div class="src">composables/useDeposit/useDepositSelectedChannel.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-validation">驗證</span>
+          <h4>每日次數限制</h4>
+          <p><code>gamePayTypes.dailyMax</code> = 每日最大次數，<code>remainingTimes</code> = 今日剩餘次數。<br>當 <code>remainingTimes == 0 && dailyMax >= 0</code> 時，該支付類型被封鎖。</p>
+          <p>UI 顯示：<code>X / Y 次</code> (剩餘/每日上限)</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-validation">驗證</span>
+          <h4>USDT 特殊限額</h4>
+          <p>Type 26 (USDT_DIY) 使用 <code>limitRange.min</code> / <code>limitRange.max</code>，金額不在範圍內顯示：<code>請輸入限額區間金額</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-limit-shared.png" alt="共用類型限額">
+        <div class="screen-label">5.1.1.2.2 充值限制 — 共用類型</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>共用組限額</h4>
+          <p>多個支付類型可共享存款次數。由 <code>gamePayTypes.sharedGroupId</code> 控制：</p>
+          <p><code>0</code> = 不在共用組<br><code>-1</code> = 無限制<br>其他正整數 = 同 group 的類型共用次數</p>
+          <p>剩餘次數：<code>remainingTimesShared</code>，歸零則所有同組類型被封鎖。</p>
+          <div class="src">stores/recharge.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>共用組資訊面板</h4>
+          <p>點擊可查看哪些支付類型在同一共用組內，以及各自的剩餘次數。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Discount -->
+  <div class="section" id="discount">
+    <div class="section-title"><span class="num">6</span> 優惠系統 (Discount)</div>
+    <div class="section-desc">存款加送機制，有 5 種顯示狀態</div>
+
+    <img src="/images/deposit/section-1-basic.png" class="overview-img" style="max-height:300px;object-fit:cover;object-position:top;" alt="優惠相關畫面">
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-discount">優惠</span>
+        <h4>優惠欄位 (per channel)</h4>
+        <p><code>isOpen</code> = 1 開啟 | <code>discountPer</code> = 優惠百分比 | <code>minAmount</code> = 最低觸發金額(分) | <code>maxDiscount</code> = 日上限(分) | <code>maxDiscountWeek</code> = 週上限(分)</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-discount">優惠</span>
+        <h4>5 種顯示狀態</h4>
+        <p>
+          <strong>1. 隱藏</strong> — isOpen!=1 或 discountPer&le;0<br>
+          <strong>2. 已達週限</strong> — curDiscountWeek &ge; maxDiscountWeek<br>
+          <strong>3. 已達日限</strong> — curDiscount &ge; maxDiscount<br>
+          <strong>4. 未達最低</strong> — amount*100 &lt; minAmount<br>
+          <strong>5. 可領取</strong> — 充值加送 X%
+        </p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-discount">優惠</span>
+        <h4>紅利計算</h4>
+        <p><code>bonus = min(discountPer * amount / 100, maxDiscount - curDiscount, maxDiscountWeek - curDiscountWeek)</code></p>
+        <p>快捷金額按鈕上對達標金額顯示優惠百分比標籤。</p>
+        <div class="src">deposit/components/payForm/NormalPayForm.vue</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-discount">優惠</span>
+        <h4>首存優惠</h4>
+        <p><code>firstPayConfig?.isActive === 1</code> 時顯示首存引導。與通道優惠獨立運作，可能疊加。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Form Validation -->
+  <div class="section" id="form">
+    <div class="section-title"><span class="num">7</span> 表單驗證規則</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-fill-info.png" alt="填寫資訊">
+        <div class="screen-label">5.1.1.4.1 充值 — 填寫資訊狀態</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-validation">驗證</span>
+          <h4>金額驗證</h4>
+          <p>必填 | 數字 &ge; 1 | 在 <code>limitRange.min</code> ~ <code>limitRange.max</code> 範圍內</p>
+          <p>錯誤訊息：<code>請輸入正確的充值金額</code></p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-validation">驗證</span>
+          <h4>姓名驗證 (29 種類型需要)</h4>
+          <p>Regex: <code>/^(?=.*[a-zA-Z\u4e00-\u9fa5])[a-zA-Z\u4e00-\u9fa5\s]{2,}$/</code></p>
+          <p>至少 2 字元，需含中文或英文，不可純數字。</p>
+          <p>額外檢查 <code>checkBindName()</code>：若輸入姓名不在已綁定列表中，彈出 <code>bindNameDialog</code> 確認。</p>
+          <div class="src">composables/useDeposit/usePayForm.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-validation">驗證</span>
+          <h4>銀行選擇 (7 種類型需要)</h4>
+          <p>適用類型：code 12, 14, 19, 24, 29, 30, 36</p>
+          <p>提交前顯示 <code>bankPayTipsDialog</code> 確認銀行資訊</p>
+          <p>錯誤訊息：<code>請選擇正確的充值銀行</code></p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-api">API</span>
+          <h4>DD錢包特殊驗證 (code=40)</h4>
+          <p>姓名自動使用 <code>userStore.info?.realName</code>，不走表單輸入。<br>
+          提交前檢查 <code>rechargeStore.DDBalance &ge; amount</code>，不足則阻擋並顯示 DDWallet Dialog。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Risk Control -->
+  <div class="section" id="risk">
+    <div class="section-title"><span class="num">8</span> 風控攔截 (Risk Control)</div>
+
+    <img src="/images/deposit/section-2-scenarios.png" class="overview-img" style="max-height:400px;object-fit:cover;object-position:top;" alt="風控相關情境">
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">風控</span>
+        <h4>手機綁定攔截</h4>
+        <p>進入存款頁首先檢查 <code>isBindPhone</code>。未綁定時：<strong>封鎖所有支付類型</strong>，顯示 <code>BindPhone</code> 元件引導綁定。</p>
+        <p>錯誤訊息：<code>請先綁定手機</code></p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">風控</span>
+        <h4>實名認證攔截 (DD錢包)</h4>
+        <p>僅 Type 40 (DDP) 要求。檢查 <code>userStore.info?.realName</code>，缺少則導向 <code>/mine/mine-center/real-name</code>。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">風控</span>
+        <h4>通道維護攔截</h4>
+        <p><code>switchStatus</code> 值：<code>1</code>=正常, <code>2</code>=關閉(後端不回傳), <code>3</code>=維護中。<br>
+        狀態 3 或通道列表為空：顯示 <code>MaintainPay</code> 元件，封鎖所有操作。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">風控</span>
+        <h4>失敗次數導客服</h4>
+        <p>追蹤三種失敗：<code>GetOrderFailed(3)</code> / <code>SystemAutoCancel(12)</code> / <code>UserManualCancel(13)</code>。<br>
+        當計數器 &ge; 閾值，引導用戶聯繫客服而非繼續存款。</p>
+        <div class="src">composables/useDeposit/useDepositCancel.ts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. USDT Flow -->
+  <div class="section" id="usdt">
+    <div class="section-title"><span class="num">9</span> USDT 特殊流程</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-order-usdt.png" alt="USDT 支付">
+        <div class="screen-label">5.1.1.3.2 提交訂單 — USDT 支付</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>USDT_DIY (Type 26) — 快捷支付</h4>
+          <p>Expand 通道 → 用戶選擇幣種地址 → 輸入 CNY 金額 → 自動換算 USDT (<code>cryptoAmount/100</code>) → 提交 → 顯示付款資訊 + 30min 倒計時 → <strong>憑證自動上傳</strong></p>
+          <p>不可取消。付款頁顯示：<code>$realBuyNum USDT &asymp; &yen;goldAmount</code></p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>匯率換算</h4>
+          <p>適用類型：code 11, 13, 26, 33, 35, 45</p>
+          <p>匯率來源：<code>gamePayTypes?.cryptoRate</code> 優先，fallback <code>usdtRate</code></p>
+          <p>公式：<code>USDT = CNY / (rate / 100)</code></p>
+          <div class="src">composables/useDeposit/useDepositLatestOrder.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>加密幣自動列表</h4>
+          <p>若 <code>cryptoQuickConfig.cryptoTypeSwitch === 1</code>，Expand 通道改為顯示加密幣種自動列表而非一般第三方列表。推薦地址以 <code>isRecommend: true</code> 標記。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-api">API</span>
+          <h4>其他 USDT 類型 (13, 35, 45)</h4>
+          <p>一般表單提交流程，訂單成功後顯示 <code>RechargeBankPayInfo</code> 元件，需手動上傳憑證。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Order Status -->
+  <div class="section" id="order">
+    <div class="section-title"><span class="num">10</span> 訂單狀態與取消</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/deposit/screen-order-wechat.png" alt="微信提交訂單">
+        <div class="screen-label">5.1.1.3.1 提交訂單 — 微信</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>訂單狀態機</h4>
+          <p>
+            <code>0</code> = 進行中 (Process) — 顯示 RechargePayInfo + 倒計時<br>
+            <code>2</code> = 成功 (Success) — 到帳<br>
+            <code>3</code> = 失敗 (Fail)<br>
+            <code>12</code> = 已取消 (Cancel)
+          </p>
+          <p>進行中判定：<code>countdown > 0 AND status === 0</code></p>
+          <div class="src">composables/useDeposit/useDepositLatestOrder.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>倒計時</h4>
+          <p>預設 30 分鐘（從 <code>createTime</code> 起算），若後端有 <code>expireTime</code> 則使用後端值。格式 <code>HH:MM:SS</code>。歸零時自動刷新訂單狀態。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>取消規則</h4>
+          <p><strong>不可取消</strong>：Type 10 (快捷), Type 26 (USDT快捷)<br>
+          每日取消上限：<code>cancelDayCnt &lt; maxCancelPerDay</code><br>
+          達上限提示：<code>已達本日取消限制</code><br>
+          取消需選擇原因（後端回傳 <code>cancelReason</code> 選項列表）</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>上傳憑證步驟條</h4>
+          <p>4 步驟：<code>申請已提交 → 待您付款 → 上傳憑證 → 成功到帳</code><br>
+          上傳完成後 stepIndex = 2。USDT_DIY (26) 自動完成上傳，直接顯示「憑證已上傳成功，系統正在審核中」。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Dialogs -->
+  <div class="section" id="dialogs">
+    <div class="section-title"><span class="num">11</span> 彈窗系統</div>
+
+    <img src="/images/deposit/section-3-dialogs.png" class="overview-img" alt="存款彈窗">
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">UI</span>
+        <h4>5.1.3.1 存款公告</h4>
+        <p>滾動公告，支持多頁（上一頁/下一頁）。顯示位置在存款表單區域內。三種 Component 狀態：第一頁、中間頁、最末頁。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">UI</span>
+        <h4>5.1.3.2 提示彈窗 (7 種)</h4>
+        <p>
+          <strong>通道切換</strong> — 充值途中切換通道確認<br>
+          <strong>引導信息類別名新增</strong> — 新姓名綁定確認<br>
+          <strong>通用帶確認</strong> — 去完成某操作<br>
+          <strong>通用提示</strong> — 純文字提示<br>
+          <strong>DCC額度不足</strong> — DD錢包餘額不足<br>
+          <strong>操作不通暢格式(灰UI)</strong> — 兩種樣式
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. Customer Service Deposit -->
+  <div class="section" id="service">
+    <div class="section-title"><span class="num">12</span> 代客充值 (Customer Service Deposit)</div>
+    <div class="section-desc">Type 0 — 透過客服完成充值的獨立流程</div>
+
+    <img src="/images/deposit/section-5-service.png" class="overview-img" alt="代客充值">
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">流程</span>
+        <h4>代客充值流程</h4>
+        <p>基本頁面 → 選擇客服 → 進入聊天室 → 提供訂單資訊 → 輸入充值金額 → 聯繫方式 → 上傳憑證 → 等待處理</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">UI</span>
+        <h4>5.1.5.3 訂單資訊</h4>
+        <p>3 種 Component 狀態。顯示訂單號、金額、收款資訊（銀行/QRCode）。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">UI</span>
+        <h4>5.1.5.4 聊天室</h4>
+        <p>內嵌即時通訊介面，與客服對話完成充值。支持文字訊息和 QRCode 掃碼。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">流程</span>
+        <h4>5.1.5.8 上傳憑證</h4>
+        <p>代客充值的憑證上傳介面，2 種 Component 狀態。上傳後等待客服確認。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">流程</span>
+        <h4>5.1.5.9 選單狀態</h4>
+        <p>充值過程的狀態追蹤，顯示每個步驟的完成情況。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:40px;color:#475569;font-size:12px;border-top:1px solid #1e293b;">
+    <p>Source Code: <code>mango2-h5/pages/deposit/</code> | Figma: <code>xvqDn4NW3ljqw5xM1ES3gL</code> (5.1 存款)</p>
+    <p style="margin-top:4px">Generated 2026-04-08 | Windelf Knowledge Base</p>
+  </div>
+
+  <script>
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section');
+
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.target);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+          navBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        }
+      });
+    });
+
+    // Highlight nav on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navBtns.forEach(b => {
+            b.classList.toggle('active', b.dataset.target === id);
+          });
+        }
+      });
+    }, { rootMargin: '-100px 0px -60% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

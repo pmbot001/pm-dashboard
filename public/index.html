@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PM Dashboard — 需求資料庫</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="logo">📋 PM Dashboard</h1>
+        <span class="subtitle">需求資料庫查詢工具</span>
+      </div>
+      <div class="header-right">
+        <div id="stats" class="stats"></div>
+      </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="輸入功能名稱、GOR 編號、通則名稱..." autocomplete="off">
+        <button id="searchBtn" class="search-btn">搜尋</button>
+      </div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="logic">核心邏輯</button>
+        <button class="mode-tab" data-mode="feature">功能查詢</button>
+        <button class="mode-tab" data-mode="impact">影響範圍</button>
+        <button class="mode-tab" data-mode="rules">通則速查</button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="results">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <p>輸入關鍵字開始查詢</p>
+        <div class="quick-tags">
+          <span class="tag" data-query="轉盤" data-mode="logic">轉盤系統</span>
+          <span class="tag" data-query="佣金" data-mode="logic">佣金</span>
+          <span class="tag" data-query="篩選條件" data-mode="rules">篩選條件通則</span>
+          <span class="tag" data-query="多語言" data-mode="rules">多語言通則</span>
+          <span class="tag" data-query="代理充值" data-mode="feature">代理充值</span>
+          <span class="tag" data-query="返水" data-mode="impact">返水影響範圍</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose' });</script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
