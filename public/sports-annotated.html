@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H5 體育首頁 — 現況標註文件</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0f172a; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; line-height:1.6; }
+    a { color:#60a5fa; }
+
+    /* Header */
+    .page-header { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); padding:40px 24px 24px; text-align:center; }
+    .page-header h1 { font-size:28px; background:linear-gradient(90deg,#f97316,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .page-header .sub { color:#94a3b8; margin-top:8px; font-size:14px; }
+    .h-badge { display:inline-block; background:#334155; color:#cbd5e1; border-radius:12px; padding:2px 10px; font-size:12px; margin:4px 2px; }
+
+    /* Stats */
+    .stats-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:20px auto; max-width:900px; }
+    .stat-card { background:#1e293b; border-radius:12px; padding:16px 20px; text-align:center; flex:1; min-width:120px; }
+    .stat-num { font-size:28px; font-weight:700; color:#f97316; }
+    .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
+
+    /* Nav */
+    .nav-bar { position:sticky; top:0; z-index:100; background:#1e293b; display:flex; gap:6px; padding:10px 16px; overflow-x:auto; border-bottom:1px solid #334155; }
+    .nav-btn { background:#334155; color:#cbd5e1; border:none; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; white-space:nowrap; transition:all .2s; }
+    .nav-btn:hover { background:#f97316; color:#fff; }
+
+    /* Sections */
+    .section { max-width:1200px; margin:32px auto; padding:0 16px; }
+    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#f97316; color:#fff; border-radius:50%; font-size:15px; }
+    .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
+
+    /* Overview image */
+    .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
+
+    /* Annotated rows */
+    .annotated-row { display:grid; grid-template-columns:280px 280px 1fr; gap:16px; margin-bottom:24px; }
+    .annotated-row.single { grid-template-columns:280px 1fr; }
+    @media(max-width:900px) {
+      .annotated-row, .annotated-row.single { grid-template-columns:1fr; }
+    }
+    .screen-col img { width:100%; border-radius:10px; border:1px solid #334155; }
+    .screen-label { text-align:center; font-size:12px; color:#94a3b8; margin-top:6px; }
+    .rules-col { display:flex; flex-direction:column; gap:10px; }
+
+    /* Rule cards */
+    .rule-card { background:#1e293b; border-radius:10px; padding:14px; border-left:3px solid #f97316; }
+    .rule-card h4 { font-size:14px; margin:4px 0 6px; color:#f1f5f9; }
+    .rule-card p { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card code { background:#334155; padding:1px 5px; border-radius:4px; font-size:12px; color:#fbbf24; }
+    .rule-card .src { font-size:11px; color:#64748b; margin-top:6px; font-family:monospace; }
+    .rule-tag { display:inline-block; font-size:11px; padding:1px 8px; border-radius:6px; font-weight:600; }
+    .tag-flow { background:#164e63; color:#67e8f9; }
+    .tag-logic { background:#3b2f1a; color:#fbbf24; }
+    .tag-ui { background:#1a2e1a; color:#86efac; }
+    .tag-api { background:#2d1a3e; color:#c4b5fd; }
+    .tag-warning { background:#3b1a1a; color:#fca5a5; }
+    .tag-venue { background:#1a2638; color:#93c5fd; }
+
+    /* Rule grid */
+    .rule-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin-top:12px; }
+
+    /* Tables */
+    .type-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+    .type-table th { background:#334155; color:#f1f5f9; padding:8px 12px; text-align:left; }
+    .type-table td { background:#1e293b; padding:8px 12px; border-bottom:1px solid #334155; }
+    .type-table tr:hover td { background:#263548; }
+
+    /* Flow diagram */
+    .flow-box { background:#1e293b; border-radius:12px; padding:20px; margin:16px 0; overflow-x:auto; }
+    .flow-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    .flow-step { background:#334155; border-radius:8px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+    .flow-step.highlight { background:#f97316; color:#fff; }
+    .flow-step small { font-size:11px; color:#94a3b8; }
+    .flow-arrow { color:#64748b; font-size:18px; }
+    .flow-label { font-size:12px; color:#94a3b8; margin-bottom:4px; font-weight:600; }
+
+    /* Polling table */
+    .poll-table { width:100%; max-width:500px; border-collapse:collapse; margin:12px 0; font-size:13px; }
+    .poll-table th, .poll-table td { padding:6px 12px; border:1px solid #334155; }
+    .poll-table th { background:#334155; }
+    .poll-table td { background:#1e293b; }
+
+    .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="page-header">
+    <h1>H5 體育首頁 — 現況標註文件</h1>
+    <div class="sub">Figma fileKey: V4UV6fa9K73VNo2yTwWPZW &middot; 知識庫: 1-sports.md &middot; 頁面: pages/home/</div>
+    <div style="margin-top:12px">
+      <span class="h-badge">首頁框架</span>
+      <span class="h-badge">賽事列表</span>
+      <span class="h-badge">賽事詳情</span>
+      <span class="h-badge">投注購物車</span>
+      <span class="h-badge">串關</span>
+      <span class="h-badge">冠軍玩法</span>
+      <span class="h-badge">場館切換</span>
+      <span class="h-badge">新手引導</span>
+      <span class="h-badge">AI 推薦</span>
+    </div>
+    <div class="stats-row" style="margin-top:20px">
+      <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">體育場館 (FB/OB/SABA/PM/DC)</div></div>
+      <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">Period 時段 (滾球~關注)</div></div>
+      <div class="stat-card"><div class="stat-num">5s</div><div class="stat-label">登入輪詢間隔</div></div>
+      <div class="stat-card"><div class="stat-num">18</div><div class="stat-label">首頁功能項</div></div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav-bar">
+    <button class="nav-btn" data-target="overview">總覽</button>
+    <button class="nav-btn" data-target="flow">流程圖</button>
+    <button class="nav-btn" data-target="homepage">首頁框架</button>
+    <button class="nav-btn" data-target="matchlist">賽事列表</button>
+    <button class="nav-btn" data-target="matchdetail">賽事詳情</button>
+    <button class="nav-btn" data-target="cart">投注購物車</button>
+    <button class="nav-btn" data-target="combo">串關</button>
+    <button class="nav-btn" data-target="outright">冠軍玩法</button>
+    <button class="nav-btn" data-target="venue">場館系統</button>
+    <button class="nav-btn" data-target="search">搜尋篩選</button>
+    <button class="nav-btn" data-target="newbie">新手引導</button>
+    <button class="nav-btn" data-target="polling">API 輪詢</button>
+  </div>
+
+  <!-- 1. Overview -->
+  <div class="section" id="overview">
+    <div class="section-title"><span class="num">1</span> 總覽 (Overview)</div>
+    <div class="section-desc">體育模組是整個 App 的核心入口，涵蓋首頁框架、賽事瀏覽、投注下單三大流程</div>
+    <img src="/images/sports/section-sport-home.png" class="overview-img" alt="體育首頁總覽">
+  </div>
+
+  <!-- 2. Flow -->
+  <div class="section" id="flow">
+    <div class="section-title"><span class="num">2</span> 核心流程 (Core Flows)</div>
+    <div class="section-desc">從進入首頁到完成投注的主要路徑</div>
+
+    <div class="flow-box">
+      <div class="flow-label">主流程：瀏覽 → 下注</div>
+      <div class="flow-row">
+        <div class="flow-step highlight">進入首頁</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">場館切換<br><small>FB/OB/SABA/PM</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">球種選擇<br><small>足球/籃球/電競...</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">時間軸選擇<br><small>滾球/今日/早盤/串關/冠軍</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">賽事列表</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">點擊賠率</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">購物車下注</div>
+      </div>
+    </div>
+
+    <div class="flow-box">
+      <div class="flow-label">串關流程</div>
+      <div class="flow-row">
+        <div class="flow-step">選擇多場賠率</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">加入串關購物車</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">選擇串關方式<br><small>3串1 / 自由串</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">提交串關投注</div>
+      </div>
+    </div>
+
+    <div class="flow-box">
+      <div class="flow-label">賽事詳情流程</div>
+      <div class="flow-row">
+        <div class="flow-step">點擊賽事卡片</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">賽事詳情頁<br><small>影片/動畫 + 全盤口</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Tab 切換<br><small>下單/包賠/競猜/賽況/爆料</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">選盤口下注</div>
+      </div>
+    </div>
+
+    <div class="flow-box">
+      <div class="flow-label">資料載入流程 (useSimpleMarket)</div>
+      <div class="flow-row">
+        <div class="flow-step">fetchGameList()</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">fetchCount()<br><small>各球種賽事數量</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">自動選 period<br><small>滾球>今日>早盤>串關>冠軍</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">fetchListSimplify()<br><small>精簡賽事列表+賠率</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">5s 輪詢更新</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Homepage Framework -->
+  <div class="section" id="homepage">
+    <div class="section-title"><span class="num">3</span> 首頁框架 (Home Layout)</div>
+    <div class="section-desc">Header / Banner / 公告列 / SportBar — 整個首頁的外殼與收折行為</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-sport-home.png" alt="體育首頁">
+        <div class="screen-label">1.1.1 體育首頁（預設展開）</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-scroll-collapsed.png" alt="滑動收合">
+        <div class="screen-label">1.1.1.1.6 滑動收合狀態</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>Header Bar</h4>
+          <p>Logo + 儲值按鈕 + 餘額顯示 + 客服 Icon + 側欄開關。餘額刷新有 <strong>30 秒 cooldown</strong>，呼叫 <code>walletStore.getUserGold()</code>。</p>
+          <div class="src">pages/home/components/HeaderBar.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>收折行為 (BaseHomeLayout)</h4>
+          <p>捲動偵測 <code>detectCollapseHeader</code>：超過 <code>hideScrollBlockHeight + sportHideHeight</code> 觸發收折。Banner 消失、Header 縮小。</p>
+          <div class="src">pages/home/components/BaseHomeLayout.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>SportBar 場館切換列</h4>
+          <p>橢圓形切換列：「娛樂」/「體育」切換 + 杯賽入口。三個路由：<code>/home/casino</code>、<code>/home/sport</code>、<code>/home/topic</code>。杯賽模式下顏色全部換白色系。</p>
+          <div class="src">pages/home/components/sportBar/index.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-api">API</span>
+          <h4>Banner 輪播</h4>
+          <p>來源 <code>allBannerConfig.bannerConfig.configList</code>。過濾：status=2 排除、時間區間外排除、無 src 排除。5 秒自動輪播，hover 暫停。</p>
+          <div class="src">pages/home/components/BannerCarousel.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>滾動公告 (RollingBar)</h4>
+          <p>跑馬燈公告，無公告時預設「歡迎來到娛樂平台」。速度：30px/1000ms。點擊展開完整內容，左側 icon 顯示備用域名彈窗。</p>
+          <div class="src">pages/home/components/RollingBar.vue</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Match List -->
+  <div class="section" id="matchlist">
+    <div class="section-title"><span class="num">4</span> 賽事列表 (Match List)</div>
+    <div class="section-desc">球種選擇、時間軸、聯賽篩選、賽事卡片 — 核心瀏覽體驗</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-sport-logged-in.png" alt="已登入展開">
+        <div class="screen-label">1.1.1.1.2 已登入並展開</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-professional-view.png" alt="專業版">
+        <div class="screen-label">1.1.1.1.7.1 專業版視圖</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>球種選擇 (SportSelector)</h4>
+          <p>頂部球種快捷列，顯示各球種賽事數量。點擊切換 <code>state.currentBallType</code> → 重新拉取賽事列表。場館切換後 ballTypeList 重設。</p>
+          <div class="src">sport/components/SportSelector.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>時間軸 (PeriodSelector)</h4>
+          <p>只顯示有賽事的 period（count > 0）。優先序：<strong>滾球 > 今日 > 早盤 > 串關 > 冠軍</strong>。早盤/串關（type 3/4）額外顯示日期選擇器。</p>
+          <div class="src">sport/components/PeriodSelector.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>賽事卡片 (MatchItem)</h4>
+          <p>主客隊名 + 比分 + 最多 3 個賠率按鈕。點擊賠率 → 加入購物車或直接下注。影片支援 9 種平台（iFrame/FLV/M3U8/API）。關注按鈕 + 新手引導高亮。</p>
+          <div class="src">sport/components/MatchItem.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>玩法切換 (簡易盤/專業版)</h4>
+          <p>切換 <code>marketMode</code>。從簡易盤返回時觸發重新打 API 更新資料（GOR-1755）。專業版顯示更多盤口。</p>
+          <div class="src">sport/components/FilterOption.vue</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Period Types Table -->
+    <table class="type-table">
+      <thead>
+        <tr><th>代碼</th><th>名稱</th><th>說明</th><th>特殊處理</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0</td><td>ALL</td><td>滾球+今日+早盤 合併</td><td>僅 FB/SABA 使用</td></tr>
+        <tr><td>1</td><td>LIVE（滾球）</td><td>進行中賽事</td><td>即時比分更新</td></tr>
+        <tr><td>2</td><td>TODAY（今日）</td><td>今日賽事</td><td>-</td></tr>
+        <tr><td>3</td><td>EARLY（早盤）</td><td>預選賽事</td><td>需按日期篩選 (daily API)</td></tr>
+        <tr><td>4</td><td>PARLAY（串關）</td><td>可串關的賽事</td><td>需按日期篩選 (daily API)</td></tr>
+        <tr><td>5</td><td>LIVE_AND_TODAY</td><td>滾球+今日</td><td>OB 專用（不能用 ALL）</td></tr>
+        <tr><td>6</td><td>OUTRIGHT（冠軍）</td><td>冠軍玩法</td><td>獨立列表，先選聯賽</td></tr>
+        <tr><td>8</td><td>FOLLOW</td><td>關注賽事</td><td>玩家個人關注列表</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 5. Match Detail -->
+  <div class="section" id="matchdetail">
+    <div class="section-title"><span class="num">5</span> 賽事詳情 (Match Detail)</div>
+    <div class="section-desc">點擊賽事卡片後進入 — 影片/動畫、全盤口、聊天、爆料</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-match-detail-bet.png" alt="賽事詳情下單">
+        <div class="screen-label">1.2.2.1.1 賽事詳情 — 下單頁</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-match-video.png" alt="賽事詳情影片">
+        <div class="screen-label">1.2.2.1.5 賽事詳情 — 影片動畫</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>頂部比分板</h4>
+          <p>主客隊名 + Logo + 即時比分 + 半場比分。上方可選擇：影片 / 動畫 / 比分板切換。倒數計時器顯示比賽進行時間。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>Tab 頁籤</h4>
+          <p>聊天 / 包賠 / <strong>下單</strong> / 競猜 / 賽況 / 爆料。下單 Tab 為預設。Tabs 可左右滑動。包賠需活動開啟。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>全盤口列表</h4>
+          <p>分類：熱門 / 讓球 / 大小 / 勝平負 / 比分 / 單/双。支援盤口搜尋。可切換「AI精選」篩選推薦盤口。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>影片播放</h4>
+          <p>支援 9 種來源平台：im / saba / fb / m6video / yabo / deying / bb / hguan。type 1=iFrame, 2=FLV, 3=M3U8, 4=API 取得地址。支援子母畫面 (PiP)。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>聯賽切換</h4>
+          <p>同一聯賽多場賽事可左右滑動切換。頂部顯示聯賽名稱和賽事數量。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Cart / Betting -->
+  <div class="section" id="cart">
+    <div class="section-title"><span class="num">6</span> 投注購物車 (Betting Cart)</div>
+    <div class="section-desc">單注投注流程 — 從選擇賠率到確認下注</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-cart-single-bet.png" alt="單項投注">
+        <div class="screen-label">1.3.1.3.1 單項投注</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-bet-success.png" alt="投注成功">
+        <div class="screen-label">1.3.1.3.4 投注成功</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>單注投注流程</h4>
+          <p>點擊賠率 → 購物車展開 → 輸入金額（鍵盤含快捷金額 +100/+200/+300）→ 確認投注 → 注單確認中 → 投注成功/失敗</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>購物車畫面</h4>
+          <p>頂部顯示：場館名稱 + 餘額 + 轉額按鈕。中間：隊伍(主) + 盤口 + @賠率。金額區間提示：<code>限額 10-2800</code>。底部：投注按鈕 + 可贏金額。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>賠率變動處理</h4>
+          <p>投注期間賠率可能變動。盤口關閉時顯示鎖定狀態（1.3.1.4.10）。勝負條件可展開詳細/簡化顯示。餘額不足時顯示提示（1.3.1.4.9）。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-warning">注意</span>
+          <h4>重覆注單檢測</h4>
+          <p>提交投注後若偵測到重覆注單（1.3.1.3.6），彈出確認對話框。注單確認中（1.3.1.3.5）期間不可再操作。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-api">API</span>
+          <h4>下注 API</h4>
+          <p><code>POST /api/unify/v2/:platform/order/bet</code>。Token 失效（10403）→ 重試 3 次取新 Token。3 次後仍失敗顯示「線路異常，請稍後再試-10403」。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Combo / Parlay -->
+  <div class="section" id="combo">
+    <div class="section-title"><span class="num">7</span> 串關投注 (Parlay / Combo)</div>
+    <div class="section-desc">多場賽事組合投注 — 串關購物車與預約下注</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-cart-combo-bet.png" alt="串關投注">
+        <div class="screen-label">1.3.1.4.1 串關投注</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-cart-reserve.png" alt="預約功能">
+        <div class="screen-label">1.3.1.5 預約下注功能</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>串關投注</h4>
+          <p>多場賠率選中 → 串關購物車列出所有注單 → 選擇串關方式（3串1 / 自由串等）→ 輸入金額 → 提交。串關送出多串關方式時<strong>統一失敗或統一通過</strong>。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>ComboCartBtn 浮動按鈕</h4>
+          <p>體育首頁右下角，顯示串關注單數量。只在體育賽事頁且有串關賽事時顯示。route 切換時 <code>useLiveCartsStore.$reset()</code> 清空。</p>
+          <div class="src">components/carts/ComboCartBtn.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>預約下注 (Reserve Bet)</h4>
+          <p>盤口開放前預約，開放後自動成交。支援建立 / 查詢 / 編輯 / 取消預約注單。</p>
+          <p>API：<code>POST /order/reserve</code>、<code>GET /order/reserve/list</code>、<code>PUT /order/reserve/:id</code>、<code>DELETE /order/reserve/:id</code></p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>提前結算 (Cash Out)</h4>
+          <p>賽事結束前鎖定部分獲利。FB 特殊：<code>settle_status=3</code>（非正常=1）。提前結算注單排除於爆料命中率計算。</p>
+          <p>API：<code>POST /order/cashout</code>、<code>GET /order/cashout/rate</code></p>
+        </div>
+      </div>
+    </div>
+
+    <img src="/images/sports/section-cart.png" class="overview-img" alt="購物車/串關 總覽">
+  </div>
+
+  <!-- 8. Outright -->
+  <div class="section" id="outright">
+    <div class="section-title"><span class="num">8</span> 冠軍玩法 (Outright)</div>
+    <div class="section-desc">對賽事冠軍下注 — 與一般賽事不同的獨立功能</div>
+
+    <div class="annotated-row single">
+      <div class="screen-col">
+        <img src="/images/sports/screen-outright.png" alt="冠軍玩法">
+        <div class="screen-label">1.1.1.3 冠軍賽事列表</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>冠軍玩法流程</h4>
+          <p>Period = 6 (OUTRIGHT) 時顯示。先選聯賽（<code>OutrightSelector</code>）→ 顯示該聯賽各隊伍冠軍賠率 → 選擇下注。</p>
+          <div class="src">sport/components/OutrightList.vue → OutrightEventList.vue → OutrightSelector.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>顯示規則</h4>
+          <p>統一顯示 <code>eventname</code>，移除各場館舊有的 <code>bettypename</code> 特殊規則（GOR-680 / GOR-1792）。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-warning">注意</span>
+          <h4>FB 體育特殊</h4>
+          <p>FB 體育冠軍玩法投注後<strong>不加入關注列表</strong>（GOR-879）。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-api">API</span>
+          <h4>API</h4>
+          <p><code>POST /api/unify/v2/:platform/outright/list</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Venue System -->
+  <div class="section" id="venue">
+    <div class="section-title"><span class="num">9</span> 場館系統 (Venue System)</div>
+    <div class="section-desc">5 大體育場館各有不同特性，unify API 統一串接</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-sidebar.png" alt="側邊欄">
+        <div class="screen-label">1.1.1.4 側邊欄 — 場館切換與設置</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-venue-maintenance.png" alt="場館維護">
+        <div class="screen-label">1.1.1.1.3 場館維護中</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>場館切換</h4>
+          <p><code>gameStore.fetchGameList()</code> 取得可用場館。切換 → 清空 period / ballType → 重新走 fetchCount → fetchListSimplify 全流程。</p>
+          <div class="src">composables/useSimpleMarket/</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>維護狀態</h4>
+          <p>場館維護中 → 顯示 <code>MaintainPage</code> 元件，整個賽事區域替換為維護提示。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Venue Table -->
+    <table class="type-table">
+      <thead>
+        <tr><th>platform</th><th>場館名稱</th><th>特殊處理</th><th>Period 限制</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>fb</code></td><td>FB 體育</td><td>冠軍不加關注、提前結算 settle_status=3</td><td>支援 ALL</td></tr>
+        <tr><td><code>ob</code></td><td>OB 體育</td><td>電競 menuid 特殊處理、整數投注限制</td><td>不支援 ALL，用 LIVE_AND_TODAY</td></tr>
+        <tr><td><code>saba</code></td><td>SABA 體育</td><td>標準 unify 格式</td><td>支援 ALL</td></tr>
+        <tr><td><code>pm</code></td><td>PM 體育（自營）</td><td>電競支援、賽果分頁 API</td><td>標準</td></tr>
+        <tr><td><code>dc007</code></td><td>東方體育</td><td>2025-10 上線（GOR-5855）</td><td>標準</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rule-grid" style="margin-top:16px">
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">注意</span>
+        <h4>OB 電競整數投注</h4>
+        <p>球種：英雄聯盟、Dota2、CS:GO、王者榮耀、絕地求生。輸入小數 → toast「投注金額請使用整數」。H5 直接禁止小數點。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">邏輯</span>
+        <h4>Unify API 路由</h4>
+        <p>所有 API 路徑含 <code>:platform</code> 動態參數。值由 <code>SPORT_VENDOR[gameId]</code> mapping 決定。切換場館 → 取消前一個請求（AbortController）→ 建立新請求。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Search & Filter -->
+  <div class="section" id="search">
+    <div class="section-title"><span class="num">10</span> 搜尋與篩選 (Search & Filter)</div>
+    <div class="section-desc">賽事搜尋、聯賽篩選、早盤日期選擇</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-search.png" alt="搜尋">
+        <div class="screen-label">1.1.1.5 賽事搜尋</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-league-filter.png" alt="聯賽篩選">
+        <div class="screen-label">1.1.1.6 篩選聯賽</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>搜尋流程</h4>
+          <p>Placeholder「輸入/搜索/賽事/球隊」→ 顯示最近搜索（localStorage，不跨裝置）→ 匹配賽事或球隊 → 結果列表 / 無結果提示。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>聯賽篩選</h4>
+          <p>多選，不受球種限制。聯賽數量 &le; 6 全顯示，> 6 分頁並顯示「已顯示全部聯賽 N 個」。篩選後 <code>filteredMatchList</code> 重新過濾。</p>
+          <div class="src">sport/components/FilterOption.vue → FilterSettingPopup.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">UI</span>
+          <h4>早盤日期選擇</h4>
+          <p>Period 3（早盤）或 4（串關）時，額外打 <code>match/count/daily</code> 取得日期列表，顯示 <code>DateSelector</code> / <code>PeriodDropDown</code>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Newbie Guide -->
+  <div class="section" id="newbie">
+    <div class="section-title"><span class="num">11</span> 新手引導 (Newbie Guide)</div>
+    <div class="section-desc">首次使用引導：充值 → 切換場館 → 下注</div>
+
+    <div class="annotated-row">
+      <div class="screen-col">
+        <img src="/images/sports/screen-newbie-deposit.png" alt="新手引導-存款">
+        <div class="screen-label">1.1.1.13.1 教學提示 — 存款位置</div>
+      </div>
+      <div class="screen-col">
+        <img src="/images/sports/screen-newbie-venue-switch.png" alt="新手引導-場館切換">
+        <div class="screen-label">1.1.1.13.3 教學提示 — 切換場館</div>
+      </div>
+      <div class="rules-col">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">流程</span>
+          <h4>引導步驟</h4>
+          <p><code>NewbieGuides</code> enum：1) <strong>Deposit_Position</strong> 充值按鈕 → 2) <strong>Game_Switch</strong> 切換場館 → 3) <strong>Bet_Odds</strong> 下注。完成後不再顯示。</p>
+          <div class="src">composables/useNewbieGuides.ts</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-logic">邏輯</span>
+          <h4>顯示控制</h4>
+          <p><code>readyShowGuides</code>（等待列表）+ <code>showedNewbieGuides</code>（已顯示）管理順序。各元件透過 <code>addReadyShowGuides / removeReadyShowGuides</code> 宣告時機。</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-venue">場館</span>
+          <h4>TB 專用場館提示</h4>
+          <p>每日首次進入體育首頁時顯示場館切換提示（僅 <code>vdIs.tb</code>）。用 localStorage <code>showSportTips</code> 記錄時間戳。依賴條件：新手引導完成 + popup flow 完成。</p>
+          <div class="src">sport/composables/useSportTips.ts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. API Polling -->
+  <div class="section" id="polling">
+    <div class="section-title"><span class="num">12</span> API 輪詢機制 (API Polling)</div>
+    <div class="section-desc">即時資料更新策略 — 登入/未登入有不同頻率</div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-api">API</span>
+        <h4>輪詢頻率</h4>
+        <table class="poll-table">
+          <tr><th>狀態</th><th>頻率</th></tr>
+          <tr><td>登入中</td><td><strong>5 秒</strong></td></tr>
+          <tr><td>未登入</td><td>30 秒</td></tr>
+        </table>
+        <p style="margin-top:8px">觸發輪詢 API：matchCount、matchListSimplify、outrightList</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">API</span>
+        <h4>RP 規格輪詢頻率</h4>
+        <table class="poll-table">
+          <tr><th>時段</th><th>未登入</th><th>已登入</th></tr>
+          <tr><td>滾球</td><td>30s</td><td>10s</td></tr>
+          <tr><td>早盤</td><td>30s</td><td>5s (GOR-5454)</td></tr>
+        </table>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">邏輯</span>
+        <h4>請求管理</h4>
+        <p>切換場館/球種/時間軸 → <strong>AbortController 取消前一個請求</strong> → 建立新請求。避免舊資料覆蓋新資料。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">API</span>
+        <h4>主要 Unify API</h4>
+        <p><code>POST /match/count</code> — 各球種賽事數量<br>
+        <code>POST /match/count/daily</code> — 早盤/串關日期數量<br>
+        <code>POST /match/list/simplify</code> — 精簡賽事列表<br>
+        <code>POST /match/list</code> — 完整賽事列表（詳情頁）<br>
+        <code>POST /outright/list</code> — 冠軍玩法<br>
+        <code>POST /order/bet</code> — 下注<br>
+        <code>POST /order/cashout</code> — 提前結算<br>
+        <code>GET /ai-recommended/market</code> — AI 推薦</p>
+        <div class="src">apis/unify/index.ts — 路徑前綴: /api/unify/v2/:platform/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">注意</span>
+        <h4>Token 失效 (QIP-1627)</h4>
+        <p>收到 error code <code>10403</code> → 重試 3 次取新 Token 並下注。3 次後仍失敗 → 「線路異常，請稍後再試-10403」。Token API 失敗 → 直接顯示錯誤訊息。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">邏輯</span>
+        <h4>賠率顯示規則</h4>
+        <p>顯示至小數點第二位，第二位後<strong>無條件捨去</strong>。讓分盤 K 值為 0 時（不含 0/0.5）不顯示 +/- 符號。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>H5 體育首頁現況標註文件 &middot; 自動產生於 2026-04-09</p>
+    <p>Figma: V4UV6fa9K73VNo2yTwWPZW &middot; 知識庫: 1-sports.md &middot; RP: vxgdzx.axshare.com</p>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        const el = document.getElementById(target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>
