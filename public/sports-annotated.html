@@ -152,40 +152,24 @@
 
   <!-- Role Tabs -->
   <div class="role-bar">
-    <button class="role-tab active" data-role="all"><span class="role-indicator ri-all"></span>全部</button>
-    <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>PM 決策流程</button>
-    <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>RD API 規格</button>
-    <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>QA 驗測矩陣</button>
+    <button class="role-tab active" data-role="pm"><span class="role-indicator ri-pm"></span>決策流程</button>
+    <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API 規格</button>
+    <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測矩陣</button>
   </div>
 
   <!-- Nav -->
   <div class="nav-bar">
-    <button class="nav-btn" data-target="flow" data-nav-role="all pm">流程圖</button>
-    <button class="nav-btn" data-target="homepage" data-nav-role="all">首頁框架</button>
-    <button class="nav-btn" data-target="matchlist" data-nav-role="all">賽事列表</button>
-    <button class="nav-btn" data-target="matchdetail" data-nav-role="all">賽事詳情</button>
-    <button class="nav-btn" data-target="cart" data-nav-role="all">投注購物車</button>
-    <button class="nav-btn" data-target="combo" data-nav-role="all">串關</button>
-    <button class="nav-btn" data-target="outright" data-nav-role="all">冠軍玩法</button>
-    <button class="nav-btn" data-target="venue" data-nav-role="all">場館系統</button>
-    <button class="nav-btn" data-target="search" data-nav-role="all">搜尋篩選</button>
-    <button class="nav-btn" data-target="newbie" data-nav-role="all">新手引導</button>
-    <button class="nav-btn" data-target="polling" data-nav-role="all rd">API 輪詢</button>
-    <button class="nav-btn" data-target="pm-cart-state" data-nav-role="pm">🟠 單注狀態機</button>
-    <button class="nav-btn" data-target="pm-reserve" data-nav-role="pm">🟠 預約下注</button>
-    <button class="nav-btn" data-target="pm-cashout" data-nav-role="pm">🟠 提前結算</button>
-    <button class="nav-btn" data-target="pm-combo-logic" data-nav-role="pm">🟠 串關計算</button>
-    <button class="nav-btn" data-target="pm-odds-rules" data-nav-role="pm">🟠 規則說明</button>
-    <button class="nav-btn" data-target="rd-api" data-nav-role="rd">🟣 API 清單</button>
-    <button class="nav-btn" data-target="rd-venue-map" data-nav-role="rd">🟣 場館對照</button>
-    <button class="nav-btn" data-target="rd-ob-special" data-nav-role="rd">🟣 OB 特殊</button>
-    <button class="nav-btn" data-target="rd-polling-detail" data-nav-role="rd">🟣 輪詢細節</button>
-    <button class="nav-btn" data-target="qa-single" data-nav-role="qa">🟢 單注測項</button>
-    <button class="nav-btn" data-target="qa-combo" data-nav-role="qa">🟢 串關測項</button>
-    <button class="nav-btn" data-target="qa-cashout" data-nav-role="qa">🟢 結算測項</button>
-    <button class="nav-btn" data-target="qa-odds" data-nav-role="qa">🟢 規則測項</button>
-    <button class="nav-btn" data-target="qa-polling" data-nav-role="qa">🟢 輪詢測項</button>
-    <button class="nav-btn" data-target="overview" data-nav-role="all">Figma 總覽</button>
+    <button class="nav-btn" data-target="flow">流程圖</button>
+    <button class="nav-btn" data-target="homepage">首頁框架</button>
+    <button class="nav-btn" data-target="matchlist">賽事列表</button>
+    <button class="nav-btn" data-target="matchdetail">賽事詳情</button>
+    <button class="nav-btn" data-target="cart">投注購物車</button>
+    <button class="nav-btn" data-target="combo">串關</button>
+    <button class="nav-btn" data-target="outright">冠軍玩法</button>
+    <button class="nav-btn" data-target="venue">場館系統</button>
+    <button class="nav-btn" data-target="search">搜尋篩選</button>
+    <button class="nav-btn" data-target="newbie">新手引導</button>
+    <button class="nav-btn" data-target="polling">API 輪詢</button>
   </div>
 
   <!-- ============================================ -->
@@ -1192,49 +1176,36 @@
 
   <script>
     // Role tab switching
-    let currentRole = 'all';
+    function switchRole(role) {
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.role-tab[data-role="${role}"]`).classList.add('active');
+
+      document.querySelectorAll('.section').forEach(sec => {
+        const roles = (sec.getAttribute('data-role') || '').split(' ');
+        if (roles.includes('all') || roles.includes(role)) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     document.querySelectorAll('.role-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        currentRole = tab.getAttribute('data-role');
-
-        // Update active tab
-        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-
-        // Show/hide sections
-        document.querySelectorAll('.section').forEach(sec => {
-          const roles = (sec.getAttribute('data-role') || 'all').split(' ');
-          if (currentRole === 'all' || roles.includes('all') || roles.includes(currentRole)) {
-            sec.classList.remove('hidden');
-          } else {
-            sec.classList.add('hidden');
-          }
-        });
-
-        // Show/hide nav buttons
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-          const navRoles = (btn.getAttribute('data-nav-role') || 'all').split(' ');
-          if (currentRole === 'all' || navRoles.includes('all') || navRoles.includes(currentRole)) {
-            btn.classList.remove('hidden');
-          } else {
-            btn.classList.add('hidden');
-          }
-        });
-
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
     });
 
     // Nav button scrolling
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const target = btn.getAttribute('data-target');
-        const el = document.getElementById(target);
+        const el = document.getElementById(btn.getAttribute('data-target'));
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
+
+    // Default: show PM
+    switchRole('pm');
   </script>
 </body>
 </html>
