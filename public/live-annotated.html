@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H5 廣場 / 直播間 — 現況標註文件</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0f172a; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; line-height:1.6; }
+    a { color:#60a5fa; }
+
+    /* Layout */
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { position:fixed; top:0; left:0; width:250px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
+    .sidebar-header { padding:16px; border-bottom:1px solid #334155; }
+    .sidebar-back { display:flex; align-items:center; gap:8px; color:#94a3b8; font-size:13px; text-decoration:none; margin-bottom:12px; transition:color .2s; }
+    .sidebar-back:hover { color:#e2e8f0; }
+    .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
+    .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+    .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
+    .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
+    .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
+    .nav-btn.active { color:#06b6d4; background:#06b6d410; border-left-color:#06b6d4; }
+    .main-content { margin-left:250px; flex:1; }
+
+    /* Header */
+    .page-header { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); padding:40px 24px 24px; text-align:center; }
+    .page-header h1 { font-size:28px; background:linear-gradient(90deg,#06b6d4,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .page-header .sub { color:#94a3b8; margin-top:8px; font-size:14px; }
+    .h-badge { display:inline-block; background:#334155; color:#cbd5e1; border-radius:12px; padding:2px 10px; font-size:12px; margin:4px 2px; }
+
+    /* Stats */
+    .stats-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:20px auto; max-width:900px; }
+    .stat-card { background:#1e293b; border-radius:12px; padding:16px 20px; text-align:center; flex:1; min-width:120px; }
+    .stat-num { font-size:28px; font-weight:700; color:#06b6d4; }
+    .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
+
+    /* Sections */
+    .section { max-width:1200px; margin:32px auto; padding:0 16px; }
+    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#06b6d4; color:#fff; border-radius:50%; font-size:15px; flex-shrink:0; }
+    .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
+
+    /* Overview image */
+    .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
+
+    /* Annotated rows */
+    .annotated-row { display:grid; grid-template-columns:280px 280px 1fr; gap:16px; margin-bottom:24px; }
+    .annotated-row.single { grid-template-columns:280px 1fr; }
+    @media(max-width:900px) { .annotated-row, .annotated-row.single { grid-template-columns:1fr; } }
+    .screen-col img { width:100%; border-radius:10px; border:1px solid #334155; }
+    .screen-label { text-align:center; font-size:12px; color:#94a3b8; margin-top:6px; }
+    .rules-col { display:flex; flex-direction:column; gap:10px; }
+
+    /* Rule cards */
+    .rule-card { background:#1e293b; border-radius:10px; padding:14px; border-left:3px solid #06b6d4; }
+    .rule-card h4 { font-size:14px; margin:4px 0 6px; color:#f1f5f9; }
+    .rule-card p, .rule-card li { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card ul { padding-left:18px; }
+    .rule-card code { background:#334155; padding:1px 5px; border-radius:4px; font-size:12px; color:#fbbf24; }
+    .rule-card .src { font-size:11px; color:#64748b; margin-top:6px; font-family:monospace; }
+    .rule-tag { display:inline-block; font-size:11px; padding:1px 8px; border-radius:6px; font-weight:600; }
+    .tag-flow { background:#164e63; color:#67e8f9; }
+    .tag-logic { background:#3b2f1a; color:#fbbf24; }
+    .tag-ui { background:#1a2e1a; color:#86efac; }
+    .tag-api { background:#2d1a3e; color:#c4b5fd; }
+    .tag-warning { background:#3b1a1a; color:#fca5a5; }
+    .tag-validation { background:rgba(234,179,8,0.2); color:#fbbf24; }
+    .tag-risk { background:rgba(239,68,68,0.2); color:#f87171; }
+    .tag-venue { background:#1a2638; color:#93c5fd; }
+
+    .rule-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin-top:12px; }
+
+    /* Flow box */
+    .flow-box { background:#1e293b; border-radius:12px; padding:20px; margin:16px 0; overflow-x:auto; }
+    .flow-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    .flow-label { font-size:12px; color:#94a3b8; margin-bottom:4px; font-weight:600; }
+    .flow-step { background:#334155; border-radius:8px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+    .flow-step.highlight { background:#06b6d4; color:#fff; }
+    .flow-step small { font-size:11px; color:#94a3b8; }
+    .flow-arrow { color:#64748b; font-size:18px; }
+
+    /* Type table */
+    .type-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+    .type-table th { background:#334155; color:#f1f5f9; padding:8px 12px; text-align:left; }
+    .type-table td { background:#1e293b; padding:8px 12px; border-bottom:1px solid #334155; }
+    .type-table tr:hover td { background:#263548; }
+
+    /* Footer */
+    .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
+
+    /* Mobile sidebar */
+    @media(max-width:768px) {
+      .sidebar { width:200px; }
+      .main-content { margin-left:200px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
+      <div class="sidebar-title">📺 廣場 / 直播間</div>
+      <div class="sidebar-sub">10 功能</div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-btn active" data-target="sec-flow">核心流程</button>
+      <button class="nav-btn" data-target="sec-plaza-tabs">4.1 廣場主頁 Tab</button>
+      <button class="nav-btn" data-target="sec-livelist">直播列表 LiveList</button>
+      <button class="nav-btn" data-target="sec-schedule">節目表 Schedule</button>
+      <button class="nav-btn" data-target="sec-ranking">晒單排行榜</button>
+      <button class="nav-btn" data-target="sec-streamer">主播列表</button>
+      <button class="nav-btn" data-target="sec-anchor">主播主頁</button>
+      <button class="nav-btn" data-target="sec-liveroom">4.2 直式半屏直播間</button>
+      <button class="nav-btn" data-target="sec-chatroom">聊天室</button>
+      <button class="nav-btn" data-target="sec-horizontal">4.3 橫式全屏直播間</button>
+      <button class="nav-btn" data-target="sec-funky">4.4 直播帶牌</button>
+      <button class="nav-btn" data-target="sec-api">API 總覽</button>
+      <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1>📺 廣場 / 直播間 — 現況標註文件</h1>
+      <div class="sub">水果 2.0-APP（Vue H5）— L1 功能知識庫</div>
+      <div style="margin-top:12px;">
+        <span class="h-badge">Figma: nzmX9pUldlKfdI8sFSR9rQ</span>
+        <span class="h-badge">pages/live/</span>
+        <span class="h-badge">GOR-5097</span>
+        <span class="h-badge">GOR-6082</span>
+        <span class="h-badge">GOR-6486</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">功能數</div></div>
+        <div class="stat-card"><div class="stat-num">22</div><div class="stat-label">Figma 截圖</div></div>
+        <div class="stat-card"><div class="stat-num">16</div><div class="stat-label">API 端點</div></div>
+        <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Figma 頁面</div></div>
+      </div>
+    </div>
+
+    <!-- Section 1: Core Flow -->
+    <div class="section" id="sec-flow">
+      <div class="section-title"><span class="num">1</span> 核心流程</div>
+      <div class="section-desc">廣場模組的進入路徑與主要操作流程</div>
+
+      <div class="flow-box">
+        <div class="flow-label">廣場進入流程</div>
+        <div class="flow-row">
+          <span class="flow-step">首頁 Tab</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">/live 廣場</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">van-tabs 分頁</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">直播 | 排行榜 | 主播 | 節目表 | 影片專區</span>
+        </div>
+      </div>
+
+      <div class="flow-box">
+        <div class="flow-label">直播間進入流程</div>
+        <div class="flow-row">
+          <span class="flow-step">廣場列表</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">點擊 LiveCard</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">直式半屏直播間 (4.2)</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">聊天 / 競猜 / 送禮 / 晒單</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">賽事詳情頁</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">橫轉手機</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">橫式全屏直播間 (4.3)</span>
+        </div>
+      </div>
+
+      <div class="flow-box">
+        <div class="flow-label">純直播模式判斷</div>
+        <div class="flow-row">
+          <span class="flow-step">pushType</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">pushType === 2?</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">onlyLive/index.vue</span>
+          <span class="flow-step"><small>只有「直播」+「主播」兩個分頁</small></span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">pushType</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">pushType !== 2</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">live/index.vue</span>
+          <span class="flow-step"><small>完整分頁（直播/排行/主播/節目/影片）</small></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Plaza Tabs -->
+    <div class="section" id="sec-plaza-tabs">
+      <div class="section-title"><span class="num">2</span> 廣場主頁 — Tab 容器</div>
+      <div class="section-desc">路徑 /live，van-tabs 水平分頁結構，預設「直播」頁</div>
+
+      <div class="annotated-row single">
+        <div class="screen-col">
+          <img src="/images/live/screen-live-follow.png" alt="廣場直播關注頁">
+          <div class="screen-label">4.1.1.1 廣場_直播_關注</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>分頁顯示控制</h4>
+            <p>後台開啟「晒單排行榜功能」→ 才顯示「排行榜」分頁</p>
+            <p>後台開啟「影片專區功能」→ 才顯示「影片專區」分頁</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>Tab 記錄與切換</h4>
+            <p><code>active</code> Tab 記在 route query：<code>?active=liveList|ranking|streamer|schedule|videohub</code></p>
+            <p>切 Tab 時記 hitPoint（<code>liveClickTabHitPoint</code>）</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-warning">warning</span>
+            <h4>未登入限制</h4>
+            <p>主播、排行榜分頁 → 未登入用戶點擊 → 觸發登入 Sheet，不切換分頁</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-ui">ui</span>
+            <h4>程式碼位置</h4>
+            <div class="src">pages/live/index.vue<br>pages/live/onlyLive/index.vue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: LiveList -->
+    <div class="section" id="sec-livelist">
+      <div class="section-title"><span class="num">3</span> 直播列表（LiveList）</div>
+      <div class="section-desc">「直播」分頁 — 二級頁籤（房型）+ 三級標籤（聯賽/主播分類）+ 搜尋</div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-live-all-nosearch.png" alt="直播全部未搜尋">
+          <div class="screen-label">4.1.1.2.1 直播_全部_未搜尋</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-live-all-search.png" alt="直播全部搜索結果">
+          <div class="screen-label">4.1.1.2.2 直播_全部_搜索結果</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>二級頁籤（categoryList）</h4>
+            <p>從後端 <code>/categorylabel/list</code> 取得，前端自動在第一個插入「關注」（固定 ID: 999）</p>
+            <p>房型分類：體育 / 美女 / 特殊 / 清流等，後端配置</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>三級標籤（labelList）</h4>
+            <p>依目前選中的 category 動態顯示，第一個固定「全部」（labelId: 0）</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-api">api</span>
+            <h4>即時聊天人數</h4>
+            <p>每 3 秒透過 WebSocket 發送 <code>UserPlat_ChatCountList_CS</code> → 取得各直播間即時聊天人數</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>搜尋功能</h4>
+            <p>輸入後呼叫 <code>POST /search</code>（cType: 4）+ <code>GET /search/live</code> 拿熱搜關鍵字</p>
+            <p>可搜尋範圍：主播名稱、聯賽名稱、二/三級標籤、直播間名稱</p>
+            <p>搜尋歷史記在 localStorage（key: <code>liveTypeRow</code>）</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-warning">warning</span>
+            <h4>關注頁限制</h4>
+            <p>關注頁籤 → 未登入 → 要求登入後才能切換</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-grid">
+        <div class="rule-card">
+          <span class="rule-tag tag-api">api</span>
+          <h4>API 端點</h4>
+          <p><code>GET /categorylabel/list</code> — 類型頁籤 + 標籤</p>
+          <p><code>GET /live/liveList</code> — 直播間列表</p>
+          <p><code>GET /follow/getFollowSteamList</code> — 已關注主播</p>
+          <p><code>GET /search/live</code> — 熱搜關鍵字</p>
+          <p><code>POST /search</code> — 搜尋執行（cType: 4）</p>
+          <div class="src">pages/live/components/LiveList/index.vue</div>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">ui</span>
+          <h4>UI 狀態</h4>
+          <p>預設：全部直播間（後台預設類別 + 預設選中標籤）</p>
+          <p>關注頁：已關注主播直播間，空狀態有空值圖</p>
+          <p>搜尋中：搜尋結果列表，無結果顯示空值圖</p>
+          <p>Loading：骨架屏 / Spinner</p>
+          <p>下拉刷新：<code>isRefreshing</code> 狀態控制</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Schedule -->
+    <div class="section" id="sec-schedule">
+      <div class="section-title"><span class="num">4</span> 節目表（Schedule）</div>
+      <div class="section-desc">體育賽事直播預告 + 美女房型時段表，支援預約關注</div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-schedule-sports.png" alt="節目表體育">
+          <div class="screen-label">4.1.2.1 節目表_體育</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-schedule-beauty.png" alt="節目表美女">
+          <div class="screen-label">4.1.2.2 節目表_美女</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>節目表互動</h4>
+            <p>主播未上播 → 顯示「預約」按鈕（Bell icon）</p>
+            <p>主播已上播 → 顯示進入直播間按鈕</p>
+            <p>體育節目表按聯賽分組排列賽程</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>搜尋與版型</h4>
+            <p>搜尋使用 <code>SearchSheet</code> 組件，storageKey: <code>ScheduleTypeRow</code></p>
+            <p>搜尋「熱門聯賽」本期暫不製作（GOR-5097 備註）</p>
+            <p>僅一個類型頁籤時有特殊版型</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-api">api</span>
+            <h4>API</h4>
+            <p><code>GET /live/programList</code> — 取得節目表</p>
+            <div class="src">pages/live/components/Schedule/index.vue</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotated-row single">
+        <div class="screen-col">
+          <img src="/images/live/screen-schedule-nosearch.png" alt="節目表未搜索">
+          <div class="screen-label">4.1.2.1.1 節目表_體育_未搜索</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-ui">ui</span>
+            <h4>搜尋前狀態</h4>
+            <p>顯示熱搜關鍵字列表</p>
+            <p>節目表卡片包含：主播頭像、主播名稱、賽事名稱、預計開播時間</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Ranking -->
+    <div class="section" id="sec-ranking">
+      <div class="section-title"><span class="num">5</span> 晒單排行榜（Ranking）</div>
+      <div class="section-desc">玩家投注晒單排行，分日/週/月榜，後台開關控制</div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-ranking-player.png" alt="排行榜玩家資訊">
+          <div class="screen-label">4.1.4.1.1 排行總榜_玩家資訊</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-ranking-expand.png" alt="排行榜展開">
+          <div class="screen-label">4.1.4.1.4 排行總榜_展開</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>顯示開關</h4>
+            <p>後台開關 <code>liveStore.showBetRankConfig.isEnabled</code> → false 時整個分頁不出現</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>遊客顯示模式</h4>
+            <p><code>showBetGuestDisplayMode === 0</code> 且未登入 → 分頁顯示但禁用（點擊觸發登入 Sheet）</p>
+            <p><code>showBetGuestDisplayMode !== 0</code> → 遊客可見</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>榜單切換</h4>
+            <p><code>activeRange</code>：daily / weekly / monthly</p>
+            <p><code>activePeriod</code>：current（當期）/ previous（上期）</p>
+            <p>每次切換 → 重新 fetch 排行榜資料</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>展開明細</h4>
+            <p>玩家卡片可展開 → 呼叫 <code>GET /showbet/rank/playerinfo</code> 取得個人晒單明細</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-ranking-empty.png" alt="排行榜空值圖">
+          <div class="screen-label">4.1.4.2 排行總榜_空值圖</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-ranking-rules.png" alt="排行榜規則說明">
+          <div class="screen-label">4.1.4.3 規則說明</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-api">api</span>
+            <h4>API 端點</h4>
+            <p><code>GET /showbet/rank</code> — 排行榜資料（periodType + periodValue）</p>
+            <p><code>GET /showbet/rank/playerinfo</code> — 玩家晒單明細</p>
+            <p><code>GET /showbet/rank/rule</code> — 規則說明文字</p>
+            <div class="src">pages/live/components/Ranking/index.vue</div>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-ui">ui</span>
+            <h4>UI 狀態</h4>
+            <p>預設：日榜當期</p>
+            <p>空榜：顯示空值圖</p>
+            <p>上滑：Header 收合</p>
+            <p>規則說明：彈窗顯示</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Streamer -->
+    <div class="section" id="sec-streamer">
+      <div class="section-title"><span class="num">6</span> 主播列表（Streamer）</div>
+      <div class="section-desc">搜尋、篩選、排序主播卡片，無限捲動分頁（每頁 30 筆）</div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-streamer-search.png" alt="主播搜尋">
+          <div class="screen-label">4.1.5.1.1 主播列表_搜尋</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-streamer-filter.png" alt="主播篩選排序">
+          <div class="screen-label">4.1.5.1.2 主播列表_篩選排序</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-warning">warning</span>
+            <h4>登入限制</h4>
+            <p>未登入 → 整個分頁禁用（點擊觸發登入 Sheet）</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>排序選項</h4>
+            <p><code>activeLabel</code>：1 = 人氣（預設）、2 = 紅單</p>
+            <p>只有體育類別下顯示人氣/紅單三級選項</p>
+            <p>非體育類別（如美女）→ 不顯示三級選項</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>無限捲動</h4>
+            <p><code>page</code> 從 1 開始，每次 loadMore 追加 30 筆</p>
+            <p><code>isFinished</code>：後端回傳空陣列時停止</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-api">api</span>
+            <h4>API</h4>
+            <p><code>GET /anchor/listV2</code> — 主播列表（分頁 + 篩選）</p>
+            <p><code>GET /anchor/popularkeywords</code> — 熱搜關鍵字</p>
+            <p><code>GET /categorylabel/list</code> — 類別標籤</p>
+            <div class="src">pages/live/components/Streamer/index.vue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Anchor Profile -->
+    <div class="section" id="sec-anchor">
+      <div class="section-title"><span class="num">7</span> 專家/主播主頁</div>
+      <div class="section-desc">主播個人主頁 — 直播時間表 / 主播推單 / 爆料 三個子頁籤</div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-anchor-schedule.png" alt="主播主頁時間表">
+          <div class="screen-label">4.1.6.1 主播主頁_直播時間表</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-anchor-recommend.png" alt="主播主頁推單">
+          <div class="screen-label">4.1.6.2 主播主頁_主播推單</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>進入方式</h4>
+            <p>從主播卡片點擊進入主播個人主頁</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-ui">ui</span>
+            <h4>三個子頁籤</h4>
+            <p>直播時間表 — 預約場次</p>
+            <p>主播推單 — 推薦注單記錄</p>
+            <p>爆料 — 文章/分析</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-api">api</span>
+            <h4>API</h4>
+            <p><code>GET /anchor/infoV2</code> — 主播資訊</p>
+            <p><code>GET /v3/live/getRecommendBetBySteamer</code> — 主播推單列表</p>
+            <p>爆料部分可能在 gossiping 模組</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotated-row single">
+        <div class="screen-col">
+          <img src="/images/live/screen-anchor-gossip.png" alt="主播主頁爆料">
+          <div class="screen-label">4.1.6.3 主播主頁_爆料</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-ui">ui</span>
+            <h4>爆料頁籤</h4>
+            <p>顯示主播發布的文章/賽事分析</p>
+            <p>可能與 gossiping 模組共用元件</p>
+            <div class="src">pages/streamer/ (待確認路徑)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Live Room -->
+    <div class="section" id="sec-liveroom">
+      <div class="section-title"><span class="num">8</span> 直式半屏直播間（4.2）</div>
+      <div class="section-desc">上半直播影片 + 下半聊天室互動區，主要直播間入口形式</div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-liveroom-main.png" alt="主播直播間">
+          <div class="screen-label">4.2.1.1 主播直播間</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-liveroom-pk.png" alt="PK 競猜">
+          <div class="screen-label">4.2.1.2 主播_PK 競猜</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>直播間功能</h4>
+            <p>送禮、推單/晒單、競猜、跟單、聊天 — 完整互動</p>
+            <p>PK 競猜：開盤 / 封盤 / 開獎不同狀態</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>遊客廣告（GOR-6394）</h4>
+            <p>H5 遊客等待 5 分鐘後顯示充值引導廣告</p>
+            <p>由後端控制 on/off</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>任務提示（GOR-6053）</h4>
+            <p>直播間內顯示每日任務進度提示 + 領獎引導</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>主動式彈窗（GOR-6149）</h4>
+            <p>依規則控制彈窗出現頻率/條件</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-liveroom-offline.png" alt="主播下播">
+          <div class="screen-label">4.2.1.6 主播下播/停播</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-liveroom-transfer.png" alt="玩家轉移">
+          <div class="screen-label">4.2.1.5 主播_玩家轉移</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>主播下播流程</h4>
+            <p>主播下播時 → 推薦直播間彈窗（GOR-5909/GOR-6052）</p>
+            <p>網路中斷/串流錯誤 → 重連提示</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-warning">warning</span>
+            <h4>近期重要 GOR</h4>
+            <p>GOR-6082 — 單場大哥任務及在線榜（待驗收）</p>
+            <p>GOR-6486 — 每日任務展示到直播間（待開發）</p>
+            <p>GOR-6544 — 新增免費禮物吸引遊客（需求設計中）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotated-row">
+        <div class="screen-col">
+          <img src="/images/live/screen-gift.png" alt="送禮">
+          <div class="screen-label">4.2.2.5 聊天室_禮物</div>
+        </div>
+        <div class="screen-col">
+          <img src="/images/live/screen-gossip-cards.png" alt="爆料卡片">
+          <div class="screen-label">4.2.5.1 爆料_卡片列表</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>送禮系統</h4>
+            <p>一般禮物 + 高價禮物（4.2.2.5.1）</p>
+            <p>送禮特效動畫在聊天室顯示</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>爆料功能</h4>
+            <p>爆料卡片列表 → 點擊展開詳情</p>
+            <p>單場 / 串關 不同詳情樣式</p>
+            <p>可查看全部盤口</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-api">api</span>
+            <h4>直播間 API（部分）</h4>
+            <p><code>GET /live/getRedPacketActivity</code> — 紅包活動</p>
+            <p><code>POST /live/grabbingRedPacket</code> — 搶紅包</p>
+            <p><code>GET /follow/followSteamingListV2</code> — 關注主播</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Chatroom -->
+    <div class="section" id="sec-chatroom">
+      <div class="section-title"><span class="num">9</span> 聊天室</div>
+      <div class="section-desc">直播間下半部即時聊天區域 — WebSocket 即時通訊</div>
+
+      <div class="annotated-row single">
+        <div class="screen-col">
+          <img src="/images/live/screen-chatroom.png" alt="聊天室">
+          <div class="screen-label">4.2.2.1 主播聊天室</div>
+        </div>
+        <div class="rules-col">
+          <div class="rule-card">
+            <span class="rule-tag tag-logic">logic</span>
+            <h4>訊息分類</h4>
+            <p>一般聊天、系統公告、晒單卡片、跟單推送、禁言通知</p>
+            <p>系統發話文字顏色可調整（GOR-5274）</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-validation">validation</span>
+            <h4>屏蔽字規則（GOR-4204）</h4>
+            <p>屏蔽 4 碼以上數字</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-flow">flow</span>
+            <h4>滾動邏輯（GOR-4722/4721）</h4>
+            <p>置底滾動，有新訊息時智能判斷是否自動置底</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-api">api</span>
+            <h4>WebSocket 通訊</h4>
+            <p><code>UserPlat_ChatCountList_CS</code> — 每 3 秒廣播各直播間人數</p>
+            <p>觀看時長計算用於每日任務（GOR-6141）</p>
+          </div>
+          <div class="rule-card">
+            <span class="rule-tag tag-warning">warning</span>
+            <h4>歷史踩坑</h4>
+            <p>GOR-4300~4360 聊天室卡頓優化系列（已完成）</p>
+            <p>GOR-5578 聊天室分享砍單</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 10: Horizontal -->
+    <div class="section" id="sec-horizontal">
+      <div class="section-title"><span class="num">10</span> 橫式全屏直播間（4.3）</div>
+      <div class="section-desc">賽事詳情頁進入，手機橫轉後全屏，聊天室為側邊欄</div>
+
+      <div class="rule-grid">
+        <div class="rule-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>進入方式</h4>
+          <p>從賽事詳情頁進入，手機橫轉後全屏顯示直播影片</p>
+          <p>UI 佈局為橫式，聊天室縮放為側邊欄</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-ui">ui</span>
+          <h4>功能同 4.2</h4>
+          <p>功能與直式半屏類似：送禮、競猜、跟單、聊天等</p>
+          <p>RP：VIC-196 橫式全屏 - 賽事詳情/主播直播間</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-warning">warning</span>
+          <h4>知識缺口</h4>
+          <p>Figma 頁面（pageId: 25341:410131）的詳細 Frame 結構因 timeout 未取得，需後續補充</p>
+          <p>程式碼位置待確認：<code>pages/live/vertical-entertainment/</code> 或 <code>pages/live/live-funky/</code></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 11: Funky -->
+    <div class="section" id="sec-funky">
+      <div class="section-title"><span class="num">11</span> 直播帶牌 / Funky 火箭（4.4）</div>
+      <div class="section-desc">Funky 場館的直播間串接，內嵌在遊戲畫面中</div>
+
+      <div class="rule-grid">
+        <div class="rule-card">
+          <span class="rule-tag tag-venue">venue</span>
+          <h4>Funky 場館串接</h4>
+          <p>特定場館（Funky）的直播間以「帶牌」方式內嵌在遊戲畫面中</p>
+          <p>支援皮膚：2.0 / TB / YXB / YXR</p>
+          <p>支援平台：PC / H5 / APP</p>
+        </div>
+        <div class="rule-card">
+          <span class="rule-tag tag-api">api</span>
+          <h4>相關 GOR</h4>
+          <p>GOR-4423 — 串接 Funky 火箭（原始功能）</p>
+          <p>GOR-6311/6309/6310/6423 — 多皮膚多平台直播帶牌（已關閉，2026-01）</p>
+          <div class="src">pages/live/live-funky/</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: API Table -->
+    <div class="section" id="sec-api">
+      <div class="section-title"><span class="num">12</span> API 端點總覽</div>
+      <div class="section-desc">廣場/直播間模組所有已知 API 端點</div>
+
+      <table class="type-table">
+        <thead>
+          <tr><th>功能</th><th>Method</th><th>路徑</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>直播列表</td><td>GET</td><td><code>/live/liveList</code></td><td>所有直播間列表</td></tr>
+          <tr><td>類別標籤</td><td>GET</td><td><code>/categorylabel/list</code></td><td>廣場二/三級分類</td></tr>
+          <tr><td>節目表</td><td>GET</td><td><code>/live/programList</code></td><td>待播賽事</td></tr>
+          <tr><td>指定聯賽直播間</td><td>GET</td><td><code>/live/getSpecifiedLiveRoomListV2</code></td><td>特定聯賽直播間清單</td></tr>
+          <tr><td>推單（直播間）</td><td>GET</td><td><code>/v3/live/getRecommendBetByLiveId</code></td><td>直播間推單</td></tr>
+          <tr><td>推單（主播）</td><td>GET</td><td><code>/v3/live/getRecommendBetBySteamer</code></td><td>主播推單</td></tr>
+          <tr><td>主播列表</td><td>GET</td><td><code>/anchor/listV2</code></td><td>廣場主播頁</td></tr>
+          <tr><td>主播資訊</td><td>GET</td><td><code>/anchor/infoV2</code></td><td>主播個人主頁</td></tr>
+          <tr><td>熱搜（主播）</td><td>GET</td><td><code>/anchor/popularkeywords</code></td><td>主播搜尋熱搜</td></tr>
+          <tr><td>搜尋（直播）</td><td>GET</td><td><code>/search/live</code></td><td>直播搜尋熱搜</td></tr>
+          <tr><td>搜尋執行</td><td>POST</td><td><code>/search</code></td><td>搜尋（cType: 4）</td></tr>
+          <tr><td>關注主播列表</td><td>GET</td><td><code>/follow/getFollowSteamList</code></td><td>已關注直播間列表</td></tr>
+          <tr><td>關注操作</td><td>POST</td><td><code>/follow/followSteamer</code></td><td>關注/取消關注</td></tr>
+          <tr><td>晒單排行榜</td><td>GET</td><td><code>/showbet/rank</code></td><td>廣場排行榜</td></tr>
+          <tr><td>晒單玩家明細</td><td>GET</td><td><code>/showbet/rank/playerinfo</code></td><td>玩家晒單明細</td></tr>
+          <tr><td>排行榜規則</td><td>GET</td><td><code>/showbet/rank/rule</code></td><td>規則說明</td></tr>
+          <tr><td>紅包活動</td><td>GET</td><td><code>/live/getRedPacketActivity</code></td><td>直播間紅包</td></tr>
+          <tr><td>搶紅包</td><td>POST</td><td><code>/live/grabbingRedPacket</code></td><td>搶紅包</td></tr>
+          <tr><td>WebSocket</td><td>—</td><td><code>UserPlat_ChatCountList_CS</code></td><td>即時聊天人數（3 秒）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section: Figma Overview -->
+    <div class="section" id="sec-overview">
+      <div class="section-title"><span class="num">13</span> Figma 總覽</div>
+      <div class="section-desc">Figma 全景截圖，僅供參考</div>
+
+      <h3 style="color:#94a3b8; margin-bottom:12px; font-size:16px;">4.1 廣場</h3>
+      <img class="overview-img" src="/images/live/section-plaza.png" alt="4.1 廣場 Section 總覽">
+
+      <h3 style="color:#94a3b8; margin:24px 0 12px; font-size:16px;">4.2 直式半屏直播間</h3>
+      <img class="overview-img" src="/images/live/section-liveroom.png" alt="4.2 直式半屏直播間 Section 總覽">
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>廣場/直播間 標註文件 — 自動產出於 2026-04-09</p>
+      <p>資料來源：Figma nzmX9pUldlKfdI8sFSR9rQ &middot; mango2-h5 pages/live/ &middot; Jira GOR</p>
+      <p style="margin-top:8px;">知識庫：<code>~/.claude/shared-references/product-data/features/4-live.md</code></p>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
+
+<script>
+// Nav button scrolling + active state
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.getAttribute('data-target');
+    const el = document.getElementById(target);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  });
+});
+
+// Update active nav on scroll
+const sections = document.querySelectorAll('.section');
+const navBtns = document.querySelectorAll('.nav-btn');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-target') === id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(sec => observer.observe(sec));
+</script>
+
+</body>
+</html>

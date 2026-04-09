@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活動中心 — Figma + 業務規則標註</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0f172a; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang TC','Microsoft JhengHei',Roboto,sans-serif; line-height:1.6; }
+    a { color:#60a5fa; }
+
+    .page-header { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); padding:40px 24px 24px; text-align:center; }
+    .page-header h1 { font-size:28px; background:linear-gradient(90deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .page-header .sub { color:#94a3b8; margin-top:8px; font-size:14px; }
+    .h-badge { display:inline-block; background:#334155; color:#cbd5e1; border-radius:12px; padding:2px 10px; font-size:12px; margin:4px 2px; }
+
+    .stats-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:20px auto; max-width:900px; }
+    .stat-card { background:#1e293b; border-radius:12px; padding:16px 20px; text-align:center; flex:1; min-width:120px; }
+    .stat-num { font-size:28px; font-weight:700; color:#f59e0b; }
+    .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
+
+    /* Layout */
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { position:fixed; top:0; left:0; width:250px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
+    .sidebar-header { padding:16px; border-bottom:1px solid #334155; }
+    .sidebar-back { display:flex; align-items:center; gap:8px; color:#94a3b8; font-size:13px; text-decoration:none; margin-bottom:12px; transition:color .2s; }
+    .sidebar-back:hover { color:#e2e8f0; }
+    .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
+    .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+    .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
+    .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
+    .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
+    .nav-btn.active { color:#f59e0b; background:#f59e0b10; border-left-color:#f59e0b; }
+    .main-content { margin-left:250px; flex:1; }
+
+    @media(max-width:900px) {
+      .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
+      .layout { flex-direction:column; }
+      .main-content { margin-left:0; }
+      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
+      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+    }
+
+    .section { max-width:1200px; margin:32px auto; padding:0 16px; }
+    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#f59e0b; color:#fff; border-radius:50%; font-size:15px; }
+    .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
+
+    .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
+
+    .annotated-row { display:grid; grid-template-columns:280px 280px 1fr; gap:16px; margin-bottom:24px; }
+    .annotated-row.single { grid-template-columns:280px 1fr; }
+    @media(max-width:900px) { .annotated-row, .annotated-row.single { grid-template-columns:1fr; } }
+    .screen-col img { width:100%; border-radius:10px; border:1px solid #334155; }
+    .screen-label { text-align:center; font-size:12px; color:#94a3b8; margin-top:6px; }
+    .rules-col { display:flex; flex-direction:column; gap:10px; }
+
+    .rule-card { background:#1e293b; border-radius:10px; padding:14px; border-left:3px solid #f59e0b; }
+    .rule-card h4 { font-size:14px; margin:4px 0 6px; color:#f1f5f9; }
+    .rule-card p { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card code { background:#334155; padding:1px 5px; border-radius:4px; font-size:12px; color:#fbbf24; }
+    .rule-card .src { font-size:11px; color:#64748b; margin-top:6px; font-family:monospace; }
+    .rule-tag { display:inline-block; font-size:11px; padding:1px 8px; border-radius:6px; font-weight:600; }
+    .tag-flow { background:#164e63; color:#67e8f9; }
+    .tag-logic { background:#3b2f1a; color:#fbbf24; }
+    .tag-ui { background:#1a2e1a; color:#86efac; }
+    .tag-api { background:#2d1a3e; color:#c4b5fd; }
+    .tag-warning { background:#3b1a1a; color:#fca5a5; }
+    .tag-validation { background:rgba(234,179,8,0.2); color:#fbbf24; }
+    .tag-risk { background:rgba(239,68,68,0.2); color:#f87171; }
+    .tag-discount { background:rgba(168,85,247,0.2); color:#c084fc; }
+    .tag-venue { background:#1a2638; color:#93c5fd; }
+
+    .rule-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin-top:12px; }
+
+    .flow-box { background:#1e293b; border-radius:12px; padding:20px; margin:16px 0; overflow-x:auto; }
+    .flow-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    .flow-label { font-size:12px; color:#94a3b8; margin-bottom:4px; font-weight:600; }
+    .flow-step { background:#334155; border-radius:8px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+    .flow-step.highlight { background:#f59e0b; color:#fff; }
+    .flow-step small { font-size:11px; color:#94a3b8; }
+    .flow-arrow { color:#64748b; font-size:18px; }
+
+    .type-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+    .type-table th { background:#334155; color:#f1f5f9; padding:8px 12px; text-align:left; }
+    .type-table td { background:#1e293b; padding:8px 12px; border-bottom:1px solid #334155; }
+    .type-table tr:hover td { background:#263548; }
+
+    .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="page-header">
+  <h1>活動中心 (Activities)</h1>
+  <div class="sub">底部導覽列第三個 Tab — 統一管理所有行銷活動入口與詳情頁</div>
+  <div style="margin-top:12px;">
+    <span class="h-badge">路由 /activity</span>
+    <span class="h-badge">Figma V4UV6fa9K73VNo2yTwWPZW</span>
+    <span class="h-badge">RP 3.活动</span>
+    <span class="h-badge">13 個子功能</span>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-num">13</div><div class="stat-label">子功能</div></div>
+  <div class="stat-card"><div class="stat-num">22</div><div class="stat-label">aId 類型</div></div>
+  <div class="stat-card"><div class="stat-num">38</div><div class="stat-label">Figma 截圖</div></div>
+  <div class="stat-card"><div class="stat-num">60+</div><div class="stat-label">API 端點</div></div>
+  <div class="stat-card"><div class="stat-num">20+</div><div class="stat-label">GOR 關聯</div></div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
+      <div class="sidebar-title">🎁 活動中心</div>
+      <div class="sidebar-sub">13 功能 · 19 sections</div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-btn" data-target="sec-flow">核心流程</button>
+      <button class="nav-btn" data-target="sec-activity-list">活動列表</button>
+      <button class="nav-btn" data-target="sec-aid-map">aId 映射表</button>
+      <button class="nav-btn" data-target="sec-display">純展示頁</button>
+      <button class="nav-btn" data-target="sec-invite">邀請好友</button>
+      <button class="nav-btn" data-target="sec-rebate">返水</button>
+      <button class="nav-btn" data-target="sec-first-deposit">首存包賠</button>
+      <button class="nav-btn" data-target="sec-red-rain">紅包雨</button>
+      <button class="nav-btn" data-target="sec-newbie-task">新手任務</button>
+      <button class="nav-btn" data-target="sec-lottery">主題抽獎</button>
+      <button class="nav-btn" data-target="sec-daily-task">每日任務</button>
+      <button class="nav-btn" data-target="sec-newbie-wheel">新手轉盤</button>
+      <button class="nav-btn" data-target="sec-match-page">賽事分頁</button>
+      <button class="nav-btn" data-target="sec-venue-bonus">場館存款</button>
+      <button class="nav-btn" data-target="sec-rally">砍單</button>
+      <button class="nav-btn" data-target="sec-mission">任務系統</button>
+      <button class="nav-btn" data-target="sec-wheel">轉盤系統</button>
+      <button class="nav-btn" data-target="sec-reward-notify">領獎通知</button>
+      <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+    </div>
+  </nav>
+  <div class="main-content">
+
+<!-- ===== 1. 核心流程 ===== -->
+<div class="section" id="sec-flow">
+  <div class="section-title"><span class="num">1</span> 核心流程</div>
+  <div class="section-desc">活動模組的整體架構與主要流程</div>
+
+  <div class="flow-box">
+    <div class="flow-label">活動列表載入流程</div>
+    <div class="flow-row">
+      <span class="flow-step">進入 /activity</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step highlight">POST /activity/activityList</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">依分類 Tab 過濾</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">可領獎活動優先排序</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">顯示 ActivityCard</span>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">活動跳轉流程</div>
+    <div class="flow-row">
+      <span class="flow-step">點擊活動卡片</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step highlight">goToActivityDetail()</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">依 aId 查映射表</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">跳轉至對應詳情頁</span>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">紅點判斷流程</div>
+    <div class="flow-row">
+      <span class="flow-step">讀 redDotNotification</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">START(2): 活動開始後未訪問</span>
+      <span class="flow-arrow">|</span>
+      <span class="flow-step">MONDAY(3): 每週一未訪問</span>
+      <span class="flow-arrow">|</span>
+      <span class="flow-step">EVERYDAY(4): 每天未訪問</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step highlight">顯示紅點</span>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">領獎通知流程</div>
+    <div class="flow-row">
+      <span class="flow-step">登入成功</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step highlight">POST /matchactivity/activityRewardNotification</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">有可領獎活動?</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">彈出通知（優先級排序）</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">跳至活動/福利中心</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. 活動列表 ===== -->
+<div class="section" id="sec-activity-list">
+  <div class="section-title"><span class="num">2</span> 活動列表 (Activity List)</div>
+  <div class="section-desc">活動模組入口頁，提供分類 Tab 過濾 + 紅點 + 領獎入口。程式碼：pages/activity/index/index.vue</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-activity-list-overview.png" alt="活動列表總覽">
+      <div class="screen-label">活動列表（有資料）</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-activity-reward-list.png" alt="活動領獎列表">
+      <div class="screen-label">活動領獎頁（鈴鐺）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>分類 Tab</h4>
+        <p>全部(0)、限時(2)、新人首存(4)、日常(1)、體育優惠(3)、VIP(5)，對應 <code>ACTIVITY_LIST_TYPES</code></p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>排序邏輯</h4>
+        <p>可領獎活動 (<code>canClaim=1</code>) 優先排前，同類再依 sort 欄位降序排列</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>紅點邏輯</h4>
+        <p>依 <code>redDotNotification</code> 欄位：START(2) 活動開始後未訪問、MONDAY(3) 每週一未訪問、EVERYDAY(4) 每天未訪問。訪問時間先看 localStorage 再用 server visitTime</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>未登入用戶</h4>
+        <p>不記錄訪問時間，不顯示可領獎狀態</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /activity/activityList</code> — 取得活動清單（需 agentId, packageId, channelId, deviceType）</p>
+        <p><code>POST /matchactivity/activityRewardNotification</code> — 可領獎列表（登入後）</p>
+        <p><code>POST /commonactivity/track</code> — 訪問追蹤打點</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>UI 狀態</h4>
+        <p>載入中：Skeleton 骨架屏 × 4 | 有資料：ActivityCard 列表 | 空狀態：ActivityEmpty | 下拉刷新：重新 initActivityData()</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3. aId 映射表 ===== -->
+<div class="section" id="sec-aid-map">
+  <div class="section-title"><span class="num">3</span> 活動跳轉映射 (aId → 路由)</div>
+  <div class="section-desc">由 goToActivityDetail() 處理，依 aId 決定跳轉目標</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>aId</th><th>Key</th><th>跳轉路由</th><th>備註</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>10001</td><td>inviteFriends</td><td>mine/invite-friends</td><td>需登入，測試帳號禁用</td></tr>
+      <tr><td>10002</td><td>gift</td><td>/activity/gift/{uId}</td><td></td></tr>
+      <tr><td>10004</td><td>redRain</td><td>/activity/redRain/{uId}</td><td>直播相關</td></tr>
+      <tr><td>10005</td><td>display</td><td>/activity/display/{uId}</td><td>純展示</td></tr>
+      <tr><td>10006</td><td>firstDeposit</td><td>/activity/firstDeposit/{uId}</td><td>可領獎</td></tr>
+      <tr><td>10007</td><td>matchPage</td><td>/activity/matchPage/{uId}</td><td>舊版賽事</td></tr>
+      <tr><td>10008</td><td>lottery</td><td>/activity/lottery/{uId}</td><td>可領獎</td></tr>
+      <tr><td>10009</td><td>newbieTask</td><td>/activity/newbieTask/{uId}</td><td>可領獎</td></tr>
+      <tr><td>10010</td><td>rebate</td><td>/activity/rebate/</td><td>需登入，不帶 uId</td></tr>
+      <tr><td>10011</td><td>vip</td><td>/vip</td><td>直接跳 VIP 頁</td></tr>
+      <tr><td>10012</td><td>signGift</td><td>/activity/signGift/{uId}</td><td></td></tr>
+      <tr><td>10013</td><td>dailyTask</td><td>/activity/dailyTask/{uId}</td><td>可領獎</td></tr>
+      <tr><td>10014</td><td>unlimitedAgents</td><td>/activity/unlimitedAgents/{uId}</td><td></td></tr>
+      <tr><td>10015</td><td>newPlayerDraw</td><td>/activity/newPlayerDraw/{uId}</td><td>可領獎</td></tr>
+      <tr><td>10016</td><td>venueBonus</td><td>/activity/venueBonus/{uId}</td><td></td></tr>
+      <tr><td>10017</td><td>depositGarantee</td><td>/activity/depositGarantee/{uId}</td><td></td></tr>
+      <tr><td>10019</td><td>rally</td><td>/activity/rally/{uId}</td><td>社群砍單</td></tr>
+      <tr><td>10020</td><td>newMatchPage</td><td>/activity/newMatchPage/{uId}</td><td>新版賽事，可領獎</td></tr>
+      <tr><td>10021</td><td>inviteWheel</td><td>/activity/inviteWheel/{uId}</td><td>轉盤系統</td></tr>
+      <tr><td>20001</td><td>liveRedRain</td><td>/activity/liveRedRain/{uId}</td><td>直播紅包雨</td></tr>
+      <tr><td>30000</td><td>dailyMission</td><td>/activity/dailyMission/{uId}</td><td>新版任務系統</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-discount">discount</span>
+      <h4>可領獎活動 (ACTIVITY_REWARD_IDS)</h4>
+      <p>10006（首存）、10008（主題抽獎）、10009（新手任務）、10013（每日任務）、10015（新手轉盤）、10020（新版賽事分頁）</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>特殊跳轉</h4>
+      <p>REBATE(10010) → 需登入 → 不帶 uId<br>INVITE_FRIENDS(10001) → 測試帳號禁用<br>VIP(10011) → 直接跳 /vip</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. 純展示頁 ===== -->
+<div class="section" id="sec-display">
+  <div class="section-title"><span class="num">4</span> 純展示頁 (Display Page)</div>
+  <div class="section-desc">RP 3.2 | aId: 10005 | 同步雲平台設置的文案與圖片，無互動功能</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/activities/screen-display-page.png" alt="純展示頁">
+      <div class="screen-label">純展示頁詳情</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>頁面結構</h4>
+        <p>同步雲平台設置的文案與圖片，扁平化設計。邀請好友積分抽獎已廢棄（6.6.0 後端移除）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>已廢棄功能</h4>
+        <p>邀請好友積分抽獎（VIC-159 序號2）— 後端於 6.6.0 08/05 prod 移除，扁平化不需開發與測試</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 5. 邀請好友 ===== -->
+<div class="section" id="sec-invite">
+  <div class="section-title"><span class="num">5</span> 邀請好友 (Invite Friends)</div>
+  <div class="section-desc">RP 3.3 | aId: 10001 | 分享專屬邀請連結，被邀請人首存後獲獎勵。測試帳號禁用。</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/activities/section-invite-friends.png" alt="邀請好友 section 總覽">
+      <div class="screen-label">邀請好友 Section 總覽</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>邀請流程</h4>
+        <p>分享圖產生 → 複製邀請連結 → 被邀請人註冊首存 → 獲得獎勵 / 轉盤抽獎機會</p>
+        <div class="src">pages/activity/index/inviteFriends/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>邀請連結</h4>
+        <p><code>recommendUrl</code> + <code>jumpType</code> + <code>jumpValue</code>（從 shareStore.publicUrlData 取得）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>開關組合邏輯</h4>
+        <p>產品開 + 活動開 → 顯示活動 + 邀請好友<br>其餘組合 → 不顯示活動，只顯示分享圖<br>渠道屏蔽 → 同上（不顯示活動）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>首存+抽獎模式</h4>
+        <p>每天免費轉盤次數，邀請好友註冊成功可再獲次數。無次數時按鈕改為「邀請好友」。紅利可無流水要求</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /invite/inviteDrawInfo</code> — 取得邀請資訊<br><code>POST /invitedraw/drawItem</code> — 轉盤抽獎<br><code>GET /activity/share-image/default/friend-invite</code> — 預設邀請分享圖</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>邀請記錄改版</h4>
+        <p>半版顯示、「獲得邀請禮金」、新到舊排序。新增抽獎次數。無記錄時顯示「還沒有新的邀請記錄」+ 「前往邀請」</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 6. 返水 ===== -->
+<div class="section" id="sec-rebate">
+  <div class="section-title"><span class="num">6</span> 返水活動 (Rebate)</div>
+  <div class="section-desc">RP 3.4 | aId: 10010 | 各場館返水比例與規則，需登入。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-rebate-detail.png" alt="返水詳情">
+      <div class="screen-label">返水活動詳情頁</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-rebate-records.png" alt="返水記錄">
+      <div class="screen-label">返水記錄（有數據）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>需要登入</h4>
+        <p>透過 <code>userStore.requireLogin</code> 檢查，返水資訊依 <code>packageId</code> 取得</p>
+        <div class="src">pages/activity/index/rebate/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-venue">venue</span>
+        <h4>場館顯示規則</h4>
+        <p>僅顯示包體已選場館，名稱優先顯示「場館別名」。設定路徑：產品管理→創建產品→場館別名→編輯</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>返水比例彈窗</h4>
+        <p>VIP 詳情→場館返水→點擊類別名稱彈窗顯示比例。一次最多 5 欄，超過可左右拖移，第一欄凍結</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /rebate/rebateInfo</code> — 返水資訊<br><code>POST /rebate/rebateOrder</code> — 返水訂單記錄<br><code>POST /rebate/rebateDetail</code> — 返水詳情<br><code>GET /rebate/gamesRatio</code> — 各場館返水比例</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 7. 首存包賠 ===== -->
+<div class="section" id="sec-first-deposit">
+  <div class="section-title"><span class="num">7</span> 首存包賠 (First Deposit Guarantee)</div>
+  <div class="section-desc">RP 3.5 | aId: 10006 | 新手首次存款包賠活動，可領獎。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-first-deposit-unclaimed.png" alt="首存已達標未領">
+      <div class="screen-label">已達標未領取</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-first-deposit-claimed.png" alt="首存已達標已領">
+      <div class="screen-label">已達標已領取</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>核心流程</h4>
+        <p>新手首存 → 參與活動 → 賽事詳情/購物車/首頁入口浮層引導 → 達標 → 領獎</p>
+        <div class="src">pages/activity/index/firstDeposit/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /firstpay/firstPayInfo</code> — 首存活動配置<br><code>POST /firstpay/firstPayReward</code> — 首存獎勵<br><code>POST /activity/getfirstpaycompensationconfig</code> — 包賠配置（含最大補賠金額）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>入口浮層</h4>
+        <p>可從賽事詳情頁、購物車、首頁等多處看到入口浮層。GOR-5356 新增首次登入關閉按鈕</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 8. 紅包雨 ===== -->
+<div class="section" id="sec-red-rain">
+  <div class="section-title"><span class="num">8</span> 紅包雨 (Red Rain)</div>
+  <div class="section-desc">RP 3.6 | aId: 10004 / 20001 | 直播相關互動活動，搶紅包獲彩金。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-red-rain-countdown.png" alt="紅包雨倒數">
+      <div class="screen-label">開始倒數（5秒）</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-red-rain-falling.png" alt="紅包雨下紅包">
+      <div class="screen-label">紅包雨動畫+廣播</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>核心流程</h4>
+        <p>懸浮窗口 → 進入活動 → 倒數5秒 → 紅包雨（分散式落下）→ 點擊搶紅包 → 總結算彈窗 → 領取禮金</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>更新機制</h4>
+        <p>前端每 1 分鐘輪詢後台更新</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>入口（懸浮窗口）</h4>
+        <p>首頁、活動/我的→優惠活動、直播（含直播間）、爆料、存款、我的。僅 H5/APP。可拖動更改位置</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">risk</span>
+        <h4>VIP 限制</h4>
+        <p>VIP 不符合時看得到但不能搶</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>扁平化調整</h4>
+        <p>入口「正在進行中」→「進行中」| 關閉「X」→「<」| 新增 loading bar（0~30%紅/40~50%橘/60~100%綠）| 紅包分散式落下</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/activities/screen-red-rain-prize.png" alt="紅包雨獎金">
+      <div class="screen-label">抽中彩金結算</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-discount">discount</span>
+        <h4>總結算彈窗</h4>
+        <p>紅包雨結束後顯示：總獲得金額 + 溫馨提醒（彩金十分鐘內到帳）+ 「領取禮金」按鈕</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 9. 新手任務 ===== -->
+<div class="section" id="sec-newbie-task">
+  <div class="section-title"><span class="num">9</span> 新手任務 (Newbie Task)</div>
+  <div class="section-desc">RP 3.7 | aId: 10009 | 新玩家完成特定任務獲獎勵，可領獎。</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/activities/screen-newbie-task.png" alt="新手任務">
+      <div class="screen-label">新手任務活動詳情</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>身份判斷</h4>
+        <p>新會員（開啟新手任務）→「您是新用戶，可參與新手活動」<br>老會員→「您是老用戶，不可參與新手活動」<br>只開啟簽到/復活且有首存→「可參與活動」<br>只開啟簽到/復活且無首存→「請前往首存」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>子活動類型</h4>
+        <p><strong>新手大禮包</strong>：注冊帳號 + 綁定手機 + 綁定銀行卡 → 任務期限內申請 → 後台控制發放<br><strong>存款初體驗</strong>：任務期限內完成存款</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>領獎狀態</h4>
+        <p>未完成：「進行中」（不可點擊）| 已完成：「領取獎勵」→ toast「申請成功，正在審核中！」| 已領取（不可點擊）| 已失效</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /newplayer/info</code> — 活動資訊<br><code>POST /newplayer/get</code> — 玩家任務狀態<br><code>POST /newplayer/apply</code> — 申請獎勵</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>GOR-6437（開放）</h4>
+        <p>活動類型移除運營活動新手任務 — 可能影響 aId 10009 的顯示邏輯</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 10. 主題抽獎 ===== -->
+<div class="section" id="sec-lottery">
+  <div class="section-title"><span class="num">10</span> 主題抽獎 (Lottery)</div>
+  <div class="section-desc">RP 3.8 | aId: 10008 | 轉盤/翻牌/刮刮樂 + 碎片兌換機制，可領獎。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-lottery-wheel.png" alt="主題抽獎轉盤">
+      <div class="screen-label">轉盤類型</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-lottery-theme.png" alt="主題抽獎主題">
+      <div class="screen-label">主題類型</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>活動類型 (2×2組合)</h4>
+        <p>存款_主題抽獎（單抽/十連抽）| 存款_轉盤抽獎（單抽）| 投注_主題抽獎（單抽/十連抽）| 投注_轉盤抽獎（單抽）</p>
+        <div class="src">pages/activity/index/lottery/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>頁面結構</h4>
+        <p>活動標題（後台設置）+ 主題圖 + 分頁小標題（最多6個，每個6漢字）+ 原生抽獎背景圖 + 累計投注/存款 + 抽獎次數失效時間</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>碎片兌換</h4>
+        <p>抽獎可獲碎片 → 收集碎片 → 兌換獎品。相關 API：<code>getFragmentRedeemDetails</code>、<code>applyFragmentRedeemReward</code></p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>分享圖</h4>
+        <p>優先用 <code>exInfo.customSharePic</code>，沒有則用 banner 圖</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /luckydraw/getInfo</code> | <code>POST /luckydraw/drawItem</code> — 抽獎<br><code>GET /luckydraw/getGiftWinners</code> — 中獎名單<br><code>POST /luckydraw/getLuckyDrawRecord</code> — 抽獎記錄<br><code>GET /luckydraw/getFragmentRedeemDetails</code> — 碎片詳情</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 11. 每日任務 ===== -->
+<div class="section" id="sec-daily-task">
+  <div class="section-title"><span class="num">11</span> 每日任務 (Daily Task)</div>
+  <div class="section-desc">RP 3.9 | aId: 10013 | 每日重複任務系統（舊版 Tid = DAILY_TASKS）。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-daily-task-reward.png" alt="每日任務領獎">
+      <div class="screen-label">領取獎勵彈窗</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-daily-task-bonus.png" alt="每日任務彩金">
+      <div class="screen-label">多彩金詳情（彩金）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>任務排序優先級</h4>
+        <p>可領獎任務 > 未完成 > 已完成，然後依後台任務排序</p>
+        <div class="src">pages/activity/index/dailyTask/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>活動週期顯示</h4>
+        <p>每日任務 → 顯示「今日任務」| 一次任務 → 不展示週期</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>倒計時格式</h4>
+        <p>> 1天：X天X時 | > 1小時：X時X分 | > 1分鐘：X分X秒 | > 1秒：X秒 | 0：活動已結束</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>領獎按鈕狀態</h4>
+        <p>未完成 → 「前往任務」（跳後台設定）| 完成未領 → 「領獎」（彈出領獎界面）| 已領 → 「已領取」| 已過期 → 不展示</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /dailytask/info</code> | <code>POST /dailytask/get</code> | <code>POST /dailytask/apply</code></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 12. 新手轉盤 ===== -->
+<div class="section" id="sec-newbie-wheel">
+  <div class="section-title"><span class="num">12</span> 新手轉盤 (New Player Draw)</div>
+  <div class="section-desc">RP 3.10 | aId: 10015 | 新手轉盤活動彈窗，可領獎。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-newbie-wheel-main.png" alt="新手轉盤主畫面">
+      <div class="screen-label">未抽獎狀態</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-newbie-wheel-detail.png" alt="新手轉盤詳情">
+      <div class="screen-label">活動詳情弹窗</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>懸浮窗口入口</h4>
+        <p>預設位置：紅包雨懸浮窗上方<br>PC：首頁/各體育首頁/各自研場館頁<br>APP/H5：直播間/賽事詳情/體育首頁/娛樂首頁/直播首頁/自研場館頁</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>賽事詳情自動彈出</h4>
+        <p>未注冊或未充值用戶 → 進入賽事詳情 2 分鐘 → 彈新手轉盤 → 再 2 分鐘彈賽事分享。每次登入各僅 1 次，每日總限 2 次。橫屏不彈出</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>彈窗層級（直播間）</h4>
+        <p>以下會蓋在活動上面：場館切換、玩家轉移、直播間下播、送禮特效、入場特效</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /newplayerdraw/getInfo</code> — 轉盤資訊<br><code>POST /newplayerdraw/drawItem</code> — 轉盤抽獎<br><code>POST /newplayerdraw/apply</code> — 申請獎勵</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 13. 賽事分頁 ===== -->
+<div class="section" id="sec-match-page">
+  <div class="section-title"><span class="num">13</span> 賽事分頁 (Match Page)</div>
+  <div class="section-desc">RP 3.11 | aId: 10007（舊）/ 10020（新版，可領獎）| 以特定賽事為主題的活動頁。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-match-page-dropdown.png" alt="賽事分頁下拉">
+      <div class="screen-label">下拉列表內容</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-match-page-settings.png" alt="賽事分頁設置">
+      <div class="screen-label">賽事設置+開啟推單</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>新版 vs 舊版</h4>
+        <p><strong>新版 10020</strong>：支援任務條件 + 領獎（claimNewMatchActivity）<br><strong>舊版 10007</strong>：只有申請/查看記錄，無直接領獎</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>頁面結構</h4>
+        <p>最多 8 個分頁（只 1 個時隱藏頁籤）。隊徽圖吃後台配置。點投注項開啟購物車。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>防連點 & 錯誤處理</h4>
+        <p>申請按鈕 3 秒內不可重複點擊<br>空輸入 → 「訂單號不能為空」| 錯誤 → 「訂單號錯誤」+ 10 分鐘後重試<br>次數上限 → 提示今日/本週/本月次數<br>error 15033 → 防連點 | 12002 → 活動異常</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>防重複申請</h4>
+        <p><code>disableApply</code> 狀態控制。分享圖優先 customSharePic，沒有則 activityMobileShareImage</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API（新版 /newmatchactivity/）</h4>
+        <p><code>POST /newmatchactivity/info</code> | <code>POST /newmatchactivity/apply</code> | <code>POST /newmatchactivity/matchApplicationRecords</code> | <code>POST /newmatchactivity/claim</code></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 14. 場館存款 ===== -->
+<div class="section" id="sec-venue-bonus">
+  <div class="section-title"><span class="num">14</span> 場館存款 (Venue Bonus)</div>
+  <div class="section-desc">RP 3.12 | aId: 10016 | 針對特定場館的存款獎勵活動。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-venue-bonus-multi.png" alt="場館存款多頁">
+      <div class="screen-label">活動頁面（多頁）</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-venue-bonus-select-venue.png" alt="選擇場館">
+      <div class="screen-label">選擇場館界面</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>核心流程</h4>
+        <p>選優惠類型 → 選場館 → 中心錢包轉入場館錢包 → 輸入金額 → 參與活動成功 → 分享</p>
+        <div class="src">pages/activity/index/venueBonus/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>中心錢包 & 一鍵回收</h4>
+        <p>顯示 {幣種}{總金額}（千分位），有更新按鈕。一鍵回收：場館錢包全轉入（鎖定/維護中不轉），頻繁操作提示「10秒後重試」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>分頁設計</h4>
+        <p>最多 6 個小標籤，每個最多 12 漢字，對應 1 個子活動。頁面上拖時固定在頂端</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /venuebonus/info</code> — 活動資訊<br><code>POST /venuebonus/joinedvenuedeposit</code> — 已參與記錄（需登入）<br><code>POST /venuebonus/applyvenuedeposit</code> — 申請獎勵（需登入）</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 15. 砍單 ===== -->
+<div class="section" id="sec-rally">
+  <div class="section-title"><span class="num">15</span> 砍單 (Rally / 社群砍單)</div>
+  <div class="section-desc">RP 3.14 | aId: 10019 | 發起者下注後邀請好友「砍單」降低損失風險。</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-rally-detail.png" alt="砍單活動詳情">
+      <div class="screen-label">砍單活動詳情頁</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-rally-list-data.png" alt="砍單列表">
+      <div class="screen-label">砍單列表（有數據）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>砍單流程</h4>
+        <p>下注 → 資格審查 → 加入砍單 → 分享邀請 → 好友幫砍 → 砍單進度 → 成功/失敗</p>
+        <div class="src">pages/activity/index/rally/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>核心狀態</h4>
+        <p><code>rallyProgressList</code>：進行中砍單 | <code>rallySuccessList</code>：成功砍單 | <code>eligibilityCheckData</code>：資格審查 | <code>isNewMemberCutInProcess</code>：新成員砍單進行中</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/activities/screen-rally-progress.png" alt="砍單進度">
+      <div class="screen-label">砍單進度（進行中）</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/activities/screen-rally-invite.png" alt="砍單好友邀請">
+      <div class="screen-label">好友邀請（未點擊）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點 (/campaign/rally/)</h4>
+        <p><code>GET activityDetail</code> — 活動詳情<br><code>GET progressList</code> — 砍單進度<br><code>GET helpersOverview</code> — 幫砍概覽<br><code>GET helperCutPreview</code> — 幫砍預覽<br><code>POST eligibilityCheck</code> — 資格審查<br><code>PUT join</code> — 加入砍單<br><code>PUT helperCut</code> — 執行幫砍</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/activities/screen-rally-share.png" alt="砍單分享">
+      <div class="screen-label">砍單分享圖</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>子頁面清單</h4>
+        <p>活動詳情 | 進行中/未發起 | 砍單列表（無數據/單注/串關）| 砍單詳情（進行中/成功/失敗）| 分享 | 好友邀請（未點擊/已點擊-成功/完成/失敗）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-discount">discount</span>
+        <h4>GOR 優化項</h4>
+        <p>GOR-5596：列表預設日期 + 砍單後導引 | GOR-5991：分享文案自定義 | GOR-5993：被邀請人流程優化</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 16. 任務系統 ===== -->
+<div class="section" id="sec-mission">
+  <div class="section-title"><span class="num">16</span> 任務系統 (Mission System)</div>
+  <div class="section-desc">RP 6.19（從活動列表跳入）| aId: 30000 | 新版任務系統：每日簽到 + 每日任務 v2 + 新手任務新版 + 直播間任務。</div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>每日簽到 (dailysign)</h4>
+      <p>每天可簽到一次，有連續簽到獎勵。完成後獲背包獎品或轉盤機會。</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>每日任務 v2 (dailyactivity)</h4>
+      <p>多種任務類型（投注、充值、邀請等），<code>POST /mission/dailyactivity/v2</code></p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>新手任務新版 (/mission/newbie)</h4>
+      <p>與舊版 /newplayer 並存。<code>GET /mission/newbie</code> + <code>POST /mission/newbie/claim</code></p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>直播間任務 (/mission/liveStream)</h4>
+      <p>觀看直播相關任務。<code>GET /mission/liveStream</code> + <code>POST /mission/liveStream/claim</code></p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>API 端點 (/mission/)</h4>
+      <p><code>GET /mission/dailysign</code> — 簽到狀態<br><code>POST /mission/dailysign</code> — 執行簽到<br><code>GET/PUT /mission/dailysign/reminder</code> — 提醒設定<br><code>GET /mission/moreList/v2</code> — 更多任務<br><code>GET /mission/myPageProcessing</code> — 進行中任務</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>入口</h4>
+      <p>活動列表（aId 30000）、「我的」頁面、直播間等多個入口可進入</p>
+      <div class="src">pages/activity/index/dailyTask/ + stores + apis/mission/</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 17. 轉盤系統 ===== -->
+<div class="section" id="sec-wheel">
+  <div class="section-title"><span class="num">17</span> 轉盤系統 (Spin Wheel / Invite Wheel)</div>
+  <div class="section-desc">RP 3.15 + 6.21 | aId: 10021 | 通用轉盤系統，支援多種樣式。</div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>支援樣式</h4>
+      <p>標準轉盤、刮刮樂、翻牌等多種（GOR-6481 新增刮刮樂/翻牌）。通用模板（GOR-6237 改版）</p>
+      <div class="src">pages/activity/index/inviteWheel/</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-discount">discount</span>
+      <h4>GOR 演進</h4>
+      <p>GOR-5727：新增轉盤系統<br>GOR-6237：轉盤改版（通用模板）<br>GOR-6273：新增任務條件 + 中獎紀錄脫敏<br>GOR-6367：轉盤優化<br>GOR-6481：新增刮刮樂/翻牌</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 18. 領獎通知系統 ===== -->
+<div class="section" id="sec-reward-notify">
+  <div class="section-title"><span class="num">18</span> 領獎通知系統 (Reward Notify)</div>
+  <div class="section-desc">活動列表右上角鈴鐺的詳情頁 + 首頁通知彈窗。</div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>通知條件</h4>
+      <p>雲平台「活動領獎通知」開啟 + 玩家符合條件 + 有可領獎活動 → 首頁彈窗<br>雲平台「福利中心領獎通知」開啟 + 有待領紅利 → 首頁彈窗</p>
+      <div class="src">pages/activity/index/rewardNotifyList/</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>彈窗排隊</h4>
+      <p>兩者都開啟：活動通知顯示 3 秒 → 隱藏 → 間隔 2 秒 → 福利中心通知 3 秒 → 隱藏</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>彈窗優先級</h4>
+      <p>全服公告 > 賽事通知 > 上播通知 > 充提通知 > 結算通知 > 活動通知</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>顯示規則</h4>
+      <p>1 個可領獎 → 禮物圖示 + 活動名稱 + 「前往領獎」<br>2+ 個 → 「多個任務已完成，請點擊查看更多」<br>福利中心 → 「獎勵已發送至福利中心」</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>鈴鐺頁（活動領獎）</h4>
+      <p>永久常駐（不由通知開關控制）。只顯示可領獎活動（不含福利中心）。無可領獎時顯示空狀態。排序：可領獎/可抽獎最上面，依結束時間由近至遠</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-validation">validation</span>
+      <h4>觸發條件</h4>
+      <p>依後台「每次登入」或「每日前X次登入」+「VIP等級」配置。登入時不論切到哪個頁面都需彈出</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>新手轉盤特殊處理</h4>
+      <p>點擊新手轉盤「前往領獎」→ 統一跳首頁彈出新手轉盤彈窗</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>資料來源</h4>
+      <p><code>rewardNotifyList</code>：可領獎活動 | <code>welfareCenterList</code>：福利中心待領 | <code>missionNotifyList</code>：任務通知 | <code>_addActivityNotification()</code>：初始化彈出</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 19. App 好評獎勵 ===== -->
+<div class="section" id="sec-app-review">
+  <div class="section-title"><span class="num">19</span> App 好評獎勵</div>
+  <div class="section-desc">GOR-6194 | 提升評論數、減少負評的彩金活動。</div>
+
+  <div class="flow-box">
+    <div class="flow-label">好評獎勵流程</div>
+    <div class="flow-row">
+      <span class="flow-step">活動開啟?</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">用戶進入B面</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">此設備已點過「給好評」?</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">否 → 判斷登入</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step highlight">未登入跳半版登入</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">符合展示對象?</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step highlight">顯示活動懸浮窗口</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>活動懸浮窗口</h4>
+      <p>顯示於五大頁（首頁/活動/直播/爆料/我的；爆料關閉時為充值），參照懸浮窗口通則</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>活動彈窗</h4>
+      <p>依後台上傳圖片。「忍痛放棄」→ 關閉。「給好評 賺獎勵」→ 跳 App Store 評論頁</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>活動詳情頁</h4>
+      <p>標題依後台設置。支援活動分享。玩家填寫姓名 + 上傳評論截圖 + Store ID 截圖</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>半版登入提示</h4>
+      <p>「只差最後一步！登入/注冊即可申請獎勵！」</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 已知問題 ===== -->
+<div class="section" id="sec-issues">
+  <div class="section-title"><span class="num">!</span> 已知問題 / 知識斷鏈</div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>Figma 節點掃描超時</h4>
+      <p>fileKey V4UV6fa9K73VNo2yTwWPZW 掃描超時，部分 Frame nodeId 尚未確認</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>新手轉盤程式碼路徑</h4>
+      <p>aId 10015 的 newPlayerDraw 資料夾存在但詳情未確認</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>紅包雨程式碼</h4>
+      <p>aId 10004 詳情頁位置未確認，RP 說明是直播相關，可能在 live/ 目錄下</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-risk">risk</span>
+      <h4>GOR-6437（開放）</h4>
+      <p>活動類型移除運營活動新手任務，可能影響 activityList 篩選邏輯，尚未確認前端對應</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>API 並存</h4>
+      <p>matchactivity/activityRewardNotify（舊）vs matchactivity/activityRewardNotification（新）— 兩者並存，新版包含任務系統通知</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 20. Figma 總覽（放最後） ===== -->
+<div class="section" id="sec-overview">
+  <div class="section-title"><span class="num">F</span> Figma Section 總覽</div>
+  <div class="section-desc">各 Section 全景截圖，僅供參考瀏覽</div>
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.1 活動列表</h3>
+  <img class="overview-img" src="/images/activities/section-activity-list.png" alt="活動列表 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.3 邀請好友</h3>
+  <img class="overview-img" src="/images/activities/section-invite-friends.png" alt="邀請好友 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.4 返水</h3>
+  <img class="overview-img" src="/images/activities/section-rebate.png" alt="返水 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.5 首存包賠</h3>
+  <img class="overview-img" src="/images/activities/section-first-deposit.png" alt="首存包賠 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.6 紅包雨</h3>
+  <img class="overview-img" src="/images/activities/section-red-rain.png" alt="紅包雨 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.8 主題抽獎</h3>
+  <img class="overview-img" src="/images/activities/section-lottery.png" alt="主題抽獎 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.9 每日任務</h3>
+  <img class="overview-img" src="/images/activities/section-daily-task.png" alt="每日任務 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.10 新手轉盤</h3>
+  <img class="overview-img" src="/images/activities/section-newbie-wheel.png" alt="新手轉盤 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.11 賽事分頁</h3>
+  <img class="overview-img" src="/images/activities/section-match-page.png" alt="賽事分頁 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.12 場館存款</h3>
+  <img class="overview-img" src="/images/activities/section-venue-bonus.png" alt="場館存款 Section">
+
+  <h3 style="color:#f59e0b;margin:24px 0 12px;">3.14 砍單</h3>
+  <img class="overview-img" src="/images/activities/section-rally.png" alt="砍單 Section">
+</div>
+
+<div class="footer">
+  活動中心標註頁 — 資料來源：mango2-h5 程式碼 + RP (vxgdzx.axshare.com) + Figma<br>
+  產出日期：2026-04-09 | accent: #f59e0b (amber) | 共 38 張 Figma 截圖 | 19 個 Section<br>
+  <a href="/">← 返回首頁</a>
+</div>
+
+  </div><!-- /.main-content -->
+</div><!-- /.layout -->
+
+<script>
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const el = document.getElementById(btn.getAttribute('data-target'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+
+</body>
+</html>

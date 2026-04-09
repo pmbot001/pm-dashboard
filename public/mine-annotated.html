@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>我的 — 功能標註頁</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0f172a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;}
+a{color:#60a5fa;}
+
+/* Layout */
+.layout{display:flex;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;width:250px;height:100vh;background:#1e293b;border-right:1px solid #334155;display:flex;flex-direction:column;z-index:200;overflow:hidden;}
+.sidebar-header{padding:16px;border-bottom:1px solid #334155;}
+.sidebar-back{display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:13px;text-decoration:none;margin-bottom:12px;transition:color .2s;}
+.sidebar-back:hover{color:#e2e8f0;}
+.sidebar-title{font-size:16px;font-weight:700;color:#e2e8f0;}
+.sidebar-sub{font-size:11px;color:#64748b;margin-top:2px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.nav-btn{display:block;width:100%;background:transparent;color:#94a3b8;border:none;padding:9px 20px;font-size:13px;cursor:pointer;text-align:left;transition:all .15s;border-left:3px solid transparent;}
+.nav-btn:hover{color:#e2e8f0;background:#263548;border-left-color:#475569;}
+.nav-btn.active{color:#eab308;background:#eab30810;border-left-color:#eab308;}
+.main-content{margin-left:250px;flex:1;}
+
+/* Header */
+.page-header{background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);padding:40px 24px 24px;text-align:center;}
+.page-header h1{font-size:28px;background:linear-gradient(90deg,#eab308,#fde68a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-header .sub{color:#94a3b8;margin-top:8px;font-size:14px;}
+.h-badge{display:inline-block;background:#334155;color:#cbd5e1;border-radius:12px;padding:2px 10px;font-size:12px;margin:4px 2px;}
+
+.stats-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:20px auto;max-width:900px;}
+.stat-card{background:#1e293b;border-radius:12px;padding:16px 20px;text-align:center;flex:1;min-width:120px;}
+.stat-num{font-size:28px;font-weight:700;color:#eab308;}
+.stat-label{font-size:12px;color:#94a3b8;margin-top:4px;}
+
+/* Section */
+.section{max-width:1200px;margin:32px auto;padding:0 16px;}
+.section-title{font-size:22px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#eab308;color:#fff;border-radius:50%;font-size:15px;}
+.section-desc{color:#94a3b8;font-size:14px;margin-bottom:16px;}
+
+.overview-img{width:100%;border-radius:12px;border:1px solid #334155;margin-bottom:20px;}
+
+.annotated-row{display:grid;grid-template-columns:280px 280px 1fr;gap:16px;margin-bottom:24px;}
+.annotated-row.single{grid-template-columns:280px 1fr;}
+@media(max-width:900px){.annotated-row,.annotated-row.single{grid-template-columns:1fr;}}
+.screen-col img{width:100%;border-radius:10px;border:1px solid #334155;}
+.screen-label{text-align:center;font-size:12px;color:#94a3b8;margin-top:6px;}
+.rules-col{display:flex;flex-direction:column;gap:10px;}
+
+.rule-card{background:#1e293b;border-radius:10px;padding:14px;border-left:3px solid #eab308;}
+.rule-card h4{font-size:14px;margin:4px 0 6px;color:#f1f5f9;}
+.rule-card p{font-size:13px;color:#cbd5e1;margin-bottom:4px;}
+.rule-card code{background:#334155;padding:1px 5px;border-radius:4px;font-size:12px;color:#fbbf24;}
+.rule-card .src{font-size:11px;color:#64748b;margin-top:6px;font-family:monospace;}
+.rule-tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:6px;font-weight:600;}
+.tag-flow{background:#164e63;color:#67e8f9;}
+.tag-logic{background:#3b2f1a;color:#fbbf24;}
+.tag-ui{background:#1a2e1a;color:#86efac;}
+.tag-api{background:#2d1a3e;color:#c4b5fd;}
+.tag-warning{background:#3b1a1a;color:#fca5a5;}
+.tag-validation{background:rgba(234,179,8,0.2);color:#fbbf24;}
+.tag-risk{background:rgba(239,68,68,0.2);color:#f87171;}
+.tag-discount{background:rgba(168,85,247,0.2);color:#c084fc;}
+.tag-venue{background:#1a2638;color:#93c5fd;}
+
+.rule-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-top:12px;}
+
+.flow-box{background:#1e293b;border-radius:12px;padding:20px;margin:16px 0;overflow-x:auto;}
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0;}
+.flow-label{font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:600;}
+.flow-step{background:#334155;border-radius:8px;padding:8px 14px;font-size:13px;white-space:nowrap;}
+.flow-step.highlight{background:#eab308;color:#fff;}
+.flow-step small{font-size:11px;color:#94a3b8;}
+.flow-arrow{color:#64748b;font-size:18px;}
+
+.type-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+.type-table th{background:#334155;color:#f1f5f9;padding:8px 12px;text-align:left;}
+.type-table td{background:#1e293b;padding:8px 12px;border-bottom:1px solid #334155;}
+.type-table tr:hover td{background:#263548;}
+
+.footer{text-align:center;padding:40px 16px;color:#475569;font-size:13px;}
+
+/* Responsive sidebar */
+@media(max-width:768px){
+  .sidebar{width:200px;}
+  .main-content{margin-left:200px;}
+}
+@media(max-width:600px){
+  .sidebar{display:none;}
+  .main-content{margin-left:0;}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <a href="features.html" class="sidebar-back">&larr; 返回功能列表</a>
+    <div class="sidebar-title">&#x1F464; 我的</div>
+    <div class="sidebar-sub">19 sections &middot; 42 screenshots</div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-btn active" data-target="sec-flow">核心流程</button>
+    <button class="nav-btn" data-target="sec-mine-main">6.1 我的主頁</button>
+    <button class="nav-btn" data-target="sec-profile">6.1.1 個人資料</button>
+    <button class="nav-btn" data-target="sec-vip">6.2 VIP</button>
+    <button class="nav-btn" data-target="sec-transaction">6.3 交易記錄</button>
+    <button class="nav-btn" data-target="sec-invite">6.4 邀請好友</button>
+    <button class="nav-btn" data-target="sec-bet-record">6.5 投注記錄</button>
+    <button class="nav-btn" data-target="sec-reward">6.6 獎品記錄</button>
+    <button class="nav-btn" data-target="sec-help">6.7 幫助中心</button>
+    <button class="nav-btn" data-target="sec-tutorial">6.8 玩法教程</button>
+    <button class="nav-btn" data-target="sec-join">6.9 加入我們</button>
+    <button class="nav-btn" data-target="sec-cooperation">6.10 官方合作</button>
+    <button class="nav-btn" data-target="sec-match">6.11 賽事賽果</button>
+    <button class="nav-btn" data-target="sec-message">6.12 消息中心</button>
+    <button class="nav-btn" data-target="sec-gift">6.14 贈禮記錄</button>
+    <button class="nav-btn" data-target="sec-welfare">6.15 福利中心</button>
+    <button class="nav-btn" data-target="sec-commissioner">6.17 福利專員</button>
+    <button class="nav-btn" data-target="sec-backpack">6.18 背包中心</button>
+    <button class="nav-btn" data-target="sec-task">6.19 任務系統</button>
+    <button class="nav-btn" data-target="sec-openroom">6.20 玩家開房</button>
+    <button class="nav-btn" data-target="sec-wheel">6.21 轉盤活動</button>
+    <button class="nav-btn" data-target="sec-func-list">功能清單對照</button>
+    <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+
+<!-- Header -->
+<div class="page-header">
+  <h1>我的（Mine）— 功能標註</h1>
+  <div class="sub">玩家個人中心 &middot; 底部 Tab 第 5 項</div>
+  <div style="margin-top:12px;">
+    <span class="h-badge">pages/mine/</span>
+    <span class="h-badge">Figma: xvqDn4NW3ljqw5xM1ES3gL</span>
+    <span class="h-badge">19 Sections</span>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">19</div><div class="stat-label">Figma Sections</div></div>
+    <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">功能清單項目</div></div>
+    <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">快捷 Menu</div></div>
+    <div class="stat-card"><div class="stat-num">30+</div><div class="stat-label">關聯 GOR</div></div>
+  </div>
+</div>
+
+<!-- Section 1: Core Flow -->
+<div class="section" id="sec-flow">
+  <div class="section-title"><span class="num">1</span> 核心流程</div>
+  <div class="section-desc">我的頁面的主要操作流程與進入路徑</div>
+
+  <div class="flow-box">
+    <div class="flow-label">我的頁面載入流程</div>
+    <div class="flow-row">
+      <span class="flow-step">底部 Tab「我的」</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">判斷登入狀態</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">未登入：顯示「您还未登录」</span>
+    </div>
+    <div class="flow-row">
+      <span style="width:200px;display:inline-block"></span>
+      <span class="flow-arrow">&darr;</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">已登入</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">載入用戶資訊卡</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">walletStore.getUserGold()</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">顯示餘額 + VIP + 稱號</span>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">快捷 Menu 路由</div>
+    <div class="flow-row">
+      <span class="flow-step highlight">立即存款</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">deposit</span>
+      <span style="margin-left:24px" class="flow-step highlight">我要提款</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">withdraw</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step highlight">立即轉帳</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">mine/transfer</span>
+      <span style="margin-left:24px" class="flow-step highlight">邀請好友</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">mine/invite-friends</span>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">Badge / 紅點顯示邏輯</div>
+    <div class="flow-row">
+      <span class="flow-step">消息中心紅點</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">notReadNoticeCount + messageNum + activityNum &gt; 0</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">福利中心 badge</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">unclaimedWelfareCount</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">進行中訂單</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">OrderInfo 組件（存款/提款進度）</span>
+    </div>
+  </div>
+</div>
+
+<!-- Section 2: 6.1 Mine Main Page -->
+<div class="section" id="sec-mine-main">
+  <div class="section-title"><span class="num">2</span> 6.1 我的主頁面</div>
+  <div class="section-desc">玩家個人中心首頁 &middot; pages/mine/index.vue</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/mine/screen-mine-main.png" alt="我的主頁（已登入）">
+      <div class="screen-label">已登入狀態（含進行中訂單）</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/mine/screen-mine-not-logged.png" alt="我的主頁（未登入）">
+      <div class="screen-label">未登入狀態</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>登入狀態判斷</h4>
+        <p>未登入 → 顯示「您还未登录」+ 點擊頭像跳登入頁</p>
+        <p>已登入 → 顯示 <code>loginAccount</code> + 總餘額</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>用戶資訊卡</h4>
+        <p>頭像：依 <code>iconCustom</code> + 主題（dark/light）從 CDN 載入</p>
+        <p>VIP 圖示：<code>vipStore.vipIcons[vipLevel].basicIcon</code></p>
+        <p>稱號 badge：<code>badgeInfo.img</code> 從 CDN 載入稱號圖片</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>餘額刷新機制</h4>
+        <p><code>walletStore.getUserGold()</code> + 10 秒冷卻</p>
+        <p>餘額計算：<code>walletStore.totalBalance / 100</code></p>
+        <div class="src">pages/mine/index.vue → startCountdown(10)</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>測試帳號限制</h4>
+        <p><code>isTestAccount</code> 時隱藏存款/提款/轉帳等金流功能（<code>disallowTest: true</code>）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>每日任務區</h4>
+        <p><code>MineDailySign</code>（簽到）+ <code>MineMission</code>（任務提示）+ <code>DailyRewardPopup</code></p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>福利專員入口</h4>
+        <p><code>WelfareCommissioner</code> 組件在左上角，特定條件下顯示浮動入口</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>開房對賭入口</h4>
+        <p><code>settingStore.showCommunityRoomHome</code> 開啟時，頁面最底部顯示 <code>OpenRoomEntrance</code></p>
+        <p>首次進入自動滾動到該位置</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 3: Profile -->
+<div class="section" id="sec-profile">
+  <div class="section-title"><span class="num">3</span> 6.1.1 個人資料</div>
+  <div class="section-desc">個人中心 &middot; pages/mine/mine-center/index.vue</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/mine/screen-profile.png" alt="個人資料">
+      <div class="screen-label">個人資料頁</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/mine/screen-profile-badge.png" alt="稱號主頁">
+      <div class="screen-label">稱號主頁</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>別名（Alias）三種狀態</h4>
+        <p><code>NO_SET(0)</code> → 未設定</p>
+        <p><code>CONFIRMING(1)</code> → 審核中</p>
+        <p><code>SUCCESS_SET(3)</code> → 已設定</p>
+        <p>修改限制：<code>aliasConfig.changeAliasEnable</code> + <code>changeAliasInterval</code>（間隔天數）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>生日只能設定一次</h4>
+        <p>BirthdayPicker：預設當日，年份區間 100 年（e.g. 1925-01-01 ~ 2025-01-01）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>子路由一覽</h4>
+        <p>head-photo / bind-phone / bind-email / bind-qq / bind-wechat / change-password / real-name / badgeInfo / aliasInfo-name</p>
+        <div class="src">pages/mine/mine-center/*</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>登出</h4>
+        <p><code>useLogout()</code> + <code>userStore.logout()</code> → 跳登入頁</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>RP 通則（VIC-102）</h4>
+        <p>確認按鈕文案統一從「確認」改為「確定」</p>
+        <p>非金額數字統一使用非 Akrobat 字體</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 4: VIP -->
+<div class="section" id="sec-vip">
+  <div class="section-title"><span class="num">4</span> 6.2 VIP</div>
+  <div class="section-desc">VIP 等級特權說明 &middot; pages/vip/index/index.vue</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/mine/screen-vip-privilege.png" alt="VIP 特權頁">
+      <div class="screen-label">VIP 特權頁（輪播卡片）</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/mine/screen-vip-detail.png" alt="VIP 詳情">
+      <div class="screen-label">VIP 詳情頁</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>卡片輪播</h4>
+        <p>Carousel 組件，初始自動定位到玩家當前 VIP 等級</p>
+        <p>頂部固定顯示當前等級指示器</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>VIP 資料來源</h4>
+        <p><code>vipStore.vipIcons</code>：各等級圖示</p>
+        <p><code>vipStore.vipInfo</code>：升級條件、特權清單</p>
+        <p><code>vipStore.vipOrder</code>：等級排序</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>VIP 保級彈窗</h4>
+        <p>GOR-5230 新增保級彈窗與保級資訊</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>返水顯示</h4>
+        <p>GOR-6140：返水簡介顯示自訂名稱，不顯示未開場館</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 5: Transaction Record -->
+<div class="section" id="sec-transaction">
+  <div class="section-title"><span class="num">5</span> 6.3 交易記錄</div>
+  <div class="section-desc">金流交易記錄 &middot; pages/transaction-record/ &middot; 詳見 5-payment.md</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-transaction-filter.png" alt="交易記錄篩選">
+      <div class="screen-label">交易記錄（已完成篩選）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>入口</h4>
+        <p>我的功能清單「交易記錄」或存款頁右上角 icon</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>篩選功能</h4>
+        <p>種類篩選 + 時間篩選 + 自定義日期範圍</p>
+        <p>包含紅利詳情、砍單詳情、玩家開房詳情等子頁面</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>跨模組功能</h4>
+        <p>技術上歸屬金流模組（5-payment.md），但入口在「我的」功能清單</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 6: Invite Friends -->
+<div class="section" id="sec-invite">
+  <div class="section-title"><span class="num">6</span> 6.4 邀請好友</div>
+  <div class="section-desc">邀請好友等級 &middot; pages/mine/invite-friends/</div>
+
+  <img class="overview-img" src="/images/mine/section-invite.png" alt="邀請好友 section 總覽">
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>入口</h4>
+      <p>我的快捷 Menu「邀請好友」→ <code>mine/invite-friends</code></p>
+      <p>含點位追蹤：<code>clickInviteFriendHitPoint</code></p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>等級機制</h4>
+      <p>GOR-5349 新增：邀請人可獲得禮金獎勵，分為多個等級</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section 7: Bet Record -->
+<div class="section" id="sec-bet-record">
+  <div class="section-title"><span class="num">7</span> 6.5 投注記錄</div>
+  <div class="section-desc">投注歷史 &middot; pages/mine/bet-record/</div>
+
+  <img class="overview-img" src="/images/mine/section-bet-record.png" alt="投注記錄 section 總覽">
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>三分頁</h4>
+      <p>體育（SportRecordList）/ 直播（LiveRecordList）/ 遊戲（GameRecordList）</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>投注摘要</h4>
+      <p><code>RecordSummary</code>：總筆數、總投注額、盈虧</p>
+      <p>預約投注：<code>RecordSummaryReserve</code> + <code>ReserveInfiniteScrollList</code></p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>再來一單</h4>
+      <p>GOR-5520：體育投注支援「再來一單」功能</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>注單分享</h4>
+      <p>GOR-5537：依後台設定自動彈出分享圖</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>預約投注</h4>
+      <p>GOR-5481：FB 體育新增預約投注功能</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>其他功能</h4>
+      <p>日期選擇：DateRangePicker</p>
+      <p>結算按鈕：SettleButton（手動觸發結算）</p>
+      <p>串關投注：ComboCartBtn</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section 8: Reward Record -->
+<div class="section" id="sec-reward">
+  <div class="section-title"><span class="num">8</span> 6.6 獎品記錄</div>
+  <div class="section-desc">活動獲獎記錄 &middot; pages/mine/reward-record/</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-reward-list.png" alt="獎品記錄列表">
+      <div class="screen-label">獎品記錄列表</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>篩選功能</h4>
+        <p>可按日期篩選。日期篩選規則與交易記錄、福利中心、贈禮記錄統一（GOR-5343）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>獎品詳情</h4>
+        <p>點擊列表項目 → 進入獎品詳情頁</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 9: Help Center -->
+<div class="section" id="sec-help">
+  <div class="section-title"><span class="num">9</span> 6.7 幫助中心</div>
+  <div class="section-desc">常見問題 FAQ &middot; pages/mine/help-center/</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-help-center-main.png" alt="幫助中心">
+      <div class="screen-label">幫助中心主頁</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>分類結構</h4>
+        <p>存款教程 / 取款教程 / 轉帳教程 / 遊戲教程 / 遊戲介紹 / 流水介紹</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>流水查詢</h4>
+        <p>WaterFlow 組件的「流水查詢」也跳到此頁</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 10: Game Tutorial -->
+<div class="section" id="sec-tutorial">
+  <div class="section-title"><span class="num">10</span> 6.8 玩法教程</div>
+  <div class="section-desc">投注玩法教學 &middot; pages/mine/game-tutorial/</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-tutorial-list.png" alt="玩法教程列表">
+      <div class="screen-label">玩法教程列表</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>教程類型</h4>
+        <p>如何投注（基本教學）、串關教程、盤口說明、模擬投注（讓球等）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>入口</h4>
+        <p>我的功能清單「玩法教程」</p>
+        <p>VIC-345 需求</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 11: Join Us -->
+<div class="section" id="sec-join">
+  <div class="section-title"><span class="num">11</span> 6.9 加入我們</div>
+  <div class="section-desc">合營計畫 &middot; 入口：我的功能清單</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-join-us.png" alt="加入我們">
+      <div class="screen-label">加入我們（多頁滾動）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>頁面結構</h4>
+        <p>三個頁面的滾動式介紹，展示合營計畫內容</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 12: Cooperation -->
+<div class="section" id="sec-cooperation">
+  <div class="section-title"><span class="num">12</span> 6.10 官方合作</div>
+  <div class="section-desc">品牌贊助 &middot; 入口：我的功能清單</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-cooperation.png" alt="官方合作">
+      <div class="screen-label">官方合作頁</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>展示內容</h4>
+        <p>品牌贊助合作資訊展示</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 13: Match Result -->
+<div class="section" id="sec-match">
+  <div class="section-title"><span class="num">13</span> 6.11 賽事賽果</div>
+  <div class="section-desc">歷史賽事結果查詢 &middot; pages/mine/match-result/</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-match-result.png" alt="賽事賽果">
+      <div class="screen-label">賽事賽果列表</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>篩選功能</h4>
+        <p>時間篩選 + 球種篩選（展開式）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>聯賽搜尋改版</h4>
+        <p>GOR-6051 + GOR-6353：聯賽篩選改為模糊搜尋，支持關聯字（足籃球）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>詳情頁</h4>
+        <p>點擊賽事 → 賽果詳情（含計分板、多 Tab 資訊）</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 14: Message Center -->
+<div class="section" id="sec-message">
+  <div class="section-title"><span class="num">14</span> 6.12 消息中心</div>
+  <div class="section-desc">通知/公告 &middot; pages/message-center/</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-message-center.png" alt="消息中心">
+      <div class="screen-label">消息中心主頁</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>未讀紅點</h4>
+        <p>我的頁面右上角消息圖示：<code>isUnreadMsg</code></p>
+        <p>計算：<code>getNotReadNoticeCount + getMessageNum + getActivityNum &gt; 0</code></p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>功能</h4>
+        <p>系統通知、賽事公告、砍單通知</p>
+        <p>支援編輯模式（批次刪除）</p>
+        <p>GOR-5659：新版賽事分頁</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 15: Gift Record -->
+<div class="section" id="sec-gift">
+  <div class="section-title"><span class="num">15</span> 6.14 贈禮記錄</div>
+  <div class="section-desc">直播間送禮記錄 &middot; pages/mine/gift-record/</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/mine/screen-gift-record.png" alt="贈禮記錄">
+      <div class="screen-label">贈禮記錄</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>顯示條件</h4>
+        <p><code>isNoLive</code>（純體育模式）時從功能清單隱藏此入口</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>篩選</h4>
+        <p>日期篩選規則統一（GOR-5343）</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 16: Welfare Center -->
+<div class="section" id="sec-welfare">
+  <div class="section-title"><span class="num">16</span> 6.15 福利中心</div>
+  <div class="section-desc">福利領取中心 &middot; pages/mine/welfare-center/</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/mine/screen-welfare-center.png" alt="福利中心">
+      <div class="screen-label">福利中心主頁</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/mine/screen-welfare-claim.png" alt="福利中心待領取">
+      <div class="screen-label">待領取確認彈窗</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>資料邏輯</h4>
+        <p><code>useWelfareData()</code> — welfareStore、awardCategoryList</p>
+        <p><code>useWelfareFilters()</code> — 類型、日期、獎品分類</p>
+        <p><code>useWelfareCalendar()</code> — 日期範圍選擇</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>領取動作</h4>
+        <p><code>applySingleOrder</code>（單筆）/ <code>applyMultipleOrder</code>（一鍵領取）</p>
+        <p>超過 20 筆時有提示窗（GOR-5853 限制）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>狀態與類型</h4>
+        <p>狀態：<code>WelfareItemStatus</code>（待領取/已領取/已失效）</p>
+        <p>類型：<code>WelfareItemType</code>（紅利/獎品等）</p>
+        <p>篩選：<code>FilterType</code>（一般/獎品分類）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>獎品分類</h4>
+        <p><code>curFilterCategoryIsAward</code>：判斷當前篩選是否為獎品分類</p>
+        <p>獎品分類時顯示獎品分類圖示（<code>getAwardCategoryImageUrl</code>）</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 17: Welfare Commissioner -->
+<div class="section" id="sec-commissioner">
+  <div class="section-title"><span class="num">17</span> 6.17 聯繫福利專員</div>
+  <div class="section-desc">浮動入口 &middot; WelfareCommissioner 組件</div>
+
+  <img class="overview-img" src="/images/mine/section-welfare-commissioner.png" alt="福利專員 section 總覽">
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>顯示位置</h4>
+      <p>我的首頁左上角浮動入口</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>觸發條件</h4>
+      <p>特定條件下顯示，點擊跳轉到客服/福利專員</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section 18: Backpack -->
+<div class="section" id="sec-backpack">
+  <div class="section-title"><span class="num">18</span> 6.18 背包中心</div>
+  <div class="section-desc">背包管理 + 兌換中心 &middot; pages/mine/my-backpack/index.vue</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/mine/screen-backpack.png" alt="背包管理">
+      <div class="screen-label">背包管理（我的道具 + 我的背包）</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/mine/screen-redeem.png" alt="兌換中心">
+      <div class="screen-label">兌換中心</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>雙 Tab 結構</h4>
+        <p><code>isBagCenterMode</code>：true = 背包管理，false = 兌換中心</p>
+        <p>背包管理分類：<code>AwardCategoryAttr.Item</code>（我的道具）/ <code>AwardCategoryAttr.Bag</code>（我的背包）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>獎品類型</h4>
+        <p><code>AwardType</code>：普通 / 碎片 / 彩金獎品（GOR-5683）</p>
+        <p>效期改為自然日（GOR-6017）：到期日自動延長至 23:59:59</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>兌換多元化（GOR-6017）</h4>
+        <p>一件商品可接受多種兌換方案，如「碎片A&times;10」或「碎片A&times;5 + 碎片B&times;3」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>UI 組件</h4>
+        <p>頂部廣告輪播（GOR-5354）</p>
+        <p>無限滾動：<code>CustomInfiniteScroll</code></p>
+        <p>下拉刷新：<code>isRefreshLoading</code></p>
+        <p>背包記錄：<code>BackpackRecord</code>（mine/backpack-record/）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>兌換限制</h4>
+        <p>GOR-5893：兌換商品新增兌換限制</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 19: Task System -->
+<div class="section" id="sec-task">
+  <div class="section-title"><span class="num">19</span> 6.19 任務系統</div>
+  <div class="section-desc">每日簽到/任務/新手任務 &middot; pages/mine/RewardsTasks/index.vue</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/mine/screen-task-collapsed.png" alt="任務系統收合">
+      <div class="screen-label">簽到收合/任務限時</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/mine/screen-task-expanded.png" alt="任務系統展開">
+      <div class="screen-label">簽到展開/任務每日</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>四種任務類型</h4>
+        <p><code>dailySignIsVisible</code>：每日簽到</p>
+        <p><code>dailyActivityIsVisible</code>：每日任務</p>
+        <p><code>hasWheelTaskData</code>：轉盤任務</p>
+        <p><code>hasNewbieMissionData</code>：新手任務</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>頁面標題動態生成</h4>
+        <p>多種任務組合有不同標題：簽到與任務 / 每日簽到 / 任務 / 幸運大轉盤</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>轉盤類型</h4>
+        <p><code>wheelType === 0</code> → 「驚喜轉不停」</p>
+        <p>其他 → 「幸運大轉盤」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>新手任務教學</h4>
+        <p>首次開啟顯示教學模式（GOR-5661）</p>
+        <p>直播相關任務：晒單/打賞/跟單次數等</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>分享任務</h4>
+        <p>GOR-5213：<code>handleClickShare</code></p>
+        <p>GOR-5606：新增任務條件（發起砍單次數、幫砍單次數）</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 20: Open Room -->
+<div class="section" id="sec-openroom">
+  <div class="section-title"><span class="num">20</span> 6.20 玩家開房對賭</div>
+  <div class="section-desc">對賭房間 &middot; pages/open-room/</div>
+
+  <img class="overview-img" src="/images/mine/section-open-room.png" alt="玩家開房 section 總覽">
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>入口</h4>
+      <p>我的主頁面底部 <code>OpenRoomEntrance</code></p>
+      <p><code>showCommunityRoomHome</code> 開啟時才顯示</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>房間類型</h4>
+      <p>私密房 + 公開房（GOR-6265 新增）</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section 21: Wheel -->
+<div class="section" id="sec-wheel">
+  <div class="section-title"><span class="num">21</span> 6.21 轉盤活動</div>
+  <div class="section-desc">轉盤系統入口（我的頁面）</div>
+
+  <img class="overview-img" src="/images/mine/section-wheel.png" alt="轉盤活動 section 總覽">
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>入口位置</h4>
+      <p>我的頁面的每日任務區或獨立入口，具體轉盤邏輯見活動模組</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>轉盤改版</h4>
+      <p>GOR-6237 通用模版 → GOR-6367 優化 → GOR-6481 新增刮刮樂/翻牌樣式</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section: Function List Table -->
+<div class="section" id="sec-func-list">
+  <div class="section-title"><span class="num">22</span> 功能清單對照表</div>
+  <div class="section-desc">我的頁面 12 個功能項目的路由、顯示條件與隱藏規則</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>#</th><th>功能名稱</th><th>路由</th><th>隱藏條件</th><th>Badge</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>投注記錄</td><td><code>mine/bet-record</code></td><td>—</td><td>—</td></tr>
+      <tr><td>2</td><td>交易記錄</td><td><code>transaction-record</code></td><td>—</td><td>—</td></tr>
+      <tr><td>3</td><td>贈禮記錄</td><td><code>mine/gift-record</code></td><td>isNoLive</td><td>—</td></tr>
+      <tr><td>4</td><td>獎品記錄</td><td><code>mine/reward-record</code></td><td>—</td><td>—</td></tr>
+      <tr><td>5</td><td>福利中心</td><td><code>mine/welfare-center</code></td><td>—</td><td>unclaimedWelfareCount</td></tr>
+      <tr><td>6</td><td>我的稱號</td><td><code>mine/mine-center/badgeInfo</code></td><td>—</td><td>—</td></tr>
+      <tr><td>7</td><td>關注列表</td><td><code>mine/followed-list</code></td><td>isNoLive</td><td>—</td></tr>
+      <tr><td>8</td><td>官方合作</td><td><code>mine/cooperation</code></td><td>—</td><td>—</td></tr>
+      <tr><td>9</td><td>賽事賽果</td><td><code>mine/match-result</code></td><td>—</td><td>—</td></tr>
+      <tr><td>10</td><td>玩法教程</td><td><code>mine/game-tutorial</code></td><td>—</td><td>—</td></tr>
+      <tr><td>11</td><td>幫助中心</td><td><code>mine/help-center</code></td><td>—</td><td>—</td></tr>
+      <tr><td>12</td><td>加入我們</td><td><code>mine/join-us</code></td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-grid" style="margin-top:16px;">
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>isNoLive 隱藏規則</h4>
+      <p>純體育推播模式下，贈禮記錄和關注列表從功能清單隱藏</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>背包 vs 福利中心</h4>
+      <p>福利中心 = 活動獎勵領取；背包中心 = 已領取的獎品管理和兌換</p>
+    </div>
+  </div>
+</div>
+
+<!-- Section: Figma Overview -->
+<div class="section" id="sec-overview">
+  <div class="section-title"><span class="num">23</span> Figma Section 總覽</div>
+  <div class="section-desc">各 Section 全景截圖（scale=0.5，僅供參考）</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div>
+      <img class="overview-img" src="/images/mine/section-mine-profile.png" alt="6.1 我的 & 個人資料">
+      <div class="screen-label">6.1 我的 & 個人資料</div>
+    </div>
+    <div>
+      <img class="overview-img" src="/images/mine/section-vip.png" alt="6.2 VIP">
+      <div class="screen-label">6.2 VIP</div>
+    </div>
+    <div>
+      <img class="overview-img" src="/images/mine/section-transaction.png" alt="6.3 交易記錄">
+      <div class="screen-label">6.3 交易記錄</div>
+    </div>
+    <div>
+      <img class="overview-img" src="/images/mine/section-bet-record.png" alt="6.5 投注記錄">
+      <div class="screen-label">6.5 投注記錄</div>
+    </div>
+    <div>
+      <img class="overview-img" src="/images/mine/section-welfare-center.png" alt="6.15 福利中心">
+      <div class="screen-label">6.15 福利中心</div>
+    </div>
+    <div>
+      <img class="overview-img" src="/images/mine/section-backpack.png" alt="6.18 背包中心">
+      <div class="screen-label">6.18 背包中心</div>
+    </div>
+    <div>
+      <img class="overview-img" src="/images/mine/section-task-system.png" alt="6.19 任務系統">
+      <div class="screen-label">6.19 任務系統</div>
+    </div>
+    <div>
+      <img class="overview-img" src="/images/mine/section-message-center.png" alt="6.12 消息中心">
+      <div class="screen-label">6.12 消息中心</div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>「我的」功能標註頁 &middot; 資料來源：Figma + 知識庫 6-mine.md</p>
+  <p>產出日期：2026-04-09 &middot; 共 23 sections &middot; 42 screenshots</p>
+</div>
+
+</div><!-- /main-content -->
+</div><!-- /layout -->
+
+<script>
+// Nav button scrolling + active state
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.getAttribute('data-target');
+    const el = document.getElementById(target);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Highlight active nav on scroll
+const sections = document.querySelectorAll('.section');
+const navBtns = document.querySelectorAll('.nav-btn');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-target') === id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(sec => observer.observe(sec));
+</script>
+</body>
+</html>

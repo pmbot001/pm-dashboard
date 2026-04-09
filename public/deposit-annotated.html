@@ -27,24 +27,27 @@
       background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3);
     }
 
-    /* Nav */
-    .section-nav {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 10px 32px;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    /* Layout */
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { position:fixed; top:0; left:0; width:250px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
+    .sidebar-header { padding:16px; border-bottom:1px solid #334155; }
+    .sidebar-back { display:flex; align-items:center; gap:8px; color:#94a3b8; font-size:13px; text-decoration:none; margin-bottom:12px; transition:color .2s; }
+    .sidebar-back:hover { color:#e2e8f0; }
+    .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
+    .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+    .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
+    .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
+    .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
+    .nav-btn.active { color:#6366f1; background:#6366f110; border-left-color:#6366f1; }
+    .main-content { margin-left:250px; flex:1; }
+
+    @media(max-width:900px) {
+      .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
+      .layout { flex-direction:column; }
+      .main-content { margin-left:0; }
+      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
+      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
     }
-    .nav-btn {
-      padding: 6px 16px; border: 1px solid #475569; background: transparent;
-      color: #94a3b8; border-radius: 20px; font-size: 13px; cursor: pointer;
-      white-space: nowrap; transition: all 0.2s;
-    }
-    .nav-btn:hover, .nav-btn.active { background: #6366f1; color: white; border-color: #6366f1; }
 
     /* Section */
     .section {
@@ -249,21 +252,29 @@
     </div>
   </div>
 
-  <!-- Nav -->
-  <div class="section-nav">
-    <button class="nav-btn active" data-target="flow">流程圖</button>
-    <button class="nav-btn" data-target="main-page">主頁面</button>
-    <button class="nav-btn" data-target="channel">通道模式</button>
-    <button class="nav-btn" data-target="limits">限額規則</button>
-    <button class="nav-btn" data-target="discount">優惠系統</button>
-    <button class="nav-btn" data-target="form">表單驗證</button>
-    <button class="nav-btn" data-target="risk">風控攔截</button>
-    <button class="nav-btn" data-target="usdt">USDT 流程</button>
-    <button class="nav-btn" data-target="order">訂單狀態</button>
-    <button class="nav-btn" data-target="dialogs">彈窗</button>
-    <button class="nav-btn" data-target="service">代客充值</button>
-    <button class="nav-btn" data-target="overview">Figma 總覽</button>
-  </div>
+  <div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
+      <div class="sidebar-title">💰 存提款 / 金流</div>
+      <div class="sidebar-sub">12 功能 · 12 sections</div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-btn active" data-target="flow">流程圖</button>
+      <button class="nav-btn" data-target="main-page">主頁面</button>
+      <button class="nav-btn" data-target="channel">通道模式</button>
+      <button class="nav-btn" data-target="limits">限額規則</button>
+      <button class="nav-btn" data-target="discount">優惠系統</button>
+      <button class="nav-btn" data-target="form">表單驗證</button>
+      <button class="nav-btn" data-target="risk">風控攔截</button>
+      <button class="nav-btn" data-target="usdt">USDT 流程</button>
+      <button class="nav-btn" data-target="order">訂單狀態</button>
+      <button class="nav-btn" data-target="dialogs">彈窗</button>
+      <button class="nav-btn" data-target="service">代客充值</button>
+      <button class="nav-btn" data-target="overview">Figma 總覽</button>
+    </div>
+  </nav>
+  <div class="main-content">
 
   <!-- 1. Flow -->
   <div class="section" id="flow">
@@ -822,33 +833,18 @@
     <p style="margin-top:4px">Generated 2026-04-08 | Windelf Knowledge Base</p>
   </div>
 
-  <script>
-    const navBtns = document.querySelectorAll('.nav-btn');
-    const sections = document.querySelectorAll('.section');
+  </div><!-- /.main-content -->
+  </div><!-- /.layout -->
 
-    navBtns.forEach(btn => {
+  <script>
+    document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const target = document.getElementById(btn.dataset.target);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-          navBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-        }
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const el = document.getElementById(btn.getAttribute('data-target'));
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
-
-    // Highlight nav on scroll
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          navBtns.forEach(b => {
-            b.classList.toggle('active', b.dataset.target === id);
-          });
-        }
-      });
-    }, { rootMargin: '-100px 0px -60% 0px' });
-    sections.forEach(s => observer.observe(s));
   </script>
 </body>
 </html>

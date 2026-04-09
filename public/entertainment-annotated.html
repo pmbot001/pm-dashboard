@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>娛樂城 — Figma + Source Code 標註</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0f172a; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang TC','Microsoft JhengHei',Roboto,sans-serif; line-height:1.6; }
+    a { color:#60a5fa; }
+
+    .page-header { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); padding:40px 24px 24px; text-align:center; }
+    .page-header h1 { font-size:28px; background:linear-gradient(90deg,#ec4899,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .page-header .sub { color:#94a3b8; margin-top:8px; font-size:14px; }
+    .h-badge { display:inline-block; background:rgba(236,72,153,0.15); color:#f9a8d4; border:1px solid rgba(236,72,153,0.3); border-radius:12px; padding:2px 10px; font-size:12px; margin:4px 2px; }
+
+    .stats-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:20px auto; max-width:900px; }
+    .stat-card { background:#1e293b; border-radius:12px; padding:16px 20px; text-align:center; flex:1; min-width:120px; }
+    .stat-num { font-size:28px; font-weight:700; color:#ec4899; }
+    .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
+
+    /* Layout */
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { position:fixed; top:0; left:0; width:250px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
+    .sidebar-header { padding:16px; border-bottom:1px solid #334155; }
+    .sidebar-back { display:flex; align-items:center; gap:8px; color:#94a3b8; font-size:13px; text-decoration:none; margin-bottom:12px; transition:color .2s; }
+    .sidebar-back:hover { color:#e2e8f0; }
+    .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
+    .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+    .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
+    .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
+    .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
+    .nav-btn.active { color:#ec4899; background:#ec489910; border-left-color:#ec4899; }
+    .main-content { margin-left:250px; flex:1; }
+
+    @media(max-width:900px) {
+      .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
+      .layout { flex-direction:column; }
+      .main-content { margin-left:0; }
+      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
+      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+    }
+
+    .section { max-width:1200px; margin:32px auto; padding:0 16px; }
+    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#ec4899; color:#fff; border-radius:50%; font-size:15px; }
+    .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
+
+    .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
+
+    .annotated-row { display:grid; grid-template-columns:280px 280px 1fr; gap:16px; margin-bottom:24px; }
+    .annotated-row.single { grid-template-columns:280px 1fr; }
+    @media(max-width:900px) { .annotated-row, .annotated-row.single { grid-template-columns:1fr; } }
+    .screen-col img { width:100%; border-radius:10px; border:1px solid #334155; }
+    .screen-label { text-align:center; font-size:12px; color:#94a3b8; margin-top:6px; }
+    .rules-col { display:flex; flex-direction:column; gap:10px; }
+
+    .rule-card { background:#1e293b; border-radius:10px; padding:14px; border-left:3px solid #ec4899; }
+    .rule-card h4 { font-size:14px; margin:4px 0 6px; color:#f1f5f9; }
+    .rule-card p { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card code { background:#334155; padding:1px 5px; border-radius:4px; font-size:12px; color:#fbbf24; }
+    .rule-card .src { font-size:11px; color:#64748b; margin-top:6px; font-family:monospace; }
+    .rule-tag { display:inline-block; font-size:11px; padding:1px 8px; border-radius:6px; font-weight:600; }
+    .tag-flow { background:#164e63; color:#67e8f9; }
+    .tag-logic { background:#3b2f1a; color:#fbbf24; }
+    .tag-ui { background:#1a2e1a; color:#86efac; }
+    .tag-api { background:#2d1a3e; color:#c4b5fd; }
+    .tag-warning { background:#3b1a1a; color:#fca5a5; }
+    .tag-validation { background:rgba(234,179,8,0.2); color:#fbbf24; }
+    .tag-risk { background:rgba(239,68,68,0.2); color:#f87171; }
+    .tag-discount { background:rgba(168,85,247,0.2); color:#c084fc; }
+    .tag-venue { background:#1a2638; color:#93c5fd; }
+
+    .rule-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin-top:12px; }
+
+    .flow-box { background:#1e293b; border-radius:12px; padding:20px; margin:16px 0; overflow-x:auto; }
+    .flow-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    .flow-label { font-size:12px; color:#94a3b8; margin-bottom:4px; font-weight:600; }
+    .flow-step { background:#334155; border-radius:8px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+    .flow-step.highlight { background:#ec4899; color:#fff; }
+    .flow-step small { font-size:11px; color:#94a3b8; }
+    .flow-arrow { color:#64748b; font-size:18px; }
+
+    .type-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+    .type-table th { background:#334155; color:#f1f5f9; padding:8px 12px; text-align:left; }
+    .type-table td { background:#1e293b; padding:8px 12px; border-bottom:1px solid #334155; }
+    .type-table tr:hover td { background:#263548; }
+
+    .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
+    <div class="sidebar-title">🎰 娛樂城</div>
+    <div class="sidebar-sub">3 功能 · 12 sections</div>
+  </div>
+  <div class="sidebar-nav">
+    <button class="nav-btn" data-target="sec-flow">核心流程</button>
+    <button class="nav-btn" data-target="sec-home">娛樂城首頁</button>
+    <button class="nav-btn" data-target="sec-collapsed">收合狀態</button>
+    <button class="nav-btn" data-target="sec-ai">AI 精選推薦</button>
+    <button class="nav-btn" data-target="sec-more">場館更多</button>
+    <button class="nav-btn" data-target="sec-electronic">自研電子大廳</button>
+    <button class="nav-btn" data-target="sec-search">電子搜尋</button>
+    <button class="nav-btn" data-target="sec-external">外開遊戲</button>
+    <button class="nav-btn" data-target="sec-sport">體育場館</button>
+    <button class="nav-btn" data-target="sec-lobby">LobbyType 對照</button>
+    <button class="nav-btn" data-target="sec-classify">場館分類對照</button>
+    <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+  </div>
+</nav>
+
+<div class="main-content">
+
+<!-- ============ HEADER ============ -->
+<div class="page-header">
+  <h1>娛樂城 Entertainment</h1>
+  <div class="sub">水果 2.0-APP | Figma + Source Code 標註頁面</div>
+  <div style="margin-top:10px;">
+    <span class="h-badge">Figma: V4UV6fa9K73VNo2yTwWPZW</span>
+    <span class="h-badge">pages/home/index/casino/</span>
+    <span class="h-badge">POST /user/gameList</span>
+    <span class="h-badge">GOR-5299</span>
+    <span class="h-badge">GOR-5579</span>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">9</div><div class="stat-label">場館類型</div></div>
+    <div class="stat-card"><div class="stat-num">9</div><div class="stat-label">LobbyType</div></div>
+    <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">Figma 截圖</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">皮膚變體</div></div>
+  </div>
+</div>
+
+
+<!-- ============ 1. 核心流程 ============ -->
+<div class="section" id="sec-flow">
+  <div class="section-title"><span class="num">1</span> 核心流程</div>
+  <div class="section-desc">玩家從進入娛樂城到開始遊戲的完整路徑</div>
+
+  <div class="flow-box">
+    <div class="flow-label">主流程：進入遊戲</div>
+    <div class="flow-row">
+      <div class="flow-step">底部 Tab「娛樂」</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">POST /user/gameList</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">依 classifySort 排序分類</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">渲染場館卡片</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">點擊場館</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">判斷 LobbyType</div>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">LobbyType 分支</div>
+    <div class="flow-row">
+      <div class="flow-step">Normal(0) / Custom_Normal(21)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">外開 WebView</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">Sport(1) / Custom_Sports_Hall(22)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">內嵌體育頁面</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">Self_Developed_Electronic_Hall(11)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">跳轉自研電子大廳</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">Self_Developed_Fishing_Hall(12)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">跳轉自研捕魚大廳</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">No_Lobby(13)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="background:#3b1a1a; color:#fca5a5;">過濾不顯示</div>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">皮膚路由差異</div>
+    <div class="flow-row">
+      <div class="flow-step">水果 2.0</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><code>/home/index/casino</code></div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">YXB（亞星藍）</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><code>/vendors/index/yxbg/home/index/casino</code></div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">YXR（亞星紅）</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><code>/vendors/index/yxrg/home/index/casino</code></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2. 娛樂城首頁 ============ -->
+<div class="section" id="sec-home">
+  <div class="section-title"><span class="num">2</span> 娛樂城首頁（展開狀態）</div>
+  <div class="section-desc">主力皮膚水果 2.0 的完整展開畫面 — 含 Banner、分類 Tab、場館卡片</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/entertainment/screen-home-entertainment.png" alt="娛樂城首頁">
+      <div class="screen-label">2.1.1.1 首页_娱乐</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>遊戲清單資料來源</h4>
+        <p><code>POST /user/gameList</code> 回傳 <code>gameList</code>、<code>classifySort</code>、<code>venueTypeList</code>、<code>gameCupList</code>、<code>aiRecommend</code></p>
+        <p>Request: <code>{ channelId, isVirtual: 1 }</code></p>
+        <div class="src">stores: gameStore.gameList</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>分類排序</h4>
+        <p>場館類型順序由 <code>gameStore.classifySort</code> 決定（後台設定），玩家不可自訂。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>分類 Tab 交互</h4>
+        <p>頂部橫向捲動 Tab，點擊 Tab 錨點跳轉到對應分區。往上捲動時 Tab 自動 highlight 對應分類。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>遊戲卡片排序</h4>
+        <p>依 <code>game.sort</code> 升序排列。場館圖=APP 場館圖，Logo=白天/夜晚 logo。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>維護場館</h4>
+        <p><code>serverAvailable = false</code> 時顯示維護遮罩（<code>GameMaintain</code> 元件），場館仍然可見但不可進入。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>皮膚差異</h4>
+        <p>娛樂城不是獨立路由，是首頁子頁面。不同 agentId 走不同 Layout（水果 2.0 / YXB / YXR）。</p>
+        <div class="src">pages/home/index/casino/ + pages/vendors/index/yxbg/ + yxrg/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>首頁輪播廣告</h4>
+        <p>依雲平台設置顯示（雲平台 > 產品管理 > 廣告管理 > 快捷入口設置）。未上傳時顯示預設圖。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>「更多」按鈕</h4>
+        <p>當場館 ≤ 3 個時不顯示「更多」按鈕。點選後跳轉至場館內頁。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3. 收合狀態 ============ -->
+<div class="section" id="sec-collapsed">
+  <div class="section-title"><span class="num">3</span> 收合狀態</div>
+  <div class="section-desc">往下捲動時 Header 收合，只顯示分類 Tab 和場館列表</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/entertainment/screen-collapsed.png" alt="娛樂城收合狀態">
+      <div class="screen-label">2.1.1.3 首页_娱乐_滑动收合</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>Header 收合機制</h4>
+        <p>往下捲動觸發 <code>isCollapseHeader = true</code>，Header（錢包、公告跑馬燈、Banner）全部收合，只保留分類 Tab 欄。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>回頂部按鈕</h4>
+        <p>Header 收合後，右下角出現「回頂部」浮動按鈕。點擊後頁面平滑捲回頂部。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>RP 定義：#收合後-專業版</h4>
+        <p>RP 規格中標註的收合狀態。含「熱門推薦」區域。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>YXR 專屬差異</h4>
+        <p>YXR 皮膚的 Header 有固定 <code>HeaderBar</code>（APP 下載引導 + 跑馬燈 <code>RollingBar</code> + 輪播 Banner），收合行為與水果 2.0 不同。</p>
+        <div class="src">pages/vendors/index/yxrg/home/index/casino/</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 4. AI 精選推薦 ============ -->
+<div class="section" id="sec-ai">
+  <div class="section-title"><span class="num">4</span> AI 精選推薦</div>
+  <div class="section-desc">GOR-5299 — 根據用戶遊戲歷史與投注偏好做場館推薦</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/entertainment/screen-collapsed.png" alt="AI 精選區">
+      <div class="screen-label">AI 精選區（收合狀態可見）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>AI 推薦資料來源</h4>
+        <p><code>gameStore.aiRecommend</code> 回傳 gameId 陣列，置頂顯示為獨立分區 <code>classify = 999</code>。</p>
+        <p>僅在後台開啟且 <code>aiRecommend.length > 0</code> 時出現。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>推薦觸發條件</h4>
+        <p>近 30 日注單 > 5 筆（不含當日）→ 判斷是否有場館偏好。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>有偏好推薦</h4>
+        <p>條件：某場館投注正盈利第一、金額/次數/報酬率 > 50% 第一。</p>
+        <p>做法：指定場館偏好 + 隨機取 2 種方法 + 站台盈利排名 → 去重取 3 個，不足 6 個以隨機補。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>無偏好推薦</h4>
+        <p>站台投注次數排名 + 站台盈利排名 → 去重取 3 個，不足 7 個以隨機補。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>AI Tab</h4>
+        <p>分類 Tab 新增「AI」Tab，排序第一個、預設選項。未登入也顯示。點擊後錨點跳轉至 AI 精選區。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">AI 推薦演算法（統計近 7 日不含當日）</div>
+    <div class="flow-row">
+      <div class="flow-step">會員投報率排名</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">站台投注次數排名</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">站台投注金額排名</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">站台盈利排名</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">去重 + 隨機補足</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 5. 場館更多 ============ -->
+<div class="section" id="sec-more">
+  <div class="section-title"><span class="num">5</span> 場館更多頁面</div>
+  <div class="section-desc">點擊「更多」後進入場館內頁，列出該分類全部場館</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/entertainment/screen-venue-more.png" alt="場館更多">
+      <div class="screen-label">2.1.1.3 首页_娱乐_真人更多</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>進入路徑</h4>
+        <p>娛樂城首頁 → 點擊某分類的「更多」按鈕 → 場館內頁。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>顯示條件</h4>
+        <p>當該分類場館 > 3 個時才顯示「更多」按鈕。≤ 3 個時不顯示。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>角標</h4>
+        <p>場館卡片需顯示後台設置的角標。但進入內頁後不顯示角標。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>返回</h4>
+        <p>點選左上「<」返回娛樂城首頁。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 6. 自研電子大廳 ============ -->
+<div class="section" id="sec-electronic">
+  <div class="section-title"><span class="num">6</span> 自研電子大廳</div>
+  <div class="section-desc">LobbyType = Self_Developed_Electronic_Hall(11) 時跳轉至此</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/entertainment/screen-self-electronic-hall.png" alt="自研電子大廳">
+      <div class="screen-label">2.1.1.13 首页_自营电子大厅</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>進入條件</h4>
+        <p>場館大廳類型 = 「自研電子大廳」（<code>LobbyType = 11</code>）時顯示。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>子遊戲來源</h4>
+        <p><code>POST /user/subGameList</code> — 點進大廳後取得子遊戲清單。</p>
+        <p>設定路徑：雲管理 > 遊戲工具 > 場館配置 > 遊戲配置。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>收藏功能</h4>
+        <p>投注成功的電子類遊戲預設被收藏。重新進入頁面後排序生效。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>Tab 切換</h4>
+        <p>頂部 Tab：「全部」/「收藏」/「全部品牌」。支援品牌篩選與熱門/排序切換。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>搜尋限制</h4>
+        <p>最多 20 字，不可輸入空白和標點符號。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 7. 電子搜尋 ============ -->
+<div class="section" id="sec-search">
+  <div class="section-title"><span class="num">7</span> 電子大廳 — 搜尋結果</div>
+  <div class="section-desc">自研電子大廳的搜尋功能與結果頁面</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/entertainment/screen-electronic-search.png" alt="電子搜尋結果">
+      <div class="screen-label">2.1.1.14 首页_自营电子大厅-搜索_结果</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>搜尋流程</h4>
+        <p>點擊搜尋 icon → 輸入關鍵字 → 即時搜尋子遊戲列表 → 顯示匹配結果。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>輸入驗證</h4>
+        <p>最多 20 字，不可輸入空白和標點符號。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>結果呈現</h4>
+        <p>卡片式遊戲列表，與電子大廳的排版相同。無結果時應有空狀態提示。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 8. 外開遊戲 ============ -->
+<div class="section" id="sec-external">
+  <div class="section-title"><span class="num">8</span> 外開遊戲 WebView</div>
+  <div class="section-desc">LobbyType = Normal(0) 或 Custom_Normal(21) 時外開 WebView</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/entertainment/screen-electronic-external.png" alt="外開遊戲">
+      <div class="screen-label">2.1.1.15 首页_电子大厅-外开</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>進入方式</h4>
+        <p>點擊普通場館（<code>LobbyType = Normal(0)</code>）→ 外開 WebView 載入第三方遊戲頁面。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>H5 跳轉提示</h4>
+        <p>H5 端跳轉外鏈場館時需彈出提示彈窗（QIP-13214）。APP 端直接開啟 WebView。</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>Token 取得</h4>
+        <p>進入遊戲需先取得 token（<code>/user/gameToken</code>），具體流程待確認。</p>
+        <div class="src">apis/user/index.ts</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>WebView 結構</h4>
+        <p>頂部標題列（遊戲名稱）+ 左側返回 + 右側全螢幕切換。主區域載入第三方遊戲。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 9. 體育場館 ============ -->
+<div class="section" id="sec-sport">
+  <div class="section-title"><span class="num">9</span> 體育場館選擇</div>
+  <div class="section-desc">娛樂城下的體育場館有「大廳體育」和「外開體育」兩種</div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>大廳體育場館</h4>
+      <p><code>classify = SPORT(1) && lobbyType = Sport(1)</code></p>
+      <p>內嵌頁面，不外開。</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>外開體育場館</h4>
+      <p><code>classify = SPORT(1) && lobbyType = Normal(0)</code></p>
+      <p>外開 WebView 進入第三方體育頁面。</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>自動切換場館</h4>
+      <p><code>setFirstAvailableVendor()</code> — 若當前場館在維護中，自動切換至第一個可用場館。</p>
+      <div class="src">stores/game.ts → sportVendorList / externalSportVendorList</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>業主限制</h4>
+      <p><code>lobbyType = Sport(1)</code> 的體育大廳只在 TB / YXRG 業主顯示。非這些業主則隱藏體育分類。</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>維護資訊</h4>
+      <p><code>POST /user/gameList</code> 回傳 <code>venueKey</code>、<code>platformType</code>、<code>serverAvailable</code>、<code>serverDownStart/End/Info</code>。</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-venue">venue</span>
+      <h4>娛樂城體育 Tab 顯示條件</h4>
+      <p>當體育場館有設置為「普通」或「自訂-普通」時，顯示體育類別 Tab。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 10. LobbyType 對照表 ============ -->
+<div class="section" id="sec-lobby">
+  <div class="section-title"><span class="num">10</span> LobbyType 對照表</div>
+  <div class="section-desc">遊戲進入模式的完整 enum 定義</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>LobbyType</th><th>值</th><th>行為</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Default</td><td>-1</td><td>預設</td></tr>
+      <tr><td>Normal</td><td>0</td><td>普通場館 — 外開 WebView</td></tr>
+      <tr><td>Sport</td><td>1</td><td>體育場館 — 內嵌頁面（限 TB/YXRG 業主）</td></tr>
+      <tr><td>Self_Developed_Electronic_Hall</td><td>11</td><td>自研電子大廳</td></tr>
+      <tr><td>Self_Developed_Fishing_Hall</td><td>12</td><td>自研捕魚大廳</td></tr>
+      <tr><td>No_Lobby</td><td>13</td><td>無大廳 — 直接過濾不顯示</td></tr>
+      <tr><td>Custom_Normal</td><td>21</td><td>自定-普通 — 體育外開 WebView</td></tr>
+      <tr><td>Custom_Sports_Hall</td><td>22</td><td>自定-體育大廳 — 內嵌頁面</td></tr>
+      <tr><td>Cystom_Y1</td><td>23</td><td>Y1 需求：外開 WebView 同時有內嵌頁面</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ 11. 場館分類對照表 ============ -->
+<div class="section" id="sec-classify">
+  <div class="section-title"><span class="num">11</span> 場館分類對照表</div>
+  <div class="section-desc">classify enum — 決定娛樂城分類 Tab 和場館歸屬</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>classify</th><th>英文 key</th><th>中文</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>sport</td><td>體育</td></tr>
+      <tr><td>2</td><td>dealer</td><td>真人</td></tr>
+      <tr><td>3</td><td>lottery</td><td>彩票</td></tr>
+      <tr><td>4</td><td>eSport</td><td>電競</td></tr>
+      <tr><td>5</td><td>slots</td><td>電子</td></tr>
+      <tr><td>6</td><td>chessCard</td><td>棋牌</td></tr>
+      <tr><td>7</td><td>fish</td><td>捕魚</td></tr>
+      <tr><td>10</td><td>cockFighting</td><td>鬥雞</td></tr>
+      <tr><td>999</td><td>aiRecommend</td><td>AI 推薦</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ 12. Figma 總覽（最後） ============ -->
+<div class="section" id="sec-overview">
+  <div class="section-title"><span class="num">12</span> Figma 總覽</div>
+  <div class="section-desc">2.1 娱乐城 Section 全景截圖（僅供參考）</div>
+  <img class="overview-img" src="/images/entertainment/section-overview.png" alt="Section 總覽">
+</div>
+
+<!-- ============ FOOTER ============ -->
+<div class="footer">
+  <p>娛樂城標註頁面 — 自動產出於 2026-04-09</p>
+  <p>資料來源：Figma V4UV6fa9K73VNo2yTwWPZW | mango2-h5 | Jira GOR</p>
+</div>
+
+</div><!-- /.main-content -->
+</div><!-- /.layout -->
+
+<script>
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const el = document.getElementById(btn.getAttribute('data-target'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>系統模組（登入/註冊）— 功能標註頁面</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0f172a; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang TC','Microsoft JhengHei',Roboto,sans-serif; line-height:1.6; }
+    a { color:#60a5fa; }
+
+    .page-header { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); padding:40px 24px 24px; text-align:center; }
+    .page-header h1 { font-size:28px; background:linear-gradient(90deg,#10b981,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .page-header .sub { color:#94a3b8; margin-top:8px; font-size:14px; }
+    .h-badge { display:inline-block; background:#334155; color:#cbd5e1; border-radius:12px; padding:2px 10px; font-size:12px; margin:4px 2px; }
+
+    .stats-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:20px auto; max-width:900px; }
+    .stat-card { background:#1e293b; border-radius:12px; padding:16px 20px; text-align:center; flex:1; min-width:120px; }
+    .stat-num { font-size:28px; font-weight:700; color:#10b981; }
+    .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
+
+    /* Layout */
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { position:fixed; top:0; left:0; width:250px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
+    .sidebar-header { padding:16px; border-bottom:1px solid #334155; }
+    .sidebar-back { display:flex; align-items:center; gap:8px; color:#94a3b8; font-size:13px; text-decoration:none; margin-bottom:12px; transition:color .2s; }
+    .sidebar-back:hover { color:#e2e8f0; }
+    .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
+    .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+    .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
+    .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
+    .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
+    .nav-btn.active { color:#10b981; background:#10b98110; border-left-color:#10b981; }
+    .main-content { margin-left:250px; flex:1; }
+
+    @media(max-width:900px) {
+      .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
+      .layout { flex-direction:column; }
+      .main-content { margin-left:0; }
+      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
+      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+    }
+
+    .section { max-width:1200px; margin:32px auto; padding:0 16px; }
+    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
+    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#10b981; color:#fff; border-radius:50%; font-size:15px; }
+    .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
+
+    .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
+
+    .annotated-row { display:grid; grid-template-columns:280px 280px 1fr; gap:16px; margin-bottom:24px; }
+    .annotated-row.single { grid-template-columns:280px 1fr; }
+    @media(max-width:900px) { .annotated-row, .annotated-row.single { grid-template-columns:1fr; } }
+    .screen-col img { width:100%; border-radius:10px; border:1px solid #334155; }
+    .screen-label { text-align:center; font-size:12px; color:#94a3b8; margin-top:6px; }
+    .rules-col { display:flex; flex-direction:column; gap:10px; }
+
+    .rule-card { background:#1e293b; border-radius:10px; padding:14px; border-left:3px solid #10b981; }
+    .rule-card h4 { font-size:14px; margin:4px 0 6px; color:#f1f5f9; }
+    .rule-card p { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card code { background:#334155; padding:1px 5px; border-radius:4px; font-size:12px; color:#fbbf24; }
+    .rule-card .src { font-size:11px; color:#64748b; margin-top:6px; font-family:monospace; }
+    .rule-tag { display:inline-block; font-size:11px; padding:1px 8px; border-radius:6px; font-weight:600; }
+    .tag-flow { background:#164e63; color:#67e8f9; }
+    .tag-logic { background:#3b2f1a; color:#fbbf24; }
+    .tag-ui { background:#1a2e1a; color:#86efac; }
+    .tag-api { background:#2d1a3e; color:#c4b5fd; }
+    .tag-warning { background:#3b1a1a; color:#fca5a5; }
+    .tag-validation { background:rgba(234,179,8,0.2); color:#fbbf24; }
+    .tag-risk { background:rgba(239,68,68,0.2); color:#f87171; }
+
+    .rule-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin-top:12px; }
+
+    .flow-box { background:#1e293b; border-radius:12px; padding:20px; margin:16px 0; overflow-x:auto; }
+    .flow-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    .flow-label { font-size:12px; color:#94a3b8; margin-bottom:4px; font-weight:600; }
+    .flow-step { background:#334155; border-radius:8px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+    .flow-step.highlight { background:#10b981; color:#fff; }
+    .flow-step small { font-size:11px; color:#94a3b8; }
+    .flow-arrow { color:#64748b; font-size:18px; }
+
+    .type-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+    .type-table th { background:#334155; color:#f1f5f9; padding:8px 12px; text-align:left; }
+    .type-table td { background:#1e293b; padding:8px 12px; border-bottom:1px solid #334155; }
+    .type-table tr:hover td { background:#263548; }
+
+    .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="page-header">
+  <h1>0 系統模組 — 登入 / 註冊 / 系統頁</h1>
+  <div class="sub">App 初始化、帳號驗證、系統狀態 — Figma + 程式碼 + RP 規格標註</div>
+  <div style="margin-top:12px;">
+    <span class="h-badge">pages/(system)/</span>
+    <span class="h-badge">pages/login/</span>
+    <span class="h-badge">composables/useInit.ts</span>
+    <span class="h-badge">composables/useLogin/</span>
+    <span class="h-badge">middleware/router-guard.global.ts</span>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-num">7</div><div class="stat-label">功能模組</div></div>
+  <div class="stat-card"><div class="stat-num">13</div><div class="stat-label">API 端點</div></div>
+  <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">GOR 關聯單</div></div>
+  <div class="stat-card"><div class="stat-num">21</div><div class="stat-label">截圖數</div></div>
+</div>
+
+<!-- Layout: Sidebar + Main -->
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
+      <div class="sidebar-title">🔐 系統 / 登入 / 註冊</div>
+      <div class="sidebar-sub">6 功能 · 14 sections</div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-btn" data-target="sec-init-flow">初始化流程</button>
+      <button class="nav-btn" data-target="sec-account-login">帳號登入</button>
+      <button class="nav-btn" data-target="sec-phone-login">手機登入</button>
+      <button class="nav-btn" data-target="sec-forgot-password">忘記密碼</button>
+      <button class="nav-btn" data-target="sec-ingame-login">遊戲內登入</button>
+      <button class="nav-btn" data-target="sec-account-register">帳號註冊</button>
+      <button class="nav-btn" data-target="sec-phone-register">手機註冊</button>
+      <button class="nav-btn" data-target="sec-router-guard">路由守衛</button>
+      <button class="nav-btn" data-target="sec-maintenance">維護頁</button>
+      <button class="nav-btn" data-target="sec-ip-block">IP 封鎖</button>
+      <button class="nav-btn" data-target="sec-app-launch">APP 啟動</button>
+      <button class="nav-btn" data-target="sec-popups">彈窗系統</button>
+      <button class="nav-btn" data-target="sec-rp-rules">RP 通則</button>
+      <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+    </div>
+  </nav>
+  <div class="main-content">
+
+<!-- ============================================================ -->
+<!-- Section 1: 初始化流程 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-init-flow">
+  <div class="section-title"><span class="num">1</span> 初始化流程（App Init）</div>
+  <div class="section-desc">App 啟動時的 config 拉取、渠道識別、設備綁定、系統狀態路由 — 純邏輯層，無 UI</div>
+
+  <div class="flow-box">
+    <div class="flow-label">App 啟動序列</div>
+    <div class="flow-row">
+      <div class="flow-step highlight">App 啟動</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">useInit</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">fetchChannelId<small>（query / localStorage / ENV / API）</small></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step highlight">fetchConfig<small>（baseConfig + blackList 並行）</small></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">setBaseConfigOutsideErrorCode</div>
+    </div>
+    <div class="flow-label" style="margin-top:16px;">系統狀態路由（checkSystemStatusAndRoute）</div>
+    <div class="flow-row">
+      <div class="flow-step">errCode &ne; 1 or isInMaintain</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step highlight">/maintain</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">isBlocked</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step highlight">/block</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">needLogin && !token</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">/login or getEntrance</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">rally referenceId</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">/activity/rally</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">default</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step highlight">toPushTypePage()</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">啟動 WebSocket + 各模組初始化</div>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>渠道 ID 取得順序</h4>
+      <p><code>fetchChannelId</code> 依序從 URL query &rarr; localStorage &rarr; ENV &rarr; API 取得 channelId，寫入 settingStore</p>
+      <div class="src">composables/useInit.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>baseConfig 與黑名單並行</h4>
+      <p><code>GET /config/baseConfig/v2</code> + <code>POST /config/channelIpBlackList/v3</code> 並行請求，取得平台設定與 IP 封鎖名單</p>
+      <div class="src">composables/useInit.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>errCode 統一跳維護</h4>
+      <p><code>setBaseConfigOutsideErrorCode()</code>：errCode !== 1 時統一跳維護頁，不區分具體錯誤</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>登入後非同步初始化</h4>
+      <p>登入狀態變化時（isLogin / isInitSuccess watch）觸發大量非同步初始化：活動、VIP、直播、任務等</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>WebSocket 啟動時機</h4>
+      <p>isInit = true 後才啟動平台 WS + 用戶 WS</p>
+      <div class="src">composables/useInit.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>開發模式快捷鍵</h4>
+      <p>F2 切換主題、F3 開 API debug、F4 跳過啟動彈窗 — 僅開發模式</p>
+      <div class="src">composables/useInit.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>getH5Domain</h4>
+      <p><code>POST /config/getH5Domain</code> — 根據 domain 取得 channelId（公開 API）</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 2: 帳號登入 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-account-login">
+  <div class="section-title"><span class="num">2</span> 帳號登入</div>
+  <div class="section-desc">帳號密碼登入、記住密碼、圖形驗證碼、新設備驗證</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/system/screen-account-login.png" alt="帳號登入">
+      <div class="screen-label">0.3.1.1 帳號登入</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/system/screen-account-login-validation.png" alt="帳號登入防呆">
+      <div class="screen-label">0.3.1.2 帳號登入（防呆）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>Tab 顯示控制</h4>
+        <p><code>accountLoginEnabled</code> + <code>phoneNumberLoginEnabled</code> 控制顯示哪些 tab。兩者皆開 &rarr; 顯示兩個 tab；只開一個 &rarr; 直接顯示單一表單，tab 隱藏</p>
+        <div class="src">pages/login/index.vue</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>用戶名規則</h4>
+        <p>4-20 位字母+數字。空值提示「用戶名不能為空」；格式錯誤提示「用戶名為 4-20 位字母+數字」。下拉選單顯示已成功登錄的帳號</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>密碼規則</h4>
+        <p>8-20 位字母+數字。空值提示「密碼不能為空」；格式錯誤「密碼為 8-20 位英文字母或數字組合」。預設隱碼、加密儲存在 localStorage</p>
+        <div class="src">composables/useLogin/ &mdash; passwordCrypt</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>記住密碼</h4>
+        <p>預設勾選。勾選後記錄上次登錄成功的密碼（加密儲存）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>登入成功跳轉</h4>
+        <p>由 <code>useTabbar().toPushTypePage()</code> 決定，根據 <code>baseConfig.gameTabSelected</code> 判斷目標頁</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">risk</span>
+        <h4>新設備驗證</h4>
+        <p>登入後若是新設備 &rarr; 觸發 <code>isDeviceVerificationOpen</code> &rarr; 顯示新設備驗證彈窗（NewDeviceAuth），需驗證手機</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>圖形驗證碼</h4>
+        <p>部分業主有圖形驗證碼流程（<code>isKeyCodeOpen</code>），由雲平台驗證碼開關控制</p>
+        <div class="src">NumberCaptchPopup 元件</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>登入 API</h4>
+        <p><code>POST /login/login</code> &mdash; 帳號登入<br><code>POST /login/imageValidCode</code> &mdash; 圖形驗證碼<br><code>POST /login/refreshToken</code> &mdash; Token 刷新（靜默）<br><code>POST /login/logout</code> &mdash; 登出</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 3: 手機登入 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-phone-login">
+  <div class="section-title"><span class="num">3</span> 手機登入</div>
+  <div class="section-desc">手機號碼 + 驗證碼登入，雲平台開啟「注冊須綁定手機號」才顯示</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/system/screen-phone-login.png" alt="手機登入">
+      <div class="screen-label">0.3.2.1 手機登入</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>手機號規則</h4>
+        <p>僅限數字，最多 13 位，逐字驗證格式。空值提示「手機號不能為空」；格式錯誤「請輸入正確手機號格式！」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>驗證碼規則</h4>
+        <p>6 位純數字。手機號空或格式不符時按鈕 disabled。發送後倒計時，toast「驗證碼已發送，請注意查收！」。超出次數 toast「驗證碼獲取太頻繁，請稍後重試」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>記住手機號</h4>
+        <p>預設勾選。勾選後記錄上次登錄成功的手機號</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /login/phoneLoginV2</code> &mdash; 手機號登入<br><code>POST /login/phoneCode</code> &mdash; 發送手機驗證碼</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>顯示條件</h4>
+        <p>雲平台開啟「注冊須綁定手機號」才會顯示手機登入 tab，且不能與帳號登入同時關閉</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 4: 忘記密碼 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-forgot-password">
+  <div class="section-title"><span class="num">4</span> 忘記密碼</div>
+  <div class="section-desc">透過手機驗證碼重設密碼</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/system/screen-forgot-password.png" alt="忘記密碼">
+      <div class="screen-label">0.3.3.1 忘記密碼</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>用戶名</h4>
+        <p>必填，4-20 位字母+數字。空值/格式錯誤提示</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>驗證碼</h4>
+        <p>6 位純數字。用戶名空或格式不符時按鈕 disabled。用戶名不存在 toast「此賬號並未被注冊」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>新密碼 + 確認</h4>
+        <p>8-20 位字母+數字，預設隱碼。確認密碼需與新密碼一致</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>前提條件</h4>
+        <p>雲平台需開啟「注冊須綁定手機號」才會顯示驗證碼欄位</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 5: 遊戲內登入（半版） -->
+<!-- ============================================================ -->
+<div class="section" id="sec-ingame-login">
+  <div class="section-title"><span class="num">5</span> 遊戲內登入（半版）</div>
+  <div class="section-desc">在遊戲內需要登入時彈出的半版 Sheet，含帳號登入與手機登入</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/system/screen-ingame-account-login.png" alt="遊戲內帳號登入">
+      <div class="screen-label">0.3.1.3 遊戲內帳號登入</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/system/screen-ingame-phone-login.png" alt="遊戲內手機登入">
+      <div class="screen-label">0.3.2.2 遊戲內手機登入</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>觸發時機</h4>
+        <p>路由守衛偵測到 <code>to.meta.needLogin && !token</code> 時，呼叫 <code>setIsLoginSheetOpen(true)</code> 顯示半版登入</p>
+        <div class="src">middleware/router-guard.global.ts</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>半版 Sheet</h4>
+        <p>覆蓋在當前遊戲畫面上方，背景灰遮罩。與全版登入頁同樣的表單邏輯與驗證規則</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>Session 過期</h4>
+        <p>Token 失效時顯示 ExpiredPopup，使用者需重新登入</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/system/screen-account-login-cs.png" alt="在線客服">
+      <div class="screen-label">0.3.1.4 帳號登入 — 在線客服</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>在線客服邏輯</h4>
+        <p>後台設定一條線路 &rarr; 直接進入平台客服 or 三方客服。多條線路 &rarr; 先跳選線路彈窗，再進入客服</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">risk</span>
+        <h4>踢下線機制</h4>
+        <p>雲平台「踢下線」操作後，被踢下線時間內登入會跳半版溫馨提示：「登錄異常，請聯系客服」。確認 &rarr; 跳在線客服；取消 &rarr; 關閉</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 6: 帳號註冊 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-account-register">
+  <div class="section-title"><span class="num">6</span> 帳號註冊</div>
+  <div class="section-desc">新玩家建立帳號，支援帳號註冊，驗證規則由後台 registerOption API 控制</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/system/screen-account-register.png" alt="帳號註冊">
+      <div class="screen-label">0.2.1.1 帳號註冊</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/system/screen-account-register-half.png" alt="帳號註冊半版">
+      <div class="screen-label">0.2.1.2 帳號註冊（半版）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>帳號格式（accountValidRole）</h4>
+        <p><code>accountValidRole = 2</code> &rarr; 6-13位字母+數字，首位必須字母。預設 &rarr; 6-13位字母或數字。RP 規格：4-20 位字母+數字</p>
+        <div class="src">composables/useLogin/</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>密碼規則</h4>
+        <p>8-20 位英文字母與數字組合。確認密碼需一致</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>邀請碼</h4>
+        <p>選填（雲平台可設「邀請碼必填」）。來源：雲平台產品管理或代理渠道管理</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>推薦人 ID</h4>
+        <p>從 <code>settingStore.recommendId</code>（Base64 decode）取得，<code>|</code> 分隔時取後段</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>隨便逛逛</h4>
+        <p>以訪客身分進入遊戲首頁</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /login/register</code> &mdash; 帳號註冊<br><code>POST /login/registerOption</code> &mdash; 取得當前業主的註冊設定選項</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 7: 手機註冊 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-phone-register">
+  <div class="section-title"><span class="num">7</span> 手機註冊</div>
+  <div class="section-desc">手機號碼註冊流程，含區碼選擇與驗證碼發送</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/system/screen-phone-register.png" alt="手機註冊">
+      <div class="screen-label">0.2.2.1 手機註冊</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/system/screen-phone-region-select.png" alt="手機號碼所屬地區">
+      <div class="screen-label">0.2.2.2.1 手機號碼所屬地區</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>手機號規則</h4>
+        <p>僅限數字，最多 13 位，逐字驗證格式。雲平台開啟「注冊須綁定手機號」才顯示</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">validation</span>
+        <h4>驗證碼</h4>
+        <p>6 位純數字。每 60 秒可再次發送。超出限制 toast「驗證碼獲取太頻繁，請稍後重試」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>區碼規則</h4>
+        <p>PC/H5 取瀏覽器語系對應區碼；APP 取手機系統語系。皆無法匹配時預設取排序第一個</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>台灣區碼</h4>
+        <p>+866 台灣僅在測試環境出現，正式環境不顯示（QIP-9303）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>API 端點</h4>
+        <p><code>POST /login/phoneRegisterV2</code> &mdash; 手機號碼註冊</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotated-row single" style="margin-top:8px;">
+    <div class="screen-col">
+      <img src="/images/system/screen-phone-register-half.png" alt="手機註冊半版">
+      <div class="screen-label">0.2.2.2 手機註冊（半版）</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>半版模式</h4>
+        <p>在遊戲內需要註冊時彈出的半版 Sheet，與全版註冊同樣的表單邏輯</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>isRegister 參數</h4>
+        <p><code>route.query.isRegister === 'true'</code> 時預設顯示註冊面板，支援從外部帶參數直接開啟</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 8: 路由守衛 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-router-guard">
+  <div class="section-title"><span class="num">8</span> 路由守衛（Router Guard）</div>
+  <div class="section-desc">Nuxt 全域 middleware，處理登入驗證、購物車清空、測試帳號限制、渠道 ID 傳遞 — 純邏輯，無 UI</div>
+
+  <div class="flow-box">
+    <div class="flow-label">路由跳轉處理流程</div>
+    <div class="flow-row">
+      <div class="flow-step">路由跳轉觸發</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">needLogin && !token?</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step highlight">顯示登入 Sheet + abort</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">離開直播間</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">清空購物車（useLiveCartsStore.$reset()）</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step">離開杯賽主題</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">清除 themeOverride</div>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>登入驗證</h4>
+      <p><code>to.meta.needLogin && !token</code> &rarr; 顯示登入 Sheet（非重整情況）。重整場景由 useSystemCheck 處理，避免雙重觸發</p>
+      <div class="src">middleware/router-guard.global.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-risk">risk</span>
+      <h4>測試帳號封鎖</h4>
+      <p>測試帳號不能進入：deposit、withdraw、mine-transfer 頁面</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>channelId 繼承</h4>
+      <p>channelId 從上一頁繼承，確保 URL 常態帶 channelId query。<code>from</code> query 參數記錄到 localStorage</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>跳轉參數</h4>
+      <p><code>jumpType=3, jumpValue=7</code> &rarr; 跳登入頁；<code>jumpValue=8</code> &rarr; 跳註冊頁（落地頁跳轉機制）</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 9: 維護頁 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-maintenance">
+  <div class="section-title"><span class="num">9</span> 維護頁</div>
+  <div class="section-desc">平台進入維護模式時的全屏提示頁面</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/system/screen-maintenance.png" alt="維護頁">
+      <div class="screen-label">0.1.1.1 全站維護</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>顯示內容</h4>
+        <p>顯示維護時間（startTime / endTime）+ notice 公告文字 + Lottie 動畫（serverUpgrading.json）</p>
+        <div class="src">pages/(system)/maintain.vue</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>自動恢復</h4>
+        <p>watch <code>settingStore.isInMaintain</code>：維護結束 &rarr; 執行 <code>userStore.logout()</code> 並 <code>window.location.reload()</code>。使用者無感</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-api">api</span>
+        <h4>資料來源</h4>
+        <p>維護狀態從 <code>baseConfig.noticeList</code> 讀取，在 useInit.ts 的 fetchConfig 階段取得</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>頁面設定</h4>
+        <p><code>definePageMeta({ isShowBlock: true, pageTransition: false })</code></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 10: IP 封鎖頁 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-ip-block">
+  <div class="section-title"><span class="num">10</span> IP 封鎖頁</div>
+  <div class="section-desc">玩家 IP 在黑名單中時顯示的 403 頁面</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/system/screen-ip-blocked.png" alt="IP 封鎖頁">
+      <div class="screen-label">0.1.1.2 403 訪問受限</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>顯示內容</h4>
+        <p>顯示玩家 IP（<code>baseConfig.ip</code>）與地區（<code>baseConfig.location</code>）+ Lottie 動畫（forbidden.json）</p>
+        <div class="src">pages/(system)/block.vue</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">risk</span>
+        <h4>封鎖邏輯</h4>
+        <p><code>channelIpBlackList/v3</code> 回應判斷。<code>useSystemCheck</code> 中 watchEffect 監聽 isBlocked 隨時跳轉</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>唯一出口</h4>
+        <p>只能聯繫客服，無法自行解鎖</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 11: APP 啟動頁 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-app-launch">
+  <div class="section-title"><span class="num">11</span> APP 啟動頁</div>
+  <div class="section-desc">App 開啟時的 Launch Screen</div>
+
+  <div class="annotated-row single">
+    <div class="screen-col">
+      <img src="/images/system/screen-app-launch.png" alt="APP 啟動頁">
+      <div class="screen-label">0.1.2.1 APP 啟動頁</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>啟動畫面</h4>
+        <p>顯示品牌 Logo + 載入動畫。背景取自設定</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>啟動後流程</h4>
+        <p>啟動頁結束後進入 useInit 初始化序列（Section 1 流程）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">warning</span>
+        <h4>版本資訊</h4>
+        <p>Console 輸出版本號（<code>runtimeConfig.public.appVersion</code>）、環境（VITE_ENV）、Vendor（VITE_VENDOR），方便 QA 確認</p>
+        <div class="src">plugins/version.client.ts</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 12: 彈窗系統 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-popups">
+  <div class="section-title"><span class="num">12</span> 彈窗系統（0.4 提醒）</div>
+  <div class="section-desc">首頁彈窗、公告彈窗、版本更新、緊急公告等各類彈窗</div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/system/screen-popup-homepage.png" alt="首頁彈窗">
+      <div class="screen-label">0.4.1.1 首頁彈窗</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/system/screen-popup-super-discount.png" alt="超級優惠窗">
+      <div class="screen-label">0.4.1.2 超級優惠窗</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>彈窗優先序</h4>
+        <p>由後台控制多個彈窗的顯示順序，同一時段只顯示一個（GOR-5125）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>廣告/活動彈窗</h4>
+        <p>有「不再顯示」和「確認」按鈕（GOR-4537）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>首存彈窗</h4>
+        <p>有充值/稍後再說按鈕（GOR-5231）</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/system/screen-popup-important-notice.png" alt="重要公告">
+      <div class="screen-label">0.4.1.4 重要公告</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/system/screen-popup-version-update.png" alt="版本更新">
+      <div class="screen-label">0.4.1.7 版本更新公告</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">logic</span>
+        <h4>版本更新彈窗</h4>
+        <p>含強制/非強制更新邏輯（GOR-5243）。強制更新時只有更新按鈕；非強制有「稍後再說」</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>遊戲教學彈窗</h4>
+        <p>圖片型，左右滑動說明（GOR-5243）</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="annotated-row">
+    <div class="screen-col">
+      <img src="/images/system/screen-popup-emergency.png" alt="緊急公告">
+      <div class="screen-label">0.4.1.8 緊急公告</div>
+    </div>
+    <div class="screen-col">
+      <img src="/images/system/screen-popup-switch-package.png" alt="引導換包">
+      <div class="screen-label">0.4.1.15 引導用戶換包</div>
+    </div>
+    <div class="rules-col">
+      <div class="rule-card">
+        <span class="rule-tag tag-risk">risk</span>
+        <h4>緊急公告</h4>
+        <p>高優先級彈窗（GOR-5251），不可關閉或限制關閉條件</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">flow</span>
+        <h4>App Store 好評引導</h4>
+        <p>GOR-5877。五大頁（首頁、活動、直播、爆料、我的）顯示</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-ui">ui</span>
+        <h4>上架包引導</h4>
+        <p>引導用戶從當前包體切換至上架包（GOR-5243 範疇）</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 13: RP 通則 -->
+<!-- ============================================================ -->
+<div class="section" id="sec-rp-rules">
+  <div class="section-title"><span class="num">13</span> RP 全站通則摘要</div>
+  <div class="section-desc">來自 RP 規格的跨模組通用規則</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>類別</th><th>通則</th><th>規則摘要</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>全站</td><td>Token</td><td>登錄後維持 72 小時。設備未變動、IP 變動 &rarr; 不失效；設備變動 &rarr; 失效。有延長機制</td></tr>
+      <tr><td>全站</td><td>Timeout</td><td>統一 20 秒（原 10 秒，2023/07/24 確認）</td></tr>
+      <tr><td>全站</td><td>網頁重整</td><td>重整後停留原有頁面（GOR-5608）。Token 失效時回到「推廣類型」設置頁面</td></tr>
+      <tr><td>全站</td><td>金額顯示</td><td>小數點第二位，第二位後無條件捨去（2026/03/03）</td></tr>
+      <tr><td>登錄</td><td>異地登錄觸發</td><td>上次 IP &ne; 本次 IP & 登記 IP &ne; 本次 IP；上次裝置 &ne; 本次裝置 & 注冊裝置 &ne; 本次裝置</td></tr>
+      <tr><td>全站</td><td>Safari 場館外鏈</td><td>Safari 限制彈出項目，需加提醒讓用戶自主選擇：「即將另開遊戲界面，是否繼續」</td></tr>
+      <tr><td>全站</td><td>跳轉類型「開啟APP」</td><td>PC 無 APP 統一用跳轉參數。H5/APP 判斷 scheme/package name 是否符合</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:24px;">
+    <h3 style="font-size:16px; margin-bottom:12px; color:#f1f5f9;">語系 &rarr; 區碼對照表</h3>
+    <table class="type-table">
+      <thead>
+        <tr><th>語系</th><th>居住國</th><th>幣種</th><th>預設區碼</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>簡體中文</td><td>中國</td><td>人民幣</td><td>+86</td></tr>
+        <tr><td>繁體中文（台灣）</td><td>台灣</td><td>人民幣</td><td>+866 ⚠️ 僅測試環境</td></tr>
+        <tr><td>繁體中文（香港）</td><td>香港</td><td>港幣</td><td>+852</td></tr>
+        <tr><td>繁體中文（澳門）</td><td>澳門</td><td>港幣</td><td>+853</td></tr>
+        <tr><td>越南文</td><td>越南</td><td>越南盾</td><td>+84</td></tr>
+        <tr><td>馬來文</td><td>馬來西亞</td><td>馬幣</td><td>+60</td></tr>
+        <tr><td>印尼文</td><td>印尼</td><td>印尼盾</td><td>+62</td></tr>
+        <tr><td>日文</td><td>日本</td><td>日幣</td><td>+81</td></tr>
+        <tr><td>韓文</td><td>韓國</td><td>韓圓</td><td>+82</td></tr>
+        <tr><td>泰文</td><td>泰國</td><td>泰銖</td><td>+66</td></tr>
+        <tr><td>印地語</td><td>印度</td><td>印度盧比</td><td>+91</td></tr>
+        <tr><td>英文</td><td>美國</td><td>美金</td><td>+1</td></tr>
+        <tr><td>葡萄牙文</td><td>巴西</td><td>雷亞爾</td><td>+55</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rule-grid" style="margin-top:24px;">
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>懸浮窗口通則</h4>
+      <p>各懸浮窗口出現頁面由後台設置。預設位置分左側/右側（GOR-5709）。包含：廣告、新手大轉盤、砍單、紅包雨、搶紅包、充值未到賬等</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>紅點顯示通則</h4>
+      <p>「我的」頁面內有任何紅點提示則「我的」icon 顯示紅點。有紅點功能：消息、福利中心、幫助中心、玩法教程、我的稱號、提款、優惠活動、領獎通知</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>彈窗通則</h4>
+      <p>廣告彈窗有「不再顯示」。版本更新含強制/非強制。首頁彈窗由後台控制優先序（GOR-5125）。教學彈窗圖片型左右滑動</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>時區通則</h4>
+      <p>所有時間依用戶切換的時區顯示，使用 UTC 格式。時間格式依語言不同</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 14: Figma 總覽（放最後） -->
+<!-- ============================================================ -->
+<div class="section" id="sec-overview">
+  <div class="section-title"><span class="num">14</span> Figma 總覽圖</div>
+  <div class="section-desc">各 section 的全景截圖，僅供參考</div>
+
+  <h3 style="font-size:16px; margin:16px 0 8px; color:#f1f5f9;">0.1 系統頁</h3>
+  <img class="overview-img" src="/images/system/section-system-pages.png" alt="系統頁總覽">
+
+  <h3 style="font-size:16px; margin:16px 0 8px; color:#f1f5f9;">0.2 註冊</h3>
+  <img class="overview-img" src="/images/system/section-register.png" alt="註冊總覽">
+
+  <h3 style="font-size:16px; margin:16px 0 8px; color:#f1f5f9;">0.3 登入</h3>
+  <img class="overview-img" src="/images/system/section-login.png" alt="登入總覽">
+
+  <h3 style="font-size:16px; margin:16px 0 8px; color:#f1f5f9;">0.4 提醒</h3>
+  <img class="overview-img" src="/images/system/section-alerts.png" alt="提醒總覽">
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>系統模組標註頁面 — 自動產出於 2026-04-09</p>
+  <p>資料來源：Figma V4UV6fa9K73VNo2yTwWPZW + 程式碼 mango2-h5 + RP vxgdzx.axshare.com</p>
+  <p style="margin-top:8px;">GOR-327 / GOR-960 / GOR-3898 / GOR-478 / GOR-2368</p>
+</div>
+
+  </div><!-- /.main-content -->
+</div><!-- /.layout -->
+
+<script>
+// Nav button scrolling
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const el = document.getElementById(btn.getAttribute('data-target'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+
+</body>
+</html>

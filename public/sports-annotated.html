@@ -21,14 +21,21 @@
     .stat-num { font-size:28px; font-weight:700; color:#f97316; }
     .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
 
-    /* Role Tabs */
-    .role-bar { display:flex; justify-content:center; gap:0; background:#0f172a; padding:16px 16px 0; }
-    .role-tab { background:#1e293b; color:#94a3b8; border:none; padding:12px 28px; font-size:15px; font-weight:600; cursor:pointer; transition:all .2s; border-bottom:3px solid transparent; }
-    .role-tab:first-child { border-radius:10px 0 0 0; }
-    .role-tab:last-child { border-radius:0 10px 0 0; }
+    /* Layout */
+    .layout { display:flex; min-height:100vh; }
+    .sidebar { position:fixed; top:0; left:0; width:250px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
+    .sidebar-header { padding:16px; border-bottom:1px solid #334155; }
+    .sidebar-back { display:flex; align-items:center; gap:8px; color:#94a3b8; font-size:13px; text-decoration:none; margin-bottom:12px; transition:color .2s; }
+    .sidebar-back:hover { color:#e2e8f0; }
+    .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
+    .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+
+    /* Role Tabs in sidebar */
+    .role-bar { display:grid; grid-template-columns:1fr 1fr; gap:0; border-bottom:1px solid #334155; }
+    .role-tab { background:transparent; color:#94a3b8; border:none; padding:10px 8px; font-size:12px; font-weight:600; cursor:pointer; transition:all .2s; border-bottom:2px solid transparent; text-align:center; }
     .role-tab:hover { color:#e2e8f0; background:#263548; }
-    .role-tab.active { color:#f97316; border-bottom-color:#f97316; background:#1e293b; }
-    .role-indicator { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+    .role-tab.active { color:#f97316; border-bottom-color:#f97316; }
+    .role-indicator { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:4px; }
     .ri-all { background:#94a3b8; }
     .ri-pm { background:#f97316; }
     .ri-rd { background:#a78bfa; }
@@ -41,11 +48,15 @@
     .depth-l3 { background:#2d1a3e; color:#c4b5fd; }
     .depth-l4 { background:#1a2e1a; color:#86efac; }
 
-    /* Nav */
-    .nav-bar { position:sticky; top:0; z-index:100; background:#1e293b; display:flex; gap:6px; padding:10px 16px; overflow-x:auto; border-bottom:1px solid #334155; }
-    .nav-btn { background:#334155; color:#cbd5e1; border:none; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; white-space:nowrap; transition:all .2s; }
-    .nav-btn:hover { background:#f97316; color:#fff; }
+    /* Sidebar Nav */
+    .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
+    .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
+    .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
+    .nav-btn.active { color:#f97316; background:#f9731610; border-left-color:#f97316; }
     .nav-btn.hidden { display:none; }
+
+    /* Main content area */
+    .main-content { margin-left:250px; flex:1; }
 
     /* Sections */
     .section { max-width:1200px; margin:32px auto; padding:0 16px; }
@@ -123,9 +134,71 @@
     .test-fail { color:#f87171; }
 
     .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
+
+    /* Mobile responsive */
+    @media(max-width:900px) {
+      .sidebar { position:relative; width:100%; height:auto; max-height:none; border-right:none; border-bottom:1px solid #334155; }
+      .layout { flex-direction:column; }
+      .main-content { margin-left:0; }
+      .role-bar { grid-template-columns:repeat(4,1fr); }
+      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
+      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+      .nav-btn:hover, .nav-btn.active { border-left:none; }
+    }
   </style>
 </head>
 <body>
+
+  <div class="layout">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
+      <div class="sidebar-title">⚽ 體育賽事</div>
+      <div class="sidebar-sub">14 功能 · 26 sections</div>
+    </div>
+    <div class="role-bar">
+      <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>概覽</button>
+      <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策</button>
+      <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API</button>
+      <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測</button>
+    </div>
+    <div class="sidebar-nav">
+      <!-- L1 nav -->
+      <button class="nav-btn" data-target="flow" data-nav-role="l1">流程圖</button>
+      <button class="nav-btn" data-target="homepage" data-nav-role="l1">首頁框架</button>
+      <button class="nav-btn" data-target="matchlist" data-nav-role="l1">賽事列表</button>
+      <button class="nav-btn" data-target="matchdetail" data-nav-role="l1">賽事詳情</button>
+      <button class="nav-btn" data-target="cart" data-nav-role="l1">投注購物車</button>
+      <button class="nav-btn" data-target="combo" data-nav-role="l1">串關</button>
+      <button class="nav-btn" data-target="outright" data-nav-role="l1">冠軍玩法</button>
+      <button class="nav-btn" data-target="venue" data-nav-role="l1">場館系統</button>
+      <button class="nav-btn" data-target="search" data-nav-role="l1">搜尋篩選</button>
+      <button class="nav-btn" data-target="newbie" data-nav-role="l1">新手引導</button>
+      <button class="nav-btn" data-target="polling" data-nav-role="l1">API 輪詢</button>
+      <!-- PM nav -->
+      <button class="nav-btn" data-target="pm-cart-state" data-nav-role="pm">單注狀態機</button>
+      <button class="nav-btn" data-target="pm-reserve" data-nav-role="pm">預約下注</button>
+      <button class="nav-btn" data-target="pm-cashout" data-nav-role="pm">提前結算</button>
+      <button class="nav-btn" data-target="pm-combo-logic" data-nav-role="pm">串關計算</button>
+      <button class="nav-btn" data-target="pm-odds-rules" data-nav-role="pm">規則說明</button>
+      <!-- RD nav -->
+      <button class="nav-btn" data-target="rd-api" data-nav-role="rd">API 清單</button>
+      <button class="nav-btn" data-target="rd-venue-map" data-nav-role="rd">場館對照</button>
+      <button class="nav-btn" data-target="rd-ob-special" data-nav-role="rd">OB 特殊</button>
+      <button class="nav-btn" data-target="rd-polling-detail" data-nav-role="rd">輪詢細節</button>
+      <!-- QA nav -->
+      <button class="nav-btn" data-target="qa-single" data-nav-role="qa">單注測項</button>
+      <button class="nav-btn" data-target="qa-combo" data-nav-role="qa">串關測項</button>
+      <button class="nav-btn" data-target="qa-cashout" data-nav-role="qa">結算測項</button>
+      <button class="nav-btn" data-target="qa-odds" data-nav-role="qa">規則測項</button>
+      <button class="nav-btn" data-target="qa-polling" data-nav-role="qa">輪詢測項</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
 
   <!-- Header -->
   <div class="page-header">
@@ -148,47 +221,6 @@
       <div class="stat-card"><div class="stat-num">5s</div><div class="stat-label">登入輪詢間隔</div></div>
       <div class="stat-card"><div class="stat-num">70+</div><div class="stat-label">QA 驗測項目</div></div>
     </div>
-  </div>
-
-  <!-- Role Tabs -->
-  <div class="role-bar">
-    <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>功能概覽</button>
-    <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策流程</button>
-    <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API 規格</button>
-    <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測矩陣</button>
-  </div>
-
-  <!-- Nav -->
-  <div class="nav-bar">
-    <!-- L1 nav -->
-    <button class="nav-btn" data-target="flow" data-nav-role="l1">流程圖</button>
-    <button class="nav-btn" data-target="homepage" data-nav-role="l1">首頁框架</button>
-    <button class="nav-btn" data-target="matchlist" data-nav-role="l1">賽事列表</button>
-    <button class="nav-btn" data-target="matchdetail" data-nav-role="l1">賽事詳情</button>
-    <button class="nav-btn" data-target="cart" data-nav-role="l1">投注購物車</button>
-    <button class="nav-btn" data-target="combo" data-nav-role="l1">串關</button>
-    <button class="nav-btn" data-target="outright" data-nav-role="l1">冠軍玩法</button>
-    <button class="nav-btn" data-target="venue" data-nav-role="l1">場館系統</button>
-    <button class="nav-btn" data-target="search" data-nav-role="l1">搜尋篩選</button>
-    <button class="nav-btn" data-target="newbie" data-nav-role="l1">新手引導</button>
-    <button class="nav-btn" data-target="polling" data-nav-role="l1">API 輪詢</button>
-    <!-- PM nav -->
-    <button class="nav-btn" data-target="pm-cart-state" data-nav-role="pm">單注狀態機</button>
-    <button class="nav-btn" data-target="pm-reserve" data-nav-role="pm">預約下注</button>
-    <button class="nav-btn" data-target="pm-cashout" data-nav-role="pm">提前結算</button>
-    <button class="nav-btn" data-target="pm-combo-logic" data-nav-role="pm">串關計算</button>
-    <button class="nav-btn" data-target="pm-odds-rules" data-nav-role="pm">規則說明</button>
-    <!-- RD nav -->
-    <button class="nav-btn" data-target="rd-api" data-nav-role="rd">API 清單</button>
-    <button class="nav-btn" data-target="rd-venue-map" data-nav-role="rd">場館對照</button>
-    <button class="nav-btn" data-target="rd-ob-special" data-nav-role="rd">OB 特殊</button>
-    <button class="nav-btn" data-target="rd-polling-detail" data-nav-role="rd">輪詢細節</button>
-    <!-- QA nav -->
-    <button class="nav-btn" data-target="qa-single" data-nav-role="qa">單注測項</button>
-    <button class="nav-btn" data-target="qa-combo" data-nav-role="qa">串關測項</button>
-    <button class="nav-btn" data-target="qa-cashout" data-nav-role="qa">結算測項</button>
-    <button class="nav-btn" data-target="qa-odds" data-nav-role="qa">規則測項</button>
-    <button class="nav-btn" data-target="qa-polling" data-nav-role="qa">輪詢測項</button>
   </div>
 
   <!-- ============================================ -->
@@ -1193,6 +1225,9 @@
     <p>知識庫: 1-sports.md · 1-sports-betting.md · 1-sports-market.md</p>
   </div>
 
+  </div><!-- /main-content -->
+  </div><!-- /layout -->
+
   <script>
     // Role tab switching
     function switchRole(role) {
@@ -1209,16 +1244,23 @@
         btn.classList.toggle('hidden', nr !== role);
       });
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Reset active nav
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const firstVisible = document.querySelector(`.nav-btn[data-nav-role="${role}"]:not(.hidden)`);
+      if (firstVisible) firstVisible.classList.add('active');
+
+      document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     document.querySelectorAll('.role-tab').forEach(tab => {
       tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
     });
 
-    // Nav button scrolling
+    // Nav button click → scroll + highlight
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         const el = document.getElementById(btn.getAttribute('data-target'));
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
