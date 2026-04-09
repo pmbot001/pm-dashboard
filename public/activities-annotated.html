@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>活動中心 — Figma + 業務規則標註</title>
+  <title>活動中心 — 現況標註文件（PM / RD / QA）</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#0f172a; color:#e2e8f0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang TC','Microsoft JhengHei',Roboto,sans-serif; line-height:1.6; }
@@ -27,23 +27,48 @@
     .sidebar-back:hover { color:#e2e8f0; }
     .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
     .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+
+    /* Role Tabs in sidebar */
+    .role-bar { display:grid; grid-template-columns:1fr 1fr; gap:0; border-bottom:1px solid #334155; }
+    .role-tab { background:transparent; color:#94a3b8; border:none; padding:10px 8px; font-size:12px; font-weight:600; cursor:pointer; transition:all .2s; border-bottom:2px solid transparent; text-align:center; }
+    .role-tab:hover { color:#e2e8f0; background:#263548; }
+    .role-tab.active { color:#f59e0b; border-bottom-color:#f59e0b; }
+    .role-indicator { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:4px; }
+    .ri-pm { background:#f59e0b; }
+    .ri-rd { background:#a78bfa; }
+    .ri-qa { background:#34d399; }
+
+    /* Section depth badges */
+    .depth-badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:6px; font-weight:700; margin-left:8px; vertical-align:middle; }
+    .depth-l1 { background:#334155; color:#94a3b8; }
+    .depth-l2 { background:#3b2f1a; color:#fbbf24; }
+    .depth-l3 { background:#2d1a3e; color:#c4b5fd; }
+    .depth-l4 { background:#1a2e1a; color:#86efac; }
+
     .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
     .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
     .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
     .nav-btn.active { color:#f59e0b; background:#f59e0b10; border-left-color:#f59e0b; }
+    .nav-btn.hidden { display:none; }
     .main-content { margin-left:250px; flex:1; }
 
     @media(max-width:900px) {
       .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
       .layout { flex-direction:column; }
       .main-content { margin-left:0; }
+      .role-bar { grid-template-columns:repeat(4,1fr); }
       .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
       .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+      .nav-btn:hover, .nav-btn.active { border-left:none; }
     }
 
     .section { max-width:1200px; margin:32px auto; padding:0 16px; }
-    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
-    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#f59e0b; color:#fff; border-radius:50%; font-size:15px; }
+    .section.hidden { display:none; }
+    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#f59e0b; color:#fff; border-radius:50%; font-size:15px; flex-shrink:0; }
+    .section-title .num.pm { background:#f59e0b; }
+    .section-title .num.rd { background:#7c3aed; }
+    .section-title .num.qa { background:#059669; }
     .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
 
     .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
@@ -56,8 +81,11 @@
     .rules-col { display:flex; flex-direction:column; gap:10px; }
 
     .rule-card { background:#1e293b; border-radius:10px; padding:14px; border-left:3px solid #f59e0b; }
+    .rule-card.rd-card { border-left-color:#7c3aed; }
+    .rule-card.qa-card { border-left-color:#059669; }
     .rule-card h4 { font-size:14px; margin:4px 0 6px; color:#f1f5f9; }
-    .rule-card p { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card p, .rule-card li { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card ul { padding-left:18px; }
     .rule-card code { background:#334155; padding:1px 5px; border-radius:4px; font-size:12px; color:#fbbf24; }
     .rule-card .src { font-size:11px; color:#64748b; margin-top:6px; font-family:monospace; }
     .rule-tag { display:inline-block; font-size:11px; padding:1px 8px; border-radius:6px; font-weight:600; }
@@ -70,6 +98,7 @@
     .tag-risk { background:rgba(239,68,68,0.2); color:#f87171; }
     .tag-discount { background:rgba(168,85,247,0.2); color:#c084fc; }
     .tag-venue { background:#1a2638; color:#93c5fd; }
+    .tag-test { background:#064e3b; color:#6ee7b7; }
 
     .rule-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; margin-top:12px; }
 
@@ -78,13 +107,23 @@
     .flow-label { font-size:12px; color:#94a3b8; margin-bottom:4px; font-weight:600; }
     .flow-step { background:#334155; border-radius:8px; padding:8px 14px; font-size:13px; white-space:nowrap; }
     .flow-step.highlight { background:#f59e0b; color:#fff; }
+    .flow-step.warn { background:#991b1b; color:#fca5a5; }
     .flow-step small { font-size:11px; color:#94a3b8; }
     .flow-arrow { color:#64748b; font-size:18px; }
+    .flow-branch { color:#fbbf24; font-size:12px; font-weight:600; }
 
     .type-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
     .type-table th { background:#334155; color:#f1f5f9; padding:8px 12px; text-align:left; }
     .type-table td { background:#1e293b; padding:8px 12px; border-bottom:1px solid #334155; }
     .type-table tr:hover td { background:#263548; }
+
+    /* Test matrix */
+    .test-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:12px; }
+    .test-table th { background:#064e3b; color:#d1fae5; padding:8px; text-align:left; font-size:11px; }
+    .test-table td { background:#1e293b; padding:6px 8px; border-bottom:1px solid #334155; }
+    .test-table tr:hover td { background:#263548; }
+    .test-pass { color:#34d399; }
+    .test-fail { color:#f87171; }
 
     .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
   </style>
@@ -100,6 +139,7 @@
     <span class="h-badge">Figma V4UV6fa9K73VNo2yTwWPZW</span>
     <span class="h-badge">RP 3.活动</span>
     <span class="h-badge">13 個子功能</span>
+    <span class="h-badge">L1 概覽 + L2 決策 + L3 API + L4 驗測</span>
   </div>
 </div>
 
@@ -108,7 +148,7 @@
   <div class="stat-card"><div class="stat-num">22</div><div class="stat-label">aId 類型</div></div>
   <div class="stat-card"><div class="stat-num">38</div><div class="stat-label">Figma 截圖</div></div>
   <div class="stat-card"><div class="stat-num">60+</div><div class="stat-label">API 端點</div></div>
-  <div class="stat-card"><div class="stat-num">20+</div><div class="stat-label">GOR 關聯</div></div>
+  <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">深挖子系統</div></div>
 </div>
 
 <div class="layout">
@@ -116,48 +156,80 @@
     <div class="sidebar-header">
       <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
       <div class="sidebar-title">🎁 活動中心</div>
-      <div class="sidebar-sub">13 功能 · 19 sections</div>
+      <div class="sidebar-sub">13 功能 · 4 視角 · 40+ sections</div>
+    </div>
+    <div class="role-bar">
+      <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>概覽</button>
+      <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策</button>
+      <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API</button>
+      <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測</button>
     </div>
     <div class="sidebar-nav">
-      <button class="nav-btn" data-target="sec-flow">核心流程</button>
-      <button class="nav-btn" data-target="sec-activity-list">活動列表</button>
-      <button class="nav-btn" data-target="sec-aid-map">aId 映射表</button>
-      <button class="nav-btn" data-target="sec-display">純展示頁</button>
-      <button class="nav-btn" data-target="sec-invite">邀請好友</button>
-      <button class="nav-btn" data-target="sec-rebate">返水</button>
-      <button class="nav-btn" data-target="sec-first-deposit">首存包賠</button>
-      <button class="nav-btn" data-target="sec-red-rain">紅包雨</button>
-      <button class="nav-btn" data-target="sec-newbie-task">新手任務</button>
-      <button class="nav-btn" data-target="sec-lottery">主題抽獎</button>
-      <button class="nav-btn" data-target="sec-daily-task">每日任務</button>
-      <button class="nav-btn" data-target="sec-newbie-wheel">新手轉盤</button>
-      <button class="nav-btn" data-target="sec-match-page">賽事分頁</button>
-      <button class="nav-btn" data-target="sec-venue-bonus">場館存款</button>
-      <button class="nav-btn" data-target="sec-rally">砍單</button>
-      <button class="nav-btn" data-target="sec-mission">任務系統</button>
-      <button class="nav-btn" data-target="sec-wheel">轉盤系統</button>
-      <button class="nav-btn" data-target="sec-reward-notify">領獎通知</button>
-      <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+      <!-- L1 nav -->
+      <button class="nav-btn" data-target="sec-flow" data-nav-role="l1">核心流程</button>
+      <button class="nav-btn" data-target="sec-activity-list" data-nav-role="l1">活動列表</button>
+      <button class="nav-btn" data-target="sec-aid-map" data-nav-role="l1">aId 映射表</button>
+      <button class="nav-btn" data-target="sec-display" data-nav-role="l1">純展示頁</button>
+      <button class="nav-btn" data-target="sec-invite" data-nav-role="l1">邀請好友</button>
+      <button class="nav-btn" data-target="sec-rebate" data-nav-role="l1">返水</button>
+      <button class="nav-btn" data-target="sec-first-deposit" data-nav-role="l1">首存包賠</button>
+      <button class="nav-btn" data-target="sec-red-rain" data-nav-role="l1">紅包雨</button>
+      <button class="nav-btn" data-target="sec-newbie-task" data-nav-role="l1">新手任務</button>
+      <button class="nav-btn" data-target="sec-lottery" data-nav-role="l1">主題抽獎</button>
+      <button class="nav-btn" data-target="sec-daily-task" data-nav-role="l1">每日任務</button>
+      <button class="nav-btn" data-target="sec-newbie-wheel" data-nav-role="l1">新手轉盤</button>
+      <button class="nav-btn" data-target="sec-match-page" data-nav-role="l1">賽事分頁</button>
+      <button class="nav-btn" data-target="sec-venue-bonus" data-nav-role="l1">場館存款</button>
+      <button class="nav-btn" data-target="sec-rally" data-nav-role="l1">砍單</button>
+      <button class="nav-btn" data-target="sec-mission" data-nav-role="l1">任務系統</button>
+      <button class="nav-btn" data-target="sec-wheel" data-nav-role="l1">轉盤系統</button>
+      <button class="nav-btn" data-target="sec-reward-notify" data-nav-role="l1">領獎通知</button>
+      <button class="nav-btn" data-target="sec-app-review" data-nav-role="l1">好評獎勵</button>
+      <button class="nav-btn" data-target="sec-overview" data-nav-role="l1">Figma 總覽</button>
+      <!-- PM nav (L2) -->
+      <button class="nav-btn" data-target="pm-list-sort" data-nav-role="pm">列表分類/紅點</button>
+      <button class="nav-btn" data-target="pm-invite-state" data-nav-role="pm">邀請好友狀態機</button>
+      <button class="nav-btn" data-target="pm-wheel-state" data-nav-role="pm">轉盤系統狀態</button>
+      <button class="nav-btn" data-target="pm-lottery-err" data-nav-role="pm">主題抽獎 errCode</button>
+      <button class="nav-btn" data-target="pm-newbie-flow" data-nav-role="pm">新手任務決策</button>
+      <button class="nav-btn" data-target="pm-mission-v2" data-nav-role="pm">新版 Mission</button>
+      <button class="nav-btn" data-target="pm-rally-flow" data-nav-role="pm">砍單 Rally</button>
+      <!-- RD nav (L3) -->
+      <button class="nav-btn" data-target="rd-api-overview" data-nav-role="rd">API 總覽表</button>
+      <button class="nav-btn" data-target="rd-api-invite" data-nav-role="rd">邀請/抽獎 API</button>
+      <button class="nav-btn" data-target="rd-api-wheel" data-nav-role="rd">轉盤系統 API</button>
+      <button class="nav-btn" data-target="rd-api-mission" data-nav-role="rd">任務系統 API</button>
+      <button class="nav-btn" data-target="rd-api-rally" data-nav-role="rd">砍單/賽事 API</button>
+      <!-- QA nav (L4) -->
+      <button class="nav-btn" data-target="qa-list" data-nav-role="qa">活動列表測項</button>
+      <button class="nav-btn" data-target="qa-invite-rebate" data-nav-role="qa">邀請/返水測項</button>
+      <button class="nav-btn" data-target="qa-lottery-wheel" data-nav-role="qa">抽獎/轉盤測項</button>
+      <button class="nav-btn" data-target="qa-task" data-nav-role="qa">任務系統測項</button>
+      <button class="nav-btn" data-target="qa-rally-cross" data-nav-role="qa">砍單/跨活動測項</button>
     </div>
   </nav>
   <div class="main-content">
 
+<!-- ============================================================ -->
+<!--  L1 SECTIONS (概覽)                                          -->
+<!-- ============================================================ -->
+
 <!-- ===== 1. 核心流程 ===== -->
-<div class="section" id="sec-flow">
-  <div class="section-title"><span class="num">1</span> 核心流程</div>
+<div class="section" id="sec-flow" data-role="l1">
+  <div class="section-title"><span class="num">1</span> 核心流程 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">活動模組的整體架構與主要流程</div>
 
   <div class="flow-box">
     <div class="flow-label">活動列表載入流程</div>
     <div class="flow-row">
       <span class="flow-step">進入 /activity</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step highlight">POST /activity/activityList</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">依分類 Tab 過濾</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">可領獎活動優先排序</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">顯示 ActivityCard</span>
     </div>
   </div>
@@ -166,11 +238,11 @@
     <div class="flow-label">活動跳轉流程</div>
     <div class="flow-row">
       <span class="flow-step">點擊活動卡片</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step highlight">goToActivityDetail()</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">依 aId 查映射表</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">跳轉至對應詳情頁</span>
     </div>
   </div>
@@ -179,13 +251,13 @@
     <div class="flow-label">紅點判斷流程</div>
     <div class="flow-row">
       <span class="flow-step">讀 redDotNotification</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">START(2): 活動開始後未訪問</span>
       <span class="flow-arrow">|</span>
       <span class="flow-step">MONDAY(3): 每週一未訪問</span>
       <span class="flow-arrow">|</span>
       <span class="flow-step">EVERYDAY(4): 每天未訪問</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step highlight">顯示紅點</span>
     </div>
   </div>
@@ -194,21 +266,21 @@
     <div class="flow-label">領獎通知流程</div>
     <div class="flow-row">
       <span class="flow-step">登入成功</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step highlight">POST /matchactivity/activityRewardNotification</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">有可領獎活動?</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">彈出通知（優先級排序）</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">跳至活動/福利中心</span>
     </div>
   </div>
 </div>
 
 <!-- ===== 2. 活動列表 ===== -->
-<div class="section" id="sec-activity-list">
-  <div class="section-title"><span class="num">2</span> 活動列表 (Activity List)</div>
+<div class="section" id="sec-activity-list" data-role="l1">
+  <div class="section-title"><span class="num">2</span> 活動列表 (Activity List) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">活動模組入口頁，提供分類 Tab 過濾 + 紅點 + 領獎入口。程式碼：pages/activity/index/index.vue</div>
 
   <div class="annotated-row">
@@ -251,15 +323,15 @@
       <div class="rule-card">
         <span class="rule-tag tag-ui">ui</span>
         <h4>UI 狀態</h4>
-        <p>載入中：Skeleton 骨架屏 × 4 | 有資料：ActivityCard 列表 | 空狀態：ActivityEmpty | 下拉刷新：重新 initActivityData()</p>
+        <p>載入中：Skeleton 骨架屏 x 4 | 有資料：ActivityCard 列表 | 空狀態：ActivityEmpty | 下拉刷新：重新 initActivityData()</p>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ===== 3. aId 映射表 ===== -->
-<div class="section" id="sec-aid-map">
-  <div class="section-title"><span class="num">3</span> 活動跳轉映射 (aId → 路由)</div>
+<div class="section" id="sec-aid-map" data-role="l1">
+  <div class="section-title"><span class="num">3</span> 活動跳轉映射 (aId &rarr; 路由) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">由 goToActivityDetail() 處理，依 aId 決定跳轉目標</div>
 
   <table class="type-table">
@@ -300,14 +372,14 @@
     <div class="rule-card">
       <span class="rule-tag tag-warning">warning</span>
       <h4>特殊跳轉</h4>
-      <p>REBATE(10010) → 需登入 → 不帶 uId<br>INVITE_FRIENDS(10001) → 測試帳號禁用<br>VIP(10011) → 直接跳 /vip</p>
+      <p>REBATE(10010) &rarr; 需登入 &rarr; 不帶 uId<br>INVITE_FRIENDS(10001) &rarr; 測試帳號禁用<br>VIP(10011) &rarr; 直接跳 /vip</p>
     </div>
   </div>
 </div>
 
 <!-- ===== 4. 純展示頁 ===== -->
-<div class="section" id="sec-display">
-  <div class="section-title"><span class="num">4</span> 純展示頁 (Display Page)</div>
+<div class="section" id="sec-display" data-role="l1">
+  <div class="section-title"><span class="num">4</span> 純展示頁 (Display Page) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.2 | aId: 10005 | 同步雲平台設置的文案與圖片，無互動功能</div>
 
   <div class="annotated-row single">
@@ -331,8 +403,8 @@
 </div>
 
 <!-- ===== 5. 邀請好友 ===== -->
-<div class="section" id="sec-invite">
-  <div class="section-title"><span class="num">5</span> 邀請好友 (Invite Friends)</div>
+<div class="section" id="sec-invite" data-role="l1">
+  <div class="section-title"><span class="num">5</span> 邀請好友 (Invite Friends) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.3 | aId: 10001 | 分享專屬邀請連結，被邀請人首存後獲獎勵。測試帳號禁用。</div>
 
   <div class="annotated-row single">
@@ -344,7 +416,7 @@
       <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
         <h4>邀請流程</h4>
-        <p>分享圖產生 → 複製邀請連結 → 被邀請人註冊首存 → 獲得獎勵 / 轉盤抽獎機會</p>
+        <p>分享圖產生 &rarr; 複製邀請連結 &rarr; 被邀請人註冊首存 &rarr; 獲得獎勵 / 轉盤抽獎機會</p>
         <div class="src">pages/activity/index/inviteFriends/</div>
       </div>
       <div class="rule-card">
@@ -355,7 +427,7 @@
       <div class="rule-card">
         <span class="rule-tag tag-logic">logic</span>
         <h4>開關組合邏輯</h4>
-        <p>產品開 + 活動開 → 顯示活動 + 邀請好友<br>其餘組合 → 不顯示活動，只顯示分享圖<br>渠道屏蔽 → 同上（不顯示活動）</p>
+        <p>產品開 + 活動開 &rarr; 顯示活動 + 邀請好友<br>其餘組合 &rarr; 不顯示活動，只顯示分享圖<br>渠道屏蔽 &rarr; 同上（不顯示活動）</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-ui">ui</span>
@@ -377,8 +449,8 @@
 </div>
 
 <!-- ===== 6. 返水 ===== -->
-<div class="section" id="sec-rebate">
-  <div class="section-title"><span class="num">6</span> 返水活動 (Rebate)</div>
+<div class="section" id="sec-rebate" data-role="l1">
+  <div class="section-title"><span class="num">6</span> 返水活動 (Rebate) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.4 | aId: 10010 | 各場館返水比例與規則，需登入。</div>
 
   <div class="annotated-row">
@@ -400,12 +472,12 @@
       <div class="rule-card">
         <span class="rule-tag tag-venue">venue</span>
         <h4>場館顯示規則</h4>
-        <p>僅顯示包體已選場館，名稱優先顯示「場館別名」。設定路徑：產品管理→創建產品→場館別名→編輯</p>
+        <p>僅顯示包體已選場館，名稱優先顯示「場館別名」。設定路徑：產品管理&rarr;創建產品&rarr;場館別名&rarr;編輯</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-ui">ui</span>
         <h4>返水比例彈窗</h4>
-        <p>VIP 詳情→場館返水→點擊類別名稱彈窗顯示比例。一次最多 5 欄，超過可左右拖移，第一欄凍結</p>
+        <p>VIP 詳情&rarr;場館返水&rarr;點擊類別名稱彈窗顯示比例。一次最多 5 欄，超過可左右拖移，第一欄凍結</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
@@ -417,8 +489,8 @@
 </div>
 
 <!-- ===== 7. 首存包賠 ===== -->
-<div class="section" id="sec-first-deposit">
-  <div class="section-title"><span class="num">7</span> 首存包賠 (First Deposit Guarantee)</div>
+<div class="section" id="sec-first-deposit" data-role="l1">
+  <div class="section-title"><span class="num">7</span> 首存包賠 (First Deposit Guarantee) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.5 | aId: 10006 | 新手首次存款包賠活動，可領獎。</div>
 
   <div class="annotated-row">
@@ -434,7 +506,7 @@
       <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
         <h4>核心流程</h4>
-        <p>新手首存 → 參與活動 → 賽事詳情/購物車/首頁入口浮層引導 → 達標 → 領獎</p>
+        <p>新手首存 &rarr; 參與活動 &rarr; 賽事詳情/購物車/首頁入口浮層引導 &rarr; 達標 &rarr; 領獎</p>
         <div class="src">pages/activity/index/firstDeposit/</div>
       </div>
       <div class="rule-card">
@@ -452,8 +524,8 @@
 </div>
 
 <!-- ===== 8. 紅包雨 ===== -->
-<div class="section" id="sec-red-rain">
-  <div class="section-title"><span class="num">8</span> 紅包雨 (Red Rain)</div>
+<div class="section" id="sec-red-rain" data-role="l1">
+  <div class="section-title"><span class="num">8</span> 紅包雨 (Red Rain) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.6 | aId: 10004 / 20001 | 直播相關互動活動，搶紅包獲彩金。</div>
 
   <div class="annotated-row">
@@ -469,7 +541,7 @@
       <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
         <h4>核心流程</h4>
-        <p>懸浮窗口 → 進入活動 → 倒數5秒 → 紅包雨（分散式落下）→ 點擊搶紅包 → 總結算彈窗 → 領取禮金</p>
+        <p>懸浮窗口 &rarr; 進入活動 &rarr; 倒數5秒 &rarr; 紅包雨（分散式落下）&rarr; 點擊搶紅包 &rarr; 總結算彈窗 &rarr; 領取禮金</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-logic">logic</span>
@@ -479,17 +551,12 @@
       <div class="rule-card">
         <span class="rule-tag tag-ui">ui</span>
         <h4>入口（懸浮窗口）</h4>
-        <p>首頁、活動/我的→優惠活動、直播（含直播間）、爆料、存款、我的。僅 H5/APP。可拖動更改位置</p>
+        <p>首頁、活動/我的&rarr;優惠活動、直播（含直播間）、爆料、存款、我的。僅 H5/APP。可拖動更改位置</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-risk">risk</span>
         <h4>VIP 限制</h4>
         <p>VIP 不符合時看得到但不能搶</p>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>扁平化調整</h4>
-        <p>入口「正在進行中」→「進行中」| 關閉「X」→「<」| 新增 loading bar（0~30%紅/40~50%橘/60~100%綠）| 紅包分散式落下</p>
       </div>
     </div>
   </div>
@@ -510,8 +577,8 @@
 </div>
 
 <!-- ===== 9. 新手任務 ===== -->
-<div class="section" id="sec-newbie-task">
-  <div class="section-title"><span class="num">9</span> 新手任務 (Newbie Task)</div>
+<div class="section" id="sec-newbie-task" data-role="l1">
+  <div class="section-title"><span class="num">9</span> 新手任務 (Newbie Task) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.7 | aId: 10009 | 新玩家完成特定任務獲獎勵，可領獎。</div>
 
   <div class="annotated-row single">
@@ -523,35 +590,30 @@
       <div class="rule-card">
         <span class="rule-tag tag-logic">logic</span>
         <h4>身份判斷</h4>
-        <p>新會員（開啟新手任務）→「您是新用戶，可參與新手活動」<br>老會員→「您是老用戶，不可參與新手活動」<br>只開啟簽到/復活且有首存→「可參與活動」<br>只開啟簽到/復活且無首存→「請前往首存」</p>
+        <p>新會員（開啟新手任務）&rarr;「您是新用戶，可參與新手活動」<br>老會員&rarr;「您是老用戶，不可參與新手活動」<br>只開啟簽到/復活且有首存&rarr;「可參與活動」<br>只開啟簽到/復活且無首存&rarr;「請前往首存」</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
         <h4>子活動類型</h4>
-        <p><strong>新手大禮包</strong>：注冊帳號 + 綁定手機 + 綁定銀行卡 → 任務期限內申請 → 後台控制發放<br><strong>存款初體驗</strong>：任務期限內完成存款</p>
+        <p><strong>新手大禮包</strong>：注冊帳號 + 綁定手機 + 綁定銀行卡 &rarr; 任務期限內申請 &rarr; 後台控制發放<br><strong>存款初體驗</strong>：任務期限內完成存款</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-ui">ui</span>
         <h4>領獎狀態</h4>
-        <p>未完成：「進行中」（不可點擊）| 已完成：「領取獎勵」→ toast「申請成功，正在審核中！」| 已領取（不可點擊）| 已失效</p>
+        <p>未完成：「進行中」（不可點擊）| 已完成：「領取獎勵」&rarr; toast「申請成功，正在審核中！」| 已領取（不可點擊）| 已失效</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
         <h4>API 端點</h4>
         <p><code>POST /newplayer/info</code> — 活動資訊<br><code>POST /newplayer/get</code> — 玩家任務狀態<br><code>POST /newplayer/apply</code> — 申請獎勵</p>
       </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-warning">warning</span>
-        <h4>GOR-6437（開放）</h4>
-        <p>活動類型移除運營活動新手任務 — 可能影響 aId 10009 的顯示邏輯</p>
-      </div>
     </div>
   </div>
 </div>
 
 <!-- ===== 10. 主題抽獎 ===== -->
-<div class="section" id="sec-lottery">
-  <div class="section-title"><span class="num">10</span> 主題抽獎 (Lottery)</div>
+<div class="section" id="sec-lottery" data-role="l1">
+  <div class="section-title"><span class="num">10</span> 主題抽獎 (Lottery) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.8 | aId: 10008 | 轉盤/翻牌/刮刮樂 + 碎片兌換機制，可領獎。</div>
 
   <div class="annotated-row">
@@ -566,24 +628,14 @@
     <div class="rules-col">
       <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
-        <h4>活動類型 (2×2組合)</h4>
+        <h4>活動類型 (2x2組合)</h4>
         <p>存款_主題抽獎（單抽/十連抽）| 存款_轉盤抽獎（單抽）| 投注_主題抽獎（單抽/十連抽）| 投注_轉盤抽獎（單抽）</p>
         <div class="src">pages/activity/index/lottery/</div>
       </div>
       <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>頁面結構</h4>
-        <p>活動標題（後台設置）+ 主題圖 + 分頁小標題（最多6個，每個6漢字）+ 原生抽獎背景圖 + 累計投注/存款 + 抽獎次數失效時間</p>
-      </div>
-      <div class="rule-card">
         <span class="rule-tag tag-logic">logic</span>
         <h4>碎片兌換</h4>
-        <p>抽獎可獲碎片 → 收集碎片 → 兌換獎品。相關 API：<code>getFragmentRedeemDetails</code>、<code>applyFragmentRedeemReward</code></p>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>分享圖</h4>
-        <p>優先用 <code>exInfo.customSharePic</code>，沒有則用 banner 圖</p>
+        <p>抽獎可獲碎片 &rarr; 收集碎片 &rarr; 兌換獎品。相關 API：<code>getFragmentRedeemDetails</code>、<code>applyFragmentRedeemReward</code></p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
@@ -595,8 +647,8 @@
 </div>
 
 <!-- ===== 11. 每日任務 ===== -->
-<div class="section" id="sec-daily-task">
-  <div class="section-title"><span class="num">11</span> 每日任務 (Daily Task)</div>
+<div class="section" id="sec-daily-task" data-role="l1">
+  <div class="section-title"><span class="num">11</span> 每日任務 (Daily Task) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.9 | aId: 10013 | 每日重複任務系統（舊版 Tid = DAILY_TASKS）。</div>
 
   <div class="annotated-row">
@@ -616,19 +668,9 @@
         <div class="src">pages/activity/index/dailyTask/</div>
       </div>
       <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>活動週期顯示</h4>
-        <p>每日任務 → 顯示「今日任務」| 一次任務 → 不展示週期</p>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>倒計時格式</h4>
-        <p>> 1天：X天X時 | > 1小時：X時X分 | > 1分鐘：X分X秒 | > 1秒：X秒 | 0：活動已結束</p>
-      </div>
-      <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
         <h4>領獎按鈕狀態</h4>
-        <p>未完成 → 「前往任務」（跳後台設定）| 完成未領 → 「領獎」（彈出領獎界面）| 已領 → 「已領取」| 已過期 → 不展示</p>
+        <p>未完成 &rarr; 「前往任務」（跳後台設定）| 完成未領 &rarr; 「領獎」（彈出領獎界面）| 已領 &rarr; 「已領取」| 已過期 &rarr; 不展示</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
@@ -640,8 +682,8 @@
 </div>
 
 <!-- ===== 12. 新手轉盤 ===== -->
-<div class="section" id="sec-newbie-wheel">
-  <div class="section-title"><span class="num">12</span> 新手轉盤 (New Player Draw)</div>
+<div class="section" id="sec-newbie-wheel" data-role="l1">
+  <div class="section-title"><span class="num">12</span> 新手轉盤 (New Player Draw) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.10 | aId: 10015 | 新手轉盤活動彈窗，可領獎。</div>
 
   <div class="annotated-row">
@@ -657,17 +699,12 @@
       <div class="rule-card">
         <span class="rule-tag tag-ui">ui</span>
         <h4>懸浮窗口入口</h4>
-        <p>預設位置：紅包雨懸浮窗上方<br>PC：首頁/各體育首頁/各自研場館頁<br>APP/H5：直播間/賽事詳情/體育首頁/娛樂首頁/直播首頁/自研場館頁</p>
+        <p>預設位置：紅包雨懸浮窗上方<br>APP/H5：直播間/賽事詳情/體育首頁/娛樂首頁/直播首頁/自研場館頁</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-logic">logic</span>
         <h4>賽事詳情自動彈出</h4>
-        <p>未注冊或未充值用戶 → 進入賽事詳情 2 分鐘 → 彈新手轉盤 → 再 2 分鐘彈賽事分享。每次登入各僅 1 次，每日總限 2 次。橫屏不彈出</p>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-warning">warning</span>
-        <h4>彈窗層級（直播間）</h4>
-        <p>以下會蓋在活動上面：場館切換、玩家轉移、直播間下播、送禮特效、入場特效</p>
+        <p>未注冊或未充值用戶 &rarr; 進入賽事詳情 2 分鐘 &rarr; 彈新手轉盤 &rarr; 再 2 分鐘彈賽事分享。每次登入各僅 1 次，每日總限 2 次。橫屏不彈出</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
@@ -679,8 +716,8 @@
 </div>
 
 <!-- ===== 13. 賽事分頁 ===== -->
-<div class="section" id="sec-match-page">
-  <div class="section-title"><span class="num">13</span> 賽事分頁 (Match Page)</div>
+<div class="section" id="sec-match-page" data-role="l1">
+  <div class="section-title"><span class="num">13</span> 賽事分頁 (Match Page) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.11 | aId: 10007（舊）/ 10020（新版，可領獎）| 以特定賽事為主題的活動頁。</div>
 
   <div class="annotated-row">
@@ -699,19 +736,9 @@
         <p><strong>新版 10020</strong>：支援任務條件 + 領獎（claimNewMatchActivity）<br><strong>舊版 10007</strong>：只有申請/查看記錄，無直接領獎</p>
       </div>
       <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>頁面結構</h4>
-        <p>最多 8 個分頁（只 1 個時隱藏頁籤）。隊徽圖吃後台配置。點投注項開啟購物車。</p>
-      </div>
-      <div class="rule-card">
         <span class="rule-tag tag-validation">validation</span>
-        <h4>防連點 & 錯誤處理</h4>
-        <p>申請按鈕 3 秒內不可重複點擊<br>空輸入 → 「訂單號不能為空」| 錯誤 → 「訂單號錯誤」+ 10 分鐘後重試<br>次數上限 → 提示今日/本週/本月次數<br>error 15033 → 防連點 | 12002 → 活動異常</p>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-logic">logic</span>
-        <h4>防重複申請</h4>
-        <p><code>disableApply</code> 狀態控制。分享圖優先 customSharePic，沒有則 activityMobileShareImage</p>
+        <h4>防連點 &amp; 錯誤處理</h4>
+        <p>申請按鈕 3 秒內不可重複點擊<br>空輸入 &rarr; 「訂單號不能為空」| 錯誤 &rarr; 「訂單號錯誤」+ 10 分鐘後重試<br>error 15033 &rarr; 防連點 | 12002 &rarr; 活動異常</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
@@ -723,8 +750,8 @@
 </div>
 
 <!-- ===== 14. 場館存款 ===== -->
-<div class="section" id="sec-venue-bonus">
-  <div class="section-title"><span class="num">14</span> 場館存款 (Venue Bonus)</div>
+<div class="section" id="sec-venue-bonus" data-role="l1">
+  <div class="section-title"><span class="num">14</span> 場館存款 (Venue Bonus) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.12 | aId: 10016 | 針對特定場館的存款獎勵活動。</div>
 
   <div class="annotated-row">
@@ -740,31 +767,21 @@
       <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
         <h4>核心流程</h4>
-        <p>選優惠類型 → 選場館 → 中心錢包轉入場館錢包 → 輸入金額 → 參與活動成功 → 分享</p>
+        <p>選優惠類型 &rarr; 選場館 &rarr; 中心錢包轉入場館錢包 &rarr; 輸入金額 &rarr; 參與活動成功 &rarr; 分享</p>
         <div class="src">pages/activity/index/venueBonus/</div>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>中心錢包 & 一鍵回收</h4>
-        <p>顯示 {幣種}{總金額}（千分位），有更新按鈕。一鍵回收：場館錢包全轉入（鎖定/維護中不轉），頻繁操作提示「10秒後重試」</p>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>分頁設計</h4>
-        <p>最多 6 個小標籤，每個最多 12 漢字，對應 1 個子活動。頁面上拖時固定在頂端</p>
       </div>
       <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
         <h4>API 端點</h4>
-        <p><code>POST /venuebonus/info</code> — 活動資訊<br><code>POST /venuebonus/joinedvenuedeposit</code> — 已參與記錄（需登入）<br><code>POST /venuebonus/applyvenuedeposit</code> — 申請獎勵（需登入）</p>
+        <p><code>POST /venuebonus/info</code> — 活動資訊<br><code>POST /venuebonus/joinedvenuedeposit</code> — 已參與記錄<br><code>POST /venuebonus/applyvenuedeposit</code> — 申請獎勵</p>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ===== 15. 砍單 ===== -->
-<div class="section" id="sec-rally">
-  <div class="section-title"><span class="num">15</span> 砍單 (Rally / 社群砍單)</div>
+<div class="section" id="sec-rally" data-role="l1">
+  <div class="section-title"><span class="num">15</span> 砍單 (Rally / 社群砍單) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.14 | aId: 10019 | 發起者下注後邀請好友「砍單」降低損失風險。</div>
 
   <div class="annotated-row">
@@ -780,58 +797,21 @@
       <div class="rule-card">
         <span class="rule-tag tag-flow">flow</span>
         <h4>砍單流程</h4>
-        <p>下注 → 資格審查 → 加入砍單 → 分享邀請 → 好友幫砍 → 砍單進度 → 成功/失敗</p>
+        <p>下注 &rarr; 資格審查 &rarr; 加入砍單 &rarr; 分享邀請 &rarr; 好友幫砍 &rarr; 砍單進度 &rarr; 成功/失敗</p>
         <div class="src">pages/activity/index/rally/</div>
       </div>
       <div class="rule-card">
-        <span class="rule-tag tag-logic">logic</span>
-        <h4>核心狀態</h4>
-        <p><code>rallyProgressList</code>：進行中砍單 | <code>rallySuccessList</code>：成功砍單 | <code>eligibilityCheckData</code>：資格審查 | <code>isNewMemberCutInProcess</code>：新成員砍單進行中</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="annotated-row">
-    <div class="screen-col">
-      <img src="/images/activities/screen-rally-progress.png" alt="砍單進度">
-      <div class="screen-label">砍單進度（進行中）</div>
-    </div>
-    <div class="screen-col">
-      <img src="/images/activities/screen-rally-invite.png" alt="砍單好友邀請">
-      <div class="screen-label">好友邀請（未點擊）</div>
-    </div>
-    <div class="rules-col">
-      <div class="rule-card">
         <span class="rule-tag tag-api">api</span>
         <h4>API 端點 (/campaign/rally/)</h4>
-        <p><code>GET activityDetail</code> — 活動詳情<br><code>GET progressList</code> — 砍單進度<br><code>GET helpersOverview</code> — 幫砍概覽<br><code>GET helperCutPreview</code> — 幫砍預覽<br><code>POST eligibilityCheck</code> — 資格審查<br><code>PUT join</code> — 加入砍單<br><code>PUT helperCut</code> — 執行幫砍</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="annotated-row single">
-    <div class="screen-col">
-      <img src="/images/activities/screen-rally-share.png" alt="砍單分享">
-      <div class="screen-label">砍單分享圖</div>
-    </div>
-    <div class="rules-col">
-      <div class="rule-card">
-        <span class="rule-tag tag-ui">ui</span>
-        <h4>子頁面清單</h4>
-        <p>活動詳情 | 進行中/未發起 | 砍單列表（無數據/單注/串關）| 砍單詳情（進行中/成功/失敗）| 分享 | 好友邀請（未點擊/已點擊-成功/完成/失敗）</p>
-      </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-discount">discount</span>
-        <h4>GOR 優化項</h4>
-        <p>GOR-5596：列表預設日期 + 砍單後導引 | GOR-5991：分享文案自定義 | GOR-5993：被邀請人流程優化</p>
+        <p><code>GET activityDetail</code> | <code>GET progressList</code> | <code>POST eligibilityCheck</code> | <code>PUT join</code> | <code>PUT helperCut</code></p>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ===== 16. 任務系統 ===== -->
-<div class="section" id="sec-mission">
-  <div class="section-title"><span class="num">16</span> 任務系統 (Mission System)</div>
+<div class="section" id="sec-mission" data-role="l1">
+  <div class="section-title"><span class="num">16</span> 任務系統 (Mission System) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 6.19（從活動列表跳入）| aId: 30000 | 新版任務系統：每日簽到 + 每日任務 v2 + 新手任務新版 + 直播間任務。</div>
 
   <div class="rule-grid">
@@ -855,23 +835,12 @@
       <h4>直播間任務 (/mission/liveStream)</h4>
       <p>觀看直播相關任務。<code>GET /mission/liveStream</code> + <code>POST /mission/liveStream/claim</code></p>
     </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-api">api</span>
-      <h4>API 端點 (/mission/)</h4>
-      <p><code>GET /mission/dailysign</code> — 簽到狀態<br><code>POST /mission/dailysign</code> — 執行簽到<br><code>GET/PUT /mission/dailysign/reminder</code> — 提醒設定<br><code>GET /mission/moreList/v2</code> — 更多任務<br><code>GET /mission/myPageProcessing</code> — 進行中任務</p>
-    </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-ui">ui</span>
-      <h4>入口</h4>
-      <p>活動列表（aId 30000）、「我的」頁面、直播間等多個入口可進入</p>
-      <div class="src">pages/activity/index/dailyTask/ + stores + apis/mission/</div>
-    </div>
   </div>
 </div>
 
 <!-- ===== 17. 轉盤系統 ===== -->
-<div class="section" id="sec-wheel">
-  <div class="section-title"><span class="num">17</span> 轉盤系統 (Spin Wheel / Invite Wheel)</div>
+<div class="section" id="sec-wheel" data-role="l1">
+  <div class="section-title"><span class="num">17</span> 轉盤系統 (Spin Wheel / Invite Wheel) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">RP 3.15 + 6.21 | aId: 10021 | 通用轉盤系統，支援多種樣式。</div>
 
   <div class="rule-grid">
@@ -890,21 +859,20 @@
 </div>
 
 <!-- ===== 18. 領獎通知系統 ===== -->
-<div class="section" id="sec-reward-notify">
-  <div class="section-title"><span class="num">18</span> 領獎通知系統 (Reward Notify)</div>
+<div class="section" id="sec-reward-notify" data-role="l1">
+  <div class="section-title"><span class="num">18</span> 領獎通知系統 (Reward Notify) <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">活動列表右上角鈴鐺的詳情頁 + 首頁通知彈窗。</div>
 
   <div class="rule-grid">
     <div class="rule-card">
       <span class="rule-tag tag-logic">logic</span>
       <h4>通知條件</h4>
-      <p>雲平台「活動領獎通知」開啟 + 玩家符合條件 + 有可領獎活動 → 首頁彈窗<br>雲平台「福利中心領獎通知」開啟 + 有待領紅利 → 首頁彈窗</p>
-      <div class="src">pages/activity/index/rewardNotifyList/</div>
+      <p>雲平台「活動領獎通知」開啟 + 玩家符合條件 + 有可領獎活動 &rarr; 首頁彈窗<br>雲平台「福利中心領獎通知」開啟 + 有待領紅利 &rarr; 首頁彈窗</p>
     </div>
     <div class="rule-card">
       <span class="rule-tag tag-ui">ui</span>
       <h4>彈窗排隊</h4>
-      <p>兩者都開啟：活動通知顯示 3 秒 → 隱藏 → 間隔 2 秒 → 福利中心通知 3 秒 → 隱藏</p>
+      <p>兩者都開啟：活動通知顯示 3 秒 &rarr; 隱藏 &rarr; 間隔 2 秒 &rarr; 福利中心通知 3 秒 &rarr; 隱藏</p>
     </div>
     <div class="rule-card">
       <span class="rule-tag tag-logic">logic</span>
@@ -912,53 +880,33 @@
       <p>全服公告 > 賽事通知 > 上播通知 > 充提通知 > 結算通知 > 活動通知</p>
     </div>
     <div class="rule-card">
-      <span class="rule-tag tag-ui">ui</span>
-      <h4>顯示規則</h4>
-      <p>1 個可領獎 → 禮物圖示 + 活動名稱 + 「前往領獎」<br>2+ 個 → 「多個任務已完成，請點擊查看更多」<br>福利中心 → 「獎勵已發送至福利中心」</p>
-    </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-ui">ui</span>
-      <h4>鈴鐺頁（活動領獎）</h4>
-      <p>永久常駐（不由通知開關控制）。只顯示可領獎活動（不含福利中心）。無可領獎時顯示空狀態。排序：可領獎/可抽獎最上面，依結束時間由近至遠</p>
-    </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-validation">validation</span>
-      <h4>觸發條件</h4>
-      <p>依後台「每次登入」或「每日前X次登入」+「VIP等級」配置。登入時不論切到哪個頁面都需彈出</p>
-    </div>
-    <div class="rule-card">
       <span class="rule-tag tag-warning">warning</span>
       <h4>新手轉盤特殊處理</h4>
-      <p>點擊新手轉盤「前往領獎」→ 統一跳首頁彈出新手轉盤彈窗</p>
-    </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-logic">logic</span>
-      <h4>資料來源</h4>
-      <p><code>rewardNotifyList</code>：可領獎活動 | <code>welfareCenterList</code>：福利中心待領 | <code>missionNotifyList</code>：任務通知 | <code>_addActivityNotification()</code>：初始化彈出</p>
+      <p>點擊新手轉盤「前往領獎」&rarr; 統一跳首頁彈出新手轉盤彈窗</p>
     </div>
   </div>
 </div>
 
 <!-- ===== 19. App 好評獎勵 ===== -->
-<div class="section" id="sec-app-review">
-  <div class="section-title"><span class="num">19</span> App 好評獎勵</div>
+<div class="section" id="sec-app-review" data-role="l1">
+  <div class="section-title"><span class="num">19</span> App 好評獎勵 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">GOR-6194 | 提升評論數、減少負評的彩金活動。</div>
 
   <div class="flow-box">
     <div class="flow-label">好評獎勵流程</div>
     <div class="flow-row">
       <span class="flow-step">活動開啟?</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">用戶進入B面</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">此設備已點過「給好評」?</span>
-      <span class="flow-arrow">→</span>
-      <span class="flow-step">否 → 判斷登入</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">否 &rarr; 判斷登入</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step highlight">未登入跳半版登入</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step">符合展示對象?</span>
-      <span class="flow-arrow">→</span>
+      <span class="flow-arrow">&rarr;</span>
       <span class="flow-step highlight">顯示活動懸浮窗口</span>
     </div>
   </div>
@@ -967,29 +915,19 @@
     <div class="rule-card">
       <span class="rule-tag tag-ui">ui</span>
       <h4>活動懸浮窗口</h4>
-      <p>顯示於五大頁（首頁/活動/直播/爆料/我的；爆料關閉時為充值），參照懸浮窗口通則</p>
-    </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-ui">ui</span>
-      <h4>活動彈窗</h4>
-      <p>依後台上傳圖片。「忍痛放棄」→ 關閉。「給好評 賺獎勵」→ 跳 App Store 評論頁</p>
+      <p>顯示於五大頁（首頁/活動/直播/爆料/我的），參照懸浮窗口通則</p>
     </div>
     <div class="rule-card">
       <span class="rule-tag tag-flow">flow</span>
       <h4>活動詳情頁</h4>
       <p>標題依後台設置。支援活動分享。玩家填寫姓名 + 上傳評論截圖 + Store ID 截圖</p>
     </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-logic">logic</span>
-      <h4>半版登入提示</h4>
-      <p>「只差最後一步！登入/注冊即可申請獎勵！」</p>
-    </div>
   </div>
 </div>
 
 <!-- ===== 已知問題 ===== -->
-<div class="section" id="sec-issues">
-  <div class="section-title"><span class="num">!</span> 已知問題 / 知識斷鏈</div>
+<div class="section" id="sec-issues" data-role="l1">
+  <div class="section-title"><span class="num">!</span> 已知問題 / 知識斷鏈 <span class="depth-badge depth-l1">L1</span></div>
 
   <div class="rule-grid">
     <div class="rule-card">
@@ -999,69 +937,844 @@
     </div>
     <div class="rule-card">
       <span class="rule-tag tag-warning">warning</span>
-      <h4>新手轉盤程式碼路徑</h4>
-      <p>aId 10015 的 newPlayerDraw 資料夾存在但詳情未確認</p>
-    </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-warning">warning</span>
-      <h4>紅包雨程式碼</h4>
-      <p>aId 10004 詳情頁位置未確認，RP 說明是直播相關，可能在 live/ 目錄下</p>
+      <h4>API 並存</h4>
+      <p>matchactivity/activityRewardNotify（舊）vs matchactivity/activityRewardNotification（新）— 兩者並存，新版包含任務系統通知</p>
     </div>
     <div class="rule-card">
       <span class="rule-tag tag-risk">risk</span>
       <h4>GOR-6437（開放）</h4>
       <p>活動類型移除運營活動新手任務，可能影響 activityList 篩選邏輯，尚未確認前端對應</p>
     </div>
-    <div class="rule-card">
-      <span class="rule-tag tag-warning">warning</span>
-      <h4>API 並存</h4>
-      <p>matchactivity/activityRewardNotify（舊）vs matchactivity/activityRewardNotification（新）— 兩者並存，新版包含任務系統通知</p>
-    </div>
   </div>
 </div>
 
-<!-- ===== 20. Figma 總覽（放最後） ===== -->
-<div class="section" id="sec-overview">
-  <div class="section-title"><span class="num">F</span> Figma Section 總覽</div>
+<!-- ===== 20. Figma 總覽 ===== -->
+<div class="section" id="sec-overview" data-role="l1">
+  <div class="section-title"><span class="num">F</span> Figma Section 總覽 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">各 Section 全景截圖，僅供參考瀏覽</div>
 
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.1 活動列表</h3>
   <img class="overview-img" src="/images/activities/section-activity-list.png" alt="活動列表 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.3 邀請好友</h3>
   <img class="overview-img" src="/images/activities/section-invite-friends.png" alt="邀請好友 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.4 返水</h3>
   <img class="overview-img" src="/images/activities/section-rebate.png" alt="返水 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.5 首存包賠</h3>
   <img class="overview-img" src="/images/activities/section-first-deposit.png" alt="首存包賠 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.6 紅包雨</h3>
   <img class="overview-img" src="/images/activities/section-red-rain.png" alt="紅包雨 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.8 主題抽獎</h3>
   <img class="overview-img" src="/images/activities/section-lottery.png" alt="主題抽獎 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.9 每日任務</h3>
   <img class="overview-img" src="/images/activities/section-daily-task.png" alt="每日任務 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.10 新手轉盤</h3>
   <img class="overview-img" src="/images/activities/section-newbie-wheel.png" alt="新手轉盤 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.11 賽事分頁</h3>
   <img class="overview-img" src="/images/activities/section-match-page.png" alt="賽事分頁 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.12 場館存款</h3>
   <img class="overview-img" src="/images/activities/section-venue-bonus.png" alt="場館存款 Section">
-
   <h3 style="color:#f59e0b;margin:24px 0 12px;">3.14 砍單</h3>
   <img class="overview-img" src="/images/activities/section-rally.png" alt="砍單 Section">
 </div>
 
+<!-- ============================================================ -->
+<!--  PM SECTIONS (L2 決策流程)                                     -->
+<!-- ============================================================ -->
+
+<!-- PM-1: 活動列表分類/排序/紅點 -->
+<div class="section" id="pm-list-sort" data-role="pm">
+  <div class="section-title"><span class="num pm">P1</span> 活動列表分類/排序/紅點 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">程式碼：useActivity.ts + constants.ts — 活動列表的完整分類、排序和紅點決策邏輯</div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">分類 Tab 系統</h3>
+  <table class="type-table">
+    <thead><tr><th>值</th><th>enum</th><th>顯示名稱</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>ALL</td><td>全部活动</td></tr>
+      <tr><td>1</td><td>DAILY</td><td>日常活动</td></tr>
+      <tr><td>2</td><td>LIMITED</td><td>限时活动</td></tr>
+      <tr><td>3</td><td>SPORTS</td><td>体育优惠</td></tr>
+      <tr><td>4</td><td>NEWBIE</td><td>新人首存</td></tr>
+      <tr><td>5</td><td>VIP</td><td>VIP特权</td></tr>
+    </tbody>
+  </table>
+  <p style="color:#94a3b8;font-size:13px;margin-bottom:16px;">Tab 順序固定為：全部 &rarr; 限時 &rarr; 新人首存 &rarr; 日常 &rarr; 體育 &rarr; VIP</p>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">排序邏輯（兩階段）</h3>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>階段 1：可領獎優先</h4>
+      <p><code>claimableUids</code>（從 <code>rewardNotifyList</code> 取得）標記為 <code>canClaim=1</code></p>
+      <p>可領獎活動類型（ACTIVITY_REWARD_IDS）：10006、10008、10009、10013、10015、10020</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>階段 2：同類排序</h4>
+      <p>可領獎組：先依 <code>time</code> 比較（結束時間由近到遠），再依 <code>sort</code> 降序<br>普通組：依 <code>sort</code> 降序，同 sort 再依 <code>uId</code> 升序</p>
+    </div>
+  </div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">紅點通知機制</h3>
+  <table class="type-table">
+    <thead><tr><th>值</th><th>enum</th><th>規則</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>NULL</td><td>未定義，不顯示</td></tr>
+      <tr><td>1</td><td>NO_NOTIFICATION</td><td>不提示</td></tr>
+      <tr><td>2</td><td>START</td><td>活動開始後未訪問才顯示（訪問過一次即永久消除）</td></tr>
+      <tr><td>3</td><td>START_AND_MONDAY</td><td>未訪問或每週一未訪問才顯示</td></tr>
+      <tr><td>4</td><td>START_AND_EVERYDAY</td><td>每天未訪問都顯示</td></tr>
+    </tbody>
+  </table>
+  <div class="rule-card" style="margin-top:12px;">
+    <span class="rule-tag tag-warning">warning</span>
+    <h4>訪問時間來源優先序</h4>
+    <p>1. <code>updateVisitTime</code>（即時更新值）&rarr; 2. <code>localStorage</code> 的 <code>logged_user_activity_visit[uId]</code>（毫秒）&rarr; 3. 伺服器 <code>visitTime</code>（秒，需 x1000 轉毫秒）</p>
+    <p>未登入用戶：不記錄訪問、不顯示可領獎 | 活動未開始：永不顯示紅點</p>
+  </div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">訪問入口追蹤 (VisitEntranceTypes)</h3>
+  <div class="rule-card">
+    <span class="rule-tag tag-logic">logic</span>
+    <h4>追蹤來源 enum</h4>
+    <p>HomeBanner=1, HomePopup=2, LaunchPage=3, ActivityList=4, Other=5, FloatingEventHome=6, FloatingLiveHome=7, MyInterface=8, FloatingMyInterface=9, FloatingEventDetail=10, FloatingLiveRoom=11, LiveRoomButton=12, LiveRoomPopup=13, WithdrawalBanner=14, ReportDetail=15, ReportDetailLiveRoom=16, FloatingActivity=17, FloatingGossiping=18, PromotionsPopup=20</p>
+  </div>
+</div>
+
+<!-- PM-2: 邀請好友狀態機 -->
+<div class="section" id="pm-invite-state" data-role="pm">
+  <div class="section-title"><span class="num pm">P2</span> 邀請好友狀態機 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">程式碼：pages/activity/index/inviteFriends/ + apis/invite/ | aId: 10001</div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">邀請狀態機</h3>
+  <table class="type-table">
+    <thead><tr><th>status</th><th>文字</th><th>樣式</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>未首存</td><td>neutral</td></tr>
+      <tr><td>2</td><td>审核中</td><td>neutral</td></tr>
+      <tr><td>3</td><td>失效</td><td>neutral</td></tr>
+      <tr><td>4</td><td>已发放</td><td>green</td></tr>
+      <tr><td>5</td><td>已领取</td><td>red</td></tr>
+      <tr><td>6</td><td>已过期</td><td>red</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">開關組合邏輯（VIC-316）</h3>
+  <table class="type-table">
+    <thead><tr><th>產品開關</th><th>活動開關</th><th>渠道屏蔽</th><th>結果</th></tr></thead>
+    <tbody>
+      <tr><td>開</td><td>開</td><td>否</td><td>顯示活動與邀請好友</td></tr>
+      <tr><td>關</td><td>開</td><td>—</td><td>不顯示活動，僅顯示分享圖</td></tr>
+      <tr><td>開</td><td>關</td><td>—</td><td>不顯示活動，僅顯示分享圖</td></tr>
+      <tr><td>開</td><td>開</td><td>是</td><td>不顯示活動，僅顯示分享圖</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-card" style="margin-top:12px;">
+    <span class="rule-tag tag-warning">warning</span>
+    <h4>邀請好友（首存+抽獎模式）</h4>
+    <p>每天免費轉盤次數 &rarr; 邀請好友註冊成功可再獲次數 &rarr; 無次數時按鈕變「邀請好友」<br>紅利可無流水要求（GOR-5349 移除首存條件）<br>玩家姓名脫敏：<code>maskName()</code> &rarr; 前2後2 + 4 個 <code>*</code><br>2024/6/11 已移除每5分鐘輪詢機制（效能考量）</p>
+  </div>
+</div>
+
+<!-- PM-3: 轉盤系統狀態 -->
+<div class="section" id="pm-wheel-state" data-role="pm">
+  <div class="section-title"><span class="num pm">P3</span> 轉盤系統（WheelState / WheelType） <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">程式碼：pages/activity/index/inviteWheel/ | aId: 10021 — 裂變邀請轉盤的完整狀態機</div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">轉盤狀態機 (WheelState)</h3>
+  <table class="type-table">
+    <thead><tr><th>值</th><th>enum</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>NotValid</td><td>沒有抽獎資格</td></tr>
+      <tr><td>1</td><td>Valid</td><td>符合抽獎資格</td></tr>
+      <tr><td>2</td><td>InProgress</td><td>任務未完成</td></tr>
+      <tr><td>3</td><td>MissionComplete</td><td>完成任務</td></tr>
+      <tr><td>4</td><td>Bonus</td><td>加碼任務進行中</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">轉盤模板類型 (WheelType)</h3>
+  <table class="type-table">
+    <thead><tr><th>值</th><th>enum</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>SpinWheel</td><td>惊喜转不停（標準轉盤）</td></tr>
+      <tr><td>1</td><td>FruitMachine</td><td>幸运大转盘（小瑪麗水果拉霸）</td></tr>
+    </tbody>
+  </table>
+  <p style="color:#94a3b8;font-size:13px;margin-top:8px;">另支援刮刮樂、翻牌等樣式（GOR-6481）</p>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">獎品領取狀態 (InviteRewardStatus)</h3>
+  <table class="type-table">
+    <thead><tr><th>值</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>未達成</td></tr>
+      <tr><td>1</td><td>可領取</td></tr>
+      <tr><td>2</td><td>已派獎</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">中獎記錄狀態 (WinningRecordItemStatus)</h3>
+  <table class="type-table">
+    <thead><tr><th>值</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>-1</td><td>全部</td></tr>
+      <tr><td>0</td><td>進行中</td></tr>
+      <tr><td>1</td><td>待領取</td></tr>
+      <tr><td>2</td><td>已領待申請</td></tr>
+      <tr><td>3</td><td>申請審核中</td></tr>
+      <tr><td>4</td><td>成功</td></tr>
+      <tr><td>5</td><td>失敗</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">任務條件三層結構</h3>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>ConditionTypeLv1（一級）</h4>
+      <p>1=累積有效投注, 2=累積投注金額, 3=累積存款金額, 4=單筆充值, 5=充值次數, 6=跟單次數, 7=觀看時長, 8=打賞次數, 9=曬單次數, 10=APP登錄次數, 11=分享次數</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>ConditionTypeLv2（二級）</h4>
+      <p>0=無, 1=任一場館, 2=指定場館, 3=任一通道, 4=指定通道, 5=任一直播間, 6=指定直播間, 7=不判斷, 8=滿足其一, 9=滿足全部</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>ConditionTypeLv3（三級）</h4>
+      <p>0=無, 1=全部, 2=同IP限制, 3=同設備限制</p>
+    </div>
+  </div>
+</div>
+
+<!-- PM-4: 主題抽獎 errCode -->
+<div class="section" id="pm-lottery-err" data-role="pm">
+  <div class="section-title"><span class="num pm">P4</span> 主題抽獎 errCode 處理 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">程式碼：pages/activity/index/lottery/ | aId: 10008 — handleDrawItemDialogOpen 完整錯誤處理</div>
+
+  <table class="type-table">
+    <thead><tr><th>errCode</th><th>常量</th><th>處理方式</th></tr></thead>
+    <tbody>
+      <tr><td>15004</td><td>ErrLuckyDrawIsClosed</td><td>toast「幸运抽奖已停用」</td></tr>
+      <tr><td>15005</td><td>ErrLuckyDrawHaveNotStarted</td><td>toast「抽奖活动尚未开始」</td></tr>
+      <tr><td>15006</td><td>ErrLuckyDrawExpired</td><td>toast「抽奖活动已到期」</td></tr>
+      <tr><td>15009</td><td>ErrLuckyDrawVipLevelNotEnough</td><td>toast「VIP等级不符合」</td></tr>
+      <tr><td>15012</td><td>ErrLuckyDrawPlayerDrawChanceNotEnu10</td><td>dialog：次數不足10次（投注/存款引導）</td></tr>
+      <tr><td>15013</td><td>ErrLuckyDrawPlayerDrawChanceNotEnu</td><td>dialog：次數不足1次（投注/存款引導）</td></tr>
+      <tr><td>15018</td><td>ErrLuckyDrawTimeLimitTypeLastXPeriodDays</td><td>toast「抽奖时间还没到」</td></tr>
+      <tr><td>15022</td><td>ErrLuckyDrawDepositLimitTypeLimitDepositLimit</td><td>dialog「存款未达 X」</td></tr>
+      <tr><td>15023</td><td>ErrLuckyDrawDepositLimitTypeLimitBetLimit</td><td>dialog「有效投注未达 X」</td></tr>
+      <tr><td>15026</td><td>ErrLuckyDrawCycleTypeDrawChanceLimit</td><td>toast「抽奖次数达上限」</td></tr>
+      <tr><td>15033</td><td>ErrLuckyDrawRedisKeyExists</td><td>toast 防連點提示</td></tr>
+      <tr><td>15034</td><td>userQualificationsNoMatch</td><td>toast「不符合活动条件」</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">前端手動錯誤碼</h3>
+  <table class="type-table">
+    <thead><tr><th>code</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>1 (noUserData)</td><td>需要登入</td></tr>
+      <tr><td>2 (needBindPhone)</td><td>需要綁定手機號</td></tr>
+      <tr><td>3 (needBindBankCard)</td><td>需要綁定銀行帳號</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">碎片兌換系統 (useCollect)</h3>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>碎片 Tab</h4>
+      <p>TOTAL_DETAIL 累計明細 | EXCHANGE_AWARD 兌換獎項 | EXCHANGE_DETAIL 兌換明細 | COLLECT_RULE 搜集規則</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>碎片/金粉類型</h4>
+      <p><code>type=5</code>（碎片）&rarr; 單位「個」<br><code>type=6</code>（金粉）&rarr; <code>total/100</code>，單位「克」</p>
+    </div>
+  </div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">中獎記錄狀態 (useLotteryRecord)</h3>
+  <table class="type-table">
+    <thead><tr><th>status</th><th>文字</th><th>樣式</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>-3 / -2</td><td>申請</td><td>apply/disabled</td><td>未過期可申請，已過期不可</td></tr>
+      <tr><td>-1</td><td>审核中</td><td>padding</td><td>&mdash;</td></tr>
+      <tr><td>1</td><td>待发货</td><td>padding</td><td>審核通過</td></tr>
+      <tr><td>2 / 5</td><td>已失效</td><td>error</td><td>審核拒絕/拒絕發貨</td></tr>
+      <tr><td>3</td><td>成功/已发货</td><td>success</td><td>彩金/碎片/金粉顯示「成功」，其他「已发货」</td></tr>
+      <tr><td>4</td><td>成功</td><td>success</td><td>已收貨</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PM-5: 新手任務決策 -->
+<div class="section" id="pm-newbie-flow" data-role="pm">
+  <div class="section-title"><span class="num pm">P5</span> 新手任務決策邏輯 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">程式碼：pages/activity/index/newbieTask/ | aId: 10009</div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">子活動類型 (NewbiePageType)</h3>
+  <table class="type-table">
+    <thead><tr><th>值</th><th>類型</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>New</td><td>新手大禮包（註冊+綁手機+綁銀行卡）</td></tr>
+      <tr><td>2</td><td>Deposit</td><td>存款初體驗（期限內完成存款）</td></tr>
+      <tr><td>3</td><td>SignIn</td><td>簽到大禮包</td></tr>
+      <tr><td>4</td><td>Revive</td><td>復活大禮包（投注）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">統一領獎流程</h3>
+  <div class="flow-box">
+    <div class="flow-row">
+      <span class="flow-step">進行中</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">領取獎勵</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">審核中</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">後台通過 &rarr; 已領取</span>
+      <span class="flow-arrow">|</span>
+      <span class="flow-step warn">後台不通過 &rarr; 已失效</span>
+    </div>
+  </div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">errCode &rarr; 按鈕狀態 (errorCode2buttonAct)</h3>
+  <table class="type-table">
+    <thead><tr><th>errCode</th><th>按鈕文字</th><th>按鈕類型</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>领取奖励</td><td>full（可點擊）</td></tr>
+      <tr><td>13100</td><td>进行中</td><td>disable</td></tr>
+      <tr><td>13101</td><td>已领取</td><td>disable</td></tr>
+      <tr><td>13102, 13105, 13114-16</td><td>已失效</td><td>disable</td></tr>
+      <tr><td>13104</td><td>审核中</td><td>disable</td></tr>
+      <tr><td>13107</td><td>未达标</td><td>disable</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">身份判斷（VIC-158）</h3>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>新會員 + 開啟新手任務</h4>
+      <p>「您是新用戶，可參與新手活動」</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>老會員</h4>
+      <p>「您是老用戶，不可參與新手活動」</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>只開啟簽到/復活 + 有首存</h4>
+      <p>「可參與活動」</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>只開啟簽到/復活 + 無首存</h4>
+      <p>「您尚未達成首存，請前往首存」</p>
+    </div>
+  </div>
+
+  <div class="rule-card" style="margin-top:12px;">
+    <span class="rule-tag tag-warning">warning</span>
+    <h4>綁定檢查 (useBindDialogInfo)</h4>
+    <p><code>checkIsLogin</code> &rarr; <code>checkIsBindPhone</code> &rarr; <code>checkIsBindBankCard</code>（可被 <code>isSkipBindBankCheck</code> 跳過）</p>
+  </div>
+</div>
+
+<!-- PM-6: 新版 Mission -->
+<div class="section" id="pm-mission-v2" data-role="pm">
+  <div class="section-title"><span class="num pm">P6</span> 任務系統新版 Mission <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">程式碼：composables/useMission.ts + stores/dailyMissions | aId: 30000/30001/30002/30004</div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">每日簽到 (dailysign)</h3>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>簽到規則類型</h4>
+      <p><code>signRule=1</code> &rarr; 累積簽到次數<br><code>signRule=2</code> &rarr; 連續簽到次數</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>簽到限制條件</h4>
+      <p><code>accountRestrictions</code>：1=限制綁手機, 2=限制綁銀行卡<br><code>registerRestrictions</code>：註冊時間限制<br><code>vipLevels</code>：VIP 等級限制<br><code>riskRestrictions</code>：風控限制<br><code>enableVisitor</code>：是否允許訪客<br><code>devicePlatforms</code>：裝置平台限制</p>
+    </div>
+  </div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">每日任務 v2 獎品與領取狀態</h3>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>獎品類型 (awardType)</h4>
+      <p>1=虛擬道具, 2=虛擬獎品, 3=實體獎品, 4=優惠券, 5=彩金, 6=彩金獎品</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>領取狀態 (rewardStatus)</h4>
+      <p>0=不可領, 1=可領取, 2=已領取, 3=已領待申請, 4=已失效</p>
+    </div>
+  </div>
+
+  <h3 style="color:#fbbf24;margin:16px 0 8px;">任務跳轉處理 (useMission.handleJump)</h3>
+  <table class="type-table">
+    <thead><tr><th>conditionTypeLv1</th><th>跳轉處理</th></tr></thead>
+    <tbody>
+      <tr><td>ActivityShareCount</td><td>開啟安心分享（<code>forceSafeShare: true</code>）</td></tr>
+      <tr><td>UserBindPhone</td><td>跳 <code>/mine/mine-center/bind-phone</code></td></tr>
+      <tr><td>UserBindBank</td><td>先驗手機綁定 &rarr; 跳 <code>/withdraw/addBankCard</code></td></tr>
+      <tr><td>ActivityInviteCount</td><td>開啟邀請好友分享</td></tr>
+      <tr><td>ActivityDailySignCount</td><td>跳 <code>/mine/rewardsTasks</code></td></tr>
+      <tr><td>GossipWatchCount</td><td>跳 <code>/gossiping?currentTabType=byTime</code></td></tr>
+      <tr><td>其他</td><td>依 <code>jumpType/jumpValue</code> 通用跳轉</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PM-7: 砍單 Rally -->
+<div class="section" id="pm-rally-flow" data-role="pm">
+  <div class="section-title"><span class="num pm">P7</span> 砍單 Rally 決策流程 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">程式碼：pages/activity/index/rally/ + apis/campaign/ | aId: 10019</div>
+
+  <div class="flow-box">
+    <div class="flow-label">砍單核心流程</div>
+    <div class="flow-row">
+      <span class="flow-step">發起者下注</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">eligibilityCheck</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">transactionActivationCheck</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">PutRallyJoin</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">邀請好友「幫砍」</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">putHelperCut</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">達標 &rarr; 砍單成功</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>防連點規則</h4>
+      <p>點擊申請按鈕後 <strong>3秒</strong> 內不可重複<br>提示：「活動申請中，需保持良好網路，且避免連續點擊申請哦~」<br>error code 15033 &rarr; 防連點<br>error code 12002 &rarr; 「活動異常，請稍後再試！」</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-discount">discount</span>
+      <h4>GOR 優化項</h4>
+      <p>GOR-5596：列表預設日期 + 砍單後導引<br>GOR-5991：分享文案自定義<br>GOR-5993：被邀請人流程優化</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  RD SECTIONS (L3 API 規格)                                     -->
+<!-- ============================================================ -->
+
+<!-- RD-1: API 總覽 -->
+<div class="section" id="rd-api-overview" data-role="rd">
+  <div class="section-title"><span class="num rd">R1</span> API 總覽表 <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">活動模組 60+ API 端點，按功能分組。認證類型：platform = 帶平台資訊 | withoutPublic = 需登入帶 token</div>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">共用 API</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/activity/activityList</code></td><td>取得所有活動清單</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/activity/venuesetting</code></td><td>場館設置</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/activity/showActivityInfo</code></td><td>活動資訊</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/commonactivity/track</code></td><td>活動訪問追蹤</td><td>&mdash;</td></tr>
+      <tr><td>POST</td><td><code>/matchactivity/activityRewardNotification</code></td><td>可領獎活動通知</td><td>platform</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">通用請求結構</h3>
+  <div class="rule-grid">
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>ActivityTaskInfo&lt;T&gt;</h4>
+      <p><code>{ uId: string, channelId: string, packageId: number }</code></p>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>ActivityClaimTask&lt;T&gt;</h4>
+      <p><code>{ uId: string, pageId: string, taskId?: string }</code></p>
+    </div>
+  </div>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">首存 / 返水 API</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/firstpay/firstPayInfo</code></td><td>首存活動配置</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/firstpay/firstPayReward</code></td><td>首存獎勵</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/activity/getfirstpaycompensationconfig</code></td><td>包賠配置</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/rebate/rebateInfo</code></td><td>返水資訊（含標題、規則）</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/rebate/rebateOrder</code></td><td>返水訂單記錄</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/rebate/rebateDetail</code></td><td>返水詳情</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/rebate/gamesRatio</code></td><td>各場館返水比例</td><td>withoutPublic</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">新手/每日任務（舊版）</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/newplayer/info</code></td><td>新手任務活動資訊</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/newplayer/get</code></td><td>玩家個人任務狀態</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/newplayer/apply</code></td><td>申請獎勵</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/dailytask/info</code></td><td>每日任務資訊</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/dailytask/get</code></td><td>玩家每日任務狀態</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/dailytask/apply</code></td><td>申請獎勵</td><td>platform</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">新手轉盤 / 場館存款</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/newplayerdraw/getInfo</code></td><td>新手轉盤資訊</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/newplayerdraw/drawItem</code></td><td>轉盤抽獎</td><td>withoutPublic</td></tr>
+      <tr><td>POST</td><td><code>/newplayerdraw/apply</code></td><td>申請獎勵</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/venuebonus/info</code></td><td>場館存款活動資訊</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/venuebonus/joinedvenuedeposit</code></td><td>已參與記錄</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/venuebonus/applyvenuedeposit</code></td><td>申請獎勵</td><td>platform</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- RD-2: 邀請/抽獎 API -->
+<div class="section" id="rd-api-invite" data-role="rd">
+  <div class="section-title"><span class="num rd">R2</span> 邀請好友 / 主題抽獎 API <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">邀請好友 (aId 10001) + 主題抽獎 (aId 10008) 的 API 規格</div>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">邀請好友</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/invite/inviteDrawInfo</code></td><td>取得邀請資訊</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/invitedraw/drawItem</code></td><td>轉盤抽獎</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/activity/share-image/default/friend-invite</code></td><td>預設邀請分享圖</td><td>platform</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">主題抽獎 (luckydraw)</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/luckydraw/getInfo</code></td><td>取得活動資訊</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/luckydraw/getGiftWinners</code></td><td>中獎名單</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/luckydraw/drawItem</code></td><td>抽獎（單抽/十連抽）</td><td>withoutPublic</td></tr>
+      <tr><td>POST</td><td><code>/luckydraw/getLuckyDrawRecord</code></td><td>抽獎記錄</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/luckydraw/getFragmentRedeemDetails</code></td><td>碎片兌換詳情</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/luckydraw/getAllFragmentRedeemRewards</code></td><td>所有可兌換獎品</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/luckydraw/applyFragmentRedeemReward</code></td><td>申請兌換碎片獎勵</td><td>withoutPublic</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- RD-3: 轉盤系統 API -->
+<div class="section" id="rd-api-wheel" data-role="rd">
+  <div class="section-title"><span class="num rd">R3</span> 轉盤系統 API <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">裂變邀請轉盤 (aId 10021) — 10 個端點</div>
+
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/inviteWheel/activityStatus</code></td><td>資格狀態（含浮窗提示文字）</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/inviteWheel/activityDetail</code></td><td>活動詳情（含獎品、任務、期數）</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/inviteWheel/activityRules</code></td><td>活動規則</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/inviteWheel/spin</code></td><td>抽獎（需帶 <code>period</code>）</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/inviteWheel/winningRecord</code></td><td>中獎記錄（支援日期/狀態篩選）</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/inviteWheel/inviteRecord</code></td><td>邀請記錄（支援日期篩選）</td><td>withoutPublic</td></tr>
+      <tr><td>POST</td><td><code>/inviteWheel/claim</code></td><td>領獎</td><td>withoutPublic</td></tr>
+      <tr><td>POST</td><td><code>/inviteWheel/claimBonusMission</code></td><td>加碼任務領獎</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/inviteWheel/remindByRegister</code></td><td>被邀人彈窗提示</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/inviteWheel/shareUrl</code></td><td>分享連結（含安全分享 URL）</td><td>platform</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-card rd-card" style="margin-top:12px;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>activityDetail 關鍵回應欄位</h4>
+    <p><code>activeBegin</code> 活動開始時間 | <code>awardInfo</code> 獎品資訊 | <code>bonusMissions[]</code> 加碼任務 | <code>isClaimLimitBindBank/Phone</code> 領獎需綁定 | <code>period</code> 當前期數 | <code>roulettePrizes[]</code> 轉盤獎品列表 | <code>wheelState</code> | <code>wheelType</code></p>
+  </div>
+</div>
+
+<!-- RD-4: 任務系統 API -->
+<div class="section" id="rd-api-mission" data-role="rd">
+  <div class="section-title"><span class="num rd">R4</span> 任務系統 API (Mission) <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">新版 Mission 系統 — 簽到/每日/新手/直播 共 11 個端點</div>
+
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/mission/dailysign</code></td><td>取得簽到狀態</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/mission/dailysign</code></td><td>執行簽到</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/mission/dailysign/reminder</code></td><td>取得簽到提醒設定</td><td>withoutPublic</td></tr>
+      <tr><td>PUT</td><td><code>/mission/dailysign/reminder</code></td><td>更新簽到提醒設定</td><td>withoutPublic</td></tr>
+      <tr><td>POST</td><td><code>/mission/dailyactivity/v2</code></td><td>完成每日活動</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/mission/moreList/v2</code></td><td>更多任務列表（含 dailyActivity + inviteWheel + newbie）</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/mission/myPageProcessing</code></td><td>「我的」頁面進行中任務</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/mission/newbie</code></td><td>新手任務（新版）</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/mission/newbie/claim</code></td><td>領取新手任務獎勵</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/mission/liveStream</code></td><td>直播間任務清單（分頁）</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/mission/liveStream/claim</code></td><td>領取直播間任務獎勵</td><td>platform</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- RD-5: 砍單/賽事 API -->
+<div class="section" id="rd-api-rally" data-role="rd">
+  <div class="section-title"><span class="num rd">R5</span> 砍單 / 賽事分頁 API <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">Rally (aId 10019) — 13 個端點 | 賽事分頁 (aId 10007/10020) — 8 個端點</div>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">砍單 (/campaign/rally/)</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th><th>認證</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/campaign/rally/activityDetail</code></td><td>砍單活動詳情</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/campaignInviteInfo</code></td><td>砍單邀請資訊</td><td>platform</td></tr>
+      <tr><td>POST</td><td><code>/campaign/rally/transactionActivationCheck</code></td><td>交易激活檢查</td><td>withoutPublic</td></tr>
+      <tr><td>POST</td><td><code>/campaign/rally/eligibilityCheck</code></td><td>資格審查</td><td>withoutPublic</td></tr>
+      <tr><td>PUT</td><td><code>/campaign/rally/join</code></td><td>加入砍單</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/progressList</code></td><td>砍單進度列表</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/helpersOverview</code></td><td>幫砍概覽</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/progressDetail</code></td><td>砍單進度詳情</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/helpers</code></td><td>幫砍者列表</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/helperCutPreview</code></td><td>幫砍預覽</td><td>platform</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/helperCutInviteInfo</code></td><td>幫砍邀請資訊</td><td>withoutPublic</td></tr>
+      <tr><td>PUT</td><td><code>/campaign/rally/helperCut</code></td><td>執行幫砍</td><td>withoutPublic</td></tr>
+      <tr><td>GET</td><td><code>/campaign/rally/playerActivityStatus</code></td><td>玩家活動狀態</td><td>platform</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">賽事分頁（新版 /newmatchactivity/）</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/newmatchactivity/info</code></td><td>取得活動資訊</td></tr>
+      <tr><td>POST</td><td><code>/newmatchactivity/apply</code></td><td>申請活動</td></tr>
+      <tr><td>POST</td><td><code>/newmatchactivity/matchApplicationRecords</code></td><td>申請記錄</td></tr>
+      <tr><td>POST</td><td><code>/newmatchactivity/claim</code></td><td>領獎</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;margin:16px 0 8px;">賽事分頁（舊版 /matchactivity/）</h3>
+  <table class="type-table">
+    <thead><tr><th>Method</th><th>Path</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/matchactivity/info</code></td><td>取得活動資訊</td></tr>
+      <tr><td>POST</td><td><code>/matchactivity/apply</code></td><td>申請活動</td></tr>
+      <tr><td>POST</td><td><code>/matchactivity/matchApplicationRecords</code></td><td>申請記錄</td></tr>
+      <tr><td>POST</td><td><code>/matchactivity/activityRewardNotification</code></td><td>可領獎通知</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!--  QA SECTIONS (L4 驗測矩陣)                                     -->
+<!-- ============================================================ -->
+
+<!-- QA-1: 活動列表 -->
+<div class="section" id="qa-list" data-role="qa">
+  <div class="section-title"><span class="num qa">Q1</span> 活動列表測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">活動列表頁面的分類、排序、紅點、跳轉測試</div>
+
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>分類 Tab 顯示</td><td>活動清單有各類型活動</td><td>6 個 Tab 正確分類</td></tr>
+      <tr><td>排序：可領獎優先</td><td>有可領獎 + 普通活動</td><td>可領獎活動排在前面</td></tr>
+      <tr><td>排序：可領獎同類排序</td><td>多個可領獎活動</td><td>依結束時間由近到遠，同時間依 sort 降序</td></tr>
+      <tr><td>紅點：START 模式</td><td>活動開始，用戶未訪問</td><td>顯示紅點</td></tr>
+      <tr><td>紅點：START 訪問後</td><td>用戶已訪問</td><td>紅點消失，後續不再顯示</td></tr>
+      <tr><td>紅點：START_AND_MONDAY</td><td>週一未訪問</td><td>顯示紅點</td></tr>
+      <tr><td>紅點：START_AND_EVERYDAY</td><td>新的一天未訪問</td><td>顯示紅點</td></tr>
+      <tr><td>紅點：未登入</td><td>未登入狀態</td><td>不顯示任何紅點</td></tr>
+      <tr><td>紅點：活動未開始</td><td>BeginTime > now</td><td>不顯示紅點</td></tr>
+      <tr><td>跳轉：邀請好友</td><td>測試帳號點擊</td><td>toast「此为测试账号，无法操作！」</td></tr>
+      <tr><td>跳轉：返水</td><td>未登入點擊</td><td>觸發登入流程</td></tr>
+      <tr><td>空狀態</td><td>無任何活動</td><td>顯示 ActivityEmpty 元件</td></tr>
+      <tr><td>下拉刷新</td><td>執行刷新</td><td>重新呼叫 initActivityData</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA-2: 邀請/返水 -->
+<div class="section" id="qa-invite-rebate" data-role="qa">
+  <div class="section-title"><span class="num qa">Q2</span> 邀請好友 / 返水測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">邀請好友 (aId 10001) + 返水 (aId 10010) 的完整測試矩陣</div>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">邀請好友</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>測試帳號禁用</td><td>isTestAccount=true</td><td>toast 禁用，不可進入</td></tr>
+      <tr><td>邀請連結生成</td><td>正常登入</td><td>recommendUrl 包含正確參數</td></tr>
+      <tr><td>分享圖：有圖</td><td>有 shareImage</td><td>顯示遠端分享圖</td></tr>
+      <tr><td>分享圖：無圖</td><td>shareImage 為空</td><td>使用預設邀請圖</td></tr>
+      <tr><td>邀請狀態切換</td><td>被邀請人完成首存</td><td>status 從 1&rarr;2&rarr;4</td></tr>
+      <tr><td>姓名脫敏</td><td>名字 > 3 字元</td><td>前2 + **** + 後2</td></tr>
+      <tr><td>姓名脫敏：短名</td><td>名字 &lt;= 3 字元</td><td>不脫敏，原樣顯示</td></tr>
+      <tr><td>抽獎次數用盡</td><td>免費次數=0</td><td>按鈕變「邀請好友」</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">返水</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>未登入進入</td><td>未登入</td><td>觸發 requireLogin</td></tr>
+      <tr><td>場館過濾</td><td>包體未選某場館</td><td>該場館不顯示</td></tr>
+      <tr><td>場館別名</td><td>有設定別名</td><td>優先顯示別名</td></tr>
+      <tr><td>比例表超過5欄</td><td>>5 個場館</td><td>第5欄半顯示，可拖移</td></tr>
+      <tr><td>第一欄凍結</td><td>左右拖移</td><td>第一欄不跟隨</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA-3: 抽獎/轉盤 -->
+<div class="section" id="qa-lottery-wheel" data-role="qa">
+  <div class="section-title"><span class="num qa">Q3</span> 主題抽獎 / 轉盤系統測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">主題抽獎 (aId 10008) + 轉盤系統 (aId 10021) 的驗測矩陣</div>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">主題抽獎</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>VIP 不符</td><td>VIP 等級不足</td><td>errCode=15009，toast 提示</td></tr>
+      <tr><td>次數不足（單抽）</td><td>0 次可用</td><td>errCode=15013，dialog 引導存款/投注</td></tr>
+      <tr><td>次數不足（十連抽）</td><td>&lt;10 次可用</td><td>errCode=15012，dialog 引導</td></tr>
+      <tr><td>活動停用</td><td>後台停用</td><td>errCode=15004，toast</td></tr>
+      <tr><td>活動過期</td><td>超過結束時間</td><td>errCode=15006，toast</td></tr>
+      <tr><td>防連點</td><td>快速連續點擊</td><td>errCode=15033，toast 提示重試</td></tr>
+      <tr><td>週期次數達上限</td><td>已達上限</td><td>errCode=15026，toast</td></tr>
+      <tr><td>存款未達標</td><td>存款 &lt; 門檻</td><td>errCode=15022，dialog 顯示門檻</td></tr>
+      <tr><td>投注未達標</td><td>投注 &lt; 門檻</td><td>errCode=15023，dialog 顯示門檻</td></tr>
+      <tr><td>需登入</td><td>未登入</td><td>手動 errCode=1，引導登入</td></tr>
+      <tr><td>需綁手機</td><td>未綁手機</td><td>手動 errCode=2，引導綁定</td></tr>
+      <tr><td>需綁銀行卡</td><td>未綁銀行卡</td><td>手動 errCode=3，引導綁定</td></tr>
+      <tr><td>碎片兌換</td><td>碎片足夠</td><td>可進入兌換流程</td></tr>
+      <tr><td>碎片金粉單位</td><td>type=5/6</td><td>碎片=個，金粉=克(total/100)</td></tr>
+      <tr><td>中獎申請：已過期</td><td>expireTime &lt; now</td><td>申請按鈕 disabled</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">轉盤系統</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>無資格</td><td>wheelState=0</td><td>不可抽獎</td></tr>
+      <tr><td>有資格</td><td>wheelState=1</td><td>可進行抽獎</td></tr>
+      <tr><td>任務未完成</td><td>wheelState=2</td><td>顯示任務進度</td></tr>
+      <tr><td>任務已完成</td><td>wheelState=3</td><td>可領獎</td></tr>
+      <tr><td>加碼任務</td><td>wheelState=4</td><td>顯示加碼任務進度</td></tr>
+      <tr><td>領獎需綁手機</td><td>isClaimLimitBindPhone=true</td><td>彈出綁定手機 dialog</td></tr>
+      <tr><td>領獎需綁銀行卡</td><td>isClaimLimitBindBank=true</td><td>彈出綁定銀行卡 dialog</td></tr>
+      <tr><td>被邀人提示</td><td>透過邀請連結註冊</td><td>remindByRegister 彈窗</td></tr>
+      <tr><td>中獎記錄篩選</td><td>選日期/狀態</td><td>正確過濾結果</td></tr>
+      <tr><td>彩金金額</td><td>awardAmount 值</td><td>需 /100 轉換顯示</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA-4: 任務系統 -->
+<div class="section" id="qa-task" data-role="qa">
+  <div class="section-title"><span class="num qa">Q4</span> 任務系統測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">新手任務 (aId 10009) + 每日任務 (aId 10013) + 新版 Mission (aId 30000)</div>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">新手任務</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>新會員</td><td>開啟新手任務</td><td>顯示「可參與新手活動」</td></tr>
+      <tr><td>老會員</td><td>&mdash;</td><td>顯示「不可參與新手活動」</td></tr>
+      <tr><td>簽到/復活 + 無首存</td><td>只開啟簽到子活動</td><td>「尚未達成首存，請前往」</td></tr>
+      <tr><td>領取 &rarr; 審核通過</td><td>後台通過</td><td>errCode 1 &rarr; 「已領取」</td></tr>
+      <tr><td>領取 &rarr; 審核拒絕</td><td>後台拒絕</td><td>13102 &rarr; 「已失效」</td></tr>
+      <tr><td>審核中</td><td>等待中</td><td>13104 &rarr; 「审核中」</td></tr>
+      <tr><td>未達標</td><td>條件未滿足</td><td>13107 &rarr; 「未达标」</td></tr>
+      <tr><td>綁定檢查：跳過銀行卡</td><td>isSkipBindBankCheck=true</td><td>不檢查銀行卡綁定</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">每日任務（舊版）</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>任務排序</td><td>混合狀態任務</td><td>可領獎 > 未完成 > 已完成</td></tr>
+      <tr><td>前往任務</td><td>InProgress 狀態</td><td>依 jumpType/jumpValue 跳轉</td></tr>
+      <tr><td>APP登錄任務</td><td>TaskType=10</td><td>跳轉 APP 落地頁</td></tr>
+      <tr><td>領獎</td><td>Completed 狀態</td><td>彈出領獎界面</td></tr>
+      <tr><td>已領取</td><td>Claimed 狀態</td><td>按鈕 disable</td></tr>
+      <tr><td>已過期任務</td><td>超過截止時間</td><td>整條不顯示</td></tr>
+      <tr><td>倒計時格式</td><td>各時間區間</td><td>依規則切換格式</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">任務系統（新版 Mission）</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>每日簽到：累積</td><td>signRule=1</td><td>累積計算簽到天數</td></tr>
+      <tr><td>每日簽到：連續</td><td>signRule=2</td><td>斷簽重新計算</td></tr>
+      <tr><td>簽到提醒</td><td>開啟提醒</td><td>reminder enabled=1</td></tr>
+      <tr><td>新手任務領獎</td><td>rewardStatus=1</td><td>可呼叫 claim</td></tr>
+      <tr><td>子任務進度</td><td>conditionProgress/Goal</td><td>百分比正確</td></tr>
+      <tr><td>任務跳轉：分享</td><td>ActivityShareCount</td><td>開啟安心分享</td></tr>
+      <tr><td>任務跳轉：綁手機</td><td>UserBindPhone</td><td>跳綁手機頁</td></tr>
+      <tr><td>任務跳轉：綁銀行卡</td><td>UserBindBank + 未綁手機</td><td>先彈手機綁定 dialog</td></tr>
+      <tr><td>任務跳轉：邀請</td><td>ActivityInviteCount</td><td>開啟邀請分享</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA-5: 砍單/跨活動 -->
+<div class="section" id="qa-rally-cross" data-role="qa">
+  <div class="section-title"><span class="num qa">Q5</span> 砍單 / 跨活動通用測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">砍單 (aId 10019) + 所有活動的跨功能驗測</div>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">砍單活動</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>資格審查</td><td>不符合條件</td><td>eligibilityCheck 失敗提示</td></tr>
+      <tr><td>加入砍單</td><td>通過審查</td><td>PUT /join 成功</td></tr>
+      <tr><td>幫砍操作</td><td>好友執行幫砍</td><td>PUT /helperCut 成功</td></tr>
+      <tr><td>防連點</td><td>3秒內重複</td><td>errCode 15033 提示</td></tr>
+      <tr><td>砍單進度</td><td>進行中</td><td>progressList 正確</td></tr>
+      <tr><td>邀請幫砍</td><td>生成邀請資訊</td><td>helperCutInviteInfo 回傳</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#6ee7b7;margin:16px 0 8px;">跨活動通用驗測</h3>
+  <table class="test-table">
+    <thead><tr><th>測試項</th><th>條件</th><th>預期結果</th></tr></thead>
+    <tbody>
+      <tr><td>活動未到 readyTime</td><td>readyTime > now</td><td>活動不顯示或不可參與</td></tr>
+      <tr><td>活動超過 offTime</td><td>offTime &lt; now</td><td>活動下架</td></tr>
+      <tr><td>活動進行中</td><td>beginTime~endTime 內</td><td>正常參與</td></tr>
+      <tr><td>重複領取防護</td><td>已領取再呼叫 apply</td><td>API 回傳錯誤碼，按鈕 disable</td></tr>
+      <tr><td>登入狀態切換</td><td>登入 &rarr; 登出 &rarr; 重新登入</td><td>狀態正確重載</td></tr>
+      <tr><td>VIP 等級門檻</td><td>等級不足</td><td>看得到但不能操作</td></tr>
+      <tr><td>渠道屏蔽</td><td>包體被屏蔽</td><td>活動不顯示</td></tr>
+      <tr><td>風控限制</td><td>riskRestrictions 命中</td><td>不可參與</td></tr>
+      <tr><td>裝置平台限制</td><td>devicePlatforms 不含當前平台</td><td>不顯示</td></tr>
+      <tr><td>訪問追蹤</td><td>進入任何活動</td><td>commonactivity/track 正確發送</td></tr>
+      <tr><td>分享圖優先序</td><td>customSharePic 有值</td><td>優先使用自訂圖</td></tr>
+      <tr><td>分享圖優先序</td><td>customSharePic 為空</td><td>退回 banner/activityMobileShareImage</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== FOOTER ===== -->
 <div class="footer">
-  活動中心標註頁 — 資料來源：mango2-h5 程式碼 + RP (vxgdzx.axshare.com) + Figma<br>
-  產出日期：2026-04-09 | accent: #f59e0b (amber) | 共 38 張 Figma 截圖 | 19 個 Section<br>
+  活動中心標註頁 — 資料來源：mango2-h5 程式碼 + RP (vxgdzx.axshare.com) + Figma + 3-activities-detail.md<br>
+  產出日期：2026-04-09 | accent: #f59e0b (amber) | L1 概覽 20 sections + L2 決策 7 sections + L3 API 5 sections + L4 驗測 5 sections<br>
   <a href="/">← 返回首頁</a>
 </div>
 
@@ -1069,14 +1782,45 @@
 </div><!-- /.layout -->
 
 <script>
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+  // Role tab switching
+  function switchRole(role) {
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.role-tab[data-role="' + role + '"]').classList.add('active');
+
+    document.querySelectorAll('.section').forEach(sec => {
+      const roles = (sec.getAttribute('data-role') || '').split(' ');
+      sec.classList.toggle('hidden', !roles.includes(role));
+    });
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      const nr = btn.getAttribute('data-nav-role') || '';
+      btn.classList.toggle('hidden', nr !== role);
+    });
+
+    // Reset active nav
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const el = document.getElementById(btn.getAttribute('data-target'));
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const firstVisible = document.querySelector('.nav-btn[data-nav-role="' + role + '"]:not(.hidden)');
+    if (firstVisible) firstVisible.classList.add('active');
+
+    document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.role-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
   });
-});
+
+  // Nav button click -> scroll + highlight
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const el = document.getElementById(btn.getAttribute('data-target'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Default: show L1
+  switchRole('l1');
 </script>
 
 </body>

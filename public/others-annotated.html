@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>客服 / 爆料 / 其他 — 功能標註頁</title>
+<title>客服 / 爆料 / 其他 — 功能標註頁（PM / RD / QA）</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#0f172a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;}
@@ -17,10 +17,30 @@ a{color:#60a5fa;}
 .sidebar-back:hover{color:#e2e8f0;}
 .sidebar-title{font-size:16px;font-weight:700;color:#e2e8f0;}
 .sidebar-sub{font-size:11px;color:#64748b;margin-top:2px;}
+
+/* Role Tabs in sidebar */
+.role-bar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid #334155;}
+.role-tab{background:transparent;color:#94a3b8;border:none;padding:10px 8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;text-align:center;}
+.role-tab:hover{color:#e2e8f0;background:#263548;}
+.role-tab.active{color:#f43f5e;border-bottom-color:#f43f5e;}
+.role-indicator{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;}
+.ri-pm{background:#f43f5e;}
+.ri-rd{background:#a78bfa;}
+.ri-qa{background:#34d399;}
+
+/* Depth badges */
+.depth-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;margin-left:8px;vertical-align:middle;}
+.depth-l1{background:#334155;color:#94a3b8;}
+.depth-l2{background:#3b2f1a;color:#fbbf24;}
+.depth-l3{background:#2d1a3e;color:#c4b5fd;}
+.depth-l4{background:#1a2e1a;color:#86efac;}
+
+/* Sidebar Nav */
 .sidebar-nav{flex:1;overflow-y:auto;padding:8px 0;}
 .nav-btn{display:block;width:100%;background:transparent;color:#94a3b8;border:none;padding:9px 20px;font-size:13px;cursor:pointer;text-align:left;transition:all .15s;border-left:3px solid transparent;}
 .nav-btn:hover{color:#e2e8f0;background:#263548;border-left-color:#475569;}
 .nav-btn.active{color:#f43f5e;background:#f43f5e10;border-left-color:#f43f5e;}
+.nav-btn.hidden{display:none;}
 .nav-divider{height:1px;background:#334155;margin:6px 16px;}
 .nav-group-label{padding:6px 20px;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
 .main-content{margin-left:250px;flex:1;}
@@ -38,8 +58,12 @@ a{color:#60a5fa;}
 
 /* Sections */
 .section{max-width:1200px;margin:32px auto;padding:0 16px;}
-.section-title{font-size:22px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
-.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#f43f5e;color:#fff;border-radius:50%;font-size:15px;}
+.section.hidden{display:none;}
+.section-title{font-size:22px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#f43f5e;color:#fff;border-radius:50%;font-size:15px;flex-shrink:0;}
+.section-title .num.pm{background:#f43f5e;}
+.section-title .num.rd{background:#7c3aed;}
+.section-title .num.qa{background:#059669;}
 .section-desc{color:#94a3b8;font-size:14px;margin-bottom:16px;}
 
 .overview-img{width:100%;border-radius:12px;border:1px solid #334155;margin-bottom:20px;}
@@ -52,8 +76,11 @@ a{color:#60a5fa;}
 .rules-col{display:flex;flex-direction:column;gap:10px;}
 
 .rule-card{background:#1e293b;border-radius:10px;padding:14px;border-left:3px solid #f43f5e;}
+.rule-card.rd-card{border-left-color:#7c3aed;}
+.rule-card.qa-card{border-left-color:#059669;}
 .rule-card h4{font-size:14px;margin:4px 0 6px;color:#f1f5f9;}
-.rule-card p{font-size:13px;color:#cbd5e1;margin-bottom:4px;}
+.rule-card p,.rule-card li{font-size:13px;color:#cbd5e1;margin-bottom:4px;}
+.rule-card ul{padding-left:18px;}
 .rule-card code{background:#334155;padding:1px 5px;border-radius:4px;font-size:12px;color:#fbbf24;}
 .rule-card .src{font-size:11px;color:#64748b;margin-top:6px;font-family:monospace;}
 .rule-tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:6px;font-weight:600;}
@@ -65,6 +92,7 @@ a{color:#60a5fa;}
 .tag-validation{background:rgba(234,179,8,0.2);color:#fbbf24;}
 .tag-risk{background:rgba(239,68,68,0.2);color:#f87171;}
 .tag-venue{background:#1a2638;color:#93c5fd;}
+.tag-test{background:#064e3b;color:#6ee7b7;}
 
 .rule-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-top:12px;}
 
@@ -73,8 +101,10 @@ a{color:#60a5fa;}
 .flow-label{font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:600;}
 .flow-step{background:#334155;border-radius:8px;padding:8px 14px;font-size:13px;white-space:nowrap;}
 .flow-step.highlight{background:#f43f5e;color:#fff;}
+.flow-step.warn{background:#991b1b;color:#fca5a5;}
 .flow-step small{font-size:11px;color:#94a3b8;}
 .flow-arrow{color:#64748b;font-size:18px;}
+.flow-branch{color:#fbbf24;font-size:12px;font-weight:600;}
 
 .type-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
 .type-table th{background:#334155;color:#f1f5f9;padding:8px 12px;text-align:left;}
@@ -83,11 +113,27 @@ a{color:#60a5fa;}
 .type-table .yes{color:#4ade80;}
 .type-table .no{color:#475569;}
 
+/* Test matrix */
+.test-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:12px;}
+.test-table th{background:#064e3b;color:#d1fae5;padding:8px;text-align:left;font-size:11px;}
+.test-table td{background:#1e293b;padding:6px 8px;border-bottom:1px solid #334155;}
+.test-table tr:hover td{background:#263548;}
+.test-pass{color:#34d399;}
+.test-fail{color:#f87171;}
+.pri-p0{color:#f87171;font-weight:700;}
+.pri-p1{color:#fbbf24;}
+.pri-p2{color:#94a3b8;}
+
 .footer{text-align:center;padding:40px 16px;color:#475569;font-size:13px;}
 
-@media(max-width:768px){
-  .sidebar{display:none;}
+@media(max-width:900px){
+  .sidebar{position:relative;width:100%;height:auto;max-height:none;border-right:none;border-bottom:1px solid #334155;}
+  .layout{flex-direction:column;}
   .main-content{margin-left:0;}
+  .role-bar{grid-template-columns:repeat(4,1fr);}
+  .sidebar-nav{display:flex;flex-wrap:wrap;padding:8px;gap:4px;}
+  .nav-btn{display:inline-block;width:auto;border-left:none;border-radius:8px;padding:6px 12px;}
+  .nav-btn:hover,.nav-btn.active{border-left:none;}
 }
 </style>
 </head>
@@ -99,35 +145,76 @@ a{color:#60a5fa;}
   <div class="sidebar-header">
     <a href="features.html" class="sidebar-back">&larr; 返回功能總覽</a>
     <div class="sidebar-title">💬 客服 / 爆料 / 其他</div>
-    <div class="sidebar-sub">7 客服 &middot; 8 特色頁 &middot; 13 爆料</div>
+    <div class="sidebar-sub">8 功能 · 18 L1 sections · 8 決策流程 · 17 API · 84 測項</div>
+  </div>
+  <div class="role-bar">
+    <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>概覽</button>
+    <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策</button>
+    <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API</button>
+    <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測</button>
   </div>
   <nav class="sidebar-nav">
-    <div class="nav-group-label">客服</div>
-    <button class="nav-btn active" data-target="sec-cs-flow">客服進入流程</button>
-    <button class="nav-btn" data-target="sec-cs-home">客服首頁 / 搜索</button>
-    <button class="nav-btn" data-target="sec-cs-chat">即時對話 / 選單</button>
-    <button class="nav-btn" data-target="sec-cs-queue">排隊狀況</button>
-    <button class="nav-btn" data-target="sec-cs-issue">選擇問題 / 查單</button>
-    <button class="nav-btn" data-target="sec-cs-dialog">提示視窗 / 評價</button>
-    <button class="nav-btn" data-target="sec-cs-api">客服 API 一覽</button>
-    <div class="nav-divider"></div>
-    <div class="nav-group-label">特色頁</div>
-    <button class="nav-btn" data-target="sec-lp-flow">落地頁流程</button>
-    <button class="nav-btn" data-target="sec-lp-basic">基礎落地頁</button>
-    <button class="nav-btn" data-target="sec-lp-install">安裝教學 / 信任</button>
-    <button class="nav-btn" data-target="sec-lp-share">白產分享</button>
-    <div class="nav-divider"></div>
-    <div class="nav-group-label">爆料</div>
-    <button class="nav-btn" data-target="sec-gossip-flow">爆料流程</button>
-    <button class="nav-btn" data-target="sec-gossip-home">爆料首頁 4 Tab</button>
-    <button class="nav-btn" data-target="sec-gossip-detail">文章詳情</button>
-    <button class="nav-btn" data-target="sec-gossip-rank">榜單</button>
-    <button class="nav-btn" data-target="sec-gossip-search">搜索</button>
-    <button class="nav-btn" data-target="sec-gossip-share">分享 / 教學</button>
-    <button class="nav-btn" data-target="sec-gossip-api">爆料 API 一覽</button>
-    <div class="nav-divider"></div>
-    <div class="nav-group-label">附錄</div>
-    <button class="nav-btn" data-target="sec-overview">Figma 總覽圖</button>
+    <!-- L1 nav -->
+    <div class="nav-group-label" data-nav-role="l1">客服</div>
+    <button class="nav-btn" data-target="sec-cs-flow" data-nav-role="l1">客服進入流程</button>
+    <button class="nav-btn" data-target="sec-cs-home" data-nav-role="l1">客服首頁 / 搜索</button>
+    <button class="nav-btn" data-target="sec-cs-chat" data-nav-role="l1">即時對話 / 選單</button>
+    <button class="nav-btn" data-target="sec-cs-queue" data-nav-role="l1">排隊狀況</button>
+    <button class="nav-btn" data-target="sec-cs-issue" data-nav-role="l1">選擇問題 / 查單</button>
+    <button class="nav-btn" data-target="sec-cs-dialog" data-nav-role="l1">提示視窗 / 評價</button>
+    <button class="nav-btn" data-target="sec-cs-api" data-nav-role="l1">客服 API 一覽</button>
+    <div class="nav-divider" data-nav-role="l1"></div>
+    <div class="nav-group-label" data-nav-role="l1">特色頁</div>
+    <button class="nav-btn" data-target="sec-lp-flow" data-nav-role="l1">落地頁流程</button>
+    <button class="nav-btn" data-target="sec-lp-basic" data-nav-role="l1">基礎落地頁</button>
+    <button class="nav-btn" data-target="sec-lp-install" data-nav-role="l1">安裝教學 / 信任</button>
+    <button class="nav-btn" data-target="sec-lp-share" data-nav-role="l1">白產分享</button>
+    <div class="nav-divider" data-nav-role="l1"></div>
+    <div class="nav-group-label" data-nav-role="l1">爆料</div>
+    <button class="nav-btn" data-target="sec-gossip-flow" data-nav-role="l1">爆料流程</button>
+    <button class="nav-btn" data-target="sec-gossip-home" data-nav-role="l1">爆料首頁 4 Tab</button>
+    <button class="nav-btn" data-target="sec-gossip-detail" data-nav-role="l1">文章詳情</button>
+    <button class="nav-btn" data-target="sec-gossip-rank" data-nav-role="l1">榜單</button>
+    <button class="nav-btn" data-target="sec-gossip-search" data-nav-role="l1">搜索</button>
+    <button class="nav-btn" data-target="sec-gossip-share" data-nav-role="l1">分享 / 教學</button>
+    <button class="nav-btn" data-target="sec-gossip-api" data-nav-role="l1">爆料 API 一覽</button>
+    <div class="nav-divider" data-nav-role="l1"></div>
+    <div class="nav-group-label" data-nav-role="l1">附錄</div>
+    <button class="nav-btn" data-target="sec-overview" data-nav-role="l1">Figma 總覽圖</button>
+
+    <!-- PM nav -->
+    <div class="nav-group-label" data-nav-role="pm">客服決策流程</div>
+    <button class="nav-btn" data-target="pm-cs-open" data-nav-role="pm">客服開啟流程</button>
+    <button class="nav-btn" data-target="pm-cs-filter" data-nav-role="pm">VIP 篩選 / 幣商跳轉</button>
+    <button class="nav-btn" data-target="pm-cs-iframe" data-nav-role="pm">iframe 狀態管理</button>
+    <button class="nav-btn" data-target="pm-cs-postmsg" data-nav-role="pm">postMessage 協議</button>
+    <div class="nav-divider" data-nav-role="pm"></div>
+    <div class="nav-group-label" data-nav-role="pm">爆料決策流程</div>
+    <button class="nav-btn" data-target="pm-gossip-tab" data-nav-role="pm">首頁 Tab 切換</button>
+    <button class="nav-btn" data-target="pm-gossip-detail" data-nav-role="pm">文章詳情跟單</button>
+    <button class="nav-btn" data-target="pm-gossip-visitor" data-nav-role="pm">訪客攔截</button>
+    <button class="nav-btn" data-target="pm-gossip-search" data-nav-role="pm">搜索篩選邏輯</button>
+
+    <!-- RD nav -->
+    <div class="nav-group-label" data-nav-role="rd">客服 API</div>
+    <button class="nav-btn" data-target="rd-cs-api" data-nav-role="rd">客服 API（3 端點）</button>
+    <button class="nav-btn" data-target="rd-cs-sign" data-nav-role="rd">URL 簽名組裝</button>
+    <button class="nav-btn" data-target="rd-cs-postmsg" data-nav-role="rd">postMessage 協議</button>
+    <div class="nav-divider" data-nav-role="rd"></div>
+    <div class="nav-group-label" data-nav-role="rd">爆料 API</div>
+    <button class="nav-btn" data-target="rd-gossip-list" data-nav-role="rd">列表 API（4 端點）</button>
+    <button class="nav-btn" data-target="rd-gossip-detail" data-nav-role="rd">詳情 API（3 端點）</button>
+    <button class="nav-btn" data-target="rd-gossip-rank" data-nav-role="rd">榜單 API（4 端點）</button>
+    <button class="nav-btn" data-target="rd-gossip-misc" data-nav-role="rd">其他 API（3 端點）</button>
+
+    <!-- QA nav -->
+    <div class="nav-group-label" data-nav-role="qa">客服測項</div>
+    <button class="nav-btn" data-target="qa-cs" data-nav-role="qa">客服測項（31 項）</button>
+    <div class="nav-divider" data-nav-role="qa"></div>
+    <div class="nav-group-label" data-nav-role="qa">爆料測項</div>
+    <button class="nav-btn" data-target="qa-gossip-home" data-nav-role="qa">首頁 / 列表（20 項）</button>
+    <button class="nav-btn" data-target="qa-gossip-detail" data-nav-role="qa">詳情 / 跟單（17 項）</button>
+    <button class="nav-btn" data-target="qa-gossip-search" data-nav-role="qa">搜索 / 其他（16 項）</button>
   </nav>
 </aside>
 
@@ -137,7 +224,7 @@ a{color:#60a5fa;}
 <!-- Header -->
 <div class="page-header">
   <h1>💬 客服 / 爆料 / 其他</h1>
-  <p class="sub">模組 7 客服 &middot; 模組 8 特色頁 &middot; 模組 13 爆料</p>
+  <p class="sub">模組 7 客服 · 模組 8 特色頁 · 模組 13 爆料 — PM / RD / QA 三視角</p>
   <div style="margin-top:12px">
     <span class="h-badge">mango2-h5</span>
     <span class="h-badge">Figma: xvqDn4NW3ljqw5xM1ES3gL</span>
@@ -146,16 +233,18 @@ a{color:#60a5fa;}
   <div class="stats-row">
     <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">功能項</div></div>
     <div class="stat-card"><div class="stat-num">45</div><div class="stat-label">Figma 截圖</div></div>
-    <div class="stat-card"><div class="stat-num">19</div><div class="stat-label">API 端點</div></div>
-    <div class="stat-card"><div class="stat-num">18</div><div class="stat-label">關聯 GOR</div></div>
+    <div class="stat-card"><div class="stat-num">17</div><div class="stat-label">API 端點</div></div>
+    <div class="stat-card"><div class="stat-num">84</div><div class="stat-label">驗測項</div></div>
   </div>
 </div>
 
-<!-- ===== 客服 Section ===== -->
+<!-- ========================================= -->
+<!-- L1 SECTIONS (existing content)            -->
+<!-- ========================================= -->
 
 <!-- 1. 客服進入流程 -->
-<div class="section" id="sec-cs-flow">
-  <h2 class="section-title"><span class="num">1</span> 客服進入流程</h2>
+<div class="section" id="sec-cs-flow" data-role="l1">
+  <h2 class="section-title"><span class="num">1</span> 客服進入流程 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">玩家點擊客服圖示後的完整判斷鏈：線道數量 → csType → iframe 模式</p>
 
   <div class="flow-box">
@@ -247,8 +336,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 2. 客服首頁 / 搜索 -->
-<div class="section" id="sec-cs-home">
-  <h2 class="section-title"><span class="num">2</span> 客服首頁 / 搜索介面</h2>
+<div class="section" id="sec-cs-home" data-role="l1">
+  <h2 class="section-title"><span class="num">2</span> 客服首頁 / 搜索介面 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">線上客服首頁的工具與服務入口，搜索功能支援關鍵字查找</p>
 
   <div class="annotated-row">
@@ -304,8 +393,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 3. 即時對話 / 選單 -->
-<div class="section" id="sec-cs-chat">
-  <h2 class="section-title"><span class="num">3</span> 即時對話 / 選單</h2>
+<div class="section" id="sec-cs-chat" data-role="l1">
+  <h2 class="section-title"><span class="num">3</span> 即時對話 / 選單 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">官方客服即時對話介面，支援選單操作與客服功能</p>
 
   <div class="annotated-row">
@@ -338,8 +427,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 4. 排隊狀況 -->
-<div class="section" id="sec-cs-queue">
-  <h2 class="section-title"><span class="num">4</span> 排隊狀況</h2>
+<div class="section" id="sec-cs-queue" data-role="l1">
+  <h2 class="section-title"><span class="num">4</span> 排隊狀況 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">等待客服回應時的排隊號碼顯示，支援展開/收合</p>
 
   <div class="annotated-row">
@@ -367,8 +456,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 5. 選擇問題 / 查訂單 -->
-<div class="section" id="sec-cs-issue">
-  <h2 class="section-title"><span class="num">5</span> 選擇問題 / 查訂單</h2>
+<div class="section" id="sec-cs-issue" data-role="l1">
+  <h2 class="section-title"><span class="num">5</span> 選擇問題 / 查訂單 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">選擇玩家問題分類、查詢訂單功能（真人客服 vs AI 客服）</p>
 
   <div class="annotated-row">
@@ -419,8 +508,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 6. 提示視窗 / 評價 / 留言 -->
-<div class="section" id="sec-cs-dialog">
-  <h2 class="section-title"><span class="num">6</span> 提示視窗 / 評價 / 留言</h2>
+<div class="section" id="sec-cs-dialog" data-role="l1">
+  <h2 class="section-title"><span class="num">6</span> 提示視窗 / 評價 / 留言 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">對話中的各種彈窗：切換確認、客服評價、離線留言</p>
 
   <div class="annotated-row">
@@ -485,8 +574,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 7. 客服 API 一覽 -->
-<div class="section" id="sec-cs-api">
-  <h2 class="section-title"><span class="num">7</span> 客服 API 一覽</h2>
+<div class="section" id="sec-cs-api" data-role="l1">
+  <h2 class="section-title"><span class="num">7</span> 客服 API 一覽 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">客服相關 API 端點與 sType 類型列表</p>
 
   <table class="type-table">
@@ -513,11 +602,9 @@ a{color:#60a5fa;}
   </table>
 </div>
 
-<!-- ===== 特色頁 Section ===== -->
-
 <!-- 8. 落地頁流程 -->
-<div class="section" id="sec-lp-flow">
-  <h2 class="section-title"><span class="num">8</span> 落地頁進入流程</h2>
+<div class="section" id="sec-lp-flow" data-role="l1">
+  <h2 class="section-title"><span class="num">8</span> 落地頁進入流程 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">白產落地頁 / 轉盤落地頁的進入與下載邏輯</p>
 
   <div class="flow-box">
@@ -567,8 +654,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 9. 基礎落地頁 -->
-<div class="section" id="sec-lp-basic">
-  <h2 class="section-title"><span class="num">9</span> 基礎落地頁</h2>
+<div class="section" id="sec-lp-basic" data-role="l1">
+  <h2 class="section-title"><span class="num">9</span> 基礎落地頁 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">三種風格的落地頁：標準版、高規格防護、娛樂城版</p>
 
   <div class="annotated-row">
@@ -620,8 +707,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 10. 安裝教學 / 一鍵信任 -->
-<div class="section" id="sec-lp-install">
-  <h2 class="section-title"><span class="num">10</span> 安裝教學 / 一鍵信任</h2>
+<div class="section" id="sec-lp-install" data-role="l1">
+  <h2 class="section-title"><span class="num">10</span> 安裝教學 / 一鍵信任 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">APP 下載後的安裝引導：iOS、iOS 18、Android 分別處理</p>
 
   <div class="annotated-row">
@@ -686,8 +773,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 11. 白產分享 -->
-<div class="section" id="sec-lp-share">
-  <h2 class="section-title"><span class="num">11</span> 白產分享</h2>
+<div class="section" id="sec-lp-share" data-role="l1">
+  <h2 class="section-title"><span class="num">11</span> 白產分享 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">白產分享頁面，用於 Safari 開啟的分享落地頁</p>
 
   <div class="annotated-row single">
@@ -710,11 +797,9 @@ a{color:#60a5fa;}
   </div>
 </div>
 
-<!-- ===== 爆料 Section ===== -->
-
 <!-- 12. 爆料流程 -->
-<div class="section" id="sec-gossip-flow">
-  <h2 class="section-title"><span class="num">12</span> 爆料核心流程</h2>
+<div class="section" id="sec-gossip-flow" data-role="l1">
+  <h2 class="section-title"><span class="num">12</span> 爆料核心流程 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">爆料平台讓主播/專家發布賽事預測，玩家可瀏覽、按讚、跟單投注</p>
 
   <div class="flow-box">
@@ -774,8 +859,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 13. 爆料首頁 4 Tab -->
-<div class="section" id="sec-gossip-home">
-  <h2 class="section-title"><span class="num">13</span> 爆料首頁 4 Tab</h2>
+<div class="section" id="sec-gossip-home" data-role="l1">
+  <h2 class="section-title"><span class="num">13</span> 爆料首頁 4 Tab <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">四種瀏覽模式：依聯賽、依時間、熱度榜、已關注</p>
 
   <div class="annotated-row">
@@ -856,8 +941,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 14. 文章詳情 -->
-<div class="section" id="sec-gossip-detail">
-  <h2 class="section-title"><span class="num">14</span> 文章詳情</h2>
+<div class="section" id="sec-gossip-detail" data-role="l1">
+  <h2 class="section-title"><span class="num">14</span> 文章詳情 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">單篇爆料文章的完整內容、盤口、跟單投注入口</p>
 
   <div class="annotated-row">
@@ -923,8 +1008,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 15. 榜單 -->
-<div class="section" id="sec-gossip-rank">
-  <h2 class="section-title"><span class="num">15</span> 榜單詳情</h2>
+<div class="section" id="sec-gossip-rank" data-role="l1">
+  <h2 class="section-title"><span class="num">15</span> 榜單詳情 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">四種完整榜單：命中榜、連紅榜、跟單榜、熱度榜</p>
 
   <div class="annotated-row">
@@ -958,8 +1043,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 16. 搜索 -->
-<div class="section" id="sec-gossip-search">
-  <h2 class="section-title"><span class="num">16</span> 爆料搜索</h2>
+<div class="section" id="sec-gossip-search" data-role="l1">
+  <h2 class="section-title"><span class="num">16</span> 爆料搜索 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">關鍵字搜尋爆料文章（GOR-5628 新增）</p>
 
   <div class="annotated-row">
@@ -1002,8 +1087,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 17. 分享 / 教學 -->
-<div class="section" id="sec-gossip-share">
-  <h2 class="section-title"><span class="num">17</span> 分享 / 教學</h2>
+<div class="section" id="sec-gossip-share" data-role="l1">
+  <h2 class="section-title"><span class="num">17</span> 分享 / 教學 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">爆料文章的分享功能與包賠教學</p>
 
   <div class="annotated-row single">
@@ -1027,8 +1112,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- 18. 爆料 API 一覽 -->
-<div class="section" id="sec-gossip-api">
-  <h2 class="section-title"><span class="num">18</span> 爆料 API 一覽</h2>
+<div class="section" id="sec-gossip-api" data-role="l1">
+  <h2 class="section-title"><span class="num">18</span> 爆料 API 一覽 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">爆料功能的所有 API 端點</p>
 
   <table class="type-table">
@@ -1069,9 +1154,9 @@ a{color:#60a5fa;}
   </table>
 </div>
 
-<!-- ===== 附錄：Figma 總覽 ===== -->
-<div class="section" id="sec-overview">
-  <h2 class="section-title"><span class="num">&#9734;</span> Figma 總覽圖</h2>
+<!-- Figma 總覽 -->
+<div class="section" id="sec-overview" data-role="l1">
+  <h2 class="section-title"><span class="num">&#9734;</span> Figma 總覽圖 <span class="depth-badge depth-l1">L1</span></h2>
   <p class="section-desc">三個模組的 Figma Section 全景截圖，僅供參考</p>
 
   <h3 style="color:#f1f5f9;font-size:16px;margin:16px 0 8px;">7 客服 — 在線客服</h3>
@@ -1084,44 +1169,919 @@ a{color:#60a5fa;}
   <img class="overview-img" src="/images/others/section-gossip.png" alt="爆料總覽">
 </div>
 
+
+<!-- ========================================= -->
+<!-- PM SECTIONS (L2 Decision Flows)           -->
+<!-- ========================================= -->
+
+<!-- PM-1: 客服開啟流程 -->
+<div class="section" id="pm-cs-open" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P1</span> 客服開啟流程 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">openCustomService() 完整決策樹 — 從按鈕點擊到 iframe 開啟的每個分支</p>
+
+  <div class="flow-box">
+    <div class="flow-label">openCustomService(title = '客服专线') — stores/service/index.ts:L156</div>
+    <div class="flow-row">
+      <span class="flow-step">settingStore.setSettingConfig('loading', true)</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">POST /config/getCsLineConfig { channelId }</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">errCode !== 1</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">console.log(e) — 靜默失敗，無 toast</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">errCode === 1</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">取出 specialLine / normalLine / thirdCsUrl</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">isFromImDealer = true（幣商）</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">篩選 csType === 1</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">隨機取一條 → 直接開啟</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">isFromImDealer = true + 無 csType=1</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">$showToast('系统维护中')</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">正常開啟 + btnType.length === 1</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">直接執行 callback</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">正常開啟 + btnType.length > 1</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">BottomSheet 多線道選擇</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">正常開啟 + btnType.length === 0</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">$showToast('系统维护中')</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>openLiveService() — 直播客服</h4>
+      <p>csLiveConfig.type === 1（三方）→ IframeCommon(address)；其他 → confirmAndOpenService() → 官方 iframe</p>
+      <div class="src">stores/service/index.ts:L217-L234</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>openAgentService() — 代理客服</h4>
+      <p>csAgentConfig.type === 1（三方）→ IframeCommon(addressApp)；其他 → confirmAndOpenService() → 官方 iframe</p>
+      <div class="src">stores/service/index.ts:L236-L253</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>confirmAndOpenService() — 切換確認</h4>
+      <p>newSType !== iframeLastSType + 有進行中 iframe → BottomSheet「回到对话」/「开启新的对话」；否則直接執行</p>
+      <div class="src">stores/service/index.ts:L142-L155</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>fetchIngService() — 自動恢復</h4>
+      <p>localStorage 有 serviceTimestamp + 10 分鐘內 → getChatInfo/getGuestChatInfo → Status===1 → 自動開啟半版 iframe</p>
+      <div class="src">stores/service/index.ts:L254-L282</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM-2: VIP 篩選 / 幣商跳轉 -->
+<div class="section" id="pm-cs-filter" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P2</span> VIP 篩選 / 幣商跳轉 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">_btnFilter() 線道按鈕篩選 — VIP 等級過濾 + 幣商特殊路徑</p>
+
+  <div class="flow-box">
+    <div class="flow-label">_btnFilter(vipLevel, instance, customLine, thirdCsUrl, fromImDealer?) — stores/service/index.ts:L10</div>
+    <div class="flow-row">
+      <span class="flow-branch">fromImDealer === true</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">跳過 VIP 檢查</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">fromImDealer !== true</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">customLine.vipBegin &lt;= vipLevel &lt;= customLine.vipEnd</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">通過 → 建立 btnObj</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">VIP 不符</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">return undefined（不顯示）</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>btnObj 組裝</h4>
+      <p>csType / serviceName (customerServiceName1 || customerServiceName2) / callback</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>callback 分流</h4>
+      <p>csType=1 → confirmAndOpenService → openCustomServiceIframe(sType.line, large)；csType=2 + 非幣商 → IframeCommon(thirdCsUrl)</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>幣商排除三方</h4>
+      <p>幣商跳轉時只取 csType===1 的線道，三方客服（csType=2）被排除</p>
+    </div>
+  </div>
+</div>
+
+<!-- PM-3: iframe 狀態管理 -->
+<div class="section" id="pm-cs-iframe" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P3</span> iframe 狀態管理 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">serviceStatusType 四狀態 + sType 三類型 + 狀態切換邏輯</p>
+
+  <div class="flow-box">
+    <div class="flow-label">serviceStatusType — stores/service/type.ts</div>
+    <div class="flow-row">
+      <span class="flow-step">small = 0（半版 325px 浮動）</span>
+      <span class="flow-arrow">&harr;</span>
+      <span class="flow-step highlight">large = 1（全版 100dvh）</span>
+      <span class="flow-arrow">&harr;</span>
+      <span class="flow-step">hidden = 2（暫離保持對話）</span>
+      <span class="flow-arrow">&harr;</span>
+      <span class="flow-step warn">close = 3（完全重置）</span>
+    </div>
+  </div>
+
+  <table class="type-table">
+    <thead><tr><th>sType</th><th>值</th><th>觸發方式</th></tr></thead>
+    <tbody>
+      <tr><td>遊戲客服 (line)</td><td><code>0</code></td><td>openCustomService()</td></tr>
+      <tr><td>代理客服 (agent)</td><td><code>5</code></td><td>openAgentService()</td></tr>
+      <tr><td>直播客服 (live)</td><td><code>6</code></td><td>openLiveService()</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>setIframeStatus(status)</h4>
+      <p>iframeLastStatus = iframeStatus → iframeStatus = status；若 status===close → queue/tips/imDealer/timeStamp 全重置</p>
+      <div class="src">stores/service/index.ts:L304-L314</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>setIframeLastSType(sType)</h4>
+      <p>sType !== iframeLastSType → 先 close 舊 iframe → 設定新 sType；同 sType 不動作</p>
+      <div class="src">stores/service/index.ts:L315-L320</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>皮膚差異（commonIconService）</h4>
+      <p>TB → PNG；YXB/YXR → Lottie 動畫；其他 → FontIconService 字體圖示。iframeTips===true → 紅點</p>
+      <div class="src">components/customService/commonIconService.vue</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM-4: postMessage 協議 -->
+<div class="section" id="pm-cs-postmsg" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P4</span> postMessage 協議 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">IframeContainer 與客服 iframe 的雙向溝通協議 + 拖曳邏輯</p>
+
+  <div class="flow-box">
+    <div class="flow-label">receiveMessage(msg) — IframeContainer.vue:L73-L144</div>
+    <div class="flow-row">
+      <span class="flow-branch">action = 'jump'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">type=0 → close + queue=0；type!=0 → hidden + Goto.jump(type, val)</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">action = 'close'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">setIframeStatus(close)</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">action = 'view'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">0=small, 1=large, 2=hidden, 3=載入完成（auto → send auto:1）</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">action = 'queue'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">setIframeQueue(data)</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">action = 'tips'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">setIframeTips(data) — 未讀紅點</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">action = 'move'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">handleDragging(data) — 僅 small 模式有效</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">action = 'keyboard'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">true → 150ms delay → keyboardVisible = true；false → 立即</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>拖曳邏輯 handleDragging</h4>
+      <p>start → 記錄起始座標+時間；dragging → 100ms 節流 + 邊界檢查；end → checkDragRange 防出螢幕</p>
+      <div class="src">IframeContainer.vue:L153-L191</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>URL 簽名 getServiceUrl</h4>
+      <p>params: uid/uname/agentid/channelId/avatar/theme(4)/mac/token/ip/stype/timestamp；sign = MD5(uid+agentid+mac+uname+avatar+theme+kefuSign)</p>
+      <div class="src">stores/service/index.ts:L73-L130</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM-5: 爆料首頁 Tab -->
+<div class="section" id="pm-gossip-tab" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P5</span> 爆料首頁 Tab 切換 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">4 Tab 切換完整邏輯 + 各 Tab 對應子組件 + 榜單 RankBoard 5 Tab</p>
+
+  <div class="flow-box">
+    <div class="flow-label">Gossiping onMounted — pages/gossiping/index.vue</div>
+    <div class="flow-row">
+      <span class="flow-branch">gamePredictEnabled === false</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">navigateTo('/live')</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">route.query.currentTabType 有值</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">handleListType → 切換 + router.replace 清除 query</span>
+    </div>
+  </div>
+
+  <table class="type-table">
+    <thead><tr><th>Tab</th><th>type</th><th>組件</th><th>API</th><th>排序</th></tr></thead>
+    <tbody>
+      <tr><td>已關注</td><td>isFollowed</td><td>StreamerList</td><td>/predict/topPredictor</td><td>已關注在上，推薦在下</td></tr>
+      <tr><td>依聯賽（預設）</td><td>byLeague</td><td>LeagueList</td><td>/predict/listLeague</td><td>分頁 pageSize=20</td></tr>
+      <tr><td>依時間</td><td>byTime</td><td>PredictorList</td><td>/predict/list sort=0</td><td>發布時間降序</td></tr>
+      <tr><td>熱度榜</td><td>byPopular</td><td>PredictorList</td><td>/predict/list sort=1</td><td>熱度降序</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>handleListType 防抖</h4>
+      <p>isComponentLoading || isRefreshing → return；相同 Tab → return；否則 isComponentLoading = true</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>聯賽「新」標記</h4>
+      <p>isNew = announcedTime > 0 && (now - announcedTime*1000) &lt;= 1小時</p>
+      <div class="src">LeagueList.vue</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>已關注分區</h4>
+      <p>followedList = isFollowing===true（上方）；unFollowedList = isFollowing===false（下方，顯示命中率）</p>
+      <div class="src">StreamerList.vue</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>RankBoard 5 Tab</h4>
+      <p>命中榜/連紅榜/跟單榜/熱度榜/查看更多；只顯示前 3 名；數字格式化：>=1M→'X.Xm', >=10K→'X.Xk'</p>
+      <div class="src">RankBoard.vue</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM-6: 文章詳情跟單 -->
+<div class="section" id="pm-gossip-detail" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P6</span> 文章詳情 / 跟單投注 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">詳情載入 → 盤口顯示 → 跟單加入購物車 → 按讚/分享</p>
+
+  <div class="flow-box">
+    <div class="flow-label">addToCart(cartInfo) — [predictorId]/index.vue:L447</div>
+    <div class="flow-row">
+      <span class="flow-step">userStore.requireLogin</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">formatCartData(selection, match, market)</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">setBetSource(predict)</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">marketType === 2（串關）</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">cartStore.addComboCartData</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">marketType !== 2（單注）</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">cartStore.addSingleCartData</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>文章載入雙 API</h4>
+      <p>GET /v3/predict/detail（主體+matches+predictor）→ GET /predict/content（富文本陣列）</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>多賽事橫滑</h4>
+      <p>matches 陣列 → snap-x snap-mandatory；handleMatchScroll(throttle 100ms) → 計算 currentPage</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>按讚邏輯</h4>
+      <p>POST /predict/like {like: isLike ? -1 : 1}；成功後 toggle isLike + likeCount ±1；已讚→發 sendPredictLikeEvent</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>返回導航 onBack()</h4>
+      <p>isFromPredictDetail → /match-detail；isFromSearchDetail → emit；fromOpenRoom → /open-room；else → back()</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>已結算遮罩</h4>
+      <p>article.status===4 → 半透明遮罩 + win-seal/lose-seal；點擊無效（@click 排除 status===4）</p>
+      <div class="src">CardList.vue:L116-L126</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM-7: 訪客攔截 -->
+<div class="section" id="pm-gossip-visitor" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P7</span> 訪客攔截邏輯 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">gamePredictVisitorDisplayMode 控制 + showWarnPopup 警告 + 登入攔截</p>
+
+  <div class="flow-box">
+    <div class="flow-label">handleClick(articleId) — CardList.vue:L57-L82</div>
+    <div class="flow-row">
+      <span class="flow-branch">showWarnPopup === true</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">isShowWarnPopup = true → return</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">gamePredictVisitorDisplayMode !== 1 && !isLogin</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">userStore.requireLogin() → return</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">允許訪客 or 已登入</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">sendPredictClickEvent + 進入詳情</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>isFromPredictDetail 嵌入模式</h4>
+      <p>從 match-detail 嵌入時 → emit('handlePredictDetail', articleId)，不用 router.push</p>
+    </div>
+  </div>
+</div>
+
+<!-- PM-8: 搜索篩選邏輯 -->
+<div class="section" id="pm-gossip-search" data-role="pm">
+  <h2 class="section-title"><span class="num pm">P8</span> 搜索篩選邏輯 <span class="depth-badge depth-l2">L2</span></h2>
+  <p class="section-desc">搜索觸發 + 歷史記錄管理 + 熱搜列表 + 類型/人氣排序篩選</p>
+
+  <div class="flow-box">
+    <div class="flow-label">GossipingSearch — pages/gossiping/search.vue</div>
+    <div class="flow-row">
+      <span class="flow-step">輸入框 blur/Enter</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">handleGetPredictList(init)</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">點擊歷史/熱搜/人氣</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">searchValue = tag</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">handleGetPredictList(init)</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>歷史記錄</h4>
+      <p>localStorage: 'gossipingSearchHistory'，最多 5 筆（MAX_HISTORY_ITEMS=5）；重複 → 刪舊 + unshift 到最前</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>熱搜列表</h4>
+      <p>GET /search/getSearchLive { cType: SearchRecordType.Gossiping }；onActivated 重新取得（keep-alive）</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>類型快捷</h4>
+      <p>足球 unifySportId=1 / 籃球 unifySportId=2</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>人氣排序</h4>
+      <p>看過人數最高 sort=1 / 命中率最高 sort=2 / 轉發人數最高 sort=3</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>返回邏輯</h4>
+      <p>showPredictList===true → 重置搜索狀態（不離開頁面）；false → router.back()</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================= -->
+<!-- RD SECTIONS (L3 API Specs)                -->
+<!-- ========================================= -->
+
+<!-- RD-1: 客服 API -->
+<div class="section" id="rd-cs-api" data-role="rd">
+  <h2 class="section-title"><span class="num rd">R1</span> 客服 API（3 端點）<span class="depth-badge depth-l3">L3</span></h2>
+  <p class="section-desc">客服模組所有 API 端點的完整 Request / Response Schema</p>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 1: POST /config/getCsLineConfig</h3>
+  <table class="type-table">
+    <thead><tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>channelId</code></td><td>string</td><td>Y</td><td>渠道 ID</td></tr>
+    </tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response 欄位</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>errCode</code></td><td>number</td><td>1=成功</td></tr>
+      <tr><td><code>data.csLineConfig.content.specialLine</code></td><td>object</td><td>特殊線道（enable, csType, vipBegin, vipEnd, customerServiceName1/2）</td></tr>
+      <tr><td><code>data.csLineConfig.content.normalLine</code></td><td>object</td><td>一般線道（同上結構）</td></tr>
+      <tr><td><code>data.csLiveConfig</code></td><td>object</td><td>直播客服設定（type, address, sType）</td></tr>
+      <tr><td><code>data.csAgentConfig</code></td><td>object</td><td>代理客服設定（type, addressApp, sType）</td></tr>
+      <tr><td><code>data.thirdCsUrl</code></td><td>string</td><td>三方客服網址</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 2: POST /custom/getChatInfo</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+    <tbody><tr><td><code>mac</code></td><td>string</td><td>Y</td><td>設備 ID（deviceId）</td></tr></tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>data.data</code></td><td>string(JSON)</td><td>需二次 JSON.parse → { Data: string(JSON) }</td></tr>
+      <tr><td><code>Data.Status</code></td><td>number</td><td>1=對話中</td></tr>
+      <tr><td><code>Data.SType</code></td><td>sType</td><td>客服類型（0/5/6）</td></tr>
+      <tr><td><code>Data.Reading</code></td><td>boolean</td><td>是否有未讀訊息</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 3: POST /custom/getGuestChatInfo</h3>
+  <div class="rule-card rd-card" style="margin:12px 0;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>結構同 getChatInfo</h4>
+    <p>Request: { mac: deviceId }；Response 結構同上。差別在於此為訪客（未登入）使用的端點</p>
+  </div>
+</div>
+
+<!-- RD-2: URL 簽名 -->
+<div class="section" id="rd-cs-sign" data-role="rd">
+  <h2 class="section-title"><span class="num rd">R2</span> URL 簽名組裝 <span class="depth-badge depth-l3">L3</span></h2>
+  <p class="section-desc">官方客服 iframe URL 的完整 params 組裝 + MD5 sign 計算</p>
+
+  <table class="type-table">
+    <thead><tr><th>參數</th><th>來源</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>uid</code></td><td>encodeURI(playerId).toLowerCase()</td><td>玩家 ID</td></tr>
+      <tr><td><code>uname</code></td><td>encodeURI(loginAccount || '游客').toLowerCase()</td><td>帳號名</td></tr>
+      <tr><td><code>agentid, channelId</code></td><td>config</td><td>代理/渠道</td></tr>
+      <tr><td><code>avatar, theme(=4), mac(=deviceId)</code></td><td>user/device</td><td>頭像/主題/設備</td></tr>
+      <tr><td><code>token</code></td><td>csToken</td><td>客服 token</td></tr>
+      <tr><td><code>stype</code></td><td>iframeLastSType</td><td>0/5/6</td></tr>
+      <tr><td><code>timestamp</code></td><td>timeStampTemp</td><td>首次開啟生成，關閉重置</td></tr>
+      <tr><td><code>sign</code></td><td>MD5(uid+agentid+mac+uname+avatar+theme+kefuSign)</td><td>kefuSign 來自 runtimeConfig</td></tr>
+      <tr><td><code>imDealer 參數</code></td><td>spread</td><td>幣商有資料時額外展開</td></tr>
+    </tbody>
+  </table>
+  <div class="rule-card rd-card" style="margin:16px 0;">
+    <span class="rule-tag tag-warning">warning</span>
+    <h4>最終 URL</h4>
+    <p><code>kfUrl + '?' + params</code> — kfUrl 來自 baseConfig；整個 URL 在 getServiceUrl getter 中組裝</p>
+    <div class="src">stores/service/index.ts:L73-L130</div>
+  </div>
+</div>
+
+<!-- RD-3: postMessage 協議 -->
+<div class="section" id="rd-cs-postmsg" data-role="rd">
+  <h2 class="section-title"><span class="num rd">R3</span> postMessage 協議 <span class="depth-badge depth-l3">L3</span></h2>
+  <p class="section-desc">IframeContainer 接收客服 iframe 的 7 種 action + 拖曳節流</p>
+
+  <table class="type-table">
+    <thead><tr><th>action</th><th>data</th><th>處理邏輯</th></tr></thead>
+    <tbody>
+      <tr><td><code>jump</code></td><td>{ type, val }</td><td>type=0→close+queue=0；type!=0→hidden+Goto.jump</td></tr>
+      <tr><td><code>close</code></td><td>—</td><td>setIframeStatus(close)</td></tr>
+      <tr><td><code>view</code></td><td>0/1/2/3</td><td>0=small, 1=large, 2=hidden, 3=載入完成(autoOpen→send auto:1)</td></tr>
+      <tr><td><code>queue</code></td><td>number</td><td>setIframeQueue(data)</td></tr>
+      <tr><td><code>tips</code></td><td>boolean</td><td>setIframeTips(data) — 未讀紅點</td></tr>
+      <tr><td><code>move</code></td><td>{ x, y, status }</td><td>handleDragging — start/dragging(100ms throttle)/end + checkDragRange</td></tr>
+      <tr><td><code>keyboard</code></td><td>boolean</td><td>true→150ms delay→visible；false→立即 hidden</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- RD-4: 爆料列表 API -->
+<div class="section" id="rd-gossip-list" data-role="rd">
+  <h2 class="section-title"><span class="num rd">R4</span> 爆料列表 API（4 端點）<span class="depth-badge depth-l3">L3</span></h2>
+  <p class="section-desc">列表 / 主播列表 / 聯賽列表 / 已關注主播列表</p>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 4: GET /predict/list</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>deviceId</code></td><td>string</td><td>Y</td><td>設備 ID</td></tr>
+      <tr><td><code>predictor</code></td><td>number</td><td>Y</td><td>主播 ID（0=不篩選）</td></tr>
+      <tr><td><code>matchId</code></td><td>number</td><td>Y</td><td>賽事 ID（0=不篩選）</td></tr>
+      <tr><td><code>channelId</code></td><td>string</td><td>Y</td><td>渠道 ID</td></tr>
+      <tr><td><code>page, pageSize</code></td><td>number</td><td>Y</td><td>分頁（預設 pageSize=20）</td></tr>
+      <tr><td><code>srctp</code></td><td>number</td><td>Y</td><td>資料來源類型（0=全部）</td></tr>
+      <tr><td><code>sort</code></td><td>number</td><td>N</td><td>0=依時間, 1=依熱度</td></tr>
+      <tr><td><code>keyword</code></td><td>string</td><td>N</td><td>搜尋關鍵字</td></tr>
+      <tr><td><code>unifyLeagueId</code></td><td>string</td><td>N</td><td>聯賽篩選</td></tr>
+      <tr><td><code>unifySportId</code></td><td>number</td><td>N</td><td>球種篩選（1=足球, 2=籃球）</td></tr>
+    </tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>data.errCode</code></td><td>number</td><td>1=成功</td></tr>
+      <tr><td><code>data.items[].article</code></td><td>Article</td><td>articleId, title, status(4=已結算), likeCount, shareCount</td></tr>
+      <tr><td><code>data.items[].matches[]</code></td><td>Match[]</td><td>matchId, homeTeamName, awayTeamName, markets</td></tr>
+      <tr><td><code>data.items[].predictor</code></td><td>Predictor</td><td>uId, userNickname, predictWinRate</td></tr>
+      <tr><td><code>data.pagination</code></td><td>Pagination</td><td>currPage, maxPageCount, maxCount, pageSize</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 5: GET /predict/listPredictor</h3>
+  <div class="rule-card rd-card" style="margin:12px 0;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>主播文章列表</h4>
+    <p>Request 同 /predict/list，額外帶 predictor=uId。用於主播個人主頁</p>
+  </div>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 14: GET /predict/listLeague</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>channelId</code></td><td>string</td><td>Y</td><td>渠道 ID</td></tr>
+      <tr><td><code>page, pageSize</code></td><td>number</td><td>Y</td><td>分頁</td></tr>
+    </tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>data.items[].unifyLeagueId</code></td><td>number</td><td>統一聯賽 ID</td></tr>
+      <tr><td><code>data.items[].leagueName</code></td><td>string</td><td>聯賽名稱</td></tr>
+      <tr><td><code>data.items[].articleCount</code></td><td>number</td><td>文章數</td></tr>
+      <tr><td><code>data.items[].announcedTime</code></td><td>number</td><td>最新發布時間（unix 秒）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 13: GET /predict/topPredictor</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody><tr><td><code>channelId</code></td><td>string</td><td>渠道 ID</td></tr></tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody><tr><td><code>data.data[]</code></td><td>Predictor[]</td><td>主播列表（含 isFollowing, predictWinRate, articleCount）</td></tr></tbody>
+  </table>
+</div>
+
+<!-- RD-5: 爆料詳情 API -->
+<div class="section" id="rd-gossip-detail" data-role="rd">
+  <h2 class="section-title"><span class="num rd">R5</span> 詳情 API（3 端點）<span class="depth-badge depth-l3">L3</span></h2>
+  <p class="section-desc">文章詳情 + 富文本 + 按讚</p>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 6: GET /v3/predict/detail</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>agentId</code></td><td>number</td><td>Y</td><td>代理 ID</td></tr>
+      <tr><td><code>predictId</code></td><td>number</td><td>Y</td><td>文章 ID</td></tr>
+      <tr><td><code>deviceId</code></td><td>string</td><td>Y</td><td>設備 ID</td></tr>
+    </tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody><tr><td><code>data</code></td><td>PredictorListItem</td><td>文章+賽事+作者完整資料</td></tr></tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 7: GET /predict/content</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>predictId</code></td><td>number</td><td>文章 ID</td></tr>
+      <tr><td><code>agentId</code></td><td>number</td><td>代理 ID</td></tr>
+    </tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>data.articleId</code></td><td>number</td><td>文章 ID</td></tr>
+      <tr><td><code>data.content[]</code></td><td>ArticleContent[]</td><td>富文本陣列（context: HTML, imageMobile, imagePc）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 8: POST /predict/like</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>predictId</code></td><td>number</td><td>Y</td><td>文章 ID</td></tr>
+      <tr><td><code>deviceId</code></td><td>string</td><td>N</td><td>設備 ID</td></tr>
+      <tr><td><code>like</code></td><td>number</td><td>Y</td><td>1=按讚, -1=取消</td></tr>
+    </tbody>
+  </table>
+  <div class="rule-card rd-card" style="margin:12px 0;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>Response</h4>
+    <p>errCode: truthy=成功；data: null（無回傳資料）</p>
+  </div>
+</div>
+
+<!-- RD-6: 榜單 API -->
+<div class="section" id="rd-gossip-rank" data-role="rd">
+  <h2 class="section-title"><span class="num rd">R6</span> 榜單 API（4 端點）<span class="depth-badge depth-l3">L3</span></h2>
+  <p class="section-desc">四種榜單共用 Request + 各自特有回傳欄位</p>
+
+  <table class="type-table">
+    <thead><tr><th>共用 Request</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody><tr><td><code>agentId</code></td><td>number</td><td>代理 ID（預設 73）</td></tr></tbody>
+  </table>
+
+  <table class="type-table">
+    <thead><tr><th>API</th><th>Path</th><th>特有欄位</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>9. winRateRanking</td><td><code>/predict/winRateRanking</code></td><td>rate, win, max, total</td><td>命中率%, 紅單數, 近X場, 實際場數</td></tr>
+      <tr><td>10. winComboRanking</td><td><code>/predict/winComboRanking</code></td><td>winComboCount</td><td>連紅次數</td></tr>
+      <tr><td>11. followBetRanking</td><td><code>/predict/followBetRanking</code></td><td>followBetCount</td><td>跟單次數</td></tr>
+      <tr><td>12. viewRanking</td><td><code>/predict/viewRanking</code></td><td>viewCount</td><td>觀看次數</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-card rd-card" style="margin:16px 0;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>共用回傳欄位</h4>
+    <p>roleId（7=主播/3=專家）, uId, name, avatar, bio, isFollowing</p>
+  </div>
+</div>
+
+<!-- RD-7: 其他 API -->
+<div class="section" id="rd-gossip-misc" data-role="rd">
+  <h2 class="section-title"><span class="num rd">R7</span> 其他 API（3 端點）<span class="depth-badge depth-l3">L3</span></h2>
+  <p class="section-desc">分享底圖 + 熱搜列表 + 搜尋上報</p>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 15: GET /config/share-image/gossip</h3>
+  <table class="type-table">
+    <thead><tr><th>Request</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody><tr><td><code>channelId</code></td><td>string</td><td>渠道 ID</td></tr></tbody>
+  </table>
+  <table class="type-table">
+    <thead><tr><th>Response</th><th>型別</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td><code>data.imageUrl</code></td><td>string</td><td>分享底圖 URL</td></tr>
+      <tr><td><code>data.safeShareImageUrl</code></td><td>string</td><td>白產安全分享底圖 URL</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 16: GET /search/getSearchLive</h3>
+  <div class="rule-card rd-card" style="margin:12px 0;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>爆料熱搜列表</h4>
+    <p>Request: { cType: SearchRecordType.Gossiping }；回傳熱搜關鍵字陣列</p>
+  </div>
+
+  <h3 style="color:#c4b5fd;font-size:16px;margin:16px 0 8px;">API 17: POST /search</h3>
+  <div class="rule-card rd-card" style="margin:12px 0;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>上報搜尋關鍵字</h4>
+    <p>搜索有值時呼叫 addHotSearchKey(searchValue) 上報，用於熱搜統計</p>
+  </div>
+</div>
+
+
+<!-- ========================================= -->
+<!-- QA SECTIONS (L4 Test Matrix)              -->
+<!-- ========================================= -->
+
+<!-- QA-1: 客服測項 -->
+<div class="section" id="qa-cs" data-role="qa">
+  <h2 class="section-title"><span class="num qa">Q1</span> 客服驗測矩陣（31 項）<span class="depth-badge depth-l4">L4</span></h2>
+  <p class="section-desc">客服開啟 / VIP / 幣商 / iframe 狀態 / postMessage / 皮膚 — 完整測項</p>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>單線道官方客服開啟</td><td>後台只設定 1 條官方線道</td><td>點擊客服圖示</td><td>直接開啟官方客服 iframe（全版）</td><td class="pri-p0">P0</td></tr>
+      <tr><td>2</td><td>單線道三方客服開啟</td><td>後台只設定 1 條三方線道</td><td>點擊客服圖示</td><td>開啟 IframeCommon 顯示三方網址</td><td class="pri-p0">P0</td></tr>
+      <tr><td>3</td><td>多線道選擇</td><td>後台設定 2 條線道</td><td>點擊客服圖示</td><td>彈出 BottomSheet 顯示 2 個按鈕</td><td class="pri-p0">P0</td></tr>
+      <tr><td>4</td><td>VIP 等級不符</td><td>VIP=3，線道 vipBegin=5</td><td>點擊客服圖示</td><td>該線道不顯示在選擇列表中</td><td class="pri-p1">P1</td></tr>
+      <tr><td>5</td><td>VIP 等級符合</td><td>VIP=5, vipBegin=3, vipEnd=7</td><td>點擊客服圖示</td><td>該線道正常顯示</td><td class="pri-p1">P1</td></tr>
+      <tr><td>6</td><td>無可用線道</td><td>兩條線道 VIP 都不符</td><td>點擊客服圖示</td><td>Toast '系统维护中，请稍后再尝试'</td><td class="pri-p1">P1</td></tr>
+      <tr><td>7</td><td>幣商跳轉開客服</td><td>imDealer 有資料</td><td>自動觸發</td><td>隨機選一條 csType=1 線道直接開啟</td><td class="pri-p1">P1</td></tr>
+      <tr><td>8</td><td>幣商跳轉無官方線道</td><td>imDealer 有資料，只有 csType=2</td><td>自動觸發</td><td>Toast '系统维护中'</td><td class="pri-p1">P1</td></tr>
+      <tr><td>9</td><td>切換客服類型確認</td><td>已開啟遊戲客服</td><td>點擊直播客服</td><td>顯示確認 BottomSheet</td><td class="pri-p0">P0</td></tr>
+      <tr><td>10</td><td>回到對話</td><td>切換確認彈窗</td><td>點擊「回到对话」</td><td>恢復上次 iframe 狀態</td><td class="pri-p0">P0</td></tr>
+      <tr><td>11</td><td>開啟新的對話</td><td>切換確認彈窗</td><td>點擊「开启新的对话」</td><td>關閉舊 iframe + 開啟新客服</td><td class="pri-p0">P0</td></tr>
+      <tr><td>12</td><td>相同類型重複開啟</td><td>已開啟遊戲客服</td><td>再次點擊客服圖示</td><td>不彈確認，直接恢復 iframe</td><td class="pri-p1">P1</td></tr>
+      <tr><td>13</td><td>自動恢復對話</td><td>10分鐘內有進行中對話</td><td>進入 APP</td><td>fetchIngService → 自動開啟半版 iframe</td><td class="pri-p0">P0</td></tr>
+      <tr><td>14</td><td>超時不恢復</td><td>超過10分鐘</td><td>進入 APP</td><td>不自動開啟</td><td class="pri-p1">P1</td></tr>
+      <tr><td>15</td><td>訪客恢復對話</td><td>未登入，10分鐘內有對話</td><td>進入 APP</td><td>呼叫 getGuestChatInfo 恢復</td><td class="pri-p1">P1</td></tr>
+      <tr><td>16</td><td>iframe 全版到半版</td><td>官方客服已開啟全版</td><td>iframe 發送 view:0</td><td>切換為 325px 浮動視窗</td><td class="pri-p1">P1</td></tr>
+      <tr><td>17</td><td>iframe 拖曳</td><td>半版模式</td><td>手指拖曳</td><td>視窗跟隨移動，不超出螢幕邊界</td><td class="pri-p2">P2</td></tr>
+      <tr><td>18</td><td>iframe 隱藏</td><td>半版或全版</td><td>iframe 發送 view:2</td><td>視窗隱藏（保持對話）</td><td class="pri-p1">P1</td></tr>
+      <tr><td>19</td><td>iframe 關閉重置</td><td>任意狀態</td><td>iframe 發送 close</td><td>queue=0, tips=false, imDealer={}, timeStamp=''</td><td class="pri-p0">P0</td></tr>
+      <tr><td>20</td><td>排隊顯示</td><td>iframeQueue > 0</td><td>排隊中</td><td>右側顯示排隊號碼卡片</td><td class="pri-p1">P1</td></tr>
+      <tr><td>21</td><td>排隊收合展開</td><td>排隊中</td><td>點擊左側紅色區域</td><td>切換展開/收合狀態</td><td class="pri-p2">P2</td></tr>
+      <tr><td>22</td><td>未讀紅點</td><td>iframeTips = true</td><td>有未讀訊息</td><td>客服圖示右上角顯示紅點</td><td class="pri-p1">P1</td></tr>
+      <tr><td>23</td><td>iOS 鍵盤彈出</td><td>全版模式 + iOS</td><td>打開輸入法</td><td>iframe 高度調整為 visualViewport.height</td><td class="pri-p2">P2</td></tr>
+      <tr><td>24</td><td>全螢幕橫屏</td><td>isFullScreen = true</td><td>—</td><td>iframe 寬度 50vw，靠右對齊</td><td class="pri-p2">P2</td></tr>
+      <tr><td>25</td><td>showService=false</td><td>進入三方遊戲</td><td>—</td><td>客服 iframe + 排隊全部隱藏</td><td class="pri-p1">P1</td></tr>
+      <tr><td>26</td><td>直播客服三方</td><td>csLiveConfig.type=1</td><td>點擊直播客服</td><td>開啟 IframeCommon + address</td><td class="pri-p1">P1</td></tr>
+      <tr><td>27</td><td>代理客服三方</td><td>csAgentConfig.type=1</td><td>點擊代理客服</td><td>開啟 IframeCommon + addressApp</td><td class="pri-p1">P1</td></tr>
+      <tr><td>28</td><td>URL sign 正確性</td><td>—</td><td>開啟官方客服</td><td>MD5(uid+agentid+mac+uname+avatar+theme+kefuSign)</td><td class="pri-p0">P0</td></tr>
+      <tr><td>29</td><td>皮膚差異：TB</td><td>TB 皮膚</td><td>—</td><td>客服圖示為 PNG 圖片</td><td class="pri-p2">P2</td></tr>
+      <tr><td>30</td><td>皮膚差異：YXB/YXR</td><td>YXB 或 YXR 皮膚</td><td>—</td><td>客服圖示為 Lottie 動畫</td><td class="pri-p2">P2</td></tr>
+      <tr><td>31</td><td>三方客服關閉確認</td><td>三方客服已開啟</td><td>點擊返回</td><td>彈出 ConfirmDialog「是否要离开?」</td><td class="pri-p1">P1</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA-2: 爆料首頁/列表測項 -->
+<div class="section" id="qa-gossip-home" data-role="qa">
+  <h2 class="section-title"><span class="num qa">Q2</span> 爆料首頁 / 列表測項（20 項）<span class="depth-badge depth-l4">L4</span></h2>
+  <p class="section-desc">功能開關 / Tab 切換 / 各列表分頁 / 榜單 — 測項 #32-#51</p>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>32</td><td>功能關閉跳轉</td><td>gamePredictEnabled=false</td><td>進入 /gossiping</td><td>自動跳轉 /live</td><td class="pri-p0">P0</td></tr>
+      <tr><td>33</td><td>首頁預設 Tab</td><td>—</td><td>進入爆料首頁</td><td>預設顯示「依聯賽」Tab</td><td class="pri-p1">P1</td></tr>
+      <tr><td>34</td><td>URL 指定 Tab</td><td>query.currentTabType='byTime'</td><td>進入爆料首頁</td><td>自動切換到「依時間」Tab + 清除 query</td><td class="pri-p1">P1</td></tr>
+      <tr><td>35</td><td>Tab 切換鎖定</td><td>正在載入中</td><td>點擊其他 Tab</td><td>無反應（opacity-50 + cursor-not-allowed）</td><td class="pri-p1">P1</td></tr>
+      <tr><td>36</td><td>依聯賽列表分頁</td><td>—</td><td>滾動到底</td><td>載入下一頁（pageSize=20）</td><td class="pri-p0">P0</td></tr>
+      <tr><td>37</td><td>聯賽「新」標記</td><td>有 1 小時內發布的文章</td><td>—</td><td>卡片右上角顯示「new」圖示</td><td class="pri-p2">P2</td></tr>
+      <tr><td>38</td><td>依時間列表</td><td>byTime Tab</td><td>—</td><td>呼叫 /predict/list sort=0</td><td class="pri-p0">P0</td></tr>
+      <tr><td>39</td><td>熱度榜列表</td><td>byPopular Tab</td><td>—</td><td>呼叫 /predict/list sort=1</td><td class="pri-p0">P0</td></tr>
+      <tr><td>40</td><td>已關注分區</td><td>isFollowed Tab</td><td>—</td><td>已關注在上方，推薦在下方</td><td class="pri-p1">P1</td></tr>
+      <tr><td>41</td><td>關注後排序</td><td>在已關注 Tab 點擊關注</td><td>—</td><td>被關注者移到列表最前面</td><td class="pri-p1">P1</td></tr>
+      <tr><td>42</td><td>取消關注排序</td><td>在已關注 Tab 點擊取消</td><td>—</td><td>被取消者移到列表最後面</td><td class="pri-p1">P1</td></tr>
+      <tr><td>43</td><td>近期命中率顯示</td><td>推薦區主播</td><td>—</td><td>顯示 predictWinRate[1].rate + '%'</td><td class="pri-p1">P1</td></tr>
+      <tr><td>44</td><td>榜單前 3 名</td><td>命中榜資料 >= 3</td><td>—</td><td>顯示前 3 名 + 頭像+數值</td><td class="pri-p1">P1</td></tr>
+      <tr><td>45</td><td>榜單空狀態</td><td>無榜單資料</td><td>—</td><td>顯示 noData 圖 + '冲榜中'</td><td class="pri-p2">P2</td></tr>
+      <tr><td>46</td><td>榜單 Tab 切換</td><td>—</td><td>點擊不同榜單</td><td>呼叫對應 API 刷新資料</td><td class="pri-p1">P1</td></tr>
+      <tr><td>47</td><td>榜單「查看更多」</td><td>—</td><td>點擊第 5 個 Tab</td><td>跳轉 /gossiping/rank-detail</td><td class="pri-p1">P1</td></tr>
+      <tr><td>48</td><td>文章詳情載入</td><td>—</td><td>進入 /gossiping/:id</td><td>呼叫 detail + content 兩個 API</td><td class="pri-p0">P0</td></tr>
+      <tr><td>49</td><td>多場賽事滑動</td><td>matches.length > 1</td><td>—</td><td>橫向滑動 + 底部頁碼指示器</td><td class="pri-p1">P1</td></tr>
+      <tr><td>50</td><td>盤口 Tab 切換</td><td>多個 market</td><td>點擊不同盤口名稱</td><td>切換顯示對應盤口選項</td><td class="pri-p1">P1</td></tr>
+      <tr><td>51</td><td>跟單-單注</td><td>marketType !== 2</td><td>點擊盤口選項</td><td>addSingleCartData + betSource=predict</td><td class="pri-p0">P0</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA-3: 爆料詳情/跟單測項 -->
+<div class="section" id="qa-gossip-detail" data-role="qa">
+  <h2 class="section-title"><span class="num qa">Q3</span> 爆料詳情 / 跟單測項（17 項）<span class="depth-badge depth-l4">L4</span></h2>
+  <p class="section-desc">跟單 / 按讚 / 分享 / 訪客 / 已結算 / 搜索基礎 — 測項 #52-#68</p>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>52</td><td>跟單-串關</td><td>marketType === 2</td><td>點擊盤口選項</td><td>addComboCartData + betSource=predict</td><td class="pri-p0">P0</td></tr>
+      <tr><td>53</td><td>跟單需登入</td><td>未登入</td><td>點擊盤口選項</td><td>requireLogin 攔截</td><td class="pri-p0">P0</td></tr>
+      <tr><td>54</td><td>按讚-未讚</td><td>isLike=false</td><td>點擊按讚</td><td>likeCount++ + 圖示變 active + 埋點</td><td class="pri-p1">P1</td></tr>
+      <tr><td>55</td><td>按讚-已讚</td><td>isLike=true</td><td>點擊按讚</td><td>likeCount-- + 圖示變 normal</td><td class="pri-p1">P1</td></tr>
+      <tr><td>56</td><td>分享</td><td>—</td><td>點擊分享</td><td>取分享底圖 + 開啟 shareStore</td><td class="pri-p1">P1</td></tr>
+      <tr><td>57</td><td>訪客查看-允許</td><td>gamePredictVisitorDisplayMode=1</td><td>未登入點擊文章</td><td>正常進入詳情</td><td class="pri-p1">P1</td></tr>
+      <tr><td>58</td><td>訪客查看-攔截</td><td>gamePredictVisitorDisplayMode!=1</td><td>未登入點擊文章</td><td>requireLogin 攔截</td><td class="pri-p1">P1</td></tr>
+      <tr><td>59</td><td>已結算文章（勝）</td><td>status=4, isWin=true</td><td>—</td><td>半透明遮罩 + 勝利印章 + 點擊無效</td><td class="pri-p1">P1</td></tr>
+      <tr><td>60</td><td>已結算文章（負）</td><td>status=4, isWin=false</td><td>—</td><td>半透明遮罩 + 失敗印章 + 點擊無效</td><td class="pri-p1">P1</td></tr>
+      <tr><td>61</td><td>搜索-關鍵字</td><td>—</td><td>輸入關鍵字 + Enter</td><td>呼叫 /predict/list keyword=xxx</td><td class="pri-p0">P0</td></tr>
+      <tr><td>62</td><td>搜索-歷史記錄</td><td>有搜索歷史</td><td>點擊歷史 tag</td><td>帶入關鍵字自動搜索</td><td class="pri-p1">P1</td></tr>
+      <tr><td>63</td><td>搜索歷史上限</td><td>已有 5 筆歷史</td><td>搜索新關鍵字</td><td>新的插入最前，最舊的被移除</td><td class="pri-p2">P2</td></tr>
+      <tr><td>64</td><td>搜索-熱搜</td><td>—</td><td>點擊熱搜詞</td><td>searchValue=tag 然後搜索</td><td class="pri-p1">P1</td></tr>
+      <tr><td>65</td><td>搜索-足球篩選</td><td>—</td><td>點擊「足球」</td><td>unifySportId=1 篩選</td><td class="pri-p1">P1</td></tr>
+      <tr><td>66</td><td>搜索-籃球篩選</td><td>—</td><td>點擊「籃球」</td><td>unifySportId=2 篩選</td><td class="pri-p1">P1</td></tr>
+      <tr><td>67</td><td>搜索-人氣排序</td><td>—</td><td>點擊「看过人数最高」</td><td>sort=1 排序</td><td class="pri-p2">P2</td></tr>
+      <tr><td>68</td><td>搜索返回重置</td><td>搜索結果顯示中</td><td>點擊返回</td><td>重置搜索狀態（不離開頁面）</td><td class="pri-p2">P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA-4: 搜索/其他測項 -->
+<div class="section" id="qa-gossip-search" data-role="qa">
+  <h2 class="section-title"><span class="num qa">Q4</span> 搜索 / 其他測項（16 項）<span class="depth-badge depth-l4">L4</span></h2>
+  <p class="section-desc">主播 / 榜單詳情 / 新手引導 / 嵌入模式 — 測項 #69-#84</p>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>69</td><td>主播個人主頁</td><td>—</td><td>點擊主播頭像</td><td>進入 /gossiping/info?uId=xxx</td><td class="pri-p1">P1</td></tr>
+      <tr><td>70</td><td>主播頁聯賽篩選</td><td>—</td><td>從聯賽列表點入</td><td>leagueId 帶入 API 篩選</td><td class="pri-p1">P1</td></tr>
+      <tr><td>71</td><td>登入狀態變化刷新</td><td>—</td><td>登入/登出</td><td>各列表 watch(isLogin) → onRefresh</td><td class="pri-p1">P1</td></tr>
+      <tr><td>72</td><td>榜單詳情 TOP3</td><td>有 >= 3 筆資料</td><td>—</td><td>1st 置中突出, 2nd 左, 3rd 右</td><td class="pri-p2">P2</td></tr>
+      <tr><td>73</td><td>榜單詳情空位</td><td>有 < 3 筆資料</td><td>—</td><td>空位顯示「宝座尚空」</td><td class="pri-p2">P2</td></tr>
+      <tr><td>74</td><td>榜單 4~10 名</td><td>有 > 3 筆資料</td><td>—</td><td>列表顯示 4~10 名</td><td class="pri-p2">P2</td></tr>
+      <tr><td>75</td><td>從 match-detail 嵌入</td><td>isFromPredictDetail=true</td><td>—</td><td>無 PageHeader，有「完整方案」按鈕</td><td class="pri-p1">P1</td></tr>
+      <tr><td>76</td><td>從 open-room 進入</td><td>fromOpenRoom=true</td><td>點擊返回</td><td>返回到 /open-room/{roomId}?activeTab=predict</td><td class="pri-p1">P1</td></tr>
+      <tr><td>77</td><td>新手引導-觀看爆料</td><td>GossipWatchCount 未完成</td><td>首次進入</td><td>FocusSlotGuide 顯示前 2 篇</td><td class="pri-p2">P2</td></tr>
+      <tr><td>78</td><td>新手引導-跟單投注</td><td>GossipFollowCount 未完成</td><td>首次進入詳情</td><td>FocusSlotGuide 顯示盤口</td><td class="pri-p2">P2</td></tr>
+      <tr><td>79</td><td>新手引導-榜單</td><td>gossipRankTip 未完成</td><td>首次看到榜單</td><td>TeachTeleport 提示</td><td class="pri-p2">P2</td></tr>
+      <tr><td>80</td><td>新手引導-盤口投注</td><td>gossipMarketTip 未完成</td><td>首次看到盤口</td><td>TeachTeleport 提示</td><td class="pri-p2">P2</td></tr>
+      <tr><td>81</td><td>全部盤口查看</td><td>詳情頁有盤口</td><td>點擊「全部盘口」</td><td>彈出 AllMarketSheet</td><td class="pri-p1">P1</td></tr>
+      <tr><td>82</td><td>關注/取消關注賽事</td><td>—</td><td>點擊收藏圖示</td><td>matchFollowEdit API → 更新圖示</td><td class="pri-p1">P1</td></tr>
+      <tr><td>83</td><td>sticky header</td><td>滾動超過按讚區域</td><td>—</td><td>頂部顯示 sticky header</td><td class="pri-p2">P2</td></tr>
+      <tr><td>84</td><td>文章列表切換</td><td>predictList > 1</td><td>點擊左/右箭頭</td><td>切換到前/後一篇文章</td><td class="pri-p2">P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
 <!-- Footer -->
 <div class="footer">
-  客服 / 爆料 / 其他 標註頁 — 自動產出於 2026-04-09<br>
-  資料來源：Figma (xvqDn4NW3ljqw5xM1ES3gL) &times; mango2-h5 &times; Jira (GOR)<br>
-  <span style="color:#64748b;">pm-dashboard / annotated-page skill</span>
+  客服 / 爆料 / 其他 標註頁（L1-L4）— PM / RD / QA 三視角 — 自動產出於 2026-04-09<br>
+  資料來源：Figma (xvqDn4NW3ljqw5xM1ES3gL) &times; mango2-h5 (15fce829c) &times; 7-others-detail.md<br>
+  <span style="color:#64748b;">pm-dashboard / annotated-page skill — 8 決策流程 · 17 API · 84 測項</span>
 </div>
 
 </div><!-- /main-content -->
 </div><!-- /layout -->
 
 <script>
-// Sidebar nav scrolling + active state
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.getAttribute('data-target');
-    const el = document.getElementById(target);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Role tab switching
+  function switchRole(role) {
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.role-tab[data-role="${role}"]`).classList.add('active');
+
+    document.querySelectorAll('.section').forEach(sec => {
+      const r = sec.getAttribute('data-role') || '';
+      sec.classList.toggle('hidden', r !== role);
+    });
+
+    document.querySelectorAll('.nav-btn, .nav-divider, .nav-group-label').forEach(el => {
+      const nr = el.getAttribute('data-nav-role') || '';
+      if (nr) el.classList.toggle('hidden', nr !== role);
+    });
+
+    // Reset active nav
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const firstVisible = document.querySelector(`.nav-btn[data-nav-role="${role}"]:not(.hidden)`);
+    if (firstVisible) firstVisible.classList.add('active');
+
+    document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.role-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
+  });
+
+  // Nav button click → scroll + highlight
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-    }
+      const el = document.getElementById(btn.getAttribute('data-target'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   });
-});
 
-// Update active nav on scroll
-const sections = document.querySelectorAll('.section');
-const navBtns = document.querySelectorAll('.nav-btn');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.id;
-      navBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-target') === id);
-      });
-    }
-  });
-}, { rootMargin: '-20% 0px -70% 0px' });
-sections.forEach(sec => observer.observe(sec));
+  // Scroll spy
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          if (!btn.classList.contains('hidden')) {
+            btn.classList.toggle('active', btn.getAttribute('data-target') === id);
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+
+  // Default: show L1
+  switchRole('l1');
 </script>
 </body>
 </html>

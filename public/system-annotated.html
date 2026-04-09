@@ -27,23 +27,48 @@
     .sidebar-back:hover { color:#e2e8f0; }
     .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
     .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+    /* Role Tabs in sidebar */
+    .role-bar { display:grid; grid-template-columns:1fr 1fr; gap:0; border-bottom:1px solid #334155; }
+    .role-tab { background:transparent; color:#94a3b8; border:none; padding:10px 8px; font-size:12px; font-weight:600; cursor:pointer; transition:all .2s; border-bottom:2px solid transparent; text-align:center; }
+    .role-tab:hover { color:#e2e8f0; background:#263548; }
+    .role-tab.active { color:#10b981; border-bottom-color:#10b981; }
+    .role-indicator { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:4px; }
+    .ri-pm { background:#f97316; }
+    .ri-rd { background:#a78bfa; }
+    .ri-qa { background:#34d399; }
+
+    /* Section role badges */
+    .depth-badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:6px; font-weight:700; margin-left:8px; vertical-align:middle; }
+    .depth-l1 { background:#334155; color:#94a3b8; }
+    .depth-l2 { background:#3b2f1a; color:#fbbf24; }
+    .depth-l3 { background:#2d1a3e; color:#c4b5fd; }
+    .depth-l4 { background:#1a2e1a; color:#86efac; }
+
     .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
     .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
     .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
     .nav-btn.active { color:#10b981; background:#10b98110; border-left-color:#10b981; }
+    .nav-btn.hidden { display:none; }
     .main-content { margin-left:250px; flex:1; }
 
     @media(max-width:900px) {
       .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
       .layout { flex-direction:column; }
       .main-content { margin-left:0; }
+      .role-bar { grid-template-columns:repeat(4,1fr); }
       .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
       .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+      .nav-btn:hover, .nav-btn.active { border-left:none; }
+      .nav-btn.hidden { display:none; }
     }
 
     .section { max-width:1200px; margin:32px auto; padding:0 16px; }
-    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; }
-    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#10b981; color:#fff; border-radius:50%; font-size:15px; }
+    .section.hidden { display:none; }
+    .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#10b981; color:#fff; border-radius:50%; font-size:15px; flex-shrink:0; }
+    .section-title .num.pm { background:#f97316; }
+    .section-title .num.rd { background:#7c3aed; }
+    .section-title .num.qa { background:#059669; }
     .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
 
     .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
@@ -56,8 +81,11 @@
     .rules-col { display:flex; flex-direction:column; gap:10px; }
 
     .rule-card { background:#1e293b; border-radius:10px; padding:14px; border-left:3px solid #10b981; }
+    .rule-card.rd-card { border-left-color:#7c3aed; }
+    .rule-card.qa-card { border-left-color:#059669; }
     .rule-card h4 { font-size:14px; margin:4px 0 6px; color:#f1f5f9; }
-    .rule-card p { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card p, .rule-card li { font-size:13px; color:#cbd5e1; margin-bottom:4px; }
+    .rule-card ul { padding-left:18px; }
     .rule-card code { background:#334155; padding:1px 5px; border-radius:4px; font-size:12px; color:#fbbf24; }
     .rule-card .src { font-size:11px; color:#64748b; margin-top:6px; font-family:monospace; }
     .rule-tag { display:inline-block; font-size:11px; padding:1px 8px; border-radius:6px; font-weight:600; }
@@ -83,6 +111,14 @@
     .type-table th { background:#334155; color:#f1f5f9; padding:8px 12px; text-align:left; }
     .type-table td { background:#1e293b; padding:8px 12px; border-bottom:1px solid #334155; }
     .type-table tr:hover td { background:#263548; }
+
+    /* Test matrix */
+    .test-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:12px; }
+    .test-table th { background:#064e3b; color:#d1fae5; padding:8px; text-align:left; font-size:11px; }
+    .test-table td { background:#1e293b; padding:6px 8px; border-bottom:1px solid #334155; }
+    .test-table tr:hover td { background:#263548; }
+
+    .flow-branch { color:#fbbf24; font-size:12px; font-weight:600; }
 
     .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
   </style>
@@ -116,23 +152,49 @@
     <div class="sidebar-header">
       <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
       <div class="sidebar-title">🔐 系統 / 登入 / 註冊</div>
-      <div class="sidebar-sub">6 功能 · 14 sections</div>
+      <div class="sidebar-sub">6 功能 · 14+17 sections · L1-L4</div>
+    </div>
+    <div class="role-bar">
+      <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>概覽</button>
+      <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策</button>
+      <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API</button>
+      <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測</button>
     </div>
     <div class="sidebar-nav">
-      <button class="nav-btn" data-target="sec-init-flow">初始化流程</button>
-      <button class="nav-btn" data-target="sec-account-login">帳號登入</button>
-      <button class="nav-btn" data-target="sec-phone-login">手機登入</button>
-      <button class="nav-btn" data-target="sec-forgot-password">忘記密碼</button>
-      <button class="nav-btn" data-target="sec-ingame-login">遊戲內登入</button>
-      <button class="nav-btn" data-target="sec-account-register">帳號註冊</button>
-      <button class="nav-btn" data-target="sec-phone-register">手機註冊</button>
-      <button class="nav-btn" data-target="sec-router-guard">路由守衛</button>
-      <button class="nav-btn" data-target="sec-maintenance">維護頁</button>
-      <button class="nav-btn" data-target="sec-ip-block">IP 封鎖</button>
-      <button class="nav-btn" data-target="sec-app-launch">APP 啟動</button>
-      <button class="nav-btn" data-target="sec-popups">彈窗系統</button>
-      <button class="nav-btn" data-target="sec-rp-rules">RP 通則</button>
-      <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+      <!-- L1 nav -->
+      <button class="nav-btn" data-target="sec-init-flow" data-nav-role="l1">初始化流程</button>
+      <button class="nav-btn" data-target="sec-account-login" data-nav-role="l1">帳號登入</button>
+      <button class="nav-btn" data-target="sec-phone-login" data-nav-role="l1">手機登入</button>
+      <button class="nav-btn" data-target="sec-forgot-password" data-nav-role="l1">忘記密碼</button>
+      <button class="nav-btn" data-target="sec-ingame-login" data-nav-role="l1">遊戲內登入</button>
+      <button class="nav-btn" data-target="sec-account-register" data-nav-role="l1">帳號註冊</button>
+      <button class="nav-btn" data-target="sec-phone-register" data-nav-role="l1">手機註冊</button>
+      <button class="nav-btn" data-target="sec-router-guard" data-nav-role="l1">路由守衛</button>
+      <button class="nav-btn" data-target="sec-maintenance" data-nav-role="l1">維護頁</button>
+      <button class="nav-btn" data-target="sec-ip-block" data-nav-role="l1">IP 封鎖</button>
+      <button class="nav-btn" data-target="sec-app-launch" data-nav-role="l1">APP 啟動</button>
+      <button class="nav-btn" data-target="sec-popups" data-nav-role="l1">彈窗系統</button>
+      <button class="nav-btn" data-target="sec-rp-rules" data-nav-role="l1">RP 通則</button>
+      <button class="nav-btn" data-target="sec-overview" data-nav-role="l1">Figma 總覽</button>
+      <!-- PM nav -->
+      <button class="nav-btn" data-target="pm-init-decision" data-nav-role="pm">初始化決策樹</button>
+      <button class="nav-btn" data-target="pm-login-decision" data-nav-role="pm">登入決策分支</button>
+      <button class="nav-btn" data-target="pm-register-decision" data-nav-role="pm">註冊決策分支</button>
+      <button class="nav-btn" data-target="pm-token-mgmt" data-nav-role="pm">Token 管理</button>
+      <button class="nav-btn" data-target="pm-router-guard" data-nav-role="pm">路由守衛邏輯</button>
+      <!-- RD nav -->
+      <button class="nav-btn" data-target="rd-api-overview" data-nav-role="rd">API 端點總覽</button>
+      <button class="nav-btn" data-target="rd-api-login" data-nav-role="rd">登入 API Schema</button>
+      <button class="nav-btn" data-target="rd-api-register" data-nav-role="rd">註冊 API Schema</button>
+      <button class="nav-btn" data-target="rd-api-misc" data-nav-role="rd">其他 API Schema</button>
+      <button class="nav-btn" data-target="rd-error-codes" data-nav-role="rd">Error Codes</button>
+      <!-- QA nav -->
+      <button class="nav-btn" data-target="qa-login" data-nav-role="qa">登入測項</button>
+      <button class="nav-btn" data-target="qa-register" data-nav-role="qa">註冊測項</button>
+      <button class="nav-btn" data-target="qa-init" data-nav-role="qa">初始化測項</button>
+      <button class="nav-btn" data-target="qa-token" data-nav-role="qa">Token 測項</button>
+      <button class="nav-btn" data-target="qa-guard" data-nav-role="qa">路由守衛測項</button>
+      <button class="nav-btn" data-target="qa-file-index" data-nav-role="qa">檔案索引</button>
     </div>
   </nav>
   <div class="main-content">
@@ -140,7 +202,7 @@
 <!-- ============================================================ -->
 <!-- Section 1: 初始化流程 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-init-flow">
+<div class="section" data-role="l1" id="sec-init-flow">
   <div class="section-title"><span class="num">1</span> 初始化流程（App Init）</div>
   <div class="section-desc">App 啟動時的 config 拉取、渠道識別、設備綁定、系統狀態路由 — 純邏輯層，無 UI</div>
 
@@ -233,7 +295,7 @@
 <!-- ============================================================ -->
 <!-- Section 2: 帳號登入 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-account-login">
+<div class="section" data-role="l1" id="sec-account-login">
   <div class="section-title"><span class="num">2</span> 帳號登入</div>
   <div class="section-desc">帳號密碼登入、記住密碼、圖形驗證碼、新設備驗證</div>
 
@@ -297,7 +359,7 @@
 <!-- ============================================================ -->
 <!-- Section 3: 手機登入 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-phone-login">
+<div class="section" data-role="l1" id="sec-phone-login">
   <div class="section-title"><span class="num">3</span> 手機登入</div>
   <div class="section-desc">手機號碼 + 驗證碼登入，雲平台開啟「注冊須綁定手機號」才顯示</div>
 
@@ -339,7 +401,7 @@
 <!-- ============================================================ -->
 <!-- Section 4: 忘記密碼 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-forgot-password">
+<div class="section" data-role="l1" id="sec-forgot-password">
   <div class="section-title"><span class="num">4</span> 忘記密碼</div>
   <div class="section-desc">透過手機驗證碼重設密碼</div>
 
@@ -376,7 +438,7 @@
 <!-- ============================================================ -->
 <!-- Section 5: 遊戲內登入（半版） -->
 <!-- ============================================================ -->
-<div class="section" id="sec-ingame-login">
+<div class="section" data-role="l1" id="sec-ingame-login">
   <div class="section-title"><span class="num">5</span> 遊戲內登入（半版）</div>
   <div class="section-desc">在遊戲內需要登入時彈出的半版 Sheet，含帳號登入與手機登入</div>
 
@@ -432,7 +494,7 @@
 <!-- ============================================================ -->
 <!-- Section 6: 帳號註冊 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-account-register">
+<div class="section" data-role="l1" id="sec-account-register">
   <div class="section-title"><span class="num">6</span> 帳號註冊</div>
   <div class="section-desc">新玩家建立帳號，支援帳號註冊，驗證規則由後台 registerOption API 控制</div>
 
@@ -484,7 +546,7 @@
 <!-- ============================================================ -->
 <!-- Section 7: 手機註冊 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-phone-register">
+<div class="section" data-role="l1" id="sec-phone-register">
   <div class="section-title"><span class="num">7</span> 手機註冊</div>
   <div class="section-desc">手機號碼註冊流程，含區碼選擇與驗證碼發送</div>
 
@@ -549,7 +611,7 @@
 <!-- ============================================================ -->
 <!-- Section 8: 路由守衛 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-router-guard">
+<div class="section" data-role="l1" id="sec-router-guard">
   <div class="section-title"><span class="num">8</span> 路由守衛（Router Guard）</div>
   <div class="section-desc">Nuxt 全域 middleware，處理登入驗證、購物車清空、測試帳號限制、渠道 ID 傳遞 — 純邏輯，無 UI</div>
 
@@ -602,7 +664,7 @@
 <!-- ============================================================ -->
 <!-- Section 9: 維護頁 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-maintenance">
+<div class="section" data-role="l1" id="sec-maintenance">
   <div class="section-title"><span class="num">9</span> 維護頁</div>
   <div class="section-desc">平台進入維護模式時的全屏提示頁面</div>
 
@@ -640,7 +702,7 @@
 <!-- ============================================================ -->
 <!-- Section 10: IP 封鎖頁 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-ip-block">
+<div class="section" data-role="l1" id="sec-ip-block">
   <div class="section-title"><span class="num">10</span> IP 封鎖頁</div>
   <div class="section-desc">玩家 IP 在黑名單中時顯示的 403 頁面</div>
 
@@ -673,7 +735,7 @@
 <!-- ============================================================ -->
 <!-- Section 11: APP 啟動頁 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-app-launch">
+<div class="section" data-role="l1" id="sec-app-launch">
   <div class="section-title"><span class="num">11</span> APP 啟動頁</div>
   <div class="section-desc">App 開啟時的 Launch Screen</div>
 
@@ -706,7 +768,7 @@
 <!-- ============================================================ -->
 <!-- Section 12: 彈窗系統 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-popups">
+<div class="section" data-role="l1" id="sec-popups">
   <div class="section-title"><span class="num">12</span> 彈窗系統（0.4 提醒）</div>
   <div class="section-desc">首頁彈窗、公告彈窗、版本更新、緊急公告等各類彈窗</div>
 
@@ -793,7 +855,7 @@
 <!-- ============================================================ -->
 <!-- Section 13: RP 通則 -->
 <!-- ============================================================ -->
-<div class="section" id="sec-rp-rules">
+<div class="section" data-role="l1" id="sec-rp-rules">
   <div class="section-title"><span class="num">13</span> RP 全站通則摘要</div>
   <div class="section-desc">來自 RP 規格的跨模組通用規則</div>
 
@@ -863,7 +925,7 @@
 <!-- ============================================================ -->
 <!-- Section 14: Figma 總覽（放最後） -->
 <!-- ============================================================ -->
-<div class="section" id="sec-overview">
+<div class="section" data-role="l1" id="sec-overview">
   <div class="section-title"><span class="num">14</span> Figma 總覽圖</div>
   <div class="section-desc">各 section 的全景截圖，僅供參考</div>
 
@@ -880,9 +942,673 @@
   <img class="overview-img" src="/images/system/section-alerts.png" alt="提醒總覽">
 </div>
 
+<!-- ============================================================ -->
+<!-- PM Sections (決策流程 L2) -->
+<!-- ============================================================ -->
+
+<div class="section" data-role="pm" id="pm-init-decision">
+  <div class="section-title"><span class="num pm">P1</span> App 初始化決策樹 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">composables/useInit.ts > initFlow() — onMounted 觸發的完整初始化序列</div>
+
+  <div class="flow-box">
+    <div class="flow-label">initFlow() 完整決策流程</div>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+onMounted
+  └→ initFlow()
+       ├─ 1. useDeviceUuid()                    // 取得/產生裝置指紋
+       ├─ 2. fetchChannelId()
+       │     ├─ query.channelId 有值 → 用它
+       │     ├─ settingStore.channelId 已有 → return
+       │     ├─ isLocalhost → 用 env VITE_CHANNEL_ID
+       │     └─ else → POST /config/getH5Domain { domain } → 取 channelId
+       │     └─ 都沒有 → throw 'fetchChannelId Fail!'
+       │
+       ├─ 3. fetchConfig()                       // 並行拉兩支 API
+       │     ├─ Promise.allSettled([
+       │     │    baseConfig/v2 { channelId, deviceId, devicePlatform },
+       │     │    channelIpBlackList/v3 { channelId, deviceId }
+       │     │  ])
+       │     ├─ 兩者都成功 → 寫入 settingStore
+       │     └─ 任一失敗 → throw 'fetchConfig Fail'
+       │
+       ├─ 4. DeBox 偵測（navigator.userAgent 含 'DeBox'）
+       │     └─ 是 DeBox → deboxLoginRegister → setToken + getUserInfo
+       │
+       ├─ 5. initCnnzCode()                      // 初始化統計碼
+       ├─ 6. Token 續期（非 DeBox 且 hasToken）
+       │     └─ refreshToken → getUserInfo()
+       │     └─ 失敗 → console.warn（不中斷）
+       ├─ 7. fetchIngService()                   // 進行中客服
+       ├─ 8. 非維護中 → openAppHitPoint + fetchGameList
+       └─ 9. setIsInitSuccess(true)
+
+  [catch] → toast「初始化失败」+ 300ms 後 localStorage.clear()
+  [finally] → checkSystemStatusAndRoute() + isInit=true + loading=false
+</pre>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>checkSystemStatusAndRoute 跳轉邏輯</h4>
+      <p>errCode≠1 or isInMaintain → <code>/maintain</code><br>isBlocked → <code>/block</code><br>needLogin && !token → <code>/login</code> or <code>getEntrance</code><br>rally referenceId → <code>/activity/rally/3</code><br>default → <code>toPushTypePage()</code></p>
+      <div class="src">composables/useSystemCheck.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>初始化後 watch 聯動</h4>
+      <p><code>channelId</code> 變更 → 重拉 fetchConfig<br><code>hasToken</code> 變化 → getUserInfo + fetchGameList<br><code>[isLogin, isInitSuccess]</code> → 觸發 25+ 模組初始化</p>
+      <div class="src">composables/useInit.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>需登入才觸發的模組</h4>
+      <p>分享(fetchInviteInfo)、追蹤(getFollowSteamerList)、錢包、充值(getLatestOrder)、提款(getBindBankList)、福利、簽到、任務、金幣 — 共 9 項需 isLogin=true</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-role="pm" id="pm-login-decision">
+  <div class="section-title"><span class="num pm">P2</span> 登入流程決策分支 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">pages/login/index.vue — 帳號登入 / 手機登入 / 錯誤處理 / 新設備驗證</div>
+
+  <div class="rule-card" style="margin-bottom:16px;">
+    <span class="rule-tag tag-logic">logic</span>
+    <h4>登入模式切換</h4>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+baseConfig.accountLoginEnabled + baseConfig.phoneNumberLoginEnabled
+  ├─ 兩者皆開 → 顯示「账号登录」/「手机登录」兩個 Tab
+  ├─ 只開帳號 → 隱藏 Tab，直接顯示 AccountLogin
+  ├─ 只開手機 → 隱藏 Tab，直接顯示 PhoneLogin
+  └─ 都沒開 → 防呆：顯示 AccountLogin
+</pre>
+    <div class="src">pages/login/index.vue</div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">帳號登入流程（AccountLogin）</div>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+使用者輸入帳號/密碼
+  → vee-validate + zod 前端驗證
+  → loginByAccount()
+     ├─ 密碼 AES 加密（passwordEncrypt）→ isEncrypt: true
+     ├─ POST /login/login { ...baseData, account, password, fromDomain, keyCode?, validCode? }
+     ├─ errCode === 1
+     │    ├─ isRememberAccount → localStorage 記住帳號+加密密碼
+     │    ├─ handleLoginSuccess → setToken + 關閉彈窗 + setLoggedInBefore
+     │    └─ loading 由後續 getUserInfo 關閉
+     └─ errCode !== 1 → handleError（見錯誤碼表）
+</pre>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">手機登入流程（PhoneLogin）</div>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+使用者輸入手機號 + 驗證碼
+  → PhoneCodeBtn 發送驗證碼（opType=8）
+  → loginByPhone()
+     ├─ POST /login/phoneLoginV2 { ...baseData, countryCode, phoneNum, phoneCode }
+     ├─ 成功 → handleLoginSuccess
+     └─ 失敗 → handleError
+</pre>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>handleLoginSuccess 完整步驟</h4>
+      <p>1. 打點 → 2. 關閉 popup + loginSheet → 3. <code>setToken</code> → 4. 關閉客服 iframe → 5. <code>setLoggedInBefore()</code> → 6. 清空 referenceId → 7. 等 getUserInfo 才關 loading</p>
+      <div class="src">composables/useLogin/index.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>handleError 錯誤碼對照</h4>
+      <p>9=需圖形驗證碼 → NumberCaptchPopup<br>110=新設備 → NewDeviceAuth<br>114=新IP → NewDeviceAuth<br>192=驗證碼刷新 → refreshTrigger++<br>其他 → 全域 toast</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>驗證碼重試 retryWithNumber</h4>
+      <p>圖形驗證碼完成後，自動用暫存的 <code>lastValues</code> + <code>lastOperation</code> 重新送出原始請求</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>新設備綁定流程</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.6; white-space:pre-wrap;">
+NewDeviceAuth 彈窗
+  → 輸入手機驗證碼
+  → POST /login/newDevice → errCode===1
+    → handleLoginSuccess（isBindNewDevice=true）
+</pre>
+      <div class="src">composables/useLogin/index.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>已登入保護</h4>
+      <p><code>onMounted</code> 中若 <code>userStore.isLogin</code> 為 true → 直接 <code>toPushTypePage()</code> 跳離登入頁</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-role="pm" id="pm-register-decision">
+  <div class="section-title"><span class="num pm">P3</span> 註冊流程決策分支 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">帳號註冊 / 手機註冊 / 動態欄位控制 / 推薦人解析</div>
+
+  <div class="rule-card" style="margin-bottom:16px;">
+    <span class="rule-tag tag-logic">logic</span>
+    <h4>註冊模式切換</h4>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+baseConfig.accountRegisterEnabled + baseConfig.phoneNumberRegisterEnabled
+  ├─ 兩者皆開 → 顯示兩個 Tab
+  ├─ 只開帳號 → 隱藏 Tab，直接 AccountRegister
+  ├─ 只開手機 → 隱藏 Tab，直接 PhoneRegister
+  └─ 都沒開 → 防呆：AccountRegister
+</pre>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">帳號註冊流程</div>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+使用者填寫帳號/密碼/確認密碼/[手機號]/[驗證碼]/[邀請碼]
+  → vee-validate + zod
+  → POST /login/register { ...baseData, account, password(AES), isEncrypt,
+      registerDomain, friendId, inviteCode, phoneNum?, phoneCode?, ... }
+  → 成功 → handleLoginSuccess（自動登入）
+  → 失敗 → handleError
+</pre>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>帳號驗證規則（accountValidRole）</h4>
+      <p><strong>role=2：</strong>6-13位字母+數字，首位必須字母 <code>/^[A-Za-z][A-Za-z0-9]{5,12}$/</code><br><strong>預設：</strong>6-13位字母或數字 <code>/^[A-Za-z0-9]{6,13}$/</code></p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>動態欄位控制</h4>
+      <p>手機號欄位：<code>accountRegisterBoundPhoneNumber=true</code> 時顯示<br>邀請碼：<code>inviteCodeEnabled=true</code> 且無 referenceId/recommendId 時顯示<br>測試渠道自動清空邀請碼</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>手機註冊流程</h4>
+      <p>PhoneCodeBtn 發送驗證碼（opType=7）→ <code>POST /login/phoneRegisterV2</code> → 成功即自動登入</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>推薦人 ID 解析（getRecommendId）</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.6; white-space:pre-wrap;">
+settingStore.recommendId
+  → Base64 decode
+  → 長度 <= 4 → 空字串
+  → 包含 '|' → 取 '|' 後段
+  → 為數字 → 回傳
+  → 否則 → 空字串
+</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-role="pm" id="pm-token-mgmt">
+  <div class="section-title"><span class="num pm">P4</span> Token 管理 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">Token 儲存 / 續期 / 過期處理 / 密碼加密 / 登出</div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>Token 儲存</h4>
+      <p><code>userStore.token</code>（Pinia，持久化至 localStorage）<br><code>hasToken</code>：!!state.token<br><code>isLogin</code>：!!state.info?.playerId（有 userInfo 才算真正登入）</p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>Token 續期（初始化時）</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.6; white-space:pre-wrap;">
+initFlow 中（hasToken && !isDeBox）
+  → POST /login/refreshToken
+  → 成功 → getUserInfo()
+  → 失敗 → console.warn（不清 token，不跳轉）
+</pre>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-warning">warning</span>
+      <h4>Token 過期處理</h4>
+      <p><strong>HTTP 401：</strong>toast「您的登录已过期」→ logout → 跳首頁<br><strong>errCode 163（踢下線）：</strong>logout → ExpiredPopup → 跳 /login</p>
+      <div class="src">plugins/fetch.ts > platformStatusCodeHandler</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>Token 傳遞機制</h4>
+      <p>Header：<code>Token: {token}</code>（非 Bearer）<br>有 token → <code>/ajax-migration</code><br>無 token → <code>/ajax-migration/public</code></p>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>密碼加密</h4>
+      <p>AES — Key: <code>r6fgg5636vf67hi007xe56o3p52z68r2</code> (32位) / IV: <code>0000000000000000</code> (16位全零)<br>用途：localStorage + 登入/註冊 API</p>
+      <div class="src">utils/passwordCrypt/index.ts</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>登出流程</h4>
+      <p><code>POST /login/logout</code> → 清 localStorage 指定 key → 清所有相關 store</p>
+      <div class="src">composables/useLogin/index.ts → useLogout</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-role="pm" id="pm-router-guard">
+  <div class="section-title"><span class="num pm">P5</span> 路由守衛決策邏輯 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">middleware/router-guard.global.ts + useSystemCheck — 每次路由切換的完整判斷</div>
+
+  <div class="flow-box">
+    <div class="flow-label">router-guard.global.ts 決策流程</div>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+每次路由跳轉（to, from）
+  ├─ 1. 離開杯賽路徑 → setThemeOverride(null)
+  ├─ 2. needLogin && !token && from≠to → setIsLoginSheetOpen(true) → abort
+  ├─ 3. 路由切換 → liveCartsStore.$reset()
+  ├─ 4. 記錄前一筆路由 + 同步當前路由
+  ├─ 5. 測試帳號 → deposit/withdraw/mine-transfer → toast + abort
+  ├─ 6. from query → localStorage（渠道追蹤）
+  └─ 7. channelId 繼承 → navigateTo 帶上 channelId
+</pre>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">useSystemCheck — checkSystemStatusAndRoute（初始化後執行一次）</div>
+<pre style="color:#cbd5e1; font-size:13px; line-height:1.7; white-space:pre-wrap;">
+checkSystemStatusAndRoute()
+  ├─ errCode !== 1 || isInMaintain → /maintain
+  ├─ isBlocked → /block
+  ├─ needLogin && !token → getEntrance || /login
+  ├─ referenceId && rally=10019 → /activity/rally/3
+  ├─ isOpenRoom → /open-room
+  ├─ redirect=goJump
+  │   ├─ jumpType=2 → Goto.jump（活動頁）
+  │   └─ jumpType=3 && !isLogin
+  │       ├─ jumpValue=8 → /login?isRegister=true
+  │       └─ jumpValue=7 → /login
+  └─ 路徑為 / 或 maintain 或 block → toPushTypePage()
+
+watchEffect 持續監聽：
+  ├─ isBlocked 變 true → /block
+  └─ isInMaintain 變 true → /maintain
+</pre>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- RD Sections (API 規格 L3) -->
+<!-- ============================================================ -->
+
+<div class="section" data-role="rd" id="rd-api-overview">
+  <div class="section-title"><span class="num rd">R1</span> API 端點總覽 <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">系統/登入/註冊模組所有 API 端點一覽</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>API</th><th>Method</th><th>Path</th><th>加密</th><th>認證</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>帳號登入</td><td>POST</td><td><code>/login/login</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>手機登入</td><td>POST</td><td><code>/login/phoneLoginV2</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>帳號註冊</td><td>POST</td><td><code>/login/register</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>手機註冊</td><td>POST</td><td><code>/login/phoneRegisterV2</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>新設備綁定</td><td>POST</td><td><code>/login/newDevice</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>圖形驗證碼</td><td>GET</td><td><code>/login/imageValidCode</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>手機驗證碼</td><td>POST</td><td><code>/login/phoneCode</code></td><td>platform</td><td>依 token</td></tr>
+      <tr><td>註冊選項</td><td>POST</td><td><code>/login/registerOption</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>綁定手機</td><td>POST</td><td><code>/login/bindPhone</code></td><td>platform</td><td>是</td></tr>
+      <tr><td>修改密碼</td><td>POST</td><td><code>/login/changePassword</code></td><td>platform</td><td>是</td></tr>
+      <tr><td>重置密碼</td><td>POST</td><td><code>/login/resetPwd</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>Token 刷新</td><td>POST</td><td><code>/login/refreshToken</code></td><td>public</td><td>否</td></tr>
+      <tr><td>登出</td><td>POST</td><td><code>/login/logout</code></td><td>withoutPublic</td><td>否</td></tr>
+      <tr><td>取得使用者資訊</td><td>POST</td><td><code>/user/userData/v2</code></td><td>platform</td><td>是</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" data-role="rd" id="rd-api-login">
+  <div class="section-title"><span class="num rd">R2</span> 登入 API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">帳號登入 + 手機登入的完整 request/response</div>
+
+  <div class="rule-card rd-card" style="margin-bottom:16px;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>POST /login/login — 帳號登入</h4>
+    <p><strong>Request：</strong></p>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+{
+  channelId: string, agentId: number, hardwareId: string,
+  packageType: string, ip: string, deviceModel: string,
+  systemVersion: string, appVersion: string,
+  account: string, password: string (AES), isEncrypt: true,
+  fromDomain: string,
+  keyCode?: string, validCode?: string, appStoreKey?: string
+}
+</pre>
+    <p style="margin-top:8px;"><strong>Response：</strong></p>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+{
+  errCode: number,  // 1=成功, 9=需驗證碼, 110=新設備, 114=新IP, 163=暫封
+  msg: string,
+  data: {
+    errCode: number, account: string, token: string,
+    phoneMask: string, countryCode: string
+  }
+}
+</pre>
+    <div class="src">apis/login/index.ts → apis/login/login.d.ts</div>
+  </div>
+
+  <div class="rule-card rd-card">
+    <span class="rule-tag tag-api">api</span>
+    <h4>POST /login/phoneLoginV2 — 手機登入</h4>
+    <p><strong>Request：</strong></p>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+{
+  ...BaseInfo (channelId, agentId, hardwareId 等),
+  phoneNum: string, phoneCode: string,
+  countryCode: string, fromDomain: string,
+  keyCode?: string, validCode?: string
+}
+</pre>
+    <p style="margin-top:8px;"><strong>Response：</strong>同帳號登入。</p>
+    <div class="src">apis/login/index.ts</div>
+  </div>
+</div>
+
+<div class="section" data-role="rd" id="rd-api-register">
+  <div class="section-title"><span class="num rd">R3</span> 註冊 API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">帳號註冊 + 手機註冊的完整 request/response</div>
+
+  <div class="rule-card rd-card" style="margin-bottom:16px;">
+    <span class="rule-tag tag-api">api</span>
+    <h4>POST /login/register — 帳號註冊</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+Request: {
+  ...BaseInfo, account, password (AES), isEncrypt: true,
+  registerDomain, friendId?, inviteCode?,
+  phoneNum?, phoneCode?, countryCode?,
+  keyCode?, validCode?, roomId?,
+  AppStoreKey?, referenceIds?, landingPageDomain?, from?
+}
+Response: 同帳號登入（成功即自動登入）
+</pre>
+    <div class="src">apis/login/index.ts</div>
+  </div>
+
+  <div class="rule-card rd-card">
+    <span class="rule-tag tag-api">api</span>
+    <h4>POST /login/phoneRegisterV2 — 手機註冊</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+Request: {
+  ...BaseInfo, countryCode, phoneNum, phoneCode,
+  isEncrypt: true, inviteCode?, friendId?,
+  registerDomain, keyCode?, validCode?,
+  referenceIds?, landingPageDomain?, from?
+}
+Response: 同帳號登入
+</pre>
+    <div class="src">apis/login/index.ts</div>
+  </div>
+</div>
+
+<div class="section" data-role="rd" id="rd-api-misc">
+  <div class="section-title"><span class="num rd">R4</span> 其他 API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">Token 刷新、圖形驗證碼、手機驗證碼、新設備、使用者資訊</div>
+
+  <div class="rule-grid">
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>POST /login/refreshToken</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+Req: { channelId, hardwareId, packageType,
+       deviceModel, systemVersion, appVersion,
+       fromDomain, appStoreKey? }
+Res: { errCode: number }
+</pre>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>GET /login/imageValidCode</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+Req: 無參數（GET）
+Res: { data: {
+  item: string (Base64 圖片),
+  keyCode: number
+}}
+</pre>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>POST /login/phoneCode</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+Req: { ...BaseInfo, opType: number (7=註冊/8=登入),
+       phoneNum, countryCode, account? }
+Res: { data: { errCode: number } }
+</pre>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>POST /login/newDevice</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+Req: { ...BaseInfo, phoneNum, phoneCode,
+       countryCode, fromDomain }
+Res: { data: {
+  ErrCode, account, token,
+  publicKey (RSA), keyExpiredTime
+}}
+</pre>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>POST /user/userData/v2</h4>
+<pre style="color:#cbd5e1; font-size:12px; line-height:1.5; white-space:pre-wrap;">
+Req: {} (token in header)
+Res: { data: {
+  errCode, serverTime, classifySort[],
+  info: { playerId, loginAccount, channelId,
+    vipLevel, bindPhone, sex, recharged,
+    csToken, gameList[], ... }
+}}
+</pre>
+      <div class="src">apis/user/index.ts → apis/user/user.d.ts</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-role="rd" id="rd-error-codes">
+  <div class="section-title"><span class="num rd">R5</span> Error Codes 對照表 <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">登入/註冊相關的全域錯誤碼與前端處理行為</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>errCode</th><th>說明</th><th>前端行為</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>成功</td><td>正常處理</td></tr>
+      <tr><td>2</td><td>無效帳號</td><td>toast「此账号并未被注册，请联系客服!」</td></tr>
+      <tr><td>9</td><td>登入需圖形驗證碼</td><td>開啟 NumberCaptchPopup</td></tr>
+      <tr><td>13</td><td>IP 註冊上限</td><td>toast「您的IP：{ip}({location})已达注册上限」</td></tr>
+      <tr><td>14</td><td>註冊需圖形驗證碼</td><td>開啟 NumberCaptchPopup</td></tr>
+      <tr><td>51</td><td>驗證碼不匹配</td><td>toast「验证码不匹配」</td></tr>
+      <tr><td>110</td><td>新設備驗證</td><td>開啟 NewDeviceAuth（顯示遮蔽手機號）</td></tr>
+      <tr><td>114</td><td>新 IP 驗證</td><td>開啟 NewDeviceAuth（異地登入）</td></tr>
+      <tr><td>163</td><td>暫封/踢下線</td><td>logout + ExpiredPopup + 跳 /login</td></tr>
+      <tr><td>192</td><td>驗證碼需刷新</td><td>refreshTrigger++</td></tr>
+      <tr><td>HTTP 401</td><td>Token 過期</td><td>toast + logout + 跳首頁</td></tr>
+    </tbody>
+  </table>
+  <div class="src" style="font-size:11px; color:#64748b; margin-top:8px; font-family:monospace;">utils/apiErrorHandler/platform.ts · plugins/fetch.ts</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- QA Sections (驗測矩陣 L4) -->
+<!-- ============================================================ -->
+
+<div class="section" data-role="qa" id="qa-login">
+  <div class="section-title"><span class="num qa">Q1</span> 登入場景測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">20 項登入場景驗測矩陣</div>
+
+  <table class="test-table">
+    <thead>
+      <tr><th>#</th><th>場景</th><th>預期結果</th><th>驗證重點</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>L-01</td><td>帳號密碼正確登入</td><td>成功跳轉 pushTypePage</td><td>token 寫入、getUserInfo 完成、loading 關閉</td></tr>
+      <tr><td>L-02</td><td>帳號不存在</td><td>toast「此账号并未被注册」</td><td>errCode=2</td></tr>
+      <tr><td>L-03</td><td>密碼錯誤</td><td>toast 顯示 API 錯誤訊息</td><td>不清空密碼欄位</td></tr>
+      <tr><td>L-04</td><td>觸發圖形驗證碼（errCode=9）</td><td>彈出 NumberCaptchPopup</td><td>填寫後自動重試原始請求</td></tr>
+      <tr><td>L-05</td><td>圖形驗證碼錯誤（errCode=192）</td><td>自動刷新驗證碼圖片</td><td>refreshTrigger 遞增</td></tr>
+      <tr><td>L-06</td><td>新設備觸發異地驗證（errCode=110）</td><td>彈出 NewDeviceAuth，顯示遮蔽手機號</td><td>phoneMask 正確顯示</td></tr>
+      <tr><td>L-07</td><td>新 IP 觸發異地驗證（errCode=114）</td><td>同 L-06</td><td>countryCode 帶入</td></tr>
+      <tr><td>L-08</td><td>新設備驗證成功</td><td>bindNewDevice → 登入成功</td><td>token + publicKey 回傳</td></tr>
+      <tr><td>L-09</td><td>手機號+驗證碼登入</td><td>成功登入</td><td>opType=8</td></tr>
+      <tr><td>L-10</td><td>手機驗證碼 60 秒冷卻</td><td>按鈕倒計時 disabled</td><td>PhoneCodeBtn 元件</td></tr>
+      <tr><td>L-11</td><td>驗證碼獲取頻率過高</td><td>toast「验证码获取太频繁」</td><td>API errMsg</td></tr>
+      <tr><td>L-12</td><td>記住密碼勾選</td><td>localStorage 記住加密密碼</td><td>passwordEncrypt 值正確</td></tr>
+      <tr><td>L-13</td><td>記住密碼取消</td><td>localStorage 清空帳密</td><td>accountStorage 清空</td></tr>
+      <tr><td>L-14</td><td>帳號下拉選單</td><td>顯示曾登入帳號列表</td><td>accountStorageList</td></tr>
+      <tr><td>L-15</td><td>已登入狀態進入 /login</td><td>自動跳轉 pushTypePage</td><td>onMounted 檢查</td></tr>
+      <tr><td>L-16</td><td>被踢下線（errCode=163）</td><td>登出 + ExpiredPopup + 跳 /login</td><td>popup 確認跳客服</td></tr>
+      <tr><td>L-17</td><td>Token 過期（HTTP 401）</td><td>toast + 登出 + 跳首頁</td><td>platformStatusCodeHandler</td></tr>
+      <tr><td>L-18</td><td>只開帳號登入</td><td>隱藏 Tab，直接 AccountLogin</td><td>phoneNumberLoginEnabled=false</td></tr>
+      <tr><td>L-19</td><td>只開手機登入</td><td>隱藏 Tab，直接 PhoneLogin</td><td>accountLoginEnabled=false</td></tr>
+      <tr><td>L-20</td><td>忘記密碼</td><td>開啟 ForgetPassword 面板</td><td>popupStore.setIsForgetPasswordOpen</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" data-role="qa" id="qa-register">
+  <div class="section-title"><span class="num qa">Q2</span> 註冊場景測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">16 項註冊場景驗測矩陣</div>
+
+  <table class="test-table">
+    <thead>
+      <tr><th>#</th><th>場景</th><th>預期結果</th><th>驗證重點</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>R-01</td><td>帳號註冊成功</td><td>自動登入 + 跳轉首頁</td><td>handleLoginSuccess 完整執行</td></tr>
+      <tr><td>R-02</td><td>帳號格式錯誤（預設 role）</td><td>「6-13位字母或数字组成」</td><td>前端 zod 驗證</td></tr>
+      <tr><td>R-03</td><td>帳號格式錯誤（role=2）</td><td>「6-13位字母+数字，首位为字母」</td><td>regex 驗證</td></tr>
+      <tr><td>R-04</td><td>密碼不符規則</td><td>「密码为8-20位英文字母与数字组合」</td><td>前端 zod</td></tr>
+      <tr><td>R-05</td><td>確認密碼不一致</td><td>「密码不一致」</td><td>zod refine</td></tr>
+      <tr><td>R-06</td><td>IP 註冊上限（errCode=13）</td><td>toast 含 IP 和地區</td><td>baseConfig.ip/location</td></tr>
+      <tr><td>R-07</td><td>觸發註冊驗證碼（errCode=14）</td><td>彈出 NumberCaptchPopup</td><td>同登入驗證碼流程</td></tr>
+      <tr><td>R-08</td><td>手機號碼註冊成功</td><td>自動登入</td><td>phoneRegisterV2</td></tr>
+      <tr><td>R-09</td><td>需綁定手機號</td><td>帳號註冊表單多出手機欄位</td><td>accountRegisterBoundPhoneNumber</td></tr>
+      <tr><td>R-10</td><td>邀請碼欄位顯示條件</td><td>inviteCodeEnabled=true 且無 referenceId</td><td>三者 AND</td></tr>
+      <tr><td>R-11</td><td>測試渠道邀請碼</td><td>自動清空 inviteCode</td><td>shareStore.isTestChannel</td></tr>
+      <tr><td>R-12</td><td>推薦人 ID 解析</td><td>Base64 decode + '|' 分隔取後段</td><td>getRecommendId()</td></tr>
+      <tr><td>R-13</td><td>從直播間註冊</td><td>帶入 roomId</td><td>RoomId query</td></tr>
+      <tr><td>R-14</td><td>只開帳號註冊</td><td>隱藏 Tab</td><td>baseConfig 控制</td></tr>
+      <tr><td>R-15</td><td>只開手機註冊</td><td>隱藏 Tab</td><td>baseConfig 控制</td></tr>
+      <tr><td>R-16</td><td>訪客「随便逛逛」</td><td>跳轉 pushTypePage</td><td>toPushTypePage()</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" data-role="qa" id="qa-init">
+  <div class="section-title"><span class="num qa">Q3</span> 初始化失敗測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">10 項初始化異常場景</div>
+
+  <table class="test-table">
+    <thead>
+      <tr><th>#</th><th>場景</th><th>預期結果</th><th>驗證重點</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>I-01</td><td>channelId 取不到</td><td>toast「初始化失败」+ 清 localStorage</td><td>300ms 延遲清空</td></tr>
+      <tr><td>I-02</td><td>baseConfig API 失敗</td><td>toast「初始化失败」</td><td>logger.trace 打點</td></tr>
+      <tr><td>I-03</td><td>blackList API 失敗</td><td>同 I-02</td><td>Promise.allSettled 其一 rejected</td></tr>
+      <tr><td>I-04</td><td>baseConfig errCode !== 1</td><td>跳轉 /maintain</td><td>setBaseConfigOutsideErrorCode</td></tr>
+      <tr><td>I-05</td><td>isInMaintain=true</td><td>跳轉 /maintain</td><td>維護頁 watchEffect</td></tr>
+      <tr><td>I-06</td><td>isBlocked=true</td><td>跳轉 /block</td><td>blackList 判斷</td></tr>
+      <tr><td>I-07</td><td>refreshToken 失敗</td><td>不中斷流程，console.warn</td><td>token 保留但 userInfo 可能無</td></tr>
+      <tr><td>I-08</td><td>DeBox 環境登入失敗</td><td>console.warn 但不阻斷</td><td>try/catch 包住</td></tr>
+      <tr><td>I-09</td><td>維護結束後自動重載</td><td>watch isInMaintain → logout + reload</td><td>maintain.vue</td></tr>
+      <tr><td>I-10</td><td>IP 封鎖頁顯示</td><td>顯示 IP + 地區 + 客服入口</td><td>block.vue</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" data-role="qa" id="qa-token">
+  <div class="section-title"><span class="num qa">Q4</span> Token 管理測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">10 項 Token 生命週期驗測</div>
+
+  <table class="test-table">
+    <thead>
+      <tr><th>#</th><th>場景</th><th>預期結果</th><th>驗證重點</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>T-01</td><td>初始化時有 token</td><td>自動 refreshToken + getUserInfo</td><td>hasToken 判斷</td></tr>
+      <tr><td>T-02</td><td>refreshToken 成功</td><td>靜默續期</td><td>無 UI 變化</td></tr>
+      <tr><td>T-03</td><td>refreshToken 失敗</td><td>不登出，保留 token</td><td>catch 只 console.warn</td></tr>
+      <tr><td>T-04</td><td>API 回傳 HTTP 401</td><td>logout + toast + 跳首頁</td><td>platformStatusCodeHandler[401]</td></tr>
+      <tr><td>T-05</td><td>API 回傳 errCode=163</td><td>logout + 踢下線彈窗</td><td>ExpiredPopup</td></tr>
+      <tr><td>T-06</td><td>API 錯誤重試機制</td><td>最多 3 次，間隔遞增</td><td>retryCount Map + setTimeout</td></tr>
+      <tr><td>T-07</td><td>登出</td><td>清 localStorage + 清 stores</td><td>_logoutStorageKey</td></tr>
+      <tr><td>T-08</td><td>Token 在 header 傳遞</td><td>Token: {token}</td><td>非 Bearer</td></tr>
+      <tr><td>T-09</td><td>公開 API 不帶 token</td><td>prefix = /ajax-migration/public</td><td>apiType.public</td></tr>
+      <tr><td>T-10</td><td>私有 API 帶 token</td><td>prefix = /ajax-migration</td><td>apiType.withoutPublic</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" data-role="qa" id="qa-guard">
+  <div class="section-title"><span class="num qa">Q5</span> 路由守衛測項 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">9 項路由守衛場景驗測</div>
+
+  <table class="test-table">
+    <thead>
+      <tr><th>#</th><th>場景</th><th>預期結果</th><th>驗證重點</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>G-01</td><td>未登入訪問 needLogin 頁面</td><td>彈出半版登入 Sheet + abort</td><td>非重整場景</td></tr>
+      <tr><td>G-02</td><td>重整時未登入在 needLogin 頁</td><td>由 useSystemCheck 處理跳轉</td><td>from.path === to.path</td></tr>
+      <tr><td>G-03</td><td>測試帳號進入 deposit</td><td>toast「此为测试账号」+ abort</td><td>isTestAccount</td></tr>
+      <tr><td>G-04</td><td>測試帳號進入 withdraw</td><td>同 G-03</td><td></td></tr>
+      <tr><td>G-05</td><td>測試帳號進入 mine-transfer</td><td>同 G-03</td><td></td></tr>
+      <tr><td>G-06</td><td>channelId 跨頁繼承</td><td>URL query 自動帶上 channelId</td><td>navigateTo 替換</td></tr>
+      <tr><td>G-07</td><td>from 參數記錄</td><td>localStorage fromKey 寫入</td><td>大小寫不敏感比對</td></tr>
+      <tr><td>G-08</td><td>離開杯賽頁面</td><td>themeOverride 清空</td><td>/home/topic 路徑判斷</td></tr>
+      <tr><td>G-09</td><td>路由切換清空直播購物車</td><td>liveCartsStore.$reset()</td><td>from.name !== to.name</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section" data-role="qa" id="qa-file-index">
+  <div class="section-title"><span class="num qa">Q6</span> 檔案索引 <span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">系統模組原始碼檔案對照表，方便定位</div>
+
+  <table class="type-table">
+    <thead>
+      <tr><th>功能</th><th>檔案路徑</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>App 初始化</td><td><code>composables/useInit.ts</code></td></tr>
+      <tr><td>系統狀態檢查</td><td><code>composables/useSystemCheck.ts</code></td></tr>
+      <tr><td>登入邏輯</td><td><code>composables/useLogin/index.ts</code></td></tr>
+      <tr><td>登入型別</td><td><code>composables/useLogin/useLogin.d.ts</code></td></tr>
+      <tr><td>登入頁</td><td><code>pages/login/index.vue</code></td></tr>
+      <tr><td>帳號登入元件</td><td><code>pages/login/components/AccountLogin.vue</code></td></tr>
+      <tr><td>手機登入元件</td><td><code>pages/login/components/PhoneLogin.vue</code></td></tr>
+      <tr><td>帳號註冊元件</td><td><code>pages/login/components/AccountRegister.vue</code></td></tr>
+      <tr><td>手機註冊元件</td><td><code>pages/login/components/PhoneRegister.vue</code></td></tr>
+      <tr><td>過期彈窗</td><td><code>pages/login/components/ExpiredPopup.vue</code></td></tr>
+      <tr><td>路由守衛</td><td><code>middleware/router-guard.global.ts</code></td></tr>
+      <tr><td>Login API</td><td><code>apis/login/index.ts</code></td></tr>
+      <tr><td>Login 型別</td><td><code>apis/login/login.d.ts</code></td></tr>
+      <tr><td>User API</td><td><code>apis/user/index.ts</code></td></tr>
+      <tr><td>User 型別</td><td><code>apis/user/user.d.ts</code></td></tr>
+      <tr><td>HTTP 攔截器</td><td><code>plugins/fetch.ts</code></td></tr>
+      <tr><td>錯誤處理器</td><td><code>utils/apiErrorHandler/platform.ts</code></td></tr>
+      <tr><td>密碼加密</td><td><code>utils/passwordCrypt/index.ts</code></td></tr>
+      <tr><td>User Store</td><td><code>stores/user.ts</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
 <!-- Footer -->
 <div class="footer">
-  <p>系統模組標註頁面 — 自動產出於 2026-04-09</p>
+  <p>系統模組標註頁面（L1-L4）— 自動產出於 2026-04-09</p>
   <p>資料來源：Figma V4UV6fa9K73VNo2yTwWPZW + 程式碼 mango2-h5 + RP vxgdzx.axshare.com</p>
   <p style="margin-top:8px;">GOR-327 / GOR-960 / GOR-3898 / GOR-478 / GOR-2368</p>
 </div>
@@ -891,7 +1617,27 @@
 </div><!-- /.layout -->
 
 <script>
-// Nav button scrolling
+function switchRole(role) {
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.role-tab[data-role="' + role + '"]').classList.add('active');
+  document.querySelectorAll('.section').forEach(sec => {
+    const roles = (sec.getAttribute('data-role') || '').split(' ');
+    sec.classList.toggle('hidden', !roles.includes(role));
+  });
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    const nr = btn.getAttribute('data-nav-role') || '';
+    btn.classList.toggle('hidden', nr !== role);
+  });
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const firstVisible = document.querySelector('.nav-btn[data-nav-role="' + role + '"]:not(.hidden)');
+  if (firstVisible) firstVisible.classList.add('active');
+  document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.role-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
+});
+
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -900,6 +1646,8 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
+
+switchRole('l1');
 </script>
 
 </body>

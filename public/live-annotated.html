@@ -17,11 +17,31 @@
     .sidebar-back:hover { color:#e2e8f0; }
     .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
     .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+
+    /* Role Tabs in sidebar */
+    .role-bar { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0; border-bottom:1px solid #334155; }
+    .role-tab { background:transparent; color:#94a3b8; border:none; padding:10px 4px; font-size:11px; font-weight:600; cursor:pointer; transition:all .2s; border-bottom:2px solid transparent; text-align:center; }
+    .role-tab:hover { color:#e2e8f0; background:#263548; }
+    .role-tab.active { color:#06b6d4; border-bottom-color:#06b6d4; }
+    .role-indicator { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:3px; }
+    .ri-l1 { background:#06b6d4; }
+    .ri-pm { background:#f97316; }
+    .ri-rd { background:#a78bfa; }
+    .ri-qa { background:#34d399; }
+
+    /* Section depth badges */
+    .depth-badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:6px; font-weight:700; margin-left:8px; vertical-align:middle; }
+    .depth-l1 { background:#0e3a4a; color:#67e8f9; }
+    .depth-l2 { background:#3b2f1a; color:#fbbf24; }
+    .depth-l3 { background:#2d1a3e; color:#c4b5fd; }
+    .depth-l4 { background:#1a2e1a; color:#86efac; }
+
     .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
     .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
     .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
     .nav-btn.active { color:#06b6d4; background:#06b6d410; border-left-color:#06b6d4; }
-    .main-content { margin-left:250px; flex:1; }
+    .nav-btn.hidden { display:none; }
+    .main-content { margin-left:250px; flex:1; overflow-y:auto; }
 
     /* Header */
     .page-header { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); padding:40px 24px 24px; text-align:center; }
@@ -37,9 +57,33 @@
 
     /* Sections */
     .section { max-width:1200px; margin:32px auto; padding:0 16px; }
+    .section.hidden { display:none; }
     .section-title { font-size:22px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .section-title .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background:#06b6d4; color:#fff; border-radius:50%; font-size:15px; flex-shrink:0; }
+    .section-title .num.pm { background:#f97316; }
+    .section-title .num.rd { background:#7c3aed; }
+    .section-title .num.qa { background:#059669; }
     .section-desc { color:#94a3b8; font-size:14px; margin-bottom:16px; }
+
+    /* Role-specific rule cards */
+    .rule-card.rd-card { border-left-color:#7c3aed; }
+    .rule-card.qa-card { border-left-color:#059669; }
+    .rule-card.pm-card { border-left-color:#f97316; }
+
+    /* Test matrix table */
+    .test-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:12px; }
+    .test-table th { background:#064e3b; color:#d1fae5; padding:8px; text-align:left; font-size:11px; }
+    .test-table td { background:#1e293b; padding:6px 8px; border-bottom:1px solid #334155; }
+    .test-table tr:hover td { background:#263548; }
+    .pri-p0 { color:#f87171; font-weight:700; }
+    .pri-p1 { color:#fbbf24; font-weight:600; }
+    .pri-p2 { color:#94a3b8; }
+
+    /* Schema table */
+    .schema-table { width:100%; border-collapse:collapse; margin:12px 0; font-size:12px; }
+    .schema-table th { background:#2d1a3e; color:#c4b5fd; padding:6px 10px; text-align:left; font-size:11px; }
+    .schema-table td { background:#1e293b; padding:5px 10px; border-bottom:1px solid #334155; font-size:12px; }
+    .schema-table code { background:#334155; padding:1px 4px; border-radius:3px; font-size:11px; color:#fbbf24; }
 
     /* Overview image */
     .overview-img { width:100%; border-radius:12px; border:1px solid #334155; margin-bottom:20px; }
@@ -90,9 +134,14 @@
     .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
 
     /* Mobile sidebar */
-    @media(max-width:768px) {
-      .sidebar { width:200px; }
-      .main-content { margin-left:200px; }
+    @media(max-width:900px) {
+      .sidebar { position:relative; width:100%; height:auto; max-height:none; border-right:none; border-bottom:1px solid #334155; }
+      .layout { flex-direction:column; }
+      .main-content { margin-left:0; }
+      .role-bar { grid-template-columns:repeat(4,1fr); }
+      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
+      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+      .nav-btn:hover, .nav-btn.active { border-left:none; }
     }
   </style>
 </head>
@@ -104,22 +153,59 @@
     <div class="sidebar-header">
       <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
       <div class="sidebar-title">📺 廣場 / 直播間</div>
-      <div class="sidebar-sub">10 功能</div>
+      <div class="sidebar-sub">13 功能 · 11 決策流程 · 35 API · 86 測項</div>
+    </div>
+    <div class="role-bar">
+      <button class="role-tab active" data-role="l1"><span class="role-indicator ri-l1"></span>概覽</button>
+      <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策</button>
+      <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API</button>
+      <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測</button>
     </div>
     <div class="sidebar-nav">
-      <button class="nav-btn active" data-target="sec-flow">核心流程</button>
-      <button class="nav-btn" data-target="sec-plaza-tabs">4.1 廣場主頁 Tab</button>
-      <button class="nav-btn" data-target="sec-livelist">直播列表 LiveList</button>
-      <button class="nav-btn" data-target="sec-schedule">節目表 Schedule</button>
-      <button class="nav-btn" data-target="sec-ranking">晒單排行榜</button>
-      <button class="nav-btn" data-target="sec-streamer">主播列表</button>
-      <button class="nav-btn" data-target="sec-anchor">主播主頁</button>
-      <button class="nav-btn" data-target="sec-liveroom">4.2 直式半屏直播間</button>
-      <button class="nav-btn" data-target="sec-chatroom">聊天室</button>
-      <button class="nav-btn" data-target="sec-horizontal">4.3 橫式全屏直播間</button>
-      <button class="nav-btn" data-target="sec-funky">4.4 直播帶牌</button>
-      <button class="nav-btn" data-target="sec-api">API 總覽</button>
-      <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+      <!-- L1 nav -->
+      <button class="nav-btn" data-target="sec-flow" data-nav-role="l1">核心流程</button>
+      <button class="nav-btn" data-target="sec-plaza-tabs" data-nav-role="l1">廣場主頁 Tab</button>
+      <button class="nav-btn" data-target="sec-livelist" data-nav-role="l1">直播列表</button>
+      <button class="nav-btn" data-target="sec-schedule" data-nav-role="l1">節目表</button>
+      <button class="nav-btn" data-target="sec-ranking" data-nav-role="l1">晒單排行榜</button>
+      <button class="nav-btn" data-target="sec-streamer" data-nav-role="l1">主播列表</button>
+      <button class="nav-btn" data-target="sec-anchor" data-nav-role="l1">主播主頁</button>
+      <button class="nav-btn" data-target="sec-liveroom" data-nav-role="l1">直式半屏直播間</button>
+      <button class="nav-btn" data-target="sec-chatroom" data-nav-role="l1">聊天室</button>
+      <button class="nav-btn" data-target="sec-horizontal" data-nav-role="l1">橫式全屏直播間</button>
+      <button class="nav-btn" data-target="sec-funky" data-nav-role="l1">直播帶牌</button>
+      <button class="nav-btn" data-target="sec-api" data-nav-role="l1">API 總覽</button>
+      <button class="nav-btn" data-target="sec-overview" data-nav-role="l1">Figma 總覽</button>
+      <!-- PM nav -->
+      <button class="nav-btn" data-target="pm-tab-logic" data-nav-role="pm">Tab 模式判斷</button>
+      <button class="nav-btn" data-target="pm-livelist-filter" data-nav-role="pm">列表篩選邏輯</button>
+      <button class="nav-btn" data-target="pm-routing" data-nav-role="pm">直播間進入路由</button>
+      <button class="nav-btn" data-target="pm-schedule-logic" data-nav-role="pm">節目表 OB 特殊</button>
+      <button class="nav-btn" data-target="pm-ranking-logic" data-nav-role="pm">排行榜決策</button>
+      <button class="nav-btn" data-target="pm-streamer-logic" data-nav-role="pm">主播列表決策</button>
+      <button class="nav-btn" data-target="pm-vertical" data-nav-role="pm">直式娛樂決策</button>
+      <button class="nav-btn" data-target="pm-funky-logic" data-nav-role="pm">Funky 火箭決策</button>
+      <button class="nav-btn" data-target="pm-cocos-logic" data-nav-role="pm">Cocos 遊戲決策</button>
+      <button class="nav-btn" data-target="pm-store-logic" data-nav-role="pm">liveStore 狀態</button>
+      <!-- RD nav -->
+      <button class="nav-btn" data-target="rd-api-full" data-nav-role="rd">35 端點總覽</button>
+      <button class="nav-btn" data-target="rd-schema-livelist" data-nav-role="rd">getLiveList Schema</button>
+      <button class="nav-btn" data-target="rd-schema-category" data-nav-role="rd">getCategoryLabel</button>
+      <button class="nav-btn" data-target="rd-schema-streamer" data-nav-role="rd">getStreamerList</button>
+      <button class="nav-btn" data-target="rd-schema-rank" data-nav-role="rd">getRank Schema</button>
+      <button class="nav-btn" data-target="rd-schema-redpacket" data-nav-role="rd">紅包 API</button>
+      <button class="nav-btn" data-target="rd-error-codes" data-nav-role="rd">Error Code</button>
+      <!-- QA nav -->
+      <button class="nav-btn" data-target="qa-plaza" data-nav-role="qa">廣場主頁 (9)</button>
+      <button class="nav-btn" data-target="qa-livelist" data-nav-role="qa">直播列表 (13)</button>
+      <button class="nav-btn" data-target="qa-routing" data-nav-role="qa">進入路由 (6)</button>
+      <button class="nav-btn" data-target="qa-schedule" data-nav-role="qa">節目表 (7)</button>
+      <button class="nav-btn" data-target="qa-ranking" data-nav-role="qa">排行榜 (6)</button>
+      <button class="nav-btn" data-target="qa-streamer" data-nav-role="qa">主播列表 (6)</button>
+      <button class="nav-btn" data-target="qa-vertical" data-nav-role="qa">直式娛樂 (11)</button>
+      <button class="nav-btn" data-target="qa-funky" data-nav-role="qa">Funky 火箭 (13)</button>
+      <button class="nav-btn" data-target="qa-cocos" data-nav-role="qa">Cocos 遊戲 (11)</button>
+      <button class="nav-btn" data-target="qa-videohub" data-nav-role="qa">影片專區 (4)</button>
     </div>
   </nav>
 
@@ -128,25 +214,23 @@
 
     <!-- Header -->
     <div class="page-header">
-      <h1>📺 廣場 / 直播間 — 現況標註文件</h1>
-      <div class="sub">水果 2.0-APP（Vue H5）— L1 功能知識庫</div>
+      <h1>📺 廣場 / 直播間 — 標註文件（PM / RD / QA）</h1>
+      <div class="sub">水果 2.0-APP（Vue H5）— L1 概覽 + L2 決策流程 + L3 API Schema + L4 驗測矩陣</div>
       <div style="margin-top:12px;">
         <span class="h-badge">Figma: nzmX9pUldlKfdI8sFSR9rQ</span>
         <span class="h-badge">pages/live/</span>
-        <span class="h-badge">GOR-5097</span>
-        <span class="h-badge">GOR-6082</span>
-        <span class="h-badge">GOR-6486</span>
+        <span class="h-badge">main / 15fce829c (7.14.16)</span>
       </div>
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">功能數</div></div>
-        <div class="stat-card"><div class="stat-num">22</div><div class="stat-label">Figma 截圖</div></div>
-        <div class="stat-card"><div class="stat-num">16</div><div class="stat-label">API 端點</div></div>
-        <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Figma 頁面</div></div>
+        <div class="stat-card"><div class="stat-num">13</div><div class="stat-label">功能數</div></div>
+        <div class="stat-card"><div class="stat-num">11</div><div class="stat-label">決策流程</div></div>
+        <div class="stat-card"><div class="stat-num">35</div><div class="stat-label">API 端點</div></div>
+        <div class="stat-card"><div class="stat-num">86</div><div class="stat-label">測項</div></div>
       </div>
     </div>
 
     <!-- Section 1: Core Flow -->
-    <div class="section" id="sec-flow">
+    <div class="section" id="sec-flow" data-role="l1">
       <div class="section-title"><span class="num">1</span> 核心流程</div>
       <div class="section-desc">廣場模組的進入路徑與主要操作流程</div>
 
@@ -205,7 +289,7 @@
     </div>
 
     <!-- Section 2: Plaza Tabs -->
-    <div class="section" id="sec-plaza-tabs">
+    <div class="section" id="sec-plaza-tabs" data-role="l1">
       <div class="section-title"><span class="num">2</span> 廣場主頁 — Tab 容器</div>
       <div class="section-desc">路徑 /live，van-tabs 水平分頁結構，預設「直播」頁</div>
 
@@ -242,7 +326,7 @@
     </div>
 
     <!-- Section 3: LiveList -->
-    <div class="section" id="sec-livelist">
+    <div class="section" id="sec-livelist" data-role="l1">
       <div class="section-title"><span class="num">3</span> 直播列表（LiveList）</div>
       <div class="section-desc">「直播」分頁 — 二級頁籤（房型）+ 三級標籤（聯賽/主播分類）+ 搜尋</div>
 
@@ -311,7 +395,7 @@
     </div>
 
     <!-- Section 4: Schedule -->
-    <div class="section" id="sec-schedule">
+    <div class="section" id="sec-schedule" data-role="l1">
       <div class="section-title"><span class="num">4</span> 節目表（Schedule）</div>
       <div class="section-desc">體育賽事直播預告 + 美女房型時段表，支援預約關注</div>
 
@@ -365,7 +449,7 @@
     </div>
 
     <!-- Section 5: Ranking -->
-    <div class="section" id="sec-ranking">
+    <div class="section" id="sec-ranking" data-role="l1">
       <div class="section-title"><span class="num">5</span> 晒單排行榜（Ranking）</div>
       <div class="section-desc">玩家投注晒單排行，分日/週/月榜，後台開關控制</div>
 
@@ -436,7 +520,7 @@
     </div>
 
     <!-- Section 6: Streamer -->
-    <div class="section" id="sec-streamer">
+    <div class="section" id="sec-streamer" data-role="l1">
       <div class="section-title"><span class="num">6</span> 主播列表（Streamer）</div>
       <div class="section-desc">搜尋、篩選、排序主播卡片，無限捲動分頁（每頁 30 筆）</div>
 
@@ -481,7 +565,7 @@
     </div>
 
     <!-- Section 7: Anchor Profile -->
-    <div class="section" id="sec-anchor">
+    <div class="section" id="sec-anchor" data-role="l1">
       <div class="section-title"><span class="num">7</span> 專家/主播主頁</div>
       <div class="section-desc">主播個人主頁 — 直播時間表 / 主播推單 / 爆料 三個子頁籤</div>
 
@@ -535,7 +619,7 @@
     </div>
 
     <!-- Section 8: Live Room -->
-    <div class="section" id="sec-liveroom">
+    <div class="section" id="sec-liveroom" data-role="l1">
       <div class="section-title"><span class="num">8</span> 直式半屏直播間（4.2）</div>
       <div class="section-desc">上半直播影片 + 下半聊天室互動區，主要直播間入口形式</div>
 
@@ -635,7 +719,7 @@
     </div>
 
     <!-- Section 9: Chatroom -->
-    <div class="section" id="sec-chatroom">
+    <div class="section" id="sec-chatroom" data-role="l1">
       <div class="section-title"><span class="num">9</span> 聊天室</div>
       <div class="section-desc">直播間下半部即時聊天區域 — WebSocket 即時通訊</div>
 
@@ -678,7 +762,7 @@
     </div>
 
     <!-- Section 10: Horizontal -->
-    <div class="section" id="sec-horizontal">
+    <div class="section" id="sec-horizontal" data-role="l1">
       <div class="section-title"><span class="num">10</span> 橫式全屏直播間（4.3）</div>
       <div class="section-desc">賽事詳情頁進入，手機橫轉後全屏，聊天室為側邊欄</div>
 
@@ -705,7 +789,7 @@
     </div>
 
     <!-- Section 11: Funky -->
-    <div class="section" id="sec-funky">
+    <div class="section" id="sec-funky" data-role="l1">
       <div class="section-title"><span class="num">11</span> 直播帶牌 / Funky 火箭（4.4）</div>
       <div class="section-desc">Funky 場館的直播間串接，內嵌在遊戲畫面中</div>
 
@@ -728,7 +812,7 @@
     </div>
 
     <!-- Section: API Table -->
-    <div class="section" id="sec-api">
+    <div class="section" id="sec-api" data-role="l1">
       <div class="section-title"><span class="num">12</span> API 端點總覽</div>
       <div class="section-desc">廣場/直播間模組所有已知 API 端點</div>
 
@@ -761,7 +845,7 @@
     </div>
 
     <!-- Section: Figma Overview -->
-    <div class="section" id="sec-overview">
+    <div class="section" id="sec-overview" data-role="l1">
       <div class="section-title"><span class="num">13</span> Figma 總覽</div>
       <div class="section-desc">Figma 全景截圖，僅供參考</div>
 
@@ -772,44 +856,931 @@
       <img class="overview-img" src="/images/live/section-liveroom.png" alt="4.2 直式半屏直播間 Section 總覽">
     </div>
 
+    <!-- ======================== PM SECTIONS (L2) ======================== -->
+
+    <!-- PM 1: Tab Mode Logic -->
+    <div class="section" id="pm-tab-logic" data-role="pm">
+      <div class="section-title"><span class="num pm">1</span> 廣場 Tab 模式判斷 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">pushType 決定走標準模式（5 Tab）還是純直播模式（2 Tab），各 Tab 有登入/後台開關兩層門檻</div>
+      <div class="flow-box">
+        <div class="flow-label">模式分流</div>
+        <div class="flow-row">
+          <span class="flow-step">pushType</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">pushType === 2</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">onlyLive/index.vue</span>
+          <span class="flow-step"><small>只有「直播」+「主播」</small></span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">pushType</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">pushType !== 2</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">live/index.vue</span>
+          <span class="flow-step"><small>直播 / 排行榜 / 主播 / 節目表 / 影片專區</small></span>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>Tab 動態計算（標準模式）</h4>
+          <ul>
+            <li>Tab 1：直播（LiveList）— 永遠顯示</li>
+            <li>Tab 2：排行榜 — <code>liveStore.showBetRankConfig.isEnabled === true</code></li>
+            <li>Tab 3：主播 — disabled: <code>!userStore.isLogin</code></li>
+            <li>Tab 4：節目表 — 永遠顯示</li>
+            <li>Tab 5：影片專區 — <code>videohubStore.videoConfig?.isOpen === true</code></li>
+          </ul>
+          <div class="src">pages/live/index.vue:L32-L137</div>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>initializeActiveTab()</h4>
+          <ul>
+            <li>讀取 <code>route.query.active</code>（預設 'liveList'）</li>
+            <li>找到對應 Tab 且非 disabled &rarr; 設為 active</li>
+            <li>找不到 / disabled &rarr; active = 0（直播 Tab）</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-warning">warning</span>
+          <h4>排行榜遊客模式</h4>
+          <ul>
+            <li><code>showBetGuestDisplayMode === 0</code> 且未登入 &rarr; Tab disabled（點擊彈登入 Sheet）</li>
+            <li><code>showBetGuestDisplayMode !== 0</code> &rarr; 遊客可見</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>登出自動切 Tab</h4>
+          <p><code>watch(userStore.isLogin)</code> &rarr; 登出後如果當前 Tab 是 disabled &rarr; active = 0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 2: LiveList Filter -->
+    <div class="section" id="pm-livelist-filter" data-role="pm">
+      <div class="section-title"><span class="num pm">2</span> 直播列表篩選邏輯 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">二級頁籤（Category）+ 三級標籤（Label）+ 搜尋 + 廣告插入 + 新手引導 完整 if/else</div>
+      <div class="flow-box">
+        <div class="flow-label">filteredLiveList 計算流程</div>
+        <div class="flow-row">
+          <span class="flow-step">activeCategory === 999（關注）</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">followSteamData.online</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">searchValue 有值</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">比對 6 欄位</span>
+          <span class="flow-step"><small>userNickname, league, title, matchNameCn, categoryName, labelName</small></span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">無搜尋</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">categoryId 篩選</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">labelId 篩選</span>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>二級頁籤切換</h4>
+          <ul>
+            <li>categoryId === 999（關注）&rarr; <code>userStore.requireLogin()</code>，未登入彈登入 Sheet</li>
+            <li>其他 categoryId &rarr; 直接切換</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>廣告插入規則</h4>
+          <ul>
+            <li>條件：全部 Tab（!activeCategory）且無搜尋</li>
+            <li>位置：第 4、5 張 LiveCard 之間插入 &lt;AdRow /&gt;</li>
+            <li>關注頁且有待播 &rarr; 顯示 ReserveCard 列表</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>WebSocket 聊天人數</h4>
+          <ul>
+            <li>每 3 秒發送 <code>UserPlat_ChatCountList_CS</code></li>
+            <li>解析 protobuf &rarr; chatCountList = { [roomId]: count }</li>
+            <li>onActivated 恢復 / onDeactivated 暫停</li>
+          </ul>
+          <div class="src">pages/live/components/LiveList/index.vue:L170-L338</div>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>新手引導</h4>
+          <ul>
+            <li>curMission 存在 + activityDescription 有值 + 有直播間</li>
+            <li>檢查 ShowGuidKeys.liveLobby + isNewbie</li>
+            <li>通過 &rarr; 顯示 FocusSlotGuide：「请开始完成任务」</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 3: Room Routing -->
+    <div class="section" id="pm-routing" data-role="pm">
+      <div class="section-title"><span class="num pm">3</span> 直播間進入路由（9 種房型）<span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">useGoStreaming — 根據 roomType 決定跳轉到哪種直播間頁面</div>
+      <div class="flow-box">
+        <div class="flow-label">handleGoStreaming(liveData, options)</div>
+        <div class="flow-row">
+          <span class="flow-step">roomType=3 (sport)</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">/match-detail/{vendor}/{sport}/{matchId}</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">roomType=7 + srctp=liveFunky</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">live-live-funky?roomId={id}</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">roomType=7 (other)</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">live-live-casino?roomId={id}</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">roomType=8</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">live-vertical-entertainment?roomId={id}</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">roomType=9 (cockFight)</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">match-detail-CockFightRoom?roomId={id}</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">roomType=4/5/6</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">match-detail-OtherRoom?roomId={id}</span>
+        </div>
+      </div>
+      <table class="type-table" style="max-width:700px;">
+        <thead><tr><th>值</th><th>名稱</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>deposit</td><td>存款</td></tr>
+          <tr><td>2</td><td>withdraw</td><td>提現</td></tr>
+          <tr><td>3</td><td>sport</td><td>體育賽事</td></tr>
+          <tr><td>4</td><td>entertainment</td><td>娛樂</td></tr>
+          <tr><td>5</td><td>other</td><td>其他</td></tr>
+          <tr><td>6</td><td>special</td><td>特殊</td></tr>
+          <tr><td>7</td><td>liveCasino</td><td>Cocos 遊戲</td></tr>
+          <tr><td>8</td><td>verticalEntertainment</td><td>直式娛樂</td></tr>
+          <tr><td>9</td><td>cockFight</td><td>鬥雞</td></tr>
+        </tbody>
+      </table>
+      <div class="rule-card pm-card" style="margin-top:12px;">
+        <div class="src">composables/useGoStreaming.ts:L1-L99, types/streaming.ts:L217-L254</div>
+      </div>
+    </div>
+
+    <!-- PM 4: Schedule OB Special -->
+    <div class="section" id="pm-schedule-logic" data-role="pm">
+      <div class="section-title"><span class="num pm">4</span> 節目表 OB 特殊處理 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">OB 場館需並行呼叫一般 + 電競兩支 API，其他場館走單次遞歸分頁</div>
+      <div class="flow-box">
+        <div class="flow-label">fetchSportData(currentSportVendor)</div>
+        <div class="flow-row">
+          <span class="flow-step">platform === 'ob'</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">並行 2 次 fetchList</span>
+          <span class="flow-step"><small>一般賽事 + 電競(ESportList)</small></span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">合併結果</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">platform !== 'ob'</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">單次 fetchList</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">totalPage &lt;= page ? finished : 遞歸 page+1</span>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>sportId 特殊值</h4>
+          <ul>
+            <li><code>sportId === 1000</code>（關注列表）&rarr; eventIds = getFollowEventIds</li>
+            <li><code>sportId === 0</code> &rarr; type: 7（查主播類型）</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>關注/取消關注賽事</h4>
+          <ul>
+            <li>requireLogin &rarr; matchFollowEdit API</li>
+            <li>action: 0=取消關注, 1=關注</li>
+            <li>toast + 重新 fetchFollowList</li>
+          </ul>
+          <div class="src">Schedule/composables/useSchedule.ts:L1-L283</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 5: Ranking Logic -->
+    <div class="section" id="pm-ranking-logic" data-role="pm">
+      <div class="section-title"><span class="num pm">5</span> 排行榜決策邏輯 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">日/週/月 x 當期/上期 矩陣 + 空榜處理 + 玩家詳情頁</div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>Watch 觸發 fetchRank</h4>
+          <p><code>watch([activeRange, activePeriod, userStore.isLogin])</code></p>
+          <p>activeRange: 'daily' | 'weekly' | 'monthly'</p>
+          <p>activePeriod: 'current' | 'previous'</p>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>排行榜渲染</h4>
+          <ul>
+            <li>有資料：前 3 名 &rarr; RankTop，第 4 起 &rarr; RankList</li>
+            <li>已登入 &rarr; Teleport 到 body 底部固定顯示當前用戶排名</li>
+            <li>空榜 &rarr; RankEmpty + 「去晒單」按鈕</li>
+            <li>去晒單 &rarr; 找 roomType=3 第一間 &rarr; handleGoStreaming(defaultBottomTab:'betList')</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>玩家詳情頁</h4>
+          <ul>
+            <li>路由：/live/ranking-detail/{playerId}</li>
+            <li>fetchPlayerInfo &rarr; 日/週/月排名 + 綜合積分</li>
+            <li>晒單列表：betRankings / oddRankings</li>
+            <li>無晒單 &rarr; 推薦其他玩家晒單</li>
+          </ul>
+          <div class="src">Ranking/index.vue:L1-L150, ranking-detail/[playerId]/index.vue:L1-L637</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 6: Streamer Logic -->
+    <div class="section" id="pm-streamer-logic" data-role="pm">
+      <div class="section-title"><span class="num pm">6</span> 主播列表決策 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">分類 + 人氣/紅單排序 + 無限捲動，體育 vs 非體育三級選項差異</div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>三級選項邏輯</h4>
+          <ul>
+            <li>體育類別（activeCategory === 0 || typeId === 1）&rarr; 顯示 [人氣, 紅單]</li>
+            <li>非體育類別（美女等）&rarr; 不顯示三級選項</li>
+            <li><code>sortField: activeLabel.toString()</code>（1=人氣, 2=紅單）</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>分頁與刷新</h4>
+          <ul>
+            <li>watch([activeCategory, activeLabel]) &rarr; 清空列表 + 重新載入</li>
+            <li>無限捲動：page++, pageSize=30</li>
+            <li>streamerList.length &gt;= pagination.maxCount &rarr; isFinished</li>
+          </ul>
+          <div class="src">Streamer/index.vue:L1-L224</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 7: Vertical Entertainment -->
+    <div class="section" id="pm-vertical" data-role="pm">
+      <div class="section-title"><span class="num pm">7</span> 直式娛樂直播間決策 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">HLS 串流初始化 + 錯誤重試 + 靜音策略 + 主播下播/玩家轉移完整流程</div>
+      <div class="flow-box">
+        <div class="flow-label">video.js 初始化 + 錯誤重試</div>
+        <div class="flow-row">
+          <span class="flow-step">videoPlayerInit()</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">HLS m3u8</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">muted=true, autoplay</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">loadedmetadata &rarr; checkAndUnmute()</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step warn">error</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">首次立即 retryPlaybackSource()</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">未恢復 &rarr; 每 3 秒重試</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">canplaythrough &rarr; clearErrorRetry()</span>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>直播間互動功能</h4>
+          <ul>
+            <li>送禮：GiftGivingSheet</li>
+            <li>競猜投注：LiveBettingSheet（聊天室 / 按鈕觸發）</li>
+            <li>推薦主播：RecommendAnchorSheet</li>
+            <li>主播下播：AnchorOfflineDialog + 推薦直播間</li>
+            <li>玩家轉移：PlayerTransferSheet</li>
+            <li>廣告插播：播放中視頻靜音，結束後恢復</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>進出場處理</h4>
+          <ul>
+            <li>進入 &rarr; toggleTheme('dark') 強制暗色</li>
+            <li>離開 &rarr; toggleTheme(原主題) + playerInstance.dispose()</li>
+            <li>activeLiveId 變化 &rarr; Object.assign(LiveRoomInfo) + updateVideoSource()</li>
+          </ul>
+          <div class="src">vertical-entertainment/index.vue:L1-L503</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 8: Funky Rocket -->
+    <div class="section" id="pm-funky-logic" data-role="pm">
+      <div class="section-title"><span class="num pm">8</span> Funky 火箭下注決策 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">遊戲 Token + 消息處理 + 自動下注 + 版面切換</div>
+      <div class="flow-box">
+        <div class="flow-label">getGameToken() 前置檢查</div>
+        <div class="flow-row">
+          <span class="flow-step">!isLogin</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step warn">toast + 登入 Sheet + /live</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">場館 8946 不可用</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step warn">toast「直播间已关闭」+ /live</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">通過</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step highlight">enterGame({ gameId:8946, gameCode:602817 })</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step">sendMessage('init')</span>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>useFunkyEvent 消息處理</h4>
+          <ul>
+            <li><code>gameInfo</code> &rarr; minBet, maxBet, defaultChip</li>
+            <li><code>historyUpdate</code> &rarr; 歷史賠率</li>
+            <li><code>buttonUpdate</code> &rarr; 按鈕狀態（text, enabled, isAutoPlace）</li>
+            <li><code>unAuthorized</code> &rarr; 重新 getGameToken()</li>
+            <li><code>joinGame</code> &rarr; 火箭停止後：PlayerTransfer / Offline / Close</li>
+            <li><code>dialog</code> &rarr; 確認後導回 /live</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>下注操作</h4>
+          <ul>
+            <li>手動：<code>sendMessage('placeOrder', { stake, event })</code></li>
+            <li>自動：<code>sendMessage('autoPlace', { stake, loop })</code></li>
+            <li>聊天室關閉（openstate==0 || isError）&rarr; layout 強制 'bet'</li>
+          </ul>
+          <div class="src">live-funky/index.vue:L296-L777, useFunkyEvent.ts:L1-L157</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 9: Cocos Game -->
+    <div class="section" id="pm-cocos-logic" data-role="pm">
+      <div class="section-title"><span class="num pm">9</span> Cocos 遊戲直播間決策 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">iframe postMessage 通訊 + WebSocket 事件 + 5 面板切換</div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-flow">flow</span>
+          <h4>handleCocosMessage(data)</h4>
+          <ul>
+            <li><code>Init</code> &rarr; cocosLoading=false &rarr; initGame()</li>
+            <li><code>EndGameNotice</code> &rarr; Disconnected(5)=重連, AnchorOffline(1)=下播, ChangeGame(4)=切遊戲, PlayerTransfer(3)=轉移</li>
+            <li><code>SocketClose</code> &rarr; 重載 iframe</li>
+            <li><code>GameState</code> &rarr; '读取中'/'开盘中'/'开奖中'</li>
+            <li><code>PlayerWin</code> &rarr; 聊天室 Panel 顯示 3 秒勝利動畫</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>面板切換 CocosPanelType</h4>
+          <ul>
+            <li>GAME=0, BET_RECORD=1, INFO=2, OPEN_ROAD=3, CHAT=4</li>
+            <li>cocosLoading &rarr; return（不處理）</li>
+            <li>未登入 &rarr; 彈登入 Sheet</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-api">api</span>
+          <h4>WebSocket 事件</h4>
+          <ul>
+            <li><code>UserPlat_SwitchCasino_S</code> &rarr; 主播切換遊戲</li>
+            <li><code>Chatroom_PlayerLeave_CS</code> &rarr; liveid 有值=轉移, reason=2=下播</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>遊戲 ID 對照</h4>
+          <p>Baccarat=5, BullBull=4, DragonTiger=32, RedBlackWar=40</p>
+          <div class="src">live-casino/composable/useCocosGame.ts:L1-L415</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PM 10: liveStore -->
+    <div class="section" id="pm-store-logic" data-role="pm">
+      <div class="section-title"><span class="num pm">10</span> liveStore 狀態管理 <span class="depth-badge depth-l2">L2</span></div>
+      <div class="section-desc">Pinia store 的 Getters 決策邏輯，控制直播間全域狀態</div>
+      <div class="rule-grid">
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>核心 Getters</h4>
+          <ul>
+            <li><code>activeLiveRoomMode</code>：activeLiveId ? 2(直播) : 1(賽事)；TODO: 3(清流)未實作</li>
+            <li><code>validLiveList</code>：filter(steamStatus === 2) 只保留上播中</li>
+            <li><code>matchIdLiveDataMapping</code>：以 matchId 分組</li>
+            <li><code>isPkRoom(id)</code>：pkIdSet.has(id)</li>
+            <li><code>isRedPacketRoom(id)</code>：liveRedPacketIdSet.has(id)</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>selectAnchorList（推薦主播）</h4>
+          <ul>
+            <li>activeLiveData 無 || roomType=sport &rarr; 從 URL 解析 matchId &rarr; matchIdLiveDataMapping</li>
+            <li>其他 roomType &rarr; liveListByRoomType[activeLiveData.roomType]</li>
+          </ul>
+        </div>
+        <div class="rule-card pm-card">
+          <span class="rule-tag tag-logic">logic</span>
+          <h4>路徑判斷</h4>
+          <ul>
+            <li><code>isInLiveRoom</code>：path.includes('/match-detail/') || activeLiveId !== null</li>
+            <li><code>isVerticalEntertainmentRoom</code>：roomType === 8</li>
+          </ul>
+          <div class="src">stores/live/index.ts:L1-L187</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================== RD SECTIONS (L3) ======================== -->
+
+    <!-- RD 1: Full API Table -->
+    <div class="section" id="rd-api-full" data-role="rd">
+      <div class="section-title"><span class="num rd">1</span> 35 端點總覽 <span class="depth-badge depth-l3">L3</span></div>
+      <div class="section-desc">廣場/直播間模組完整 API 端點清單（apis/live + apis/anchor + apis/showbet + apis/follow + apis/videohub）</div>
+      <table class="type-table">
+        <thead><tr><th>#</th><th>API</th><th>Method</th><th>Path</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>getLiveList</td><td>GET</td><td><code>/live/liveList</code></td><td>所有直播間列表</td></tr>
+          <tr><td>2</td><td>getCategoryLabel</td><td>GET</td><td><code>/categorylabel/list</code></td><td>廣場二/三級分類頁籤</td></tr>
+          <tr><td>3</td><td>getProgramList</td><td>GET</td><td><code>/live/programList</code></td><td>節目表</td></tr>
+          <tr><td>4</td><td>getSpecifiedLiveRoomList</td><td>GET</td><td><code>/live/getSpecifiedLiveRoomListV2</code></td><td>指定聯賽直播間清單</td></tr>
+          <tr><td>5</td><td>getStreamingTypeList</td><td>GET</td><td><code>/live/getSteamingTypeList</code></td><td>PK/紅包/晒單排行設定</td></tr>
+          <tr><td>6</td><td>getRecommendBetByLiveId</td><td>GET</td><td><code>/v3/live/getRecommendBetByLiveId</code></td><td>直播間推單列表</td></tr>
+          <tr><td>7</td><td>getRecommendBetBySteamer</td><td>GET</td><td><code>/v3/live/getRecommendBetBySteamer</code></td><td>主播推單列表</td></tr>
+          <tr><td>8</td><td>getRecommendBetBySteamerId</td><td>POST</td><td><code>/v3/live/getRecommendBetBySteamerId</code></td><td>批量主播推單</td></tr>
+          <tr><td>9</td><td>getRecommendBetSteamers</td><td>GET</td><td><code>/v3/live/getRecommendBetSteamers</code></td><td>推單主播列表</td></tr>
+          <tr><td>10</td><td>getRecommendBetLeagues</td><td>GET</td><td><code>/v3/live/getRecommendBetLeagues</code></td><td>推單聯賽列表</td></tr>
+          <tr><td>11</td><td>getRecommendBetByLeagueId</td><td>GET</td><td><code>/v3/live/getRecommendBetByLeagueId</code></td><td>按聯賽ID推單</td></tr>
+          <tr><td>12</td><td>getRecommendBetCount</td><td>GET</td><td><code>/live/getRecommendBetCount</code></td><td>推單總數</td></tr>
+          <tr><td>13</td><td>getRecommendBetCountBySteamerId</td><td>GET</td><td><code>/live/getRecommendBetCountBySteamerId</code></td><td>主播推單總數</td></tr>
+          <tr><td>14</td><td>getSpecifiedRecommendBetList</td><td>GET</td><td><code>/v3/live/getSpecifiedRecommendBetList</code></td><td>指定聯賽推單</td></tr>
+          <tr><td>15</td><td>getRedPacketActivity</td><td>GET</td><td><code>/live/getRedPacketActivity</code></td><td>紅包活動資訊</td></tr>
+          <tr><td>16</td><td>postGrabbingRedPacket</td><td>POST</td><td><code>/live/grabbingRedPacket</code></td><td>搶紅包</td></tr>
+          <tr><td>17</td><td>getStreamerList</td><td>GET</td><td><code>/anchor/listV2</code></td><td>主播列表</td></tr>
+          <tr><td>18</td><td>getTrendingSearches</td><td>GET</td><td><code>/anchor/popularkeywords</code></td><td>主播熱搜</td></tr>
+          <tr><td>19</td><td>getStreamerInfo</td><td>GET</td><td><code>/anchor/infoV2</code></td><td>主播資訊</td></tr>
+          <tr><td>20</td><td>getRank</td><td>GET</td><td><code>/showbet/rank</code></td><td>晒單排行榜</td></tr>
+          <tr><td>21</td><td>getStreamingRank</td><td>GET</td><td><code>/showbet/rank/steaming</code></td><td>直播間內排行榜</td></tr>
+          <tr><td>22</td><td>getPlayerinfo</td><td>GET</td><td><code>/showbet/rank/playerinfo</code></td><td>玩家晒單明細</td></tr>
+          <tr><td>23</td><td>getSteamingPlayerinfo</td><td>GET</td><td><code>/showbet/rank/steaming/playerinfo</code></td><td>直播間玩家明細</td></tr>
+          <tr><td>24</td><td>getRankRule</td><td>GET</td><td><code>/showbet/rank/rule</code></td><td>排行榜規則</td></tr>
+          <tr><td>25</td><td>getFollowedList</td><td>GET</td><td><code>/follow/getFollowSteamerV2</code></td><td>已關注主播列表</td></tr>
+          <tr><td>26</td><td>updateFollowStatus</td><td>POST</td><td><code>/follow/followSteamer</code></td><td>關注/取消關注</td></tr>
+          <tr><td>27</td><td>followSteamingListV2</td><td>GET</td><td><code>/follow/followSteamingListV2</code></td><td>關注主播直播間</td></tr>
+          <tr><td>28</td><td>getFollowSteamList</td><td>GET</td><td><code>/follow/steam/list</code></td><td>關注主播依狀態切分</td></tr>
+          <tr><td>29</td><td>getFollowingInfo</td><td>GET</td><td><code>/follow/followInfo</code></td><td>查詢關注狀態</td></tr>
+          <tr><td>30</td><td>getSearchLive</td><td>GET</td><td><code>/search/live</code></td><td>熱搜關鍵字</td></tr>
+          <tr><td>31</td><td>postSearch</td><td>POST</td><td><code>/search</code></td><td>搜尋執行（cType:4）</td></tr>
+          <tr><td>32</td><td>getVideoConfig</td><td>GET</td><td><code>/videohub/config</code></td><td>影片專區設定</td></tr>
+          <tr><td>33</td><td>getVideoList</td><td>GET</td><td><code>/videohub/list</code></td><td>影片列表</td></tr>
+          <tr><td>34</td><td>getVideoDetailInfo</td><td>GET</td><td><code>/videohub/vod/:id</code></td><td>影片詳情</td></tr>
+          <tr><td>35</td><td>WebSocket</td><td>—</td><td><code>UserPlat_ChatCountList_CS</code></td><td>即時聊天人數（3秒）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RD 2: getLiveList Schema -->
+    <div class="section" id="rd-schema-livelist" data-role="rd">
+      <div class="section-title"><span class="num rd">2</span> getLiveList Schema <span class="depth-badge depth-l3">L3</span></div>
+      <div class="section-desc">GET /live/liveList — 直播間列表核心 API，LiveItem 含 29 個欄位</div>
+      <h4 style="color:#c4b5fd; margin-bottom:8px;">Request</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>channelId</code></td><td>string</td><td>Y</td><td>渠道號</td></tr>
+          <tr><td><code>agentId</code></td><td>number</td><td>Y</td><td>代理 ID</td></tr>
+          <tr><td><code>pushType</code></td><td>number</td><td>Y</td><td>推廣類型</td></tr>
+        </tbody>
+      </table>
+      <h4 style="color:#c4b5fd; margin:16px 0 8px;">Response — LiveItem 核心欄位</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>number</td><td>直播間 ID</td></tr>
+          <tr><td><code>uId</code></td><td>number</td><td>主播 userId</td></tr>
+          <tr><td><code>matchId</code></td><td>number/string</td><td>賽事 ID</td></tr>
+          <tr><td><code>steamStatus</code></td><td>number</td><td>1=預約, 2=上播</td></tr>
+          <tr><td><code>roomType</code></td><td>RoomTypeEnum</td><td>房間類型（1-9）</td></tr>
+          <tr><td><code>categoryId</code></td><td>number</td><td>分類 ID</td></tr>
+          <tr><td><code>labelId</code></td><td>number</td><td>標籤 ID</td></tr>
+          <tr><td><code>mediaStream</code></td><td>string</td><td>HLS 串流 URL</td></tr>
+          <tr><td><code>mediaFlvStream</code></td><td>string</td><td>FLV 串流 URL</td></tr>
+          <tr><td><code>userNickname</code></td><td>string</td><td>主播暱稱</td></tr>
+          <tr><td><code>userAvatar</code></td><td>string</td><td>頭像（需拼接 remoteStaticPath）</td></tr>
+          <tr><td><code>viewerCount</code></td><td>number</td><td>觀看人數</td></tr>
+          <tr><td><code>srctp</code></td><td>number</td><td>場館類型</td></tr>
+          <tr><td><code>isFollowing</code></td><td>boolean</td><td>是否已關注</td></tr>
+          <tr><td><code>hasRecommendBet</code></td><td>boolean</td><td>有推單</td></tr>
+          <tr><td><code>casino</code></td><td>object</td><td>Cocos 遊戲資訊（id, betMin, betMax, roomId, gameId, name）</td></tr>
+          <tr><td><code>roleId</code></td><td>7/3</td><td>7=主播, 3=專家</td></tr>
+          <tr><td><code>winRate</code></td><td>array</td><td>[{max, total, win, rate}]</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RD 3: getCategoryLabel Schema -->
+    <div class="section" id="rd-schema-category" data-role="rd">
+      <div class="section-title"><span class="num rd">3</span> getCategoryLabel + getStreamingTypeList <span class="depth-badge depth-l3">L3</span></div>
+      <div class="section-desc">分類頁籤 + 三級標籤 + 直播類型設定</div>
+      <h4 style="color:#c4b5fd; margin-bottom:8px;">GET /categorylabel/list — Request</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>type</code></td><td>number</td><td>Y</td><td>0=直播列表, 1=節目表/主播</td></tr>
+        </tbody>
+      </table>
+      <h4 style="color:#c4b5fd; margin:16px 0 8px;">Category 結構</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>categoryId</code></td><td>number</td><td>分類 ID</td></tr>
+          <tr><td><code>categoryName</code></td><td>string</td><td>分類名稱</td></tr>
+          <tr><td><code>typeId</code></td><td>CategoryType</td><td>-1=關注, 0=全部, 1=體育, 2=競猜, 3=美女, 4=其他, 999=搜尋</td></tr>
+          <tr><td><code>labels</code></td><td>array</td><td>[{ labelId, labelName, icon?, seq? }]</td></tr>
+        </tbody>
+      </table>
+      <div class="rule-card rd-card" style="margin-top:12px;">
+        <span class="rule-tag tag-api">api</span>
+        <h4>getStreamingTypeList — GET /live/getSteamingTypeList</h4>
+        <ul>
+          <li><code>pk</code>: [{ id, victories }] — PK 直播間</li>
+          <li><code>betMatch</code>: number[] — 競猜賽事</li>
+          <li><code>liveRedPacket</code>: [{ id, endAt }] — 紅包雨直播間</li>
+          <li><code>showBetRank.isEnabled</code>: boolean — 晒單排行榜開關</li>
+          <li><code>showBetRank.showBetGuestDisplayMode</code>: 0=遊客不顯示, 1=全部顯示, 2=不顯示投注項</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RD 4: getStreamerList Schema -->
+    <div class="section" id="rd-schema-streamer" data-role="rd">
+      <div class="section-title"><span class="num rd">4</span> getStreamerList Schema <span class="depth-badge depth-l3">L3</span></div>
+      <div class="section-desc">GET /anchor/listV2 — 主播列表分頁 + 篩選</div>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>nickname</code></td><td>string</td><td>N</td><td>搜尋暱稱</td></tr>
+          <tr><td><code>page</code></td><td>number</td><td>Y</td><td>頁碼</td></tr>
+          <tr><td><code>pageSize</code></td><td>number</td><td>Y</td><td>每頁筆數（30）</td></tr>
+          <tr><td><code>sortField</code></td><td>string</td><td>N</td><td>'1'=人氣, '2'=紅單</td></tr>
+          <tr><td><code>steamingCategoryId</code></td><td>number</td><td>N</td><td>分類篩選</td></tr>
+        </tbody>
+      </table>
+      <p style="color:#94a3b8; font-size:12px; margin-top:8px;">Response: <code>data.items: LiveItem[]</code>, <code>data.pagination.maxCount: number</code></p>
+    </div>
+
+    <!-- RD 5: getRank Schema -->
+    <div class="section" id="rd-schema-rank" data-role="rd">
+      <div class="section-title"><span class="num rd">5</span> getRank + getPlayerinfo Schema <span class="depth-badge depth-l3">L3</span></div>
+      <div class="section-desc">排行榜 + 玩家明細</div>
+      <h4 style="color:#c4b5fd; margin-bottom:8px;">GET /showbet/rank — Request</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>periodType</code></td><td>string</td><td>Y</td><td>'daily'/'weekly'/'monthly'</td></tr>
+          <tr><td><code>periodValue</code></td><td>string</td><td>Y</td><td>'current'/'previous'</td></tr>
+        </tbody>
+      </table>
+      <h4 style="color:#c4b5fd; margin:16px 0 8px;">PlayerInfo 結構</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>playerId</code></td><td>number</td><td>玩家 ID</td></tr>
+          <tr><td><code>nickName</code></td><td>string</td><td>暱稱</td></tr>
+          <tr><td><code>vipLevel</code></td><td>number</td><td>VIP 等級</td></tr>
+          <tr><td><code>rank</code></td><td>number?</td><td>排名</td></tr>
+          <tr><td><code>score</code></td><td>number?</td><td>積分</td></tr>
+        </tbody>
+      </table>
+      <div class="rule-card rd-card" style="margin-top:12px;">
+        <span class="rule-tag tag-api">api</span>
+        <h4>getRankRule — 積分權重枚舉</h4>
+        <p>WinningAmount=紅單贏錢金額, BettingAmount=投注金額, RedBetCount=紅單數, FollowedCount=被跟單數量, ShowBetCount=晒單數</p>
+      </div>
+    </div>
+
+    <!-- RD 6: Red Packet API -->
+    <div class="section" id="rd-schema-redpacket" data-role="rd">
+      <div class="section-title"><span class="num rd">6</span> 紅包活動 API <span class="depth-badge depth-l3">L3</span></div>
+      <div class="section-desc">GET 取得紅包活動 + POST 搶紅包</div>
+      <h4 style="color:#c4b5fd; margin-bottom:8px;">GET /live/getRedPacketActivity</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+        <tbody><tr><td><code>steamingId</code></td><td>number</td><td>Y</td><td>直播間 ID</td></tr></tbody>
+      </table>
+      <h4 style="color:#c4b5fd; margin:16px 0 8px;">POST /live/grabbingRedPacket</h4>
+      <table class="schema-table">
+        <thead><tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>steamingId</code></td><td>number</td><td>Y</td><td>直播間 ID</td></tr>
+          <tr><td><code>packageId</code></td><td>number</td><td>N</td><td>紅包 ID</td></tr>
+          <tr><td><code>playerId</code></td><td>number</td><td>N</td><td>玩家 ID</td></tr>
+          <tr><td><code>playerAccount</code></td><td>string</td><td>N</td><td>玩家帳號</td></tr>
+          <tr><td><code>vipLevel</code></td><td>number</td><td>N</td><td>VIP 等級</td></tr>
+          <tr><td><code>requestTime</code></td><td>number</td><td>N</td><td>請求時間</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RD 7: Error Codes -->
+    <div class="section" id="rd-error-codes" data-role="rd">
+      <div class="section-title"><span class="num rd">7</span> Error Code + 檔案對照 <span class="depth-badge depth-l3">L3</span></div>
+      <div class="section-desc">共用 errCode 模式 + API 檔案清單</div>
+      <table class="type-table" style="max-width:500px;">
+        <thead><tr><th>errCode</th><th>說明</th><th>處理方式</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>成功</td><td>正常處理</td></tr>
+          <tr><td>!== 1</td><td>失敗</td><td>throw Error(msg) 或 console.error</td></tr>
+        </tbody>
+      </table>
+      <div class="rule-card rd-card" style="margin-top:16px;">
+        <span class="rule-tag tag-api">api</span>
+        <h4>檔案對照</h4>
+        <ul>
+          <li><code>apis/live/index.ts</code> (167 行) — 直播 API 呼叫層</li>
+          <li><code>apis/live/live.d.ts</code> (462 行) — 型別定義</li>
+          <li><code>apis/anchor/index.ts</code> (17 行) — 主播 API</li>
+          <li><code>apis/showbet/index.ts</code> (24 行) — 晒單排行 API</li>
+          <li><code>apis/showbet/showbet.d.ts</code> (223 行) — 晒單型別</li>
+          <li><code>apis/follow/index.ts</code> (59 行) — 關注 API</li>
+          <li><code>apis/videohub/index.ts</code> (14 行) — 影片專區 API</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ======================== QA SECTIONS (L4) ======================== -->
+
+    <!-- QA 1: Plaza -->
+    <div class="section" id="qa-plaza" data-role="qa">
+      <div class="section-title"><span class="num qa">1</span> 廣場主頁測項（9 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>標準模式 Tab 顯示</td><td>pushType !== 2, 後台開啟晒單+影片</td><td>進入 /live</td><td>顯示 5 個 Tab</td><td class="pri-p0">P0</td></tr>
+          <tr><td>2</td><td>純直播模式 Tab 顯示</td><td>pushType === 2</td><td>進入 /live</td><td>只顯示 2 個 Tab：直播、主播</td><td class="pri-p0">P0</td></tr>
+          <tr><td>3</td><td>排行榜 Tab 隱藏</td><td>後台關閉晒單排行榜</td><td>進入 /live</td><td>排行榜 Tab 不出現</td><td class="pri-p1">P1</td></tr>
+          <tr><td>4</td><td>影片專區 Tab 隱藏</td><td>後台關閉影片專區</td><td>進入 /live</td><td>影片專區 Tab 不出現</td><td class="pri-p1">P1</td></tr>
+          <tr><td>5</td><td>未登入點主播 Tab</td><td>未登入</td><td>點擊「主播」Tab</td><td>彈出登入 Sheet，不切換</td><td class="pri-p0">P0</td></tr>
+          <tr><td>6</td><td>未登入點排行榜 Tab</td><td>未登入, guestMode=0</td><td>點擊排行榜</td><td>彈出登入 Sheet</td><td class="pri-p1">P1</td></tr>
+          <tr><td>7</td><td>遊客可見排行榜</td><td>未登入, guestMode !== 0</td><td>點擊排行榜</td><td>正常進入</td><td class="pri-p1">P1</td></tr>
+          <tr><td>8</td><td>URL query 指定 Tab</td><td>—</td><td>/live?active=ranking</td><td>切到排行榜 Tab</td><td class="pri-p2">P2</td></tr>
+          <tr><td>9</td><td>登出自動切回</td><td>已登入在主播 Tab</td><td>登出</td><td>自動切回直播 Tab</td><td class="pri-p1">P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 2: LiveList -->
+    <div class="section" id="qa-livelist" data-role="qa">
+      <div class="section-title"><span class="num qa">2</span> 直播列表測項（13 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>10</td><td>初始載入</td><td>—</td><td>進入直播 Tab</td><td>並行載入分類、列表、關注</td><td class="pri-p0">P0</td></tr>
+          <tr><td>11</td><td>二級頁籤切換</td><td>—</td><td>點擊體育分類</td><td>篩選該分類；三級標籤重置</td><td class="pri-p0">P0</td></tr>
+          <tr><td>12</td><td>關注頁籤未登入</td><td>未登入</td><td>點擊關注</td><td>觸發登入 Sheet</td><td class="pri-p0">P0</td></tr>
+          <tr><td>13</td><td>關注頁籤已登入</td><td>已登入</td><td>點擊關注</td><td>顯示已關注直播間+待播</td><td class="pri-p0">P0</td></tr>
+          <tr><td>14</td><td>三級標籤篩選</td><td>在體育分類</td><td>點擊足球標籤</td><td>只顯示足球類</td><td class="pri-p1">P1</td></tr>
+          <tr><td>15</td><td>搜尋功能</td><td>—</td><td>輸入關鍵字</td><td>比對 6 欄位，不區分大小寫</td><td class="pri-p1">P1</td></tr>
+          <tr><td>16</td><td>搜尋空結果</td><td>—</td><td>不存在關鍵字</td><td>NoData 空值圖</td><td class="pri-p2">P2</td></tr>
+          <tr><td>17</td><td>廣告插入位置</td><td>全部 Tab，無搜尋</td><td>瀏覽</td><td>廣告在第 4-5 張之間</td><td class="pri-p2">P2</td></tr>
+          <tr><td>18</td><td>非全部 Tab 廣告隱藏</td><td>特定分類</td><td>瀏覽</td><td>不顯示廣告</td><td class="pri-p2">P2</td></tr>
+          <tr><td>19</td><td>WebSocket 聊天人數</td><td>—</td><td>停留 3 秒</td><td>聊天訊息數更新</td><td class="pri-p1">P1</td></tr>
+          <tr><td>20</td><td>下拉刷新</td><td>—</td><td>下拉</td><td>重新載入全部</td><td class="pri-p1">P1</td></tr>
+          <tr><td>21</td><td>骨架屏</td><td>首次載入</td><td>進入</td><td>6 分類骨架 + 8 卡片骨架</td><td class="pri-p2">P2</td></tr>
+          <tr><td>22</td><td>新手引導</td><td>新手+有任務</td><td>進入</td><td>顯示引導遮罩</td><td class="pri-p2">P2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 3: Routing -->
+    <div class="section" id="qa-routing" data-role="qa">
+      <div class="section-title"><span class="num qa">3</span> 進入路由測項（6 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>23</td><td>體育房進入</td><td>roomType=3</td><td>點擊 LiveCard</td><td>跳轉 /match-detail/...</td><td class="pri-p0">P0</td></tr>
+          <tr><td>24</td><td>Cocos 遊戲房</td><td>roomType=7, !liveFunky</td><td>點擊</td><td>live-live-casino?roomId</td><td class="pri-p0">P0</td></tr>
+          <tr><td>25</td><td>Funky 火箭</td><td>roomType=7, liveFunky</td><td>點擊</td><td>live-live-funky?roomId</td><td class="pri-p0">P0</td></tr>
+          <tr><td>26</td><td>直式娛樂</td><td>roomType=8</td><td>點擊</td><td>live-vertical-entertainment</td><td class="pri-p0">P0</td></tr>
+          <tr><td>27</td><td>鬥雞</td><td>roomType=9</td><td>點擊</td><td>match-detail-CockFightRoom</td><td class="pri-p1">P1</td></tr>
+          <tr><td>28</td><td>其他房型</td><td>roomType=4/5/6</td><td>點擊</td><td>match-detail-OtherRoom</td><td class="pri-p1">P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 4: Schedule -->
+    <div class="section" id="qa-schedule" data-role="qa">
+      <div class="section-title"><span class="num qa">4</span> 節目表測項（7 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>29</td><td>體育節目表載入</td><td>體育分類</td><td>進入節目表</td><td>unify.matchList，按日期分組</td><td class="pri-p0">P0</td></tr>
+          <tr><td>30</td><td>OB 特殊處理</td><td>platform=ob</td><td>載入</td><td>並行 2 次呼叫，合併</td><td class="pri-p1">P1</td></tr>
+          <tr><td>31</td><td>非OB 分頁載入</td><td>platform !== ob</td><td>載入</td><td>遞歸直到 totalPage</td><td class="pri-p1">P1</td></tr>
+          <tr><td>32</td><td>體育場館切換</td><td>—</td><td>切換 Dropdown</td><td>重新載入該場館</td><td class="pri-p1">P1</td></tr>
+          <tr><td>33</td><td>非體育節目表</td><td>美女分類</td><td>進入</td><td>NormalContent 載入</td><td class="pri-p1">P1</td></tr>
+          <tr><td>34</td><td>關注賽事</td><td>已登入</td><td>點擊關注</td><td>toast「已关注此赛事」</td><td class="pri-p1">P1</td></tr>
+          <tr><td>35</td><td>取消關注</td><td>已關注</td><td>點擊取消</td><td>toast「已取消关注」</td><td class="pri-p1">P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 5: Ranking -->
+    <div class="section" id="qa-ranking" data-role="qa">
+      <div class="section-title"><span class="num qa">5</span> 排行榜測項（6 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>36</td><td>日/週/月榜切換</td><td>—</td><td>切換 activeRange</td><td>重新 fetchRank</td><td class="pri-p0">P0</td></tr>
+          <tr><td>37</td><td>當期/上期切換</td><td>—</td><td>切換 period</td><td>重新 fetchRank</td><td class="pri-p1">P1</td></tr>
+          <tr><td>38</td><td>空榜</td><td>無資料</td><td>進入排行榜</td><td>RankEmpty + 去晒單</td><td class="pri-p1">P1</td></tr>
+          <tr><td>39</td><td>玩家詳情頁</td><td>—</td><td>點擊玩家卡片</td><td>跳轉詳情頁</td><td class="pri-p1">P1</td></tr>
+          <tr><td>40</td><td>當前用戶排名</td><td>已登入</td><td>有排行資料</td><td>底部固定顯示</td><td class="pri-p2">P2</td></tr>
+          <tr><td>41</td><td>積分詳情展開</td><td>—</td><td>點擊綜合積分</td><td>展開 weightRules</td><td class="pri-p2">P2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 6: Streamer -->
+    <div class="section" id="qa-streamer" data-role="qa">
+      <div class="section-title"><span class="num qa">6</span> 主播列表測項（6 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>42</td><td>初始載入</td><td>已登入</td><td>進入主播 Tab</td><td>全部分類 + 人氣排序</td><td class="pri-p0">P0</td></tr>
+          <tr><td>43</td><td>分類切換</td><td>—</td><td>切到美女</td><td>列表刷新，三級選項消失</td><td class="pri-p1">P1</td></tr>
+          <tr><td>44</td><td>人氣/紅單排序</td><td>體育分類</td><td>切換排序</td><td>列表刷新</td><td class="pri-p1">P1</td></tr>
+          <tr><td>45</td><td>無限捲動</td><td>—</td><td>滾動到底部</td><td>自動載入下一頁</td><td class="pri-p1">P1</td></tr>
+          <tr><td>46</td><td>載完所有主播</td><td>>= maxCount</td><td>滾動</td><td>不再請求</td><td class="pri-p2">P2</td></tr>
+          <tr><td>47</td><td>搜尋主播</td><td>—</td><td>輸入關鍵字</td><td>SearchSheet + 熱搜</td><td class="pri-p1">P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 7: Vertical -->
+    <div class="section" id="qa-vertical" data-role="qa">
+      <div class="section-title"><span class="num qa">7</span> 直式娛樂直播間測項（11 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>48</td><td>進入直播間</td><td>roomType=8</td><td>點擊進入</td><td>強制暗色主題，HLS 初始化</td><td class="pri-p0">P0</td></tr>
+          <tr><td>49</td><td>串流錯誤重試</td><td>串流中斷</td><td>自動</td><td>首次立即，之後每 3 秒</td><td class="pri-p0">P0</td></tr>
+          <tr><td>50</td><td>串流恢復</td><td>canplaythrough</td><td>—</td><td>clearErrorRetry</td><td class="pri-p0">P0</td></tr>
+          <tr><td>51</td><td>靜音自動播放</td><td>進入</td><td>—</td><td>muted=true，互動後 unmute</td><td class="pri-p1">P1</td></tr>
+          <tr><td>52</td><td>主播切換直播間</td><td>activeLiveId 變化</td><td>—</td><td>updateVideoSource</td><td class="pri-p1">P1</td></tr>
+          <tr><td>53</td><td>離開還原主題</td><td>—</td><td>返回</td><td>還原原主題</td><td class="pri-p1">P1</td></tr>
+          <tr><td>54</td><td>送禮</td><td>已登入</td><td>點擊禮物</td><td>GiftGivingSheet</td><td class="pri-p1">P1</td></tr>
+          <tr><td>55</td><td>競猜投注</td><td>—</td><td>點擊投注</td><td>LiveBettingSheet</td><td class="pri-p1">P1</td></tr>
+          <tr><td>56</td><td>主播下播</td><td>WS 推送</td><td>—</td><td>AnchorOfflineDialog + 推薦</td><td class="pri-p0">P0</td></tr>
+          <tr><td>57</td><td>玩家轉移</td><td>WS 推送</td><td>—</td><td>PlayerTransferSheet</td><td class="pri-p1">P1</td></tr>
+          <tr><td>58</td><td>廣告插播</td><td>倒計時 > 0</td><td>—</td><td>「广告插播 Xs」，視頻靜音</td><td class="pri-p2">P2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 8: Funky -->
+    <div class="section" id="qa-funky" data-role="qa">
+      <div class="section-title"><span class="num qa">8</span> Funky 火箭測項（13 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>59</td><td>未登入進入</td><td>未登入</td><td>進入</td><td>toast + 登入 Sheet + /live</td><td class="pri-p0">P0</td></tr>
+          <tr><td>60</td><td>場館維護</td><td>8946 不可用</td><td>進入</td><td>toast + 導回 /live</td><td class="pri-p0">P0</td></tr>
+          <tr><td>61</td><td>正常初始化</td><td>已登入+可用</td><td>進入</td><td>enterGame &rarr; init</td><td class="pri-p0">P0</td></tr>
+          <tr><td>62</td><td>下注</td><td>buttonEnabled</td><td>點擊下注</td><td>placeOrder</td><td class="pri-p0">P0</td></tr>
+          <tr><td>63</td><td>自動下注</td><td>—</td><td>確認自動</td><td>autoPlace</td><td class="pri-p1">P1</td></tr>
+          <tr><td>64</td><td>跳船</td><td>遊戲進行中</td><td>點擊跳船</td><td>placeOrder</td><td class="pri-p0">P0</td></tr>
+          <tr><td>65</td><td>餘額刷新</td><td>—</td><td>點擊刷新</td><td>getBalance + 旋轉 2 秒</td><td class="pri-p2">P2</td></tr>
+          <tr><td>66</td><td>音量控制</td><td>—</td><td>切換靜音</td><td>toggleSound</td><td class="pri-p2">P2</td></tr>
+          <tr><td>67</td><td>聊天室關閉</td><td>openstate==0</td><td>—</td><td>layout='bet'</td><td class="pri-p1">P1</td></tr>
+          <tr><td>68</td><td>主播下播(火箭)</td><td>WS Offline</td><td>—</td><td>stopGame + OfflineDialog</td><td class="pri-p0">P0</td></tr>
+          <tr><td>69</td><td>玩家轉移(火箭)</td><td>WS Transfer</td><td>—</td><td>stopGame + TransferSheet</td><td class="pri-p1">P1</td></tr>
+          <tr><td>70</td><td>手動轉帳</td><td>autoTransfer=false</td><td>進入</td><td>自動轉帳彈窗</td><td class="pri-p1">P1</td></tr>
+          <tr><td>71</td><td>火箭房互轉</td><td>activeLiveId 變化</td><td>—</td><td>重新 getGameToken</td><td class="pri-p1">P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 9: Cocos -->
+    <div class="section" id="qa-cocos" data-role="qa">
+      <div class="section-title"><span class="num qa">9</span> Cocos 遊戲直播間測項（11 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>72</td><td>初始化遊戲</td><td>—</td><td>Cocos Init</td><td>initGame &rarr; 顯示聊天室</td><td class="pri-p0">P0</td></tr>
+          <tr><td>73</td><td>主播切換遊戲</td><td>SwitchCasino</td><td>—</td><td>ChangeGame &rarr; initGame</td><td class="pri-p0">P0</td></tr>
+          <tr><td>74</td><td>遊戲斷線</td><td>Disconnected</td><td>—</td><td>initGame 重連</td><td class="pri-p0">P0</td></tr>
+          <tr><td>75</td><td>主播下播(Cocos)</td><td>AnchorOffline</td><td>—</td><td>OfflineDialog</td><td class="pri-p0">P0</td></tr>
+          <tr><td>76</td><td>玩家轉移(Cocos)</td><td>WS liveid有值</td><td>—</td><td>TransferSheet</td><td class="pri-p1">P1</td></tr>
+          <tr><td>77</td><td>Yoo 棋牌斷線</td><td>SocketClose</td><td>—</td><td>重新載入 iframe</td><td class="pri-p1">P1</td></tr>
+          <tr><td>78</td><td>遊戲狀態顯示</td><td>GameState</td><td>—</td><td>'读取中'/'开盘中'/'开奖中'</td><td class="pri-p2">P2</td></tr>
+          <tr><td>79</td><td>玩家勝利動畫</td><td>PlayerWin+聊天</td><td>—</td><td>3 秒動畫</td><td class="pri-p2">P2</td></tr>
+          <tr><td>80</td><td>面板切換</td><td>—</td><td>點擊底部按鈕</td><td>5 面板切換</td><td class="pri-p1">P1</td></tr>
+          <tr><td>81</td><td>未登入切面板</td><td>未登入</td><td>點擊面板</td><td>登入 Sheet</td><td class="pri-p1">P1</td></tr>
+          <tr><td>82</td><td>彈幕開關</td><td>DanMu</td><td>—</td><td>showDanMu toggle</td><td class="pri-p2">P2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QA 10: Videohub -->
+    <div class="section" id="qa-videohub" data-role="qa">
+      <div class="section-title"><span class="num qa">10</span> 影片專區測項（4 項）<span class="depth-badge depth-l4">L4</span></div>
+      <table class="test-table">
+        <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>優先級</th></tr></thead>
+        <tbody>
+          <tr><td>83</td><td>影片列表載入</td><td>後台開啟</td><td>進入 Tab</td><td>GET /videohub/list</td><td class="pri-p1">P1</td></tr>
+          <tr><td>84</td><td>分類篩選</td><td>—</td><td>切換 label</td><td>篩選對應 category</td><td class="pri-p2">P2</td></tr>
+          <tr><td>85</td><td>空列表</td><td>無影片</td><td>—</td><td>NoData</td><td class="pri-p2">P2</td></tr>
+          <tr><td>86</td><td>播放影片</td><td>—</td><td>點擊卡片</td><td>VideoPlayer 顯示</td><td class="pri-p1">P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Footer -->
     <div class="footer">
-      <p>廣場/直播間 標註文件 — 自動產出於 2026-04-09</p>
-      <p>資料來源：Figma nzmX9pUldlKfdI8sFSR9rQ &middot; mango2-h5 pages/live/ &middot; Jira GOR</p>
-      <p style="margin-top:8px;">知識庫：<code>~/.claude/shared-references/product-data/features/4-live.md</code></p>
+      <p>廣場/直播間 標註文件（PM / RD / QA）— 自動產出於 2026-04-09</p>
+      <p>資料來源：Figma nzmX9pUldlKfdI8sFSR9rQ &middot; mango2-h5 main/15fce829c (7.14.16) &middot; Jira GOR</p>
+      <p style="margin-top:8px;">知識庫：<code>~/.claude/shared-references/product-data/features/4-live-detail.md</code> (1020 行)</p>
     </div>
 
   </div><!-- /main-content -->
 </div><!-- /layout -->
 
 <script>
-// Nav button scrolling + active state
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.getAttribute('data-target');
-    const el = document.getElementById(target);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Role tab switching
+  function switchRole(role) {
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.role-tab[data-role="${role}"]`).classList.add('active');
+
+    document.querySelectorAll('.section').forEach(sec => {
+      const roles = (sec.getAttribute('data-role') || '').split(' ');
+      sec.classList.toggle('hidden', !roles.includes(role));
+    });
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      const nr = btn.getAttribute('data-nav-role') || '';
+      btn.classList.toggle('hidden', nr !== role);
+    });
+
+    // Reset active nav
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const firstVisible = document.querySelector(`.nav-btn[data-nav-role="${role}"]:not(.hidden)`);
+    if (firstVisible) firstVisible.classList.add('active');
+
+    document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.role-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
+  });
+
+  // Nav button click -> scroll + highlight
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-    }
+      const el = document.getElementById(btn.getAttribute('data-target'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   });
-});
 
-// Update active nav on scroll
-const sections = document.querySelectorAll('.section');
-const navBtns = document.querySelectorAll('.nav-btn');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.id;
-      navBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-target') === id);
-      });
-    }
-  });
-}, { rootMargin: '-20% 0px -70% 0px' });
-sections.forEach(sec => observer.observe(sec));
+  // Default: show L1
+  switchRole('l1');
 </script>
 
 </body>

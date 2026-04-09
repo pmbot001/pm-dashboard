@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>我的 — 功能標註頁</title>
+<title>我的 — 功能標註頁（PM / RD / QA）</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#0f172a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;}
@@ -17,10 +17,30 @@ a{color:#60a5fa;}
 .sidebar-back:hover{color:#e2e8f0;}
 .sidebar-title{font-size:16px;font-weight:700;color:#e2e8f0;}
 .sidebar-sub{font-size:11px;color:#64748b;margin-top:2px;}
+
+/* Role Tabs in sidebar */
+.role-bar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid #334155;}
+.role-tab{background:transparent;color:#94a3b8;border:none;padding:10px 8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;text-align:center;}
+.role-tab:hover{color:#e2e8f0;background:#263548;}
+.role-tab.active{color:#eab308;border-bottom-color:#eab308;}
+.role-indicator{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;}
+.ri-pm{background:#eab308;}
+.ri-rd{background:#a78bfa;}
+.ri-qa{background:#34d399;}
+
+/* Depth badges */
+.depth-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;margin-left:8px;vertical-align:middle;}
+.depth-l1{background:#334155;color:#94a3b8;}
+.depth-l2{background:#3b2f1a;color:#fbbf24;}
+.depth-l3{background:#2d1a3e;color:#c4b5fd;}
+.depth-l4{background:#1a2e1a;color:#86efac;}
+
+/* Sidebar Nav */
 .sidebar-nav{flex:1;overflow-y:auto;padding:8px 0;}
 .nav-btn{display:block;width:100%;background:transparent;color:#94a3b8;border:none;padding:9px 20px;font-size:13px;cursor:pointer;text-align:left;transition:all .15s;border-left:3px solid transparent;}
 .nav-btn:hover{color:#e2e8f0;background:#263548;border-left-color:#475569;}
 .nav-btn.active{color:#eab308;background:#eab30810;border-left-color:#eab308;}
+.nav-btn.hidden{display:none;}
 .main-content{margin-left:250px;flex:1;}
 
 /* Header */
@@ -36,8 +56,12 @@ a{color:#60a5fa;}
 
 /* Section */
 .section{max-width:1200px;margin:32px auto;padding:0 16px;}
-.section-title{font-size:22px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
-.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#eab308;color:#fff;border-radius:50%;font-size:15px;}
+.section.hidden{display:none;}
+.section-title{font-size:22px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#eab308;color:#fff;border-radius:50%;font-size:15px;flex-shrink:0;}
+.section-title .num.pm{background:#eab308;}
+.section-title .num.rd{background:#7c3aed;}
+.section-title .num.qa{background:#059669;}
 .section-desc{color:#94a3b8;font-size:14px;margin-bottom:16px;}
 
 .overview-img{width:100%;border-radius:12px;border:1px solid #334155;margin-bottom:20px;}
@@ -50,8 +74,11 @@ a{color:#60a5fa;}
 .rules-col{display:flex;flex-direction:column;gap:10px;}
 
 .rule-card{background:#1e293b;border-radius:10px;padding:14px;border-left:3px solid #eab308;}
+.rule-card.rd-card{border-left-color:#7c3aed;}
+.rule-card.qa-card{border-left-color:#059669;}
 .rule-card h4{font-size:14px;margin:4px 0 6px;color:#f1f5f9;}
-.rule-card p{font-size:13px;color:#cbd5e1;margin-bottom:4px;}
+.rule-card p,.rule-card li{font-size:13px;color:#cbd5e1;margin-bottom:4px;}
+.rule-card ul{padding-left:18px;}
 .rule-card code{background:#334155;padding:1px 5px;border-radius:4px;font-size:12px;color:#fbbf24;}
 .rule-card .src{font-size:11px;color:#64748b;margin-top:6px;font-family:monospace;}
 .rule-tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:6px;font-weight:600;}
@@ -64,6 +91,7 @@ a{color:#60a5fa;}
 .tag-risk{background:rgba(239,68,68,0.2);color:#f87171;}
 .tag-discount{background:rgba(168,85,247,0.2);color:#c084fc;}
 .tag-venue{background:#1a2638;color:#93c5fd;}
+.tag-test{background:#064e3b;color:#6ee7b7;}
 
 .rule-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-top:12px;}
 
@@ -72,20 +100,46 @@ a{color:#60a5fa;}
 .flow-label{font-size:12px;color:#94a3b8;margin-bottom:4px;font-weight:600;}
 .flow-step{background:#334155;border-radius:8px;padding:8px 14px;font-size:13px;white-space:nowrap;}
 .flow-step.highlight{background:#eab308;color:#fff;}
+.flow-step.warn{background:#991b1b;color:#fca5a5;}
 .flow-step small{font-size:11px;color:#94a3b8;}
 .flow-arrow{color:#64748b;font-size:18px;}
+.flow-branch{color:#fbbf24;font-size:12px;font-weight:600;}
 
 .type-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
 .type-table th{background:#334155;color:#f1f5f9;padding:8px 12px;text-align:left;}
 .type-table td{background:#1e293b;padding:8px 12px;border-bottom:1px solid #334155;}
 .type-table tr:hover td{background:#263548;}
 
+/* Test matrix */
+.test-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:12px;}
+.test-table th{background:#064e3b;color:#d1fae5;padding:8px;text-align:left;font-size:11px;}
+.test-table td{background:#1e293b;padding:6px 8px;border-bottom:1px solid #334155;}
+.test-table tr:hover td{background:#263548;}
+.test-pass{color:#34d399;}
+.test-fail{color:#f87171;}
+
+/* API table */
+.api-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:12px;}
+.api-table th{background:#2d1a3e;color:#c4b5fd;padding:8px;text-align:left;font-size:11px;}
+.api-table td{background:#1e293b;padding:6px 8px;border-bottom:1px solid #334155;}
+.api-table tr:hover td{background:#263548;}
+.api-table code{background:#334155;padding:1px 4px;border-radius:3px;font-size:11px;color:#c4b5fd;}
+.method-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:700;}
+.method-get{background:#1a3a2a;color:#86efac;}
+.method-post{background:#3b2f1a;color:#fbbf24;}
+.method-put{background:#2d1a3e;color:#c4b5fd;}
+
 .footer{text-align:center;padding:40px 16px;color:#475569;font-size:13px;}
 
-/* Responsive sidebar */
-@media(max-width:768px){
-  .sidebar{width:200px;}
-  .main-content{margin-left:200px;}
+/* Responsive */
+@media(max-width:900px){
+  .sidebar{position:relative;width:100%;height:auto;max-height:none;border-right:none;border-bottom:1px solid #334155;}
+  .layout{flex-direction:column;}
+  .main-content{margin-left:0;}
+  .role-bar{grid-template-columns:repeat(4,1fr);}
+  .sidebar-nav{display:flex;flex-wrap:wrap;padding:8px;gap:4px;}
+  .nav-btn{display:inline-block;width:auto;border-left:none;border-radius:8px;padding:6px 12px;}
+  .nav-btn:hover,.nav-btn.active{border-left:none;}
 }
 @media(max-width:600px){
   .sidebar{display:none;}
@@ -101,32 +155,66 @@ a{color:#60a5fa;}
   <div class="sidebar-header">
     <a href="features.html" class="sidebar-back">&larr; 返回功能列表</a>
     <div class="sidebar-title">&#x1F464; 我的</div>
-    <div class="sidebar-sub">19 sections &middot; 42 screenshots</div>
+    <div class="sidebar-sub">23 L1 + 9 決策 + 37 API + 87 測項</div>
+  </div>
+  <div class="role-bar">
+    <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>概覽</button>
+    <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策</button>
+    <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API</button>
+    <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測</button>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-btn active" data-target="sec-flow">核心流程</button>
-    <button class="nav-btn" data-target="sec-mine-main">6.1 我的主頁</button>
-    <button class="nav-btn" data-target="sec-profile">6.1.1 個人資料</button>
-    <button class="nav-btn" data-target="sec-vip">6.2 VIP</button>
-    <button class="nav-btn" data-target="sec-transaction">6.3 交易記錄</button>
-    <button class="nav-btn" data-target="sec-invite">6.4 邀請好友</button>
-    <button class="nav-btn" data-target="sec-bet-record">6.5 投注記錄</button>
-    <button class="nav-btn" data-target="sec-reward">6.6 獎品記錄</button>
-    <button class="nav-btn" data-target="sec-help">6.7 幫助中心</button>
-    <button class="nav-btn" data-target="sec-tutorial">6.8 玩法教程</button>
-    <button class="nav-btn" data-target="sec-join">6.9 加入我們</button>
-    <button class="nav-btn" data-target="sec-cooperation">6.10 官方合作</button>
-    <button class="nav-btn" data-target="sec-match">6.11 賽事賽果</button>
-    <button class="nav-btn" data-target="sec-message">6.12 消息中心</button>
-    <button class="nav-btn" data-target="sec-gift">6.14 贈禮記錄</button>
-    <button class="nav-btn" data-target="sec-welfare">6.15 福利中心</button>
-    <button class="nav-btn" data-target="sec-commissioner">6.17 福利專員</button>
-    <button class="nav-btn" data-target="sec-backpack">6.18 背包中心</button>
-    <button class="nav-btn" data-target="sec-task">6.19 任務系統</button>
-    <button class="nav-btn" data-target="sec-openroom">6.20 玩家開房</button>
-    <button class="nav-btn" data-target="sec-wheel">6.21 轉盤活動</button>
-    <button class="nav-btn" data-target="sec-func-list">功能清單對照</button>
-    <button class="nav-btn" data-target="sec-overview">Figma 總覽</button>
+    <!-- L1 nav -->
+    <button class="nav-btn" data-target="sec-flow" data-nav-role="l1">核心流程</button>
+    <button class="nav-btn" data-target="sec-mine-main" data-nav-role="l1">6.1 我的主頁</button>
+    <button class="nav-btn" data-target="sec-profile" data-nav-role="l1">6.1.1 個人資料</button>
+    <button class="nav-btn" data-target="sec-vip" data-nav-role="l1">6.2 VIP</button>
+    <button class="nav-btn" data-target="sec-transaction" data-nav-role="l1">6.3 交易記錄</button>
+    <button class="nav-btn" data-target="sec-invite" data-nav-role="l1">6.4 邀請好友</button>
+    <button class="nav-btn" data-target="sec-bet-record" data-nav-role="l1">6.5 投注記錄</button>
+    <button class="nav-btn" data-target="sec-reward" data-nav-role="l1">6.6 獎品記錄</button>
+    <button class="nav-btn" data-target="sec-help" data-nav-role="l1">6.7 幫助中心</button>
+    <button class="nav-btn" data-target="sec-tutorial" data-nav-role="l1">6.8 玩法教程</button>
+    <button class="nav-btn" data-target="sec-join" data-nav-role="l1">6.9 加入我們</button>
+    <button class="nav-btn" data-target="sec-cooperation" data-nav-role="l1">6.10 官方合作</button>
+    <button class="nav-btn" data-target="sec-match" data-nav-role="l1">6.11 賽事賽果</button>
+    <button class="nav-btn" data-target="sec-message" data-nav-role="l1">6.12 消息中心</button>
+    <button class="nav-btn" data-target="sec-gift" data-nav-role="l1">6.14 贈禮記錄</button>
+    <button class="nav-btn" data-target="sec-welfare" data-nav-role="l1">6.15 福利中心</button>
+    <button class="nav-btn" data-target="sec-commissioner" data-nav-role="l1">6.17 福利專員</button>
+    <button class="nav-btn" data-target="sec-backpack" data-nav-role="l1">6.18 背包中心</button>
+    <button class="nav-btn" data-target="sec-task" data-nav-role="l1">6.19 任務系統</button>
+    <button class="nav-btn" data-target="sec-openroom" data-nav-role="l1">6.20 玩家開房</button>
+    <button class="nav-btn" data-target="sec-wheel" data-nav-role="l1">6.21 轉盤活動</button>
+    <button class="nav-btn" data-target="sec-func-list" data-nav-role="l1">功能清單對照</button>
+    <button class="nav-btn" data-target="sec-overview" data-nav-role="l1">Figma 總覽</button>
+    <!-- PM nav -->
+    <button class="nav-btn" data-target="pm-vip-calc" data-nav-role="pm">VIP 等級計算</button>
+    <button class="nav-btn" data-target="pm-badge-state" data-nav-role="pm">稱號狀態機</button>
+    <button class="nav-btn" data-target="pm-welfare-claim" data-nav-role="pm">福利領取流程</button>
+    <button class="nav-btn" data-target="pm-backpack-redeem" data-nav-role="pm">背包兌換</button>
+    <button class="nav-btn" data-target="pm-transfer-water" data-nav-role="pm">轉帳場館水量</button>
+    <button class="nav-btn" data-target="pm-alias-flow" data-nav-role="pm">暱稱驗證流程</button>
+    <button class="nav-btn" data-target="pm-bet-settle" data-nav-role="pm">投注結算邏輯</button>
+    <button class="nav-btn" data-target="pm-daily-task" data-nav-role="pm">每日任務系統</button>
+    <button class="nav-btn" data-target="pm-birthday-gift" data-nav-role="pm">生日禮金邏輯</button>
+    <!-- RD nav -->
+    <button class="nav-btn" data-target="rd-api-overview" data-nav-role="rd">API 總覽 (37)</button>
+    <button class="nav-btn" data-target="rd-vip-schema" data-nav-role="rd">VIP Schema</button>
+    <button class="nav-btn" data-target="rd-welfare-schema" data-nav-role="rd">福利中心 Schema</button>
+    <button class="nav-btn" data-target="rd-backpack-schema" data-nav-role="rd">背包 Schema</button>
+    <button class="nav-btn" data-target="rd-user-schema" data-nav-role="rd">使用者 Schema</button>
+    <button class="nav-btn" data-target="rd-transfer-schema" data-nav-role="rd">轉帳 Schema</button>
+    <!-- QA nav -->
+    <button class="nav-btn" data-target="qa-main" data-nav-role="qa">主頁面 (12)</button>
+    <button class="nav-btn" data-target="qa-profile" data-nav-role="qa">個人資料 (14)</button>
+    <button class="nav-btn" data-target="qa-vip" data-nav-role="qa">VIP (10)</button>
+    <button class="nav-btn" data-target="qa-badge" data-nav-role="qa">稱號 (10)</button>
+    <button class="nav-btn" data-target="qa-welfare" data-nav-role="qa">福利中心 (10)</button>
+    <button class="nav-btn" data-target="qa-backpack" data-nav-role="qa">背包中心 (9)</button>
+    <button class="nav-btn" data-target="qa-bet" data-nav-role="qa">投注記錄 (6)</button>
+    <button class="nav-btn" data-target="qa-transfer" data-nav-role="qa">轉帳 (11)</button>
+    <button class="nav-btn" data-target="qa-task" data-nav-role="qa">每日任務 (5)</button>
   </nav>
 </aside>
 
@@ -136,23 +224,30 @@ a{color:#60a5fa;}
 <!-- Header -->
 <div class="page-header">
   <h1>我的（Mine）— 功能標註</h1>
-  <div class="sub">玩家個人中心 &middot; 底部 Tab 第 5 項</div>
+  <div class="sub">玩家個人中心 &middot; 底部 Tab 第 5 項 &middot; PM / RD / QA 三視角</div>
   <div style="margin-top:12px;">
     <span class="h-badge">pages/mine/</span>
     <span class="h-badge">Figma: xvqDn4NW3ljqw5xM1ES3gL</span>
-    <span class="h-badge">19 Sections</span>
+    <span class="h-badge">L1: 23 Sections</span>
+    <span class="h-badge">L2: 9 決策流程</span>
+    <span class="h-badge">L3: 37 API</span>
+    <span class="h-badge">L4: 87 測項</span>
   </div>
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-num">19</div><div class="stat-label">Figma Sections</div></div>
-    <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">功能清單項目</div></div>
-    <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">快捷 Menu</div></div>
-    <div class="stat-card"><div class="stat-num">30+</div><div class="stat-label">關聯 GOR</div></div>
+    <div class="stat-card"><div class="stat-num">23</div><div class="stat-label">L1 Sections</div></div>
+    <div class="stat-card"><div class="stat-num">9</div><div class="stat-label">L2 決策流程</div></div>
+    <div class="stat-card"><div class="stat-num">37</div><div class="stat-label">L3 API 端點</div></div>
+    <div class="stat-card"><div class="stat-num">87</div><div class="stat-label">L4 測項</div></div>
   </div>
 </div>
 
+<!-- ========================================= -->
+<!-- L1 SECTIONS (existing, tagged data-role)  -->
+<!-- ========================================= -->
+
 <!-- Section 1: Core Flow -->
-<div class="section" id="sec-flow">
-  <div class="section-title"><span class="num">1</span> 核心流程</div>
+<div class="section" id="sec-flow" data-role="l1">
+  <div class="section-title"><span class="num">1</span> 核心流程 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">我的頁面的主要操作流程與進入路徑</div>
 
   <div class="flow-box">
@@ -220,8 +315,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 2: 6.1 Mine Main Page -->
-<div class="section" id="sec-mine-main">
-  <div class="section-title"><span class="num">2</span> 6.1 我的主頁面</div>
+<div class="section" id="sec-mine-main" data-role="l1">
+  <div class="section-title"><span class="num">2</span> 6.1 我的主頁面 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">玩家個人中心首頁 &middot; pages/mine/index.vue</div>
 
   <div class="annotated-row">
@@ -280,8 +375,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 3: Profile -->
-<div class="section" id="sec-profile">
-  <div class="section-title"><span class="num">3</span> 6.1.1 個人資料</div>
+<div class="section" id="sec-profile" data-role="l1">
+  <div class="section-title"><span class="num">3</span> 6.1.1 個人資料 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">個人中心 &middot; pages/mine/mine-center/index.vue</div>
 
   <div class="annotated-row">
@@ -329,8 +424,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 4: VIP -->
-<div class="section" id="sec-vip">
-  <div class="section-title"><span class="num">4</span> 6.2 VIP</div>
+<div class="section" id="sec-vip" data-role="l1">
+  <div class="section-title"><span class="num">4</span> 6.2 VIP <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">VIP 等級特權說明 &middot; pages/vip/index/index.vue</div>
 
   <div class="annotated-row">
@@ -371,8 +466,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 5: Transaction Record -->
-<div class="section" id="sec-transaction">
-  <div class="section-title"><span class="num">5</span> 6.3 交易記錄</div>
+<div class="section" id="sec-transaction" data-role="l1">
+  <div class="section-title"><span class="num">5</span> 6.3 交易記錄 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">金流交易記錄 &middot; pages/transaction-record/ &middot; 詳見 5-payment.md</div>
 
   <div class="annotated-row single">
@@ -402,8 +497,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 6: Invite Friends -->
-<div class="section" id="sec-invite">
-  <div class="section-title"><span class="num">6</span> 6.4 邀請好友</div>
+<div class="section" id="sec-invite" data-role="l1">
+  <div class="section-title"><span class="num">6</span> 6.4 邀請好友 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">邀請好友等級 &middot; pages/mine/invite-friends/</div>
 
   <img class="overview-img" src="/images/mine/section-invite.png" alt="邀請好友 section 總覽">
@@ -423,8 +518,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 7: Bet Record -->
-<div class="section" id="sec-bet-record">
-  <div class="section-title"><span class="num">7</span> 6.5 投注記錄</div>
+<div class="section" id="sec-bet-record" data-role="l1">
+  <div class="section-title"><span class="num">7</span> 6.5 投注記錄 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">投注歷史 &middot; pages/mine/bet-record/</div>
 
   <img class="overview-img" src="/images/mine/section-bet-record.png" alt="投注記錄 section 總覽">
@@ -466,8 +561,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 8: Reward Record -->
-<div class="section" id="sec-reward">
-  <div class="section-title"><span class="num">8</span> 6.6 獎品記錄</div>
+<div class="section" id="sec-reward" data-role="l1">
+  <div class="section-title"><span class="num">8</span> 6.6 獎品記錄 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">活動獲獎記錄 &middot; pages/mine/reward-record/</div>
 
   <div class="annotated-row single">
@@ -491,8 +586,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 9: Help Center -->
-<div class="section" id="sec-help">
-  <div class="section-title"><span class="num">9</span> 6.7 幫助中心</div>
+<div class="section" id="sec-help" data-role="l1">
+  <div class="section-title"><span class="num">9</span> 6.7 幫助中心 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">常見問題 FAQ &middot; pages/mine/help-center/</div>
 
   <div class="annotated-row single">
@@ -516,8 +611,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 10: Game Tutorial -->
-<div class="section" id="sec-tutorial">
-  <div class="section-title"><span class="num">10</span> 6.8 玩法教程</div>
+<div class="section" id="sec-tutorial" data-role="l1">
+  <div class="section-title"><span class="num">10</span> 6.8 玩法教程 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">投注玩法教學 &middot; pages/mine/game-tutorial/</div>
 
   <div class="annotated-row single">
@@ -542,8 +637,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 11: Join Us -->
-<div class="section" id="sec-join">
-  <div class="section-title"><span class="num">11</span> 6.9 加入我們</div>
+<div class="section" id="sec-join" data-role="l1">
+  <div class="section-title"><span class="num">11</span> 6.9 加入我們 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">合營計畫 &middot; 入口：我的功能清單</div>
 
   <div class="annotated-row single">
@@ -562,8 +657,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 12: Cooperation -->
-<div class="section" id="sec-cooperation">
-  <div class="section-title"><span class="num">12</span> 6.10 官方合作</div>
+<div class="section" id="sec-cooperation" data-role="l1">
+  <div class="section-title"><span class="num">12</span> 6.10 官方合作 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">品牌贊助 &middot; 入口：我的功能清單</div>
 
   <div class="annotated-row single">
@@ -582,8 +677,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 13: Match Result -->
-<div class="section" id="sec-match">
-  <div class="section-title"><span class="num">13</span> 6.11 賽事賽果</div>
+<div class="section" id="sec-match" data-role="l1">
+  <div class="section-title"><span class="num">13</span> 6.11 賽事賽果 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">歷史賽事結果查詢 &middot; pages/mine/match-result/</div>
 
   <div class="annotated-row single">
@@ -612,8 +707,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 14: Message Center -->
-<div class="section" id="sec-message">
-  <div class="section-title"><span class="num">14</span> 6.12 消息中心</div>
+<div class="section" id="sec-message" data-role="l1">
+  <div class="section-title"><span class="num">14</span> 6.12 消息中心 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">通知/公告 &middot; pages/message-center/</div>
 
   <div class="annotated-row single">
@@ -640,8 +735,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 15: Gift Record -->
-<div class="section" id="sec-gift">
-  <div class="section-title"><span class="num">15</span> 6.14 贈禮記錄</div>
+<div class="section" id="sec-gift" data-role="l1">
+  <div class="section-title"><span class="num">15</span> 6.14 贈禮記錄 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">直播間送禮記錄 &middot; pages/mine/gift-record/</div>
 
   <div class="annotated-row single">
@@ -665,8 +760,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 16: Welfare Center -->
-<div class="section" id="sec-welfare">
-  <div class="section-title"><span class="num">16</span> 6.15 福利中心</div>
+<div class="section" id="sec-welfare" data-role="l1">
+  <div class="section-title"><span class="num">16</span> 6.15 福利中心 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">福利領取中心 &middot; pages/mine/welfare-center/</div>
 
   <div class="annotated-row">
@@ -710,8 +805,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 17: Welfare Commissioner -->
-<div class="section" id="sec-commissioner">
-  <div class="section-title"><span class="num">17</span> 6.17 聯繫福利專員</div>
+<div class="section" id="sec-commissioner" data-role="l1">
+  <div class="section-title"><span class="num">17</span> 6.17 聯繫福利專員 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">浮動入口 &middot; WelfareCommissioner 組件</div>
 
   <img class="overview-img" src="/images/mine/section-welfare-commissioner.png" alt="福利專員 section 總覽">
@@ -730,8 +825,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 18: Backpack -->
-<div class="section" id="sec-backpack">
-  <div class="section-title"><span class="num">18</span> 6.18 背包中心</div>
+<div class="section" id="sec-backpack" data-role="l1">
+  <div class="section-title"><span class="num">18</span> 6.18 背包中心 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">背包管理 + 兌換中心 &middot; pages/mine/my-backpack/index.vue</div>
 
   <div class="annotated-row">
@@ -779,8 +874,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 19: Task System -->
-<div class="section" id="sec-task">
-  <div class="section-title"><span class="num">19</span> 6.19 任務系統</div>
+<div class="section" id="sec-task" data-role="l1">
+  <div class="section-title"><span class="num">19</span> 6.19 任務系統 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">每日簽到/任務/新手任務 &middot; pages/mine/RewardsTasks/index.vue</div>
 
   <div class="annotated-row">
@@ -829,8 +924,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 20: Open Room -->
-<div class="section" id="sec-openroom">
-  <div class="section-title"><span class="num">20</span> 6.20 玩家開房對賭</div>
+<div class="section" id="sec-openroom" data-role="l1">
+  <div class="section-title"><span class="num">20</span> 6.20 玩家開房對賭 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">對賭房間 &middot; pages/open-room/</div>
 
   <img class="overview-img" src="/images/mine/section-open-room.png" alt="玩家開房 section 總覽">
@@ -850,8 +945,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section 21: Wheel -->
-<div class="section" id="sec-wheel">
-  <div class="section-title"><span class="num">21</span> 6.21 轉盤活動</div>
+<div class="section" id="sec-wheel" data-role="l1">
+  <div class="section-title"><span class="num">21</span> 6.21 轉盤活動 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">轉盤系統入口（我的頁面）</div>
 
   <img class="overview-img" src="/images/mine/section-wheel.png" alt="轉盤活動 section 總覽">
@@ -870,8 +965,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section: Function List Table -->
-<div class="section" id="sec-func-list">
-  <div class="section-title"><span class="num">22</span> 功能清單對照表</div>
+<div class="section" id="sec-func-list" data-role="l1">
+  <div class="section-title"><span class="num">22</span> 功能清單對照表 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">我的頁面 12 個功能項目的路由、顯示條件與隱藏規則</div>
 
   <table class="type-table">
@@ -909,8 +1004,8 @@ a{color:#60a5fa;}
 </div>
 
 <!-- Section: Figma Overview -->
-<div class="section" id="sec-overview">
-  <div class="section-title"><span class="num">23</span> Figma Section 總覽</div>
+<div class="section" id="sec-overview" data-role="l1">
+  <div class="section-title"><span class="num">23</span> Figma Section 總覽 <span class="depth-badge depth-l1">L1</span></div>
   <div class="section-desc">各 Section 全景截圖（scale=0.5，僅供參考）</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
@@ -949,41 +1044,890 @@ a{color:#60a5fa;}
   </div>
 </div>
 
+<!-- ========================================= -->
+<!-- PM SECTIONS (L2 Decision Flows)           -->
+<!-- ========================================= -->
+
+<!-- PM: VIP Level Calculation -->
+<div class="section" id="pm-vip-calc" data-role="pm">
+  <div class="section-title"><span class="num pm">1</span> VIP 等級計算（BigNumber）<span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">升級進度、保級流水、豪禮狀態機 &middot; pages/vip/index/index.vue</div>
+
+  <div class="flow-box">
+    <div class="flow-label">VIP 升級進度計算</div>
+    <div class="flow-row">
+      <span class="flow-step">取值：vipWater, payAmount</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">levelUpWater = levelInfos[level+1].levelUpWater</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">exp = vipWater / levelUpWater</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">isPayAmount === 1</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">Yes →</span>
+      <span class="flow-step warn">Math.min(exp, exp_1) x 100</span>
+      <span class="flow-step">BigNumber.decimalPlaces(2, ROUND_DOWN)</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">No →</span>
+      <span class="flow-step">exp x 100</span>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">VIP 保級流水進度</div>
+    <div class="flow-row">
+      <span class="flow-step">seasonWater = vipInfo.seasonWater</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">levelDownWater = levelInfos[vipLevel].levelDownWater</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">(seasonWater / levelDownWater) x 100, ROUND_DOWN 2 位</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>VIP 豪禮狀態機</h4>
+      <p><code>StateCanApply</code> → { GET_GIFT, '领取豪礼' }</p>
+      <p><code>StateReview / StateAgree / StateRefuse / StateSend / StateRefuseSend</code> → { ALREADY_APPLY, '已申请' }</p>
+      <p><code>StateComplete</code> → { COMPLETE, '已领取' }</p>
+      <p><code>StateNone / default</code> → { NOT_ON_LEVEL, '等级不符' }</p>
+      <div class="src">pages/vip/index/index.vue:L84-L109</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>VIP Store 初始化</h4>
+      <p><code>setVipIcons()</code>：未登入帶 channelId/agentId，格式化為 { [level]: item } map</p>
+      <p><code>setVipInfo()</code>：POST /vip/vipInfo</p>
+      <p><code>setVipOrder()</code>：POST /vip/vipOrder</p>
+      <p><code>setUserAddress()</code>：測試帳號跳過，按 isDefault 排序</p>
+      <div class="src">stores/vip.ts:L1-L70</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Badge State Machine -->
+<div class="section" id="pm-badge-state" data-role="pm">
+  <div class="section-title"><span class="num pm">2</span> 稱號狀態機 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">5 態定義 + 時效 + 操作流程 &middot; useBadge.ts</div>
+
+  <div class="flow-box">
+    <div class="flow-label">BADGE_STATUS 五態</div>
+    <div class="flow-row">
+      <span class="flow-step">LOCKED(0) 未解鎖</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">CAN_RECEIVE(3) 可領取</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">NOT_SET(2) 已擁有未配戴</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">OWNED(1) 配戴中</span>
+    </div>
+    <div class="flow-row">
+      <span style="width:200px;display:inline-block"></span>
+      <span class="flow-arrow">&darr;</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step warn">EXPIRED(4) 已失效</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>稱號時效顯示</h4>
+      <p><strong>已擁有 + 限時：</strong>CAN_RECEIVE → days = validDays；否則 days = max(0, floor((validEndTime - now) / 86400000))</p>
+      <p><strong>已擁有 + 不限時：</strong>tag = '不限时'，text = '永久有效'</p>
+      <p><strong>未解鎖 + 限量：</strong>remaining = max(0, budget - ownCount)，isRed = remaining/budget &lt; 0.1</p>
+      <p><strong>未解鎖 + 活動限時：</strong>days = max(0, floor((activatedEndTime - now) / 86400000))，isRed = days &lt;= 3</p>
+      <div class="src">useBadge.ts:L74-L147</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>操作流程</h4>
+      <p><strong>配戴：</strong>isBinded → PUT /user/unbindBadge，toast '已取消设置'；!isBinded → PUT /user/bindBadge，toast '设置成功'</p>
+      <p><strong>領取：</strong>POST /user/badge { id, level? }，toast '领取成功'</p>
+      <p><strong>一鍵領取：</strong>POST /user/receiveAllBadges</p>
+      <p><strong>刷新進度：</strong>POST /user/refreshBadges，180 秒冷卻，返回 taskId</p>
+      <div class="src">useBadge.ts:L242-L411</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>稱號規則格式化</h4>
+      <p><code>deposit(1)</code>：subType=1 單筆充值，else 累積充值</p>
+      <p><code>validBet(2)</code>：按遊戲 ID 找場館名，targetId=9 特殊處理為「直播」</p>
+      <p><code>live(3)</code>：觀看時間(分) / 贈送禮物金額(元)</p>
+      <p><code>loginAndRegister(4)</code>：注冊時間(時) / 連續登入(日)</p>
+      <p><code>inviteFriend(5)</code>：推薦好友(人)</p>
+      <p><code>vip(6)</code>：VIP 等級門檻</p>
+      <div class="src">useBadge.ts:L440-L602</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Welfare Claim Flow -->
+<div class="section" id="pm-welfare-claim" data-role="pm">
+  <div class="section-title"><span class="num pm">3</span> 福利中心領取流程 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">單筆/一鍵領取 + 狀態格式化 + 篩選 &middot; useWelfareActions.ts</div>
+
+  <div class="flow-box">
+    <div class="flow-label">單筆領取 applySingleOrder（debounce 800ms）</div>
+    <div class="flow-row">
+      <span class="flow-step">status !== NotClaim?</span>
+      <span class="flow-branch">Yes → return</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">POST /welfarecenter/applyV2</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">檢查 errCode</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step warn">103: 綁定手機</span>
+      <span class="flow-step warn">104: 綁定銀行卡</span>
+      <span class="flow-step warn">105: 手機+銀行卡</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">toast '领取中'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">1s 後 resetList</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">success > 0 && total === 0 → '领取成功！'</span>
+    </div>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-label">一鍵領取 applyMultipleOrder（debounce 800ms）</div>
+    <div class="flow-row">
+      <span class="flow-step">POST /welfarecenter/applyCollectAllV2</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">彈窗 DISPLAY_COUNTS</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">errorCode=103 → reason='手机'</span>
+      <span class="flow-step">errorCode=104 → reason='银行卡'</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step highlight">total > 0 && failure === 0 → '继续'（遞迴再呼叫）</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>福利狀態格式化</h4>
+      <p>!claimTime && expired → status=Expired(3), '已失效'</p>
+      <p>!claimTime && !expired → status=NotClaim(1), '领取'</p>
+      <p>claimTime → status=TotalClaim(2), '已领取'</p>
+      <p><strong>倒數：</strong> >=86400 → '{d}天{h}时' / >=3600 → '{h}时{m}分钟' / >=60 → '{m}分钟{s}秒' / &lt;60 → '{s}秒'</p>
+      <div class="src">stores/welfare-center.ts:L204-L270</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>篩選器預設</h4>
+      <p>Status = NotClaim(1) / Times = NearlySevenDays(2) / Category = All(0)</p>
+      <p>日期範圍：Today(0)→1日 / 3Days(1)→3日 / 7Days(2)→7日 / 30Days(3)→15日（注意 UI 寫「近15日」）/ Custom(4)</p>
+      <p>動態分類：固定項 全部/紅利/返水 + 動態 awardCategoryList</p>
+      <div class="src">useWelfareFilters.ts:L1-L187</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Backpack Redeem -->
+<div class="section" id="pm-backpack-redeem" data-role="pm">
+  <div class="section-title"><span class="num pm">4</span> 背包兌換決策 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">背包管理 / 兌換中心 / 獎品申請 &middot; my-backpack/index.vue</div>
+
+  <div class="flow-box">
+    <div class="flow-label">背包管理 vs 兌換中心切換</div>
+    <div class="flow-row">
+      <span class="flow-step highlight">selectCenterCategory(id?)</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">isBagCenterMode = true</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">initSummary()</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step highlight">selectRedeemCategory(id?)</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">isBagCenterMode = false</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">initRedeem()</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>背包獎品申請</h4>
+      <p><code>awardType=bonusPrize(6)</code> → POST /user/redeemForBonus，toast '兑现成功'</p>
+      <p><code>awardType=physicalAward(3)</code> → POST /user/awardAttr 取屬性 → 開啟 ApplyAwardSheets</p>
+      <div class="src">my-backpack/index.vue:L396-L432</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>兌換中心兌換</h4>
+      <p>POST /user/redeem { id, amount, planId }</p>
+      <p>errCode 103/104/105 → 彈窗綁定提示</p>
+      <p>成功 → clearData + fetchRedeemList + toast '兑换成功'</p>
+      <div class="src">my-backpack/index.vue:L434-L472</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>背包分類體系</h4>
+      <p><code>AwardCategoryAttr.Item(1)</code> → '我的道具'</p>
+      <p><code>AwardCategoryAttr.Bag(2)</code> → '我的背包'</p>
+      <p>只顯示 enabled === 1 且非空分類</p>
+      <div class="src">my-backpack/index.vue:L303-L323</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>分頁與刷新</h4>
+      <p>IntersectionObserver 無限滾動，curPage++ 觸發 fetch</p>
+      <p>下拉刷新：3 秒冷卻（isRefreshDisabled）</p>
+      <p>fullUpdate: page=1, pageSize=maxPage x 30（重取所有頁面）</p>
+      <div class="src">my-backpack/index.vue:L110-L530</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Transfer & Water -->
+<div class="section" id="pm-transfer-water" data-role="pm">
+  <div class="section-title"><span class="num pm">5</span> 轉帳場館水量 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">場館選擇 + 轉帳流程 + 流水計算 + 自動轉帳 &middot; transfer/index.vue</div>
+
+  <div class="flow-box">
+    <div class="flow-label">場館選擇邏輯 confirmTransferVenue()</div>
+    <div class="flow-row">
+      <span class="flow-step highlight">type === 'output'</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">gameId === 0 → from=中心, to=第二場館</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">else →</span>
+      <span class="flow-step">from=選中場館, to=中心錢包</span>
+    </div>
+    <div class="flow-row" style="margin-top:12px;">
+      <span class="flow-step warn">規則：場館包不支持互轉，必須經過中心錢包</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>流水計算 getGameWater()</h4>
+      <p><code>isRaisingWater=0</code>（不提高）→ remainWater / 100</p>
+      <p><code>isRaisingWater=1</code>（倍數）→ amount x raisingWater + remainWater / 100</p>
+      <p><code>isRaisingWater=2</code>（金額）→ amount + raisingWater + remainWater / 100</p>
+      <div class="src">transfer/index.vue:L311-L325</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>轉帳流程 transfer()</h4>
+      <p>金額 &lt;= 0 → return</p>
+      <p>金額 > curLimitTransferAmount → toast '转账金额不得大于钱包余额'</p>
+      <p>from=中心 && to.activityLock → 二次確認彈窗</p>
+      <p>POST /wallet/gameAmountTransfer { gold: floor(amount x 100) }</p>
+      <div class="src">transfer/index.vue:L279-L308</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>自動轉帳 handleAutoTransfer()</h4>
+      <p>10 秒冷卻 + 持久化到 serversidewebstorage</p>
+      <p>開啟 → toast + collectAllMoney(true) → POST /wallet/collectAll</p>
+      <p>關閉 → toast '已关闭自动转帐模式'</p>
+      <div class="src">transfer/index.vue:L179-L202</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Alias Flow -->
+<div class="section" id="pm-alias-flow" data-role="pm">
+  <div class="section-title"><span class="num pm">6</span> 暱稱驗證流程 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">三態機 + zod 驗證 + API 回應 &middot; mine-center/aliasInfo-name/</div>
+
+  <div class="flow-box">
+    <div class="flow-label">ALIAS_STATUS 三態機</div>
+    <div class="flow-row">
+      <span class="flow-step">NO_SET(0) → 「点击修改昵称」可點擊</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">CONFIRMING(1) → 「系统审核中」不可點擊</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step highlight">SUCCESS_SET(3)</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">changeAliasEnable?</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">Yes, diffDays >= interval →</span>
+      <span class="flow-step">可修改</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-branch">Yes, diffDays < interval →</span>
+      <span class="flow-step warn">'{interval - diffDays}天后可修改'</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-validation">validation</span>
+      <h4>zod 驗證規則</h4>
+      <p>Regex: <code>/^(([a-zA-Z0-9]|[\p{Unified_Ideograph}])+)*$/u</code></p>
+      <p>中文算 2 字元，總長 &lt;= 14 字元</p>
+      <p>數字總數 &lt;= 3 且不能全是數字</p>
+      <div class="src">aliasInfo-name/index.vue:L1-L44</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>API 回應對照</h4>
+      <p>POST /user/setAlias { alias }</p>
+      <p><code>status=Fail(2), reason=Repeat(1)</code> → '此昵称已重复'</p>
+      <p><code>status=Fail(2), reason=Sensitive(2)</code> → '此昵称包含敏感词汇'</p>
+      <p><code>status=Confirm(1)</code> → '系统人员审核中'</p>
+      <p><code>status=Success(3)</code> → '昵称已更改成功'</p>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Bet Settlement -->
+<div class="section" id="pm-bet-settle" data-role="pm">
+  <div class="section-title"><span class="num pm">7</span> 投注結算邏輯 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">Tab 分類 + 結算判斷 + 狀態格式化 &middot; bet-record/utils/useBetRecord.ts</div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>Tab 分類</h4>
+      <p>體育（SportRecordList）→ sport API</p>
+      <p>直播（LiveRecordList）→ live API</p>
+      <p>遊戲（GameRecordList）→ goldrecord API</p>
+      <p>特殊：gameId === 8928 → 解析 betDetails JSON</p>
+      <div class="src">bet-record/index.vue:L1-L80</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>遊戲記錄結算判斷</h4>
+      <p>首次載入 Promise.all([未結算, 已結算])</p>
+      <p>有未結算 → activeSettle = 'unSettle'</p>
+      <p>classify=3 → isSettle:'1' / unSettle:'0'</p>
+      <p>其他 → isSettle:'1,2' / unSettle:'0'</p>
+      <div class="src">useBetRecord.ts:L7-L251</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>STATUS_MAP</h4>
+      <p>Winner → '赢'(1) / Loser → '输'(0) / Refund → '已取消'(-1)</p>
+      <p>status=0 → '接单成功' / status=2,3 → '已取消' / status=1 → 查 marketResult</p>
+      <div class="src">useBetRecord.ts:L46-L63</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>金額計算</h4>
+      <p>totalBet = betGold / 100</p>
+      <p>totalWin = activeSettle === 'isSettle' ? (winGold - betGold) / 100 : '0'</p>
+      <p>每頁 20 筆，finished = betHistory.length &lt; 20</p>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Daily Task -->
+<div class="section" id="pm-daily-task" data-role="pm">
+  <div class="section-title"><span class="num pm">8</span> 每日任務系統 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">Store 初始化 + 領取 + 新手任務 &middot; stores/dailyMissions.ts</div>
+
+  <div class="flow-box">
+    <div class="flow-label">initDailySignAndMissions()</div>
+    <div class="flow-row">
+      <span class="flow-step">isOnInit === true → return</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step highlight">Promise.all</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">getDailySign()</span>
+      <span class="flow-step">getProcessingItem()</span>
+      <span class="flow-step">getMoreList()</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">getMoreList() 含 dailyActivity, newbie, inviteWheel</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-flow">flow</span>
+      <h4>每日任務領取</h4>
+      <p>POST /mission/dailyActivity { devicePlatform: 3, missionId }</p>
+      <p>errCode === 1 → getMoreList() + return true</p>
+      <div class="src">dailyMissions.ts:L124-L139</div>
+    </div>
+    <div class="rule-card">
+      <span class="rule-tag tag-logic">logic</span>
+      <h4>新手任務</h4>
+      <p>enabled === 1 && !isOnlyLive</p>
+      <p>輪詢：每 60 秒 fetch + clearMissionNewbieInterval 清除</p>
+      <p>activityStartTime > now → 活動未開始</p>
+      <div class="src">dailyMissions.ts:L196-L327</div>
+    </div>
+  </div>
+</div>
+
+<!-- PM: Birthday Gift -->
+<div class="section" id="pm-birthday-gift" data-role="pm">
+  <div class="section-title"><span class="num pm">9</span> 生日禮金邏輯 <span class="depth-badge depth-l2">L2</span></div>
+  <div class="section-desc">VIP 頁面生日禮金顯示 &middot; pages/vip/index/index.vue</div>
+
+  <div class="flow-box">
+    <div class="flow-label">checkBirthday（computed）</div>
+    <div class="flow-row">
+      <span class="flow-step">ctm90 = registerTime + 90 天</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">birth 有值 && ctm90 > now</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step warn">isShow = 0（未滿 90 天）</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">birth 有值 && ctm90 &lt;= now</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step highlight">isShow = 1（可領取）</span>
+    </div>
+    <div class="flow-row">
+      <span class="flow-step">birth 為空</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">isShow = 2（未綁定）</span>
+    </div>
+  </div>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="rule-tag tag-ui">ui</span>
+      <h4>Template 對應</h4>
+      <p><code>checkBirthday === 0</code> 或 (1 且 giftReward === 0) → '注册超过90天，可领取生日礼金'</p>
+      <p><code>checkBirthday === 2</code> → '设置出生日期，尊享生日礼金' +「立刻设置」按鈕</p>
+      <p><code>checkBirthday === 1</code> 且 giftReward !== 0 → '达到VIPx，尊享xx元生日礼金' +「前往领取」</p>
+      <div class="src">pages/vip/index/index.vue:L178-L200, L527-L546</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- RD SECTIONS (L3 API Specs)                -->
+<!-- ========================================= -->
+
+<!-- RD: API Overview -->
+<div class="section" id="rd-api-overview" data-role="rd">
+  <div class="section-title"><span class="num rd">1</span> API 端點總覽（37 個）<span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">我的模組完整 API 清單 &middot; 來源：逆向工程 mango2-h5</div>
+
+  <table class="api-table">
+    <thead><tr><th>#</th><th>API</th><th>Method</th><th>Path</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>getVipIcons</td><td><span class="method-badge method-get">GET</span></td><td><code>/vip/icons</code></td><td>VIP 各等級圖示</td></tr>
+      <tr><td>2</td><td>getVipInfo</td><td><span class="method-badge method-post">POST</span></td><td><code>/vip/vipInfo</code></td><td>VIP 等級資訊</td></tr>
+      <tr><td>3</td><td>getVipOrder</td><td><span class="method-badge method-post">POST</span></td><td><code>/vip/vipOrder</code></td><td>VIP 禮品訂單</td></tr>
+      <tr><td>4</td><td>fetchApplyVipOrder</td><td><span class="method-badge method-post">POST</span></td><td><code>/vip/applyVipOrder</code></td><td>申請 VIP 豪禮</td></tr>
+      <tr><td>5</td><td>getCheckVipPlayer</td><td><span class="method-badge method-get">GET</span></td><td><code>/vip/checkVipPlayer</code></td><td>檢查 VIP 保級狀態</td></tr>
+      <tr><td>6</td><td>getUserInfo</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/userData/v2</code></td><td>使用者完整資訊</td></tr>
+      <tr><td>7</td><td>setHead</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setHead</code></td><td>設定頭像</td></tr>
+      <tr><td>8</td><td>setAlias</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setAlias</code></td><td>設定暱稱</td></tr>
+      <tr><td>9</td><td>setName</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setName</code></td><td>設定真實姓名</td></tr>
+      <tr><td>10</td><td>setSex</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setSex</code></td><td>設定性別</td></tr>
+      <tr><td>11</td><td>setBirthday</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setBirthday</code></td><td>設定生日</td></tr>
+      <tr><td>12</td><td>setEmail</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setEmail</code></td><td>綁定 Email</td></tr>
+      <tr><td>13</td><td>setWeChat</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setWeChat</code></td><td>綁定 WeChat</td></tr>
+      <tr><td>14</td><td>setQQ</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/setQQ</code></td><td>綁定 QQ</td></tr>
+      <tr><td>15</td><td>aliasConfig</td><td><span class="method-badge method-get">GET</span></td><td><code>/user/aliasConfig</code></td><td>暱稱修改設定</td></tr>
+      <tr><td>16</td><td>getUserBadges</td><td><span class="method-badge method-get">GET</span></td><td><code>/user/badges</code></td><td>所有稱號列表</td></tr>
+      <tr><td>17</td><td>getUserBadgeInfoById</td><td><span class="method-badge method-get">GET</span></td><td><code>/user/badge</code></td><td>單一稱號資訊</td></tr>
+      <tr><td>18</td><td>receiveUserBadge</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/badge</code></td><td>領取稱號</td></tr>
+      <tr><td>19</td><td>receiveAllUserBadges</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/receiveAllBadges</code></td><td>一鍵領取所有稱號</td></tr>
+      <tr><td>20</td><td>bindUserBadge</td><td><span class="method-badge method-put">PUT</span></td><td><code>/user/bindBadge</code></td><td>配戴稱號</td></tr>
+      <tr><td>21</td><td>unBindUserBadge</td><td><span class="method-badge method-put">PUT</span></td><td><code>/user/unbindBadge</code></td><td>取消配戴稱號</td></tr>
+      <tr><td>22</td><td>refreshBadges</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/refreshBadges</code></td><td>刷新稱號進度（180s CD）</td></tr>
+      <tr><td>23</td><td>getWelfarecenterListV2</td><td><span class="method-badge method-post">POST</span></td><td><code>/welfarecenter/getListV2</code></td><td>福利中心列表</td></tr>
+      <tr><td>24</td><td>applyWelfarecenterV2</td><td><span class="method-badge method-post">POST</span></td><td><code>/welfarecenter/applyV2</code></td><td>單筆/多筆領取福利</td></tr>
+      <tr><td>25</td><td>applyCollectAllV2</td><td><span class="method-badge method-post">POST</span></td><td><code>/welfarecenter/applyCollectAllV2</code></td><td>一鍵領取全部福利</td></tr>
+      <tr><td>26</td><td>postBagListSummary</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/bagListSummary</code></td><td>背包匯總列表</td></tr>
+      <tr><td>27</td><td>postBagList</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/bagList</code></td><td>背包獎品列表</td></tr>
+      <tr><td>28</td><td>postCategoryList</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/awardCategoryList</code></td><td>獎品分類列表</td></tr>
+      <tr><td>29</td><td>getPublishCategoryList</td><td><span class="method-badge method-get">GET</span></td><td><code>/user/publishCategoryList</code></td><td>兌換中心分類</td></tr>
+      <tr><td>30</td><td>postRedeemList</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/redeemListV2</code></td><td>兌換中心商品列表</td></tr>
+      <tr><td>31</td><td>postRedeem</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/redeem</code></td><td>兌換商品</td></tr>
+      <tr><td>32</td><td>postRedeemForBonus</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/redeemForBonus</code></td><td>彩金獎品兌現</td></tr>
+      <tr><td>33</td><td>postAwardAttr</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/awardAttr</code></td><td>取得實體獎品屬性</td></tr>
+      <tr><td>34</td><td>postApplyGift</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/applyGift</code></td><td>申請背包獎品</td></tr>
+      <tr><td>35</td><td>postBagHistory</td><td><span class="method-badge method-post">POST</span></td><td><code>/user/bagHistory</code></td><td>背包歷史記錄</td></tr>
+      <tr><td>36</td><td>gameAmountTransfer</td><td><span class="method-badge method-post">POST</span></td><td><code>/wallet/gameAmountTransfer</code></td><td>場館轉帳</td></tr>
+      <tr><td>37</td><td>collectAll</td><td><span class="method-badge method-post">POST</span></td><td><code>/wallet/collectAll</code></td><td>一鍵回收場館餘額</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- RD: VIP Schema -->
+<div class="section" id="rd-vip-schema" data-role="rd">
+  <div class="section-title"><span class="num rd">2</span> VIP API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">VIP 相關 API 的 Request / Response 規格</div>
+
+  <div class="rule-grid">
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>getVipIcons — GET /vip/icons</h4>
+      <p><strong>Request：</strong>agentId(number, 未登入必填), channelId(string, 未登入必填)</p>
+      <p><strong>Response：</strong>list[].level, list[].basicIcon, list[].badge, list[].colorCode, list[].chatroomEntryBG, list[].chatroomEntrySFX, list[].bulletScreenSFXHead/Body/Tail</p>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>getVipInfo — POST /vip/vipInfo</h4>
+      <p><strong>Response (VipData)：</strong></p>
+      <p>vipLevel, vipWater(分), payAmount(分), isPayAmount(1=啟用), relegationDay, seasonWater(分), monthRewardMode</p>
+      <p><strong>LevelInfo：</strong>levelUpAmount, levelUpWater, levelDownWater, withdrawCount, withdrawGold, levelUpReward, birthReward, monthReward1, monthReward2（皆為分）</p>
+    </div>
+  </div>
+</div>
+
+<!-- RD: Welfare Schema -->
+<div class="section" id="rd-welfare-schema" data-role="rd">
+  <div class="section-title"><span class="num rd">3</span> 福利中心 API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">福利列表 + 領取 API 的完整規格</div>
+
+  <div class="rule-grid">
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>getWelfarecenterListV2 — POST /welfarecenter/getListV2</h4>
+      <p><strong>Request：</strong>status(0=全部/1=待領/2=已領/3=已失效), type(0=全部/1=紅利/2=返水), startDate, endDate, awardCategoryId, page</p>
+      <p><strong>Response：</strong>list[].aId, .bonus(分), .water(分), .orderId, .reason, .claimTime(0=未領), .claimExpireTime, .createTime, .awardCategoryId, .awardType, .awardName, .awardAmount, totalPage, notClaim, totalClaim, expired</p>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>applyWelfarecenterV2 — POST /welfarecenter/applyV2</h4>
+      <p><strong>Request：</strong>aIds(number[]), orderIds(string[]), isClaimAll(boolean)</p>
+      <p><strong>Response：</strong>success(number), total(number), failure(number), errorCode</p>
+      <p><strong>Error Codes：</strong>103=BIND_PHONE, 104=BIND_BANK_CARD, 105=BIND_PHONE_AND_BANK_CARD</p>
+    </div>
+  </div>
+</div>
+
+<!-- RD: Backpack Schema -->
+<div class="section" id="rd-backpack-schema" data-role="rd">
+  <div class="section-title"><span class="num rd">4</span> 背包中心 API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">背包管理 + 兌換中心 API 規格</div>
+
+  <div class="rule-grid">
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>postBagListSummary — POST /user/bagListSummary</h4>
+      <p><strong>Request：</strong>page(number), pageSize(number?), awardCategory(number?)</p>
+      <p><strong>Response：</strong>items[].itemId, .awardName, .awardType(0=全部/1=虛擬道具/2=虛擬獎品/3=實體/4=優惠券/5=彩金/6=彩金獎品), .imageUrl, .quantity, .expireTime('0'=永久), .category, .waterMultiple, .awardAmount(分), pagination.maxPageCount</p>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>postRedeem — POST /user/redeem</h4>
+      <p><strong>Request：</strong>id(number), amount(number), planId(string)</p>
+      <p><strong>Error Codes：</strong>同福利中心（103/104/105）</p>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>postRedeemForBonus — POST /user/redeemForBonus</h4>
+      <p><strong>Request：</strong>awardId(number)</p>
+      <p><strong>Response：</strong>errCode === 1 → 成功</p>
+    </div>
+  </div>
+</div>
+
+<!-- RD: User Schema -->
+<div class="section" id="rd-user-schema" data-role="rd">
+  <div class="section-title"><span class="num rd">5</span> 使用者 / 稱號 API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">個人資料 + 稱號系統 API 規格</div>
+
+  <div class="rule-grid">
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>setAlias — POST /user/setAlias</h4>
+      <p><strong>Request：</strong>alias(string)</p>
+      <p><strong>Response：</strong>status(AliasStatus: 1=審核中/2=失敗/3=成功), reason(AliasFailStatus: 1=重複/2=敏感詞)</p>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>稱號操作 API 群</h4>
+      <p><code>GET /user/badges</code> → 所有稱號列表</p>
+      <p><code>POST /user/badge { id, level? }</code> → 領取稱號</p>
+      <p><code>POST /user/receiveAllBadges</code> → 一鍵領取</p>
+      <p><code>PUT /user/bindBadge { id, level? }</code> → 配戴</p>
+      <p><code>PUT /user/unbindBadge { id }</code> → 取消配戴</p>
+      <p><code>POST /user/refreshBadges</code> → 返回 taskId + 180s CD</p>
+    </div>
+  </div>
+</div>
+
+<!-- RD: Transfer Schema -->
+<div class="section" id="rd-transfer-schema" data-role="rd">
+  <div class="section-title"><span class="num rd">6</span> 轉帳 API Schema <span class="depth-badge depth-l3">L3</span></div>
+  <div class="section-desc">場館轉帳 + 一鍵回收</div>
+
+  <div class="rule-grid">
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>gameAmountTransfer — POST /wallet/gameAmountTransfer</h4>
+      <p><strong>Request：</strong>gameOutId(number, 0=中心), gameInId(number), gold(number, 分), openGame(boolean), gameCode(string)</p>
+    </div>
+    <div class="rule-card rd-card">
+      <span class="rule-tag tag-api">api</span>
+      <h4>collectAll — POST /wallet/collectAll</h4>
+      <p>回收所有場館餘額到中心錢包，無 Request Body</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- QA SECTIONS (L4 Test Matrix)              -->
+<!-- ========================================= -->
+
+<!-- QA: Main Page Tests -->
+<div class="section" id="qa-main" data-role="qa">
+  <div class="section-title"><span class="num qa">1</span> 主頁面測項（12 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">我的主頁面的驗測矩陣</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>未登入主頁</td><td>未登入</td><td>進入我的頁面</td><td>顯示「您还未登录」，點擊頭像跳登入</td><td>P0</td></tr>
+      <tr><td>2</td><td>已登入資訊顯示</td><td>已登入、VIP3</td><td>進入我的頁面</td><td>顯示帳號、餘額（元）、VIP3 圖示</td><td>P0</td></tr>
+      <tr><td>3</td><td>餘額重新整理-成功</td><td>已登入、冷卻完成</td><td>點擊刷新</td><td>轉圈 2 秒、餘額更新、10 秒冷卻啟動</td><td>P0</td></tr>
+      <tr><td>4</td><td>餘額重新整理-冷卻中</td><td>冷卻未完成</td><td>點擊刷新</td><td>toast「请等待 X 秒后重试」</td><td>P1</td></tr>
+      <tr><td>5</td><td>測試帳號限制</td><td>isTestAccount = true</td><td>點擊「立即存款」</td><td>toast「此为测试账号，无法操作！」</td><td>P1</td></tr>
+      <tr><td>6</td><td>純體育模式隱藏</td><td>isNoLive = true</td><td>進入我的頁面</td><td>贈禮記錄、關注列表不在功能清單中</td><td>P1</td></tr>
+      <tr><td>7</td><td>福利中心 badge</td><td>有 5 筆未領取</td><td>進入我的頁面</td><td>福利中心圖示顯示 badge「5」</td><td>P1</td></tr>
+      <tr><td>8</td><td>福利中心 badge-99+</td><td>有 120 筆未領取</td><td>進入我的頁面</td><td>badge 顯示「99+」</td><td>P2</td></tr>
+      <tr><td>9</td><td>消息紅點</td><td>有未讀消息</td><td>進入我的頁面</td><td>消息圖示右上顯示紅點</td><td>P1</td></tr>
+      <tr><td>10</td><td>開房間入口-首次</td><td>showCommunityRoomHome=true, 未看過提示</td><td>進入我的頁面</td><td>1 秒後自動滾動到開房入口</td><td>P2</td></tr>
+      <tr><td>11</td><td>開房間入口-再次</td><td>已看過提示</td><td>進入我的頁面</td><td>不自動滾動</td><td>P2</td></tr>
+      <tr><td>12</td><td>邀請好友埋點</td><td>已登入</td><td>點擊邀請好友</td><td>觸發 clickInviteFriendHitPoint + sendActivityTrack</td><td>P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: Profile Tests -->
+<div class="section" id="qa-profile" data-role="qa">
+  <div class="section-title"><span class="num qa">2</span> 個人資料測項（14 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">暱稱 + 個人資料 + 登出</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>13</td><td>暱稱-未設定</td><td>aliasInfo.status=0</td><td>進入個人資料</td><td>顯示「点击修改昵称」，可點擊</td><td>P0</td></tr>
+      <tr><td>14</td><td>暱稱-審核中</td><td>aliasInfo.status=1</td><td>進入個人資料</td><td>顯示「系统审核中」，不可點擊</td><td>P0</td></tr>
+      <tr><td>15</td><td>暱稱-已設定-可修改</td><td>status=3, diffDays >= interval</td><td>進入個人資料</td><td>顯示「点击修改昵称」</td><td>P1</td></tr>
+      <tr><td>16</td><td>暱稱-已設定-冷卻中</td><td>status=3, diffDays < interval</td><td>進入個人資料</td><td>顯示「X天后可修改」</td><td>P1</td></tr>
+      <tr><td>17</td><td>暱稱驗證-特殊字元</td><td>—</td><td>輸入「test@」</td><td>提示「限制特殊字元」</td><td>P1</td></tr>
+      <tr><td>18</td><td>暱稱驗證-純數字</td><td>—</td><td>輸入「12345」</td><td>提示「不能为纯数字」</td><td>P1</td></tr>
+      <tr><td>19</td><td>暱稱驗證-中文長度</td><td>—</td><td>輸入 8 個中文</td><td>提示「最多输入 14 个字元」(8x2=16>14)</td><td>P1</td></tr>
+      <tr><td>20</td><td>暱稱-重複</td><td>—</td><td>提交已存在暱稱</td><td>toast「此昵称已重复」</td><td>P1</td></tr>
+      <tr><td>21</td><td>暱稱-敏感詞</td><td>—</td><td>提交敏感詞</td><td>toast「此昵称包含敏感词汇」</td><td>P1</td></tr>
+      <tr><td>22</td><td>登出</td><td>已登入</td><td>點擊登出 → 確認</td><td>清除 token、跳轉登入頁</td><td>P0</td></tr>
+      <tr><td>23</td><td>性別只能設定一次</td><td>sex 已設定</td><td>進入個人資料</td><td>性別欄 isDisable=true，不可點擊</td><td>P1</td></tr>
+      <tr><td>24</td><td>生日只能設定一次</td><td>dateOfBirth 已設定</td><td>進入個人資料</td><td>生日欄 isDisable=true</td><td>P1</td></tr>
+      <tr><td>25</td><td>純直播模式個人資料</td><td>isOnlyLive=true</td><td>進入個人資料</td><td>隱藏暱稱、稱號；新增關注主播等</td><td>P2</td></tr>
+      <tr><td>26</td><td>複製帳號</td><td>—</td><td>點擊用戶名欄</td><td>複製帳號到剪貼簿，toast「已拷贝」</td><td>P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: VIP Tests -->
+<div class="section" id="qa-vip" data-role="qa">
+  <div class="section-title"><span class="num qa">3</span> VIP 測項（10 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">進度計算 + 豪禮 + 生日禮金</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>27</td><td>VIP 進度-雙條件</td><td>isPayAmount=1, VIP3</td><td>進入 VIP 頁</td><td>取 min(存款進度, 流水進度) 顯示</td><td>P0</td></tr>
+      <tr><td>28</td><td>VIP 進度-單條件</td><td>isPayAmount!=1</td><td>進入 VIP 頁</td><td>只顯示流水進度</td><td>P1</td></tr>
+      <tr><td>29</td><td>保級流水顯示</td><td>VIP > 0</td><td>進入 VIP 頁</td><td>顯示保級流水進度條和百分比</td><td>P0</td></tr>
+      <tr><td>30</td><td>豪禮-等級不符</td><td>查看非當前等級</td><td>滑到該等級卡片</td><td>按鈕顯示「等级不符」disabled</td><td>P1</td></tr>
+      <tr><td>31</td><td>豪禮-可領取</td><td>StateCanApply</td><td>查看當前等級</td><td>按鈕顯示「领取豪礼」可點擊</td><td>P0</td></tr>
+      <tr><td>32</td><td>豪禮-已申請</td><td>StateReview</td><td>查看當前等級</td><td>按鈕顯示「已申请」link 樣式</td><td>P1</td></tr>
+      <tr><td>33</td><td>生日禮金-未滿90天</td><td>註冊 < 90 天, 有生日</td><td>進入 VIP 頁</td><td>顯示「注册超过90天，可领取」</td><td>P1</td></tr>
+      <tr><td>34</td><td>生日禮金-可領取</td><td>註冊 >= 90 天, giftReward > 0</td><td>進入 VIP 頁</td><td>顯示金額 +「前往领取」按鈕</td><td>P0</td></tr>
+      <tr><td>35</td><td>生日禮金-未綁定</td><td>無生日</td><td>進入 VIP 頁</td><td>顯示「设置出生日期」+「立刻设置」</td><td>P1</td></tr>
+      <tr><td>36</td><td>測試帳號 VIP 禮品</td><td>isTestAccount</td><td>點擊「领取豪礼」</td><td>toast「此为测试账号，无法操作！」</td><td>P1</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: Badge Tests -->
+<div class="section" id="qa-badge" data-role="qa">
+  <div class="section-title"><span class="num qa">4</span> 稱號測項（10 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">配戴 / 領取 / 刷新 / 時效</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>37</td><td>稱號列表載入</td><td>已登入</td><td>進入我的稱號頁</td><td>顯示稱號卡片列表（含分類）</td><td>P0</td></tr>
+      <tr><td>38</td><td>配戴稱號</td><td>有已擁有稱號</td><td>點擊配戴</td><td>PUT /user/bindBadge、toast「设置成功」、頭像更新</td><td>P0</td></tr>
+      <tr><td>39</td><td>取消配戴</td><td>有配戴中稱號</td><td>點擊取消</td><td>PUT /user/unbindBadge、toast「已取消设置」</td><td>P0</td></tr>
+      <tr><td>40</td><td>領取稱號</td><td>status=CAN_RECEIVE</td><td>點擊領取</td><td>POST /user/badge、toast「领取成功」</td><td>P0</td></tr>
+      <tr><td>41</td><td>一鍵領取</td><td>多個可領取</td><td>點擊一鍵領取</td><td>POST /user/receiveAllBadges、toast「领取成功」</td><td>P1</td></tr>
+      <tr><td>42</td><td>刷新進度-冷卻中</td><td>refreshInterval 存在</td><td>點擊刷新</td><td>不回應（return）</td><td>P2</td></tr>
+      <tr><td>43</td><td>刷新進度-成功</td><td>無冷卻</td><td>點擊刷新</td><td>啟動 180 秒倒計時、刷新列表</td><td>P1</td></tr>
+      <tr><td>44</td><td>稱號時效-限時已擁有</td><td>validDays=30, 已使用 10 天</td><td>查看稱號</td><td>顯示「限时 - 可使用天数 20 天」</td><td>P1</td></tr>
+      <tr><td>45</td><td>稱號時效-限量</td><td>budget=100, ownCount=95</td><td>查看稱號</td><td>顯示「限量 - 剩余 5 个」（紅色，<10%）</td><td>P2</td></tr>
+      <tr><td>46</td><td>已失效稱號</td><td>status=EXPIRED</td><td>點擊稱號</td><td>不開啟詳情（handleDetail return）</td><td>P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: Welfare Tests -->
+<div class="section" id="qa-welfare" data-role="qa">
+  <div class="section-title"><span class="num qa">5</span> 福利中心測項（10 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">領取 / 綁定 / 篩選 / 倒數</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>47</td><td>福利列表載入</td><td>已登入</td><td>進入福利中心</td><td>預設顯示「待領取」+「近7日」+「全部類型」</td><td>P0</td></tr>
+      <tr><td>48</td><td>單筆領取-成功</td><td>有待領取項目</td><td>點擊「领取」</td><td>toast「领取中」→ 1s →「领取成功！」，列表刷新</td><td>P0</td></tr>
+      <tr><td>49</td><td>單筆領取-需綁定手機</td><td>errCode=103</td><td>點擊「领取」</td><td>彈窗「请先绑定手机」→「前往绑定」</td><td>P0</td></tr>
+      <tr><td>50</td><td>單筆領取-需綁定銀行卡</td><td>errCode=104</td><td>點擊「领取」</td><td>彈窗「请先绑定银行卡」→「前往绑定」</td><td>P1</td></tr>
+      <tr><td>51</td><td>一鍵領取-部分成功</td><td>success=5, total=3</td><td>點擊一鍵領取</td><td>彈窗顯示計數，「继续」遞迴領取</td><td>P0</td></tr>
+      <tr><td>52</td><td>一鍵領取-需綁定</td><td>errorCode=105</td><td>點擊一鍵領取</td><td>彈窗顯示「手机, 银行卡」→「前往绑定」</td><td>P1</td></tr>
+      <tr><td>53</td><td>已失效狀態</td><td>claimExpireTime < now</td><td>查看福利項目</td><td>按鈕顯示「已失效」</td><td>P1</td></tr>
+      <tr><td>54</td><td>倒數計時顯示</td><td>待領取，剩 2 小時</td><td>查看福利項目</td><td>顯示「2时0分钟」</td><td>P2</td></tr>
+      <tr><td>55</td><td>日期篩選-自訂</td><td>—</td><td>選擇自訂日期</td><td>開啟日期選擇器，選擇後查詢</td><td>P2</td></tr>
+      <tr><td>56</td><td>獎品分類篩選</td><td>有獎品分類</td><td>切換到獎品分類</td><td>curFilterCategoryIsAward=true，列表更新</td><td>P1</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: Backpack Tests -->
+<div class="section" id="qa-backpack" data-role="qa">
+  <div class="section-title"><span class="num qa">6</span> 背包中心測項（9 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">背包管理 / 兌換 / 分頁</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>57</td><td>背包管理載入</td><td>已登入</td><td>進入背包中心</td><td>預設顯示背包管理 Tab、第一個分類</td><td>P0</td></tr>
+      <tr><td>58</td><td>切換到兌換中心</td><td>—</td><td>點擊「兑换中心」</td><td>顯示兌換中心分類 Tab + 商品列表</td><td>P0</td></tr>
+      <tr><td>59</td><td>彩金獎品兌現</td><td>awardType=bonusPrize</td><td>點擊獎品 → 申請</td><td>POST /user/redeemForBonus、toast「兑现成功」</td><td>P0</td></tr>
+      <tr><td>60</td><td>實體獎品申請</td><td>awardType=physicalAward</td><td>點擊獎品 → 申請</td><td>開啟 ApplyAwardSheets 填寫收件資訊</td><td>P0</td></tr>
+      <tr><td>61</td><td>兌換商品-成功</td><td>有足夠碎片</td><td>選擇方案 → 兌換</td><td>POST /user/redeem、toast「兑换成功」</td><td>P0</td></tr>
+      <tr><td>62</td><td>兌換-需綁定手機</td><td>errCode=103</td><td>點擊兌換</td><td>彈窗「请先绑定手机」</td><td>P1</td></tr>
+      <tr><td>63</td><td>背包分頁</td><td>超過 30 筆</td><td>滾動到底部</td><td>自動載入下一頁</td><td>P1</td></tr>
+      <tr><td>64</td><td>下拉刷新冷卻</td><td>剛刷新過</td><td>立即再下拉</td><td>isRefreshDisabled=true，3 秒後才能刷新</td><td>P2</td></tr>
+      <tr><td>65</td><td>空狀態</td><td>背包無獎品</td><td>查看背包</td><td>顯示「暂无数据」+ 圖片</td><td>P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: Bet Record Tests -->
+<div class="section" id="qa-bet" data-role="qa">
+  <div class="section-title"><span class="num qa">7</span> 投注記錄測項（6 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">Tab 切換 / 結算 / 特殊處理</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>66</td><td>體育投注記錄</td><td>有體育投注</td><td>進入投注記錄</td><td>顯示體育 Tab + 記錄列表</td><td>P0</td></tr>
+      <tr><td>67</td><td>遊戲記錄-未結算優先</td><td>有未結算遊戲訂單</td><td>進入遊戲 Tab</td><td>自動切換到「未結算」Tab</td><td>P0</td></tr>
+      <tr><td>68</td><td>遊戲記錄-已結算</td><td>無未結算</td><td>進入遊戲 Tab</td><td>顯示「已結算」Tab 內容</td><td>P0</td></tr>
+      <tr><td>69</td><td>結算狀態-贏</td><td>marketResult=Winner, status=1</td><td>查看記錄</td><td>顯示「赢」</td><td>P1</td></tr>
+      <tr><td>70</td><td>結算狀態-已取消</td><td>status=2 或 3</td><td>查看記錄</td><td>顯示「已取消」</td><td>P1</td></tr>
+      <tr><td>71</td><td>遊戲 8928 特殊處理</td><td>gameId=8928</td><td>查看記錄</td><td>解析 betDetails JSON，取 marketResult</td><td>P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: Transfer Tests -->
+<div class="section" id="qa-transfer" data-role="qa">
+  <div class="section-title"><span class="num qa">8</span> 轉帳測項（11 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">場館選擇 / 金額驗證 / 流水 / 自動轉帳</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>72</td><td>轉帳-中心到場館</td><td>選中心錢包轉出</td><td>選場館 → 輸入金額 → 轉帳</td><td>POST /wallet/gameAmountTransfer、toast「转帐成功」</td><td>P0</td></tr>
+      <tr><td>73</td><td>轉帳-場館到中心</td><td>選場館轉出</td><td>自動設定中心錢包為轉入</td><td>轉出=場館、轉入=中心錢包</td><td>P0</td></tr>
+      <tr><td>74</td><td>金額超過餘額</td><td>餘額 500</td><td>輸入 600</td><td>toast「转账金额不得大于钱包余额」，自動修正為 500</td><td>P0</td></tr>
+      <tr><td>75</td><td>活動鎖定場館-二次確認</td><td>from=中心, to.activityLock=true</td><td>點擊轉帳</td><td>彈出二次確認彈窗（顯示流水）</td><td>P0</td></tr>
+      <tr><td>76</td><td>流水計算-不提高</td><td>isRaisingWater=0, remainWater=5000</td><td>查看確認彈窗</td><td>流水 = 50.00</td><td>P1</td></tr>
+      <tr><td>77</td><td>流水計算-倍數</td><td>isRaisingWater=1, raisingWater=3, amount=100</td><td>查看確認彈窗</td><td>流水 = 100x3 + remainWater/100</td><td>P1</td></tr>
+      <tr><td>78</td><td>自動轉帳-開啟</td><td>手動模式</td><td>開啟自動轉帳</td><td>儲存設定 + 回收所有場館餘額 + toast</td><td>P0</td></tr>
+      <tr><td>79</td><td>自動轉帳-關閉</td><td>自動模式</td><td>關閉自動轉帳</td><td>toast「已关闭自动转帐模式」</td><td>P1</td></tr>
+      <tr><td>80</td><td>一鍵回收</td><td>有場館餘額</td><td>點擊一鍵回收</td><td>POST /wallet/collectAll、toast「回收成功!」</td><td>P0</td></tr>
+      <tr><td>81</td><td>場館交換</td><td>from=A, to=B</td><td>點擊交換按鈕</td><td>from/to 對調</td><td>P2</td></tr>
+      <tr><td>82</td><td>隱藏零餘額場館</td><td>多個場館有零餘額</td><td>開啟隱藏</td><td>只顯示 gold > 0 的場館</td><td>P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- QA: Daily Task Tests -->
+<div class="section" id="qa-task" data-role="qa">
+  <div class="section-title"><span class="num qa">9</span> 每日任務測項（5 項）<span class="depth-badge depth-l4">L4</span></div>
+  <div class="section-desc">簽到 / 領取 / 新手 / 輪詢</div>
+
+  <table class="test-table">
+    <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td>83</td><td>每日簽到顯示</td><td>dailySign enabled</td><td>進入我的頁面</td><td>MineDailySign 組件顯示簽到入口</td><td>P0</td></tr>
+      <tr><td>84</td><td>每日任務領取</td><td>有可領取任務</td><td>點擊領取</td><td>POST /mission/dailyActivity、刷新列表</td><td>P0</td></tr>
+      <tr><td>85</td><td>新手任務-純直播隱藏</td><td>isOnlyLive=true</td><td>進入任務頁</td><td>新手任務不顯示</td><td>P1</td></tr>
+      <tr><td>86</td><td>新手任務輪詢</td><td>有新手任務</td><td>停留在頁面</td><td>每 60 秒自動刷新新手任務列表</td><td>P2</td></tr>
+      <tr><td>87</td><td>任務分享</td><td>有分享圖</td><td>點擊分享</td><td>開啟分享彈窗</td><td>P1</td></tr>
+    </tbody>
+  </table>
+</div>
+
 <!-- Footer -->
 <div class="footer">
-  <p>「我的」功能標註頁 &middot; 資料來源：Figma + 知識庫 6-mine.md</p>
-  <p>產出日期：2026-04-09 &middot; 共 23 sections &middot; 42 screenshots</p>
+  <p>「我的」功能標註頁（L1-L4 整合版）&middot; 資料來源：Figma + 6-mine.md + 6-mine-detail.md</p>
+  <p>產出日期：2026-04-09 &middot; L1: 23 sections &middot; L2: 9 決策流程 &middot; L3: 37 API &middot; L4: 87 測項</p>
 </div>
 
 </div><!-- /main-content -->
 </div><!-- /layout -->
 
 <script>
-// Nav button scrolling + active state
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const target = btn.getAttribute('data-target');
-    const el = document.getElementById(target);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
+  // Role tab switching
+  function switchRole(role) {
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.role-tab[data-role="${role}"]`).classList.add('active');
 
-// Highlight active nav on scroll
-const sections = document.querySelectorAll('.section');
-const navBtns = document.querySelectorAll('.nav-btn');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.id;
-      navBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-target') === id);
-      });
-    }
+    document.querySelectorAll('.section').forEach(sec => {
+      const roles = (sec.getAttribute('data-role') || '').split(' ');
+      sec.classList.toggle('hidden', !roles.includes(role));
+    });
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      const nr = btn.getAttribute('data-nav-role') || '';
+      btn.classList.toggle('hidden', nr !== role);
+    });
+
+    // Reset active nav
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const firstVisible = document.querySelector(`.nav-btn[data-nav-role="${role}"]:not(.hidden)`);
+    if (firstVisible) firstVisible.classList.add('active');
+
+    document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.role-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
   });
-}, { rootMargin: '-20% 0px -70% 0px' });
-sections.forEach(sec => observer.observe(sec));
+
+  // Nav button click -> scroll + highlight
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const el = document.getElementById(btn.getAttribute('data-target'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Default: show L1
+  switchRole('l1');
 </script>
 </body>
 </html>

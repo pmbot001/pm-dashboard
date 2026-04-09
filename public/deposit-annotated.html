@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>H5 存款頁面 — Figma + Source Code 標註</title>
+  <title>H5 存提款系統 — 標註文件（PM / RD / QA）</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -29,25 +29,39 @@
 
     /* Layout */
     .layout { display:flex; min-height:100vh; }
-    .sidebar { position:fixed; top:0; left:0; width:250px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
+    .sidebar { position:fixed; top:0; left:0; width:260px; height:100vh; background:#1e293b; border-right:1px solid #334155; display:flex; flex-direction:column; z-index:200; overflow:hidden; }
     .sidebar-header { padding:16px; border-bottom:1px solid #334155; }
     .sidebar-back { display:flex; align-items:center; gap:8px; color:#94a3b8; font-size:13px; text-decoration:none; margin-bottom:12px; transition:color .2s; }
     .sidebar-back:hover { color:#e2e8f0; }
     .sidebar-title { font-size:16px; font-weight:700; color:#e2e8f0; }
     .sidebar-sub { font-size:11px; color:#64748b; margin-top:2px; }
+
+    /* Role Tabs in sidebar */
+    .role-bar { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0; border-bottom:1px solid #334155; }
+    .role-tab { background:transparent; color:#94a3b8; border:none; padding:10px 4px; font-size:11px; font-weight:600; cursor:pointer; transition:all .2s; border-bottom:2px solid transparent; text-align:center; }
+    .role-tab:hover { color:#e2e8f0; background:#263548; }
+    .role-tab.active { color:#6366f1; border-bottom-color:#6366f1; }
+    .role-indicator { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:3px; }
+    .ri-pm { background:#6366f1; }
+    .ri-rd { background:#a78bfa; }
+    .ri-qa { background:#34d399; }
+
+    /* Section role badges */
+    .depth-badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:6px; font-weight:700; margin-left:8px; vertical-align:middle; }
+    .depth-l1 { background:#334155; color:#94a3b8; }
+    .depth-l2 { background:rgba(99,102,241,0.2); color:#a5b4fc; }
+    .depth-l3 { background:#2d1a3e; color:#c4b5fd; }
+    .depth-l4 { background:#1a2e1a; color:#86efac; }
+
+    /* Sidebar Nav */
     .sidebar-nav { flex:1; overflow-y:auto; padding:8px 0; }
     .nav-btn { display:block; width:100%; background:transparent; color:#94a3b8; border:none; padding:9px 20px; font-size:13px; cursor:pointer; text-align:left; transition:all .15s; border-left:3px solid transparent; }
     .nav-btn:hover { color:#e2e8f0; background:#263548; border-left-color:#475569; }
-    .nav-btn.active { color:#6366f1; background:#6366f110; border-left-color:#6366f1; }
-    .main-content { margin-left:250px; flex:1; }
+    .nav-btn.active { color:#6366f1; background:rgba(99,102,241,0.06); border-left-color:#6366f1; }
+    .nav-btn.hidden { display:none; }
 
-    @media(max-width:900px) {
-      .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
-      .layout { flex-direction:column; }
-      .main-content { margin-left:0; }
-      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
-      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
-    }
+    /* Main content area */
+    .main-content { margin-left:260px; flex:1; }
 
     /* Section */
     .section {
@@ -56,15 +70,19 @@
       padding: 40px 32px;
       border-bottom: 1px solid #1e293b;
     }
+    .section.hidden { display:none; }
     .section-title {
       font-size: 20px; font-weight: 700; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     }
     .section-title .num {
       background: #6366f1; color: white; width: 28px; height: 28px;
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
       font-size: 14px; font-weight: 700;
     }
+    .section-title .num.pm { background: #6366f1; }
+    .section-title .num.rd { background: #7c3aed; }
+    .section-title .num.qa { background: #059669; }
     .section-desc { font-size: 14px; color: #94a3b8; margin-bottom: 24px; }
 
     /* Screen + Annotation Layout */
@@ -87,7 +105,6 @@
     .screen-label {
       font-size: 12px; color: #94a3b8; margin-top: 8px; text-align: center;
     }
-
     .rules-col {
       flex: 1;
       min-width: 0;
@@ -103,6 +120,8 @@
       transition: border-color 0.2s;
     }
     .rule-card:hover { border-color: #6366f1; }
+    .rule-card.rd-card { border-left: 3px solid #7c3aed; }
+    .rule-card.qa-card { border-left: 3px solid #059669; }
     .rule-card .rule-tag {
       display: inline-block;
       font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -115,19 +134,22 @@
     .tag-discount { background: rgba(168,85,247,0.2); color: #c084fc; }
     .tag-ui { background: rgba(236,72,153,0.2); color: #f472b6; }
     .tag-api { background: rgba(20,184,166,0.2); color: #2dd4bf; }
+    .tag-test { background: rgba(5,150,105,0.2); color: #6ee7b7; }
+    .tag-warning { background: rgba(239,68,68,0.15); color: #fca5a5; }
 
     .rule-card h4 {
       font-size: 14px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px;
     }
-    .rule-card p {
+    .rule-card p, .rule-card li {
       font-size: 13px; color: #94a3b8; line-height: 1.6;
     }
+    .rule-card ul { padding-left: 18px; }
     .rule-card code {
       background: #0f172a; padding: 1px 6px; border-radius: 4px;
       font-size: 12px; color: #fbbf24;
     }
     .rule-card .src {
-      font-size: 11px; color: #475569; margin-top: 6px;
+      font-size: 11px; color: #475569; margin-top: 6px; font-family: monospace;
     }
 
     /* Overview Image */
@@ -143,6 +165,14 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
       gap: 12px;
+    }
+
+    /* Annotation markers */
+    .marker {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #6366f1; color: white; font-size: 11px; font-weight: 700;
+      margin-right: 6px;
     }
 
     /* Flow Diagram */
@@ -173,6 +203,8 @@
     .flow-step.highlight { background: #6366f1; color: white; }
     .flow-step.risk { background: #dc2626; color: white; }
     .flow-arrow { color: #475569; font-size: 18px; }
+    .flow-branch { color: #fbbf24; font-size: 12px; font-weight: 600; }
+    .flow-label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; font-weight: 600; }
 
     /* Type Table */
     .type-table {
@@ -198,6 +230,15 @@
     .type-table .yes { color: #4ade80; }
     .type-table .no { color: #475569; }
 
+    /* Test matrix */
+    .test-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:12px; }
+    .test-table th { background:#064e3b; color:#d1fae5; padding:8px; text-align:left; font-size:11px; }
+    .test-table td { background:#1e293b; padding:6px 8px; border-bottom:1px solid #334155; }
+    .test-table tr:hover td { background:#263548; }
+    .p0 { color:#f87171; font-weight:700; }
+    .p1 { color:#fbbf24; }
+    .p2 { color:#94a3b8; }
+
     /* Stats row */
     .stats-row {
       display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
@@ -213,16 +254,17 @@
     .stat-card .stat-num { font-size: 28px; font-weight: 700; color: #6366f1; }
     .stat-card .stat-label { font-size: 12px; color: #94a3b8; margin-top: 2px; }
 
-    /* Annotation markers */
-    .marker {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 22px; height: 22px; border-radius: 50%;
-      background: #6366f1; color: white; font-size: 11px; font-weight: 700;
-      margin-right: 6px;
-    }
+    .footer { text-align:center; padding:40px 16px; color:#475569; font-size:13px; }
 
     /* Responsive */
     @media (max-width: 900px) {
+      .sidebar { position:relative; width:100%; height:auto; border-right:none; border-bottom:1px solid #334155; }
+      .layout { flex-direction:column; }
+      .main-content { margin-left:0; }
+      .role-bar { grid-template-columns:repeat(4,1fr); }
+      .sidebar-nav { display:flex; flex-wrap:wrap; padding:8px; gap:4px; }
+      .nav-btn { display:inline-block; width:auto; border-left:none; border-radius:8px; padding:6px 12px; }
+      .nav-btn:hover, .nav-btn.active { border-left:none; }
       .annotated-row { flex-direction: column; }
       .screen-col img { max-height: 500px; }
       .rule-grid { grid-template-columns: 1fr; }
@@ -233,8 +275,8 @@
 
   <!-- Header -->
   <div class="page-header">
-    <h1>H5 存款系統 — 視覺化業務規則標註</h1>
-    <div class="sub">Source: <code>mango2-h5/pages/deposit/</code> + Figma <code>xvqDn4NW3ljqw5xM1ES3gL</code></div>
+    <h1>H5 存提款系統 — 視覺化業務規則標註</h1>
+    <div class="sub">Source: <code>mango2-h5/pages/deposit/</code> + Figma <code>xvqDn4NW3ljqw5xM1ES3gL</code> | L1-L4 深度知識</div>
     <div class="header-badges">
       <span class="h-badge">46 支付類型</span>
       <span class="h-badge">3 通道模式</span>
@@ -242,13 +284,14 @@
       <span class="h-badge">優惠系統</span>
       <span class="h-badge">風控攔截</span>
       <span class="h-badge">USDT 特殊流程</span>
-      <span class="h-badge">代客充值</span>
+      <span class="h-badge">50 API</span>
+      <span class="h-badge">88 測項</span>
     </div>
-    <div class="stats-row" style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:900px;margin-left:auto;margin-right:auto">
-      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">46</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">支付類型</div></div>
-      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">3</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">通道模式</div></div>
-      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">4</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">限額層級</div></div>
-      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:110px"><div style="font-size:26px;font-weight:700;color:#6366f1">5</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">優惠狀態</div></div>
+    <div class="stats-row" style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:1000px;margin-left:auto;margin-right:auto">
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:100px"><div style="font-size:26px;font-weight:700;color:#6366f1">12</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">L1 標註區</div></div>
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:100px"><div style="font-size:26px;font-weight:700;color:#6366f1">12</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">L2 決策流程</div></div>
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:100px"><div style="font-size:26px;font-weight:700;color:#818cf8">50</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">API 端點</div></div>
+      <div class="stat-card" style="background:#1e293b;border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:100px"><div style="font-size:26px;font-weight:700;color:#34d399">88</div><div style="font-size:11px;color:#94a3b8;margin-top:4px">驗測項</div></div>
     </div>
   </div>
 
@@ -257,28 +300,63 @@
     <div class="sidebar-header">
       <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
       <div class="sidebar-title">💰 存提款 / 金流</div>
-      <div class="sidebar-sub">12 功能 · 12 sections</div>
+      <div class="sidebar-sub">12 功能 · 12+12+5+4 sections</div>
+    </div>
+    <div class="role-bar">
+      <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>概覽</button>
+      <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策</button>
+      <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API</button>
+      <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測</button>
     </div>
     <div class="sidebar-nav">
-      <button class="nav-btn active" data-target="flow">流程圖</button>
-      <button class="nav-btn" data-target="main-page">主頁面</button>
-      <button class="nav-btn" data-target="channel">通道模式</button>
-      <button class="nav-btn" data-target="limits">限額規則</button>
-      <button class="nav-btn" data-target="discount">優惠系統</button>
-      <button class="nav-btn" data-target="form">表單驗證</button>
-      <button class="nav-btn" data-target="risk">風控攔截</button>
-      <button class="nav-btn" data-target="usdt">USDT 流程</button>
-      <button class="nav-btn" data-target="order">訂單狀態</button>
-      <button class="nav-btn" data-target="dialogs">彈窗</button>
-      <button class="nav-btn" data-target="service">代客充值</button>
-      <button class="nav-btn" data-target="overview">Figma 總覽</button>
+      <!-- L1 nav -->
+      <button class="nav-btn" data-target="flow" data-nav-role="l1">流程圖</button>
+      <button class="nav-btn" data-target="main-page" data-nav-role="l1">主頁面</button>
+      <button class="nav-btn" data-target="channel" data-nav-role="l1">通道模式</button>
+      <button class="nav-btn" data-target="limits" data-nav-role="l1">限額規則</button>
+      <button class="nav-btn" data-target="discount" data-nav-role="l1">優惠系統</button>
+      <button class="nav-btn" data-target="form" data-nav-role="l1">表單驗證</button>
+      <button class="nav-btn" data-target="risk" data-nav-role="l1">風控攔截</button>
+      <button class="nav-btn" data-target="usdt" data-nav-role="l1">USDT 流程</button>
+      <button class="nav-btn" data-target="order" data-nav-role="l1">訂單狀態</button>
+      <button class="nav-btn" data-target="dialogs" data-nav-role="l1">彈窗</button>
+      <button class="nav-btn" data-target="service" data-nav-role="l1">代客充值</button>
+      <button class="nav-btn" data-target="overview" data-nav-role="l1">Figma 總覽</button>
+      <!-- PM nav -->
+      <button class="nav-btn" data-target="pm-channel-load" data-nav-role="pm">通道載入與選擇</button>
+      <button class="nav-btn" data-target="pm-deposit-order" data-nav-role="pm">存款下單流程</button>
+      <button class="nav-btn" data-target="pm-order-track" data-nav-role="pm">訂單追蹤與取消</button>
+      <button class="nav-btn" data-target="pm-discount-calc" data-nav-role="pm">優惠與金額計算</button>
+      <button class="nav-btn" data-target="pm-withdraw-channel" data-nav-role="pm">提款通道與下單</button>
+      <button class="nav-btn" data-target="pm-withdraw-order" data-nav-role="pm">提款訂單狀態機</button>
+      <button class="nav-btn" data-target="pm-bank-account" data-nav-role="pm">銀行卡/帳戶管理</button>
+      <button class="nav-btn" data-target="pm-wallet-transfer" data-nav-role="pm">錢包與轉帳</button>
+      <button class="nav-btn" data-target="pm-withdraw-risk" data-nav-role="pm">提款風控</button>
+      <button class="nav-btn" data-target="pm-usdt-withdraw" data-nav-role="pm">虛擬幣提款限制</button>
+      <button class="nav-btn" data-target="pm-deposit-types" data-nav-role="pm">存款類型總覽</button>
+      <button class="nav-btn" data-target="pm-withdraw-types" data-nav-role="pm">提款類型總覽</button>
+      <!-- RD nav -->
+      <button class="nav-btn" data-target="rd-api-overview" data-nav-role="rd">50 API 總覽</button>
+      <button class="nav-btn" data-target="rd-deposit-schema" data-nav-role="rd">存款 Schema</button>
+      <button class="nav-btn" data-target="rd-withdraw-schema" data-nav-role="rd">提款 Schema</button>
+      <button class="nav-btn" data-target="rd-bind-schema" data-nav-role="rd">綁定 Schema</button>
+      <button class="nav-btn" data-target="rd-error-codes" data-nav-role="rd">Error Codes</button>
+      <!-- QA nav -->
+      <button class="nav-btn" data-target="qa-deposit" data-nav-role="qa">存款測項 (38)</button>
+      <button class="nav-btn" data-target="qa-withdraw" data-nav-role="qa">提款測項 (30)</button>
+      <button class="nav-btn" data-target="qa-bank" data-nav-role="qa">帳戶管理測項 (13)</button>
+      <button class="nav-btn" data-target="qa-transfer" data-nav-role="qa">轉帳測項 (7)</button>
     </div>
   </nav>
   <div class="main-content">
 
+  <!-- ============================================================ -->
+  <!-- L1 SECTIONS (existing, with data-role="l1" added) -->
+  <!-- ============================================================ -->
+
   <!-- 1. Flow -->
-  <div class="section" id="flow">
-    <div class="section-title"><span class="num">2</span> 存款主流程</div>
+  <div class="section" id="flow" data-role="l1">
+    <div class="section-title"><span class="num">1</span> 存款主流程 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">從進入存款頁到訂單完成的完整決策路徑</div>
 
     <div class="flow-box">
@@ -349,9 +427,9 @@
     </div>
   </div>
 
-  <!-- 3. Main Page -->
-  <div class="section" id="main-page">
-    <div class="section-title"><span class="num">3</span> 主頁面 — 類型選擇與金額</div>
+  <!-- 2. Main Page -->
+  <div class="section" id="main-page" data-role="l1">
+    <div class="section-title"><span class="num">2</span> 主頁面 — 類型選擇與金額 <span class="depth-badge depth-l1">L1</span></div>
 
     <div class="annotated-row">
       <div class="screen-col">
@@ -412,9 +490,9 @@
     </div>
   </div>
 
-  <!-- 4. Channel Modes -->
-  <div class="section" id="channel">
-    <div class="section-title"><span class="num">4</span> 通道模式 (Channel Architecture)</div>
+  <!-- 3. Channel Modes -->
+  <div class="section" id="channel" data-role="l1">
+    <div class="section-title"><span class="num">3</span> 通道模式 (Channel Architecture) <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">通道模式決定了用戶選擇支付方式後看到的 UI 和流程差異</div>
 
     <div class="annotated-row">
@@ -475,12 +553,12 @@
         <tr><td>40</td><td>DD錢包 DDP</td><td>Merge</td><td class="no">自動</td><td class="no">-</td><td class="no">-</td><td class="yes">V</td><td>需實名+餘額</td></tr>
       </tbody>
     </table>
-    <p style="font-size:12px;color:#475569;margin-top:8px">* 僅列出主要類型，完整 46 種定義在 EPayType enum</p>
+    <p style="font-size:12px;color:#475569;margin-top:8px">* 僅列出主要類型，完整 46 種定義在 EPayType enum（見 PM Tab「存款類型總覽」）</p>
   </div>
 
-  <!-- 5. Limits -->
-  <div class="section" id="limits">
-    <div class="section-title"><span class="num">5</span> 限額規則 (Amount Limits)</div>
+  <!-- 4. Limits -->
+  <div class="section" id="limits" data-role="l1">
+    <div class="section-title"><span class="num">4</span> 限額規則 (Amount Limits) <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">四層限額機制：單筆 → 每日次數 → 每週上限 → 共用組</div>
 
     <div class="annotated-row">
@@ -533,9 +611,9 @@
     </div>
   </div>
 
-  <!-- 6. Discount -->
-  <div class="section" id="discount">
-    <div class="section-title"><span class="num">6</span> 優惠系統 (Discount)</div>
+  <!-- 5. Discount -->
+  <div class="section" id="discount" data-role="l1">
+    <div class="section-title"><span class="num">5</span> 優惠系統 (Discount) <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">存款加送機制，有 5 種顯示狀態</div>
 
     <div class="annotated-row">
@@ -581,9 +659,9 @@
     </div>
   </div>
 
-  <!-- 7. Form Validation -->
-  <div class="section" id="form">
-    <div class="section-title"><span class="num">7</span> 表單驗證規則</div>
+  <!-- 6. Form Validation -->
+  <div class="section" id="form" data-role="l1">
+    <div class="section-title"><span class="num">6</span> 表單驗證規則 <span class="depth-badge depth-l1">L1</span></div>
 
     <div class="annotated-row">
       <div class="screen-col">
@@ -622,9 +700,9 @@
     </div>
   </div>
 
-  <!-- 8. Risk Control -->
-  <div class="section" id="risk">
-    <div class="section-title"><span class="num">8</span> 風控攔截 (Risk Control)</div>
+  <!-- 7. Risk Control -->
+  <div class="section" id="risk" data-role="l1">
+    <div class="section-title"><span class="num">7</span> 風控攔截 (Risk Control) <span class="depth-badge depth-l1">L1</span></div>
 
     <div class="annotated-row">
       <div class="screen-col">
@@ -669,9 +747,9 @@
     </div>
   </div>
 
-  <!-- 9. USDT Flow -->
-  <div class="section" id="usdt">
-    <div class="section-title"><span class="num">9</span> USDT 特殊流程</div>
+  <!-- 8. USDT Flow -->
+  <div class="section" id="usdt" data-role="l1">
+    <div class="section-title"><span class="num">8</span> USDT 特殊流程 <span class="depth-badge depth-l1">L1</span></div>
 
     <div class="annotated-row">
       <div class="screen-col">
@@ -707,9 +785,9 @@
     </div>
   </div>
 
-  <!-- 10. Order Status -->
-  <div class="section" id="order">
-    <div class="section-title"><span class="num">10</span> 訂單狀態與取消</div>
+  <!-- 9. Order Status -->
+  <div class="section" id="order" data-role="l1">
+    <div class="section-title"><span class="num">9</span> 訂單狀態與取消 <span class="depth-badge depth-l1">L1</span></div>
 
     <div class="annotated-row">
       <div class="screen-col">
@@ -757,9 +835,9 @@
     </div>
   </div>
 
-  <!-- 11. Dialogs -->
-  <div class="section" id="dialogs">
-    <div class="section-title"><span class="num">11</span> 彈窗系統</div>
+  <!-- 10. Dialogs -->
+  <div class="section" id="dialogs" data-role="l1">
+    <div class="section-title"><span class="num">10</span> 彈窗系統 <span class="depth-badge depth-l1">L1</span></div>
 
     <img src="/images/deposit/section-3-dialogs.png" class="overview-img" alt="存款彈窗">
 
@@ -784,9 +862,9 @@
     </div>
   </div>
 
-  <!-- 12. Customer Service Deposit -->
-  <div class="section" id="service">
-    <div class="section-title"><span class="num">12</span> 代客充值 (Customer Service Deposit)</div>
+  <!-- 11. Customer Service Deposit -->
+  <div class="section" id="service" data-role="l1">
+    <div class="section-title"><span class="num">11</span> 代客充值 (Customer Service Deposit) <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">Type 0 — 透過客服完成充值的獨立流程</div>
 
     <img src="/images/deposit/section-5-service.png" class="overview-img" alt="代客充值">
@@ -812,31 +890,954 @@
         <h4>5.1.5.8 上傳憑證</h4>
         <p>代客充值的憑證上傳介面，2 種 Component 狀態。上傳後等待客服確認。</p>
       </div>
-      <div class="rule-card">
-        <span class="rule-tag tag-flow">流程</span>
-        <h4>5.1.5.9 選單狀態</h4>
-        <p>充值過程的狀態追蹤，顯示每個步驟的完成情況。</p>
-      </div>
     </div>
   </div>
 
-  <!-- Figma Overview (appendix) -->
-  <div class="section" id="overview">
+  <!-- 12. Figma Overview -->
+  <div class="section" id="overview" data-role="l1">
     <div class="section-title">Figma 總覽</div>
     <div class="section-desc">Figma Section 5.1.1 基本頁面 全景截圖（僅供參考）</div>
     <img src="/images/deposit/section-1-basic.png" class="overview-img" alt="5.1.1 基本頁面">
   </div>
 
+  <!-- ============================================================ -->
+  <!-- PM SECTIONS (L2 Decision Flows) -->
+  <!-- ============================================================ -->
+
+  <!-- PM-1: 通道載入與選擇 -->
+  <div class="section" id="pm-channel-load" data-role="pm">
+    <div class="section-title"><span class="num pm">1</span> 存款通道載入與選擇流程 <span class="depth-badge depth-l2">L2</span></div>
+    <div class="section-desc">完整 if/else 決策路徑：從 API 請求到頁面渲染</div>
+
+    <div class="flow-box">
+      <h3>1.1 通道列表請求 — getChannelListNew()</h3>
+      <div class="flow-steps">
+        <div class="flow-step highlight">getChannelListNew(amount=0)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">isLoading 防重複</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">POST /quickpay/channellist/new</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step risk">errCode !== 1?<br><small>靜默失敗 return</small></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">formatChannelList(data)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">setChannelList + setSharedGroup</div>
+      </div>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>1.2 通道列表解析 — formatChannelList()</h4>
+        <p>遍歷 <code>res.info[]</code> 每個通道：</p>
+        <ul>
+          <li><code>isRec</code> = suggestType === 1（業主推薦）</li>
+          <li><code>isCommon</code> = suggestType === 2 || 3（常用）</li>
+          <li><code>hasCommonGold</code> = suggestType === 2（有上次金額）</li>
+          <li><code>userPreferredAmountRate</code> = random(90~97)%（首次計算後快取）</li>
+          <li>type === 'expandable' → channelType = Expand，thirdPayList = expandables</li>
+          <li>else → channelType = Merge，thirdPayList = [representative]</li>
+        </ul>
+        <div class="src">composables/useRecharge.ts:L45-L130</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>推薦補足邏輯</h4>
+        <p><code>recommendPayTypeSortSwitch === 1 && recTag &lt; 2</code> → 從 isHot && !isRec && !isCommon 的通道補到 2 個推薦標記。</p>
+        <p>幣商過濾：<code>!res.agency.info.length</code> → 過濾掉 payType === CUSTOMER(0)</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>1.3 頁面渲染決策 — rechargePage</h4>
+        <ul>
+          <li><code>!isBindPhone</code> → BindPhone 元件</li>
+          <li><code>isMaintain</code> (channelList=0 或 switchStatus=3) → MaintainPay</li>
+          <li><code>payType === 0</code> → customerServicePay</li>
+          <li><code>channelType === Merge(1)</code> → mergeChannelPay</li>
+          <li><code>channelType === Expand(2)</code> → ChannelPayStep</li>
+          <li><code>isOrderProcess === true</code> → RechargePayInfo（替代上述所有）</li>
+        </ul>
+        <div class="src">DepositList.vue:L143-L172</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>1.4 通道點擊與自動跳轉</h4>
+        <p><code>handleChannelClick</code>：清空 selectedChannelInfo → setTimeout 10ms 後設定新值。</p>
+        <p>自動跳轉：<code>depositAutoJumpPayType !== -1</code> → 自動 handleChannelClick</p>
+        <p>存款完成 → <code>watchPaySuccess()</code> → 重新拉通道 + 選回上次通道</p>
+        <div class="src">DepositList.vue:L47-L101</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-2: 存款下單流程 -->
+  <div class="section" id="pm-deposit-order" data-role="pm">
+    <div class="section-title"><span class="num pm">2</span> 存款下單流程 <span class="depth-badge depth-l2">L2</span></div>
+    <div class="section-desc">三種下單路徑 + 連續拉單機制 + 訂單解析</div>
+
+    <div class="flow-box">
+      <h3>2.1 一般支付下單 — normalPayUrl()</h3>
+      <div class="flow-steps">
+        <div class="flow-step highlight">normalPayUrl()</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">wrapOption {counter:0}</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">POST /quickpay/payment/rechargepayurl</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">data.code === 1?</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">parseOrder → setLatestOrder</div>
+      </div>
+      <div style="margin-top:8px">
+        <span class="flow-branch">code !== 1 且 &lt; 10秒</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span style="color:#fbbf24;font-size:13px">counter++ → 再次呼叫 → handleNext</span>
+        <span style="margin-left:16px;color:#94a3b8;font-size:12px">（超過 10 秒 → handleError）</span>
+      </div>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>2.2 快捷支付 — fastBankPay()</h4>
+        <p>payType = <code>EPayType.FAST(10)</code>，先上傳憑證再下單。</p>
+        <p>POST <code>/quickpay/payment/fastpaybank/new</code>，含 <code>rechargeTime</code> 格式 YYYY-MM-DD HH:mm:ss</p>
+        <div class="src">composables/useRecharge.ts:L385-L424</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>2.3 USDT 快捷 — cryptoFastUsdtPay()</h4>
+        <p>payType = <code>EPayType.USDT_DIY(26)</code>，先上傳憑證再下單。</p>
+        <p>POST <code>/payment/cryptofast</code>，含 <code>digitalId</code> + <code>refTransId</code></p>
+        <div class="src">composables/useRecharge.ts:L340-L380</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>2.4 訂單解析 — parseOrder()</h4>
+        <p>payUrl.type 對照：</p>
+        <ul>
+          <li><code>1</code> = URL（三方跳轉）</li>
+          <li><code>4</code> = card2card（銀行卡/USDT 轉帳資訊）</li>
+          <li><code>2/3</code> = 已不使用</li>
+        </ul>
+        <p>card2card 解析：receiveBank, receiveBankAccount, receiveName, receiveAmount...</p>
+        <div class="src">composables/useRecharge.ts:L133-L207</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">決策</span>
+        <h4>2.5 表單驗證完整規則</h4>
+        <p><strong>amount</strong> — 永遠必填（zod.number().min(1)）</p>
+        <p><strong>name</strong> — 29 種支付類型需要（支付寶、微信、網銀、銀行卡系列等）</p>
+        <p><strong>bank</strong> — 7 種銀行卡類型需要（code 12,14,19,24,29,30,36）</p>
+        <p><strong>checkBindName</strong>：!realName → 彈窗綁定 | name 不在列表 → 確認新姓名 | 在列表 → pass</p>
+        <div class="src">composables/useDeposit/usePayForm.ts:L1-L135</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">決策</span>
+        <h4>2.6 限額與可下單判斷</h4>
+        <p><code>canRecharge</code>：dailyMax &ge; 0 && remainingTimes === 0 → false | remainingTimesShared === 0 → false</p>
+        <p>Expand 模式使用 <code>useChannelThirdPayInfo(selectedThirdPayInfo).limitRange</code></p>
+        <p>Merge 模式：minGold === maxGold && 有 goldList → 取 goldList 的 min/max</p>
+        <p><strong>金額單位：minGold/maxGold 為元，payGold 為分</strong></p>
+        <div class="src">useDepositSelectedChannel.ts:L61-L79</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">風控</span>
+        <h4>DD 錢包錯誤跳轉</h4>
+        <p>payType=40 && errCode === 10308 → 取 <code>data.data.thirdExt</code> 作為跳轉 URL</p>
+        <p>其他錯誤：counter > 0 && msg → <code>$showToast(msg)</code></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-3: 訂單追蹤與取消 -->
+  <div class="section" id="pm-order-track" data-role="pm">
+    <div class="section-title"><span class="num pm">3</span> 訂單追蹤與取消 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>3.1 isOrderProcess 判斷</h4>
+        <p><code>!latestOrder</code> → false | <code>diff = (expireTime - now) / 1000</code> | diff > 0 && status === 0 → true</p>
+        <div class="src">stores/recharge.ts:L84-L94</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>3.2 訂單輪詢</h4>
+        <p>useQuery: staleTime=15s | refetchInterval = isOrderProcess ? 15s : undefined</p>
+        <p>倒計時：有 expireTime → 使用 | 無 → createTime + 30min | countdown === 0 → 觸發 getLatestOrder()</p>
+        <div class="src">useDepositLatestOrder.ts:L78-L139</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>3.3 取消訂單流程</h4>
+        <p>POST <code>/payment/cancelpayment</code> { orderId, reason, plainReason } → 狀態改 Cancel(12)</p>
+        <p>引導客服三種場景（各有 enabled + conditions 檢查）：</p>
+        <ul>
+          <li><code>contactCustomerOrderFailed()</code> — condition=3，requestFailCountsIncrease → counter &ge; throttle → 彈客服</li>
+          <li><code>contactCustomerSystemAutoCancel()</code> — condition=12</li>
+          <li><code>contactCustomerUserManualCancel()</code> — condition=13</li>
+        </ul>
+        <div class="src">useDepositCancel.ts:L24-L179</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-4: 優惠與金額計算 -->
+  <div class="section" id="pm-discount-calc" data-role="pm">
+    <div class="section-title"><span class="num pm">4</span> 優惠與金額計算 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-discount">決策</span>
+        <h4>4.1 存款優惠公式</h4>
+        <p><code>bonus = min(amount * discountPer/100, maxDiscount - curDiscount, maxDiscountWeek - curDiscountWeek)</code></p>
+        <p>DiscountConfig 結構：payType | discountPer | maxDiscount | curDiscount | maxDiscountWeek | curDiscountWeek | isOpen | minAmount</p>
+        <p>實際到帳 = 充值金額 + 優惠金額（由後端計算）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>4.2 USDT 匯率計算</h4>
+        <p>優先：<code>gamePayTypes.cryptoRate / 100</code> → 回退：<code>channelInfo.usdtRate / 100</code></p>
+        <p>適用類型：EPayType 11, 13, 26, 33, 35, 45</p>
+        <p>USDT 快捷：<code>cryptoAmount / 100</code> = 顯示 USDT 數量</p>
+        <div class="src">useDepositSelectedChannel.ts:L44-L53</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>4.3 存款人姓名管理</h4>
+        <p>GET <code>/payconfig/rechargenamelist</code> → { list, maxCount }</p>
+        <p>nameListType：maxCount > 數量 → type=1（末尾加「+」）| 相等 → type=0 | 小於 → type=-1</p>
+        <div class="src">composables/useRecharge.ts:L561-L595</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>4.4 DD 錢包特殊流程</h4>
+        <p><code>getDDBalance()</code> → GET /payment/ddbalance → balance(分→元 /100)</p>
+        <p><code>getDDConfig(amount)</code> → GET /payment/ddconfig/v2 → { url }</p>
+        <p>!url → $showToast('获取连结失败(Err:013)，请联系客服')</p>
+        <div class="src">useDDWallet.ts:L1-L73</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-5: 提款通道與下單 -->
+  <div class="section" id="pm-withdraw-channel" data-role="pm">
+    <div class="section-title"><span class="num pm">5</span> 提款通道與下單 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="flow-box">
+      <h3>提款主流程</h3>
+      <div class="flow-steps">
+        <div class="flow-step highlight">進入提款頁</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">POST /withdrawconfig/transferparam/v3</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">parseWithdrawChannelList</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">選擇通道</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">策略分派 UI</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">填寫表單</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step risk">流水檢查</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step highlight">POST /withdraworder/transfer</div>
+      </div>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>5.1 通道解析重點</h4>
+        <ul>
+          <li><code>gold_list</code> = 預設快捷金額（預設 '100,500,1000,5000,10000'）</li>
+          <li><code>withdraw_gold_times</code> = 金額必須是此值/100 的整倍數</li>
+          <li><code>isOpenNew</code>：1=開, 2=關, 3=維護</li>
+          <li>EASY(11)/PAY_4E(13) 共用 USDT(3) 的地址列表</li>
+          <li>銀行卡(2) 和 銀行卡預約(4) 共用同一優惠比例</li>
+        </ul>
+        <div class="src">useWithdraw.ts:L12-L160</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>5.2 UI 策略分派 — createChannel()</h4>
+        <ul>
+          <li><code>BANK_CARD_TRANSFER(8)</code> → BankTransfer</li>
+          <li><code>BANK_CARD(2)</code> → Bank</li>
+          <li><code>DAI_TI(23)</code> → DaiTi</li>
+          <li><code>DD_WALLET(17)</code> → WithdrawDD</li>
+          <li><code>A_LI(1) / WE_CHAT(18)</code> → Digital</li>
+          <li><code>USDT(3) / EASY(11) / PAY_4E(13) / BNB_USDT(24)</code> → USDT</li>
+          <li>其他虛擬幣 → Virtual</li>
+          <li>default → WithdrawBase + console.warn</li>
+        </ul>
+        <div class="src">useWithdrawTypeGroup/index.ts:L10-L56</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-validation">決策</span>
+        <h4>5.3 提款金額限制</h4>
+        <p>最低 = max(minWithdrawAmount, limitRangeAmountMin)</p>
+        <p>倍數 = withdraw_gold_times/100 的整倍數</p>
+        <p>每日次數 = withdraw_limit | 每日額度 = withdraw_gold_limit</p>
+        <p>同時提款上限 = maxWithdrawInTimeCount（預設 1）</p>
+        <p>最低保留金 = withdraw_reserve_gold</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>5.4 下單成功後續</h4>
+        <p>並行更新：fetchInviteInfo + getProgressWithdrawOrder + getChannelListParam</p>
+        <p>背景更新：打點 + getUserGold</p>
+        <p>data.gold > 0 → toast 成功 | else → toast 失敗</p>
+        <p>路由跳轉：<code>/withdraw/order-detail?orderId=xxx</code></p>
+        <div class="src">useWithdraw.ts:L444-L495</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-6: 提款訂單狀態機 -->
+  <div class="section" id="pm-withdraw-order" data-role="pm">
+    <div class="section-title"><span class="num pm">6</span> 提款訂單狀態機 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>EOrderStatus（11 階段）</h4>
+        <table class="type-table" style="margin-top:8px">
+          <tr><td>0 PENDING</td><td>發起提款</td></tr>
+          <tr><td>1 PROCESS</td><td>處理中</td></tr>
+          <tr><td>2 SAFETY_REVIEW</td><td>安全審核</td></tr>
+          <tr><td>3 AMOUNT_REVIEW</td><td>金額審核</td></tr>
+          <tr><td>4 REVIEW_PASSED</td><td>審核通過</td></tr>
+          <tr><td>5 DISTRIBUTE</td><td>分配通道</td></tr>
+          <tr><td>6 APPROVAL</td><td>接受申請</td></tr>
+          <tr><td>7 NOTIFY_BANK</td><td>通知銀行出款</td></tr>
+          <tr><td>8 TRANSFER</td><td>開始轉帳</td></tr>
+          <tr><td>9 CHECK_ACCOUNT</td><td>確認到帳</td></tr>
+          <tr><td>10 SUCCESS</td><td>成功</td></tr>
+        </table>
+        <div class="src">useWithdraw/constants.ts:L47-L99</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>進度條分組</h4>
+        <p>0-1 → PROCESS（發起提款）| 2-4 → REVIEW_PASSED（出款審核）| 5-7 → NOTIFY_BANK（準備出款）| 8 → TRANSFER（轉帳中）| 9-10 → SUCCESS</p>
+        <p>輪詢：15s 間隔，最多 3 筆進行中訂單</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>到帳確認 receivedStatus</h4>
+        <p>0=未確認 | 1=手動到帳 | 2=自動到帳 | 3=到帳異常 | 4=異常已處理</p>
+        <p>前端只送 1（手動到帳）或 3（到帳異常）</p>
+        <p>成功 + !bonusAccepted + bonusAmount → toast 獎勵彩金</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>子訂單（拆單到帳）</h4>
+        <p>PUT <code>/withdraworder/updatesuborderreceivedstatus</code></p>
+        <p>{ mainOrderId, subOrderId, receivedStatus }</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-7: 銀行卡/帳戶管理 -->
+  <div class="section" id="pm-bank-account" data-role="pm">
+    <div class="section-title"><span class="num pm">7</span> 銀行卡 / 帳戶管理 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>綁定銀行卡</h4>
+        <p>POST <code>/playerbindinfo/bindbankcard</code> { name, cardNumber, bankCode, phoneNumber, phoneCode }</p>
+        <p>成功 → addBindBankList(data) → getChannelListParam()</p>
+        <p>銀行排序優先：BC, ABC, ICBC, CBC, PSBC</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>刪除銀行卡</h4>
+        <p>彈窗：「删除后此银行卡无法被重新绑定，若需重绑，请联系客服处理」</p>
+        <p>POST <code>/playerbindinfo/deletebankcard</code> { cardNumber }</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>綁定支付寶 / 微信</h4>
+        <p>POST <code>/playerbindinfo/bindwithdrawaccount</code> { packetId, type, account, realName, qrCodeUrl }</p>
+        <p>補綁 QR：POST <code>/playerbindinfo/bindwithdrawqr</code></p>
+        <p>刪除 QR：POST <code>/playerbindinfo/delqrcodeimg</code></p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>虛擬幣地址管理</h4>
+        <p>POST <code>/playerbindinfo/binddigitaladdress</code> { digitalType, configType, address, aliasName, phoneCode, desc, new:true }</p>
+        <p>EASY(11)/PAY_4E(13) → addressConvertType → USDT(3) 共用地址池</p>
+        <p>DD 錢包刷新：POST <code>/playerbindinfo/refreshdigitaladdress</code> { configType:11 }</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-8: 錢包與轉帳 -->
+  <div class="section" id="pm-wallet-transfer" data-role="pm">
+    <div class="section-title"><span class="num pm">8</span> 錢包與轉帳 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-logic">決策</span>
+        <h4>錢包餘額結構</h4>
+        <p>playerGold（中心錢包）| totalBalance（總餘額）| totalVenueWalletGold（場館，不含維護/鎖定）| gameBalanceList[]（各場館 gold, activityLock, maintainLock）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>一鍵歸集</h4>
+        <p>POST <code>/wallet/collectAll</code>，冷卻 10 秒</p>
+        <p>邀請禮金轉入：POST <code>/wallet/invitedGoldTransfer</code> { gold }（金額乘100）</p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-flow">決策</span>
+        <h4>場館轉帳</h4>
+        <p>POST <code>/wallet/gameAmountTransferV2</code> { gameOutId, gameInId, gold(分) }</p>
+        <p>回傳：outGold, inGold, url（三方遊戲連結）</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-9: 提款風控 -->
+  <div class="section" id="pm-withdraw-risk" data-role="pm">
+    <div class="section-title"><span class="num pm">9</span> 提款風控 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">風控</span>
+        <h4>流水檢查</h4>
+        <p>顯示條件：ac_per_cur 有值 && withdraw_warn === true && totalWater 有值</p>
+        <p>進度：rate = (curWater / totalWater) * 100</p>
+        <p>showForcedWithdrawal = true → 「强制提现」/「继续打流水」</p>
+        <p>showForcedWithdrawal = false（drawWaterLimitSwitch 控制）→ 只有「确定」</p>
+        <div class="src">useWithdrawDialog.ts:L50-L77</div>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">風控</span>
+        <h4>通道列表過濾</h4>
+        <p>中心錢包 Tab：過濾掉 BANK_CARD_APPOINTMENT(4)</p>
+        <p>邀請禮金 Tab：只保留 supportInvitedGold === true，且 discount.isOpen = 0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-10: 虛擬幣提款限制 -->
+  <div class="section" id="pm-usdt-withdraw" data-role="pm">
+    <div class="section-title"><span class="num pm">10</span> 虛擬幣提款限制 <span class="depth-badge depth-l2">L2</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">風控</span>
+        <h4>switch_bankali 限制</h4>
+        <p><code>switch_bankali === true</code> + <code>limitedCryptos[]</code> 列出受限的 withdrawType</p>
+        <p>效果：需先完成銀行卡或支付寶提款，才能使用虛擬幣提款</p>
+        <p>彈窗：<code>crypto_coin_binding_helper_text</code></p>
+      </div>
+      <div class="rule-card">
+        <span class="rule-tag tag-warning">風控</span>
+        <h4>switch_usdtebpay 限制</h4>
+        <p><code>switch_usdtebpay === true</code> + <code>cryptoPopupShown[]</code></p>
+        <p>效果：首次使用虛擬幣需客服驗證</p>
+        <p>彈窗內容：<code>text_usdtebpay</code></p>
+        <div class="src">stores/withdraw.ts:L78-L88</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PM-11: 存款類型總覽 -->
+  <div class="section" id="pm-deposit-types" data-role="pm">
+    <div class="section-title"><span class="num pm">11</span> 存款類型總覽 EPayType（47 種） <span class="depth-badge depth-l2">L2</span></div>
+
+    <table class="type-table">
+      <thead>
+        <tr><th>值</th><th>常數</th><th>名稱</th><th>特殊處理</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0</td><td>CUSTOMER</td><td>代客充值</td><td>跳客服頁面</td></tr>
+        <tr><td>1</td><td>ALIPAY</td><td>支付寶</td><td>需姓名、下單後需上傳憑證</td></tr>
+        <tr><td>2</td><td>WECHAT</td><td>微信充值</td><td>需姓名</td></tr>
+        <tr><td>3</td><td>YL</td><td>網銀充值</td><td>需姓名</td></tr>
+        <tr><td>10</td><td>FAST</td><td>快捷支付</td><td>先上傳憑證再下單（fastBankPay）</td></tr>
+        <tr><td>11</td><td>USDT_PAY</td><td>USDT 支付</td><td>顯示匯率</td></tr>
+        <tr><td>12</td><td>KZK</td><td>銀行卡轉帳</td><td>需姓名+銀行代碼、下單後上傳憑證</td></tr>
+        <tr><td>13</td><td>USDT</td><td>USDT</td><td>顯示匯率、下單後顯示 USDT 資訊</td></tr>
+        <tr><td>14</td><td>FAST_CARD</td><td>極速轉卡</td><td>需姓名+銀行代碼、下單後上傳憑證</td></tr>
+        <tr><td>19</td><td>YHZF</td><td>銀行卡支付</td><td>需姓名+銀行代碼、下單後上傳憑證</td></tr>
+        <tr><td>24</td><td>TX_CARD</td><td>TX 轉卡</td><td>需姓名+銀行代碼、下單後上傳憑證</td></tr>
+        <tr><td>26</td><td>USDT_DIY</td><td>USDT 快捷</td><td>先上傳再下單（cryptoFastUsdtPay）、隱藏通道列表</td></tr>
+        <tr><td>29</td><td>YHZF1</td><td>銀行卡支付1</td><td>同 19</td></tr>
+        <tr><td>30</td><td>KZK1</td><td>銀行卡轉帳1</td><td>同 12</td></tr>
+        <tr><td>35</td><td>PAY_4E</td><td>4E</td><td>USDT 類，下單後顯示 USDT 資訊</td></tr>
+        <tr><td>36</td><td>WJ</td><td>銀行卡充值</td><td>需姓名+銀行代碼、下單後上傳憑證</td></tr>
+        <tr><td>40</td><td>DDP</td><td>DD 錢包</td><td>失敗 errCode=10308 有跳轉 URL</td></tr>
+        <tr><td>45</td><td>BNBUSDT</td><td>BNB-USDT</td><td>顯示匯率</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PM-12: 提款類型總覽 -->
+  <div class="section" id="pm-withdraw-types" data-role="pm">
+    <div class="section-title"><span class="num pm">12</span> 提款類型總覽 EWithdrawType（24 種） <span class="depth-badge depth-l2">L2</span></div>
+
+    <table class="type-table">
+      <thead>
+        <tr><th>值</th><th>常數</th><th>名稱</th><th>分組</th><th>虛擬幣</th><th>USDT</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>A_LI</td><td>支付寶</td><td>DIGITAL</td><td class="no">N</td><td class="no">N</td></tr>
+        <tr><td>2</td><td>BANK_CARD</td><td>銀行卡</td><td>BANK</td><td class="no">N</td><td class="no">N</td></tr>
+        <tr><td>3</td><td>USDT</td><td>USDT</td><td>VIRTUAL</td><td class="yes">Y</td><td class="yes">Y</td></tr>
+        <tr><td>4</td><td>BANK_CARD_APPOINTMENT</td><td>銀行卡預約</td><td>BANK</td><td class="no">N</td><td class="no">N</td></tr>
+        <tr><td>5</td><td>CNYB</td><td>CNYB</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>6</td><td>EB_PAY</td><td>EBpay</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>7</td><td>HH5</td><td>HH5</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>8</td><td>BANK_CARD_TRANSFER</td><td>銀行卡轉卡</td><td>BANK</td><td class="no">N</td><td class="no">N</td></tr>
+        <tr><td>9</td><td>OK_PAY</td><td>OKpay</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>10</td><td>WB_PAY</td><td>萬幣</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>11</td><td>EASY</td><td>易幣付虛擬幣</td><td>VIRTUAL</td><td class="yes">Y</td><td class="yes">Y</td></tr>
+        <tr><td>12</td><td>KOI_PAY</td><td>Koipay</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>13</td><td>PAY_4E</td><td>4E</td><td>VIRTUAL</td><td class="yes">Y</td><td class="yes">Y</td></tr>
+        <tr><td>14</td><td>BO_BI</td><td>波幣</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>16</td><td>YI_HUI</td><td>易匯錢包</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>17</td><td>DD_WALLET</td><td>DD 錢包</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>18</td><td>WE_CHAT</td><td>微信</td><td>DIGITAL</td><td class="no">N</td><td class="no">N</td></tr>
+        <tr><td>19</td><td>JD_PAY</td><td>JDpay</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>20</td><td>PAY_808</td><td>808pay</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>21</td><td>PAY_988</td><td>988pay</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>22</td><td>CB_PAY</td><td>CBpay</td><td>VIRTUAL</td><td class="yes">Y</td><td class="no">N</td></tr>
+        <tr><td>23</td><td>DAI_TI</td><td>代理代提</td><td>—</td><td class="no">N</td><td class="no">N</td></tr>
+        <tr><td>24</td><td>BNB_USDT</td><td>BNB-USDT</td><td>VIRTUAL</td><td class="yes">Y</td><td class="yes">Y</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- RD SECTIONS (L3 API Specs) -->
+  <!-- ============================================================ -->
+
+  <!-- RD-1: 50 API 總覽 -->
+  <div class="section" id="rd-api-overview" data-role="rd">
+    <div class="section-title"><span class="num rd">1</span> 50 API 端點總覽 <span class="depth-badge depth-l3">L3</span></div>
+    <div class="section-desc">存款 20 + 提款 8 + 綁定 10 + 錢包 7 + 其他 5</div>
+
+    <table class="type-table" style="font-size:12px">
+      <thead>
+        <tr><th>#</th><th>API</th><th>Method</th><th>Path</th><th>用途</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>getChannelListNew</td><td>POST</td><td>/quickpay/channellist/new</td><td>取得存款通道列表</td></tr>
+        <tr><td>2</td><td>normalPayUrl</td><td>POST</td><td>/quickpay/payment/rechargepayurl</td><td>一般支付下單（含重拉單）</td></tr>
+        <tr><td>3</td><td>fastBankPay</td><td>POST</td><td>/quickpay/payment/fastpaybank/new</td><td>快捷支付下單</td></tr>
+        <tr><td>4</td><td>payCancelConfig</td><td>GET</td><td>/quickpay/payconfig</td><td>取得取消理由與次數</td></tr>
+        <tr><td>5</td><td>getExchangeList</td><td>GET</td><td>/payconfig/getcryptowalleticonsetting</td><td>交易所圖示</td></tr>
+        <tr><td>6</td><td>recordExchangeClick</td><td>POST</td><td>/payment/recordcryptoclick</td><td>紀錄交易所點擊</td></tr>
+        <tr><td>7</td><td>getLatestOrder</td><td>GET</td><td>/payment/payinfo</td><td>最新存款訂單</td></tr>
+        <tr><td>8</td><td>cryptoFastUsdtPay</td><td>POST</td><td>/payment/cryptofast</td><td>USDT 快捷下單</td></tr>
+        <tr><td>9</td><td>getPayAfterRemark</td><td>GET</td><td>/payment/helpertext</td><td>訂單提交後備註</td></tr>
+        <tr><td>10</td><td>cancelpayment</td><td>POST</td><td>/payment/cancelpayment</td><td>取消存款訂單</td></tr>
+        <tr><td>11</td><td>getDDBalance</td><td>GET</td><td>/payment/ddbalance</td><td>DD 錢包餘額</td></tr>
+        <tr><td>12</td><td>getDDConfig</td><td>GET</td><td>/payment/ddconfig/v2</td><td>DD 錢包跳轉 URL</td></tr>
+        <tr><td>13</td><td>notifyUploadMatch</td><td>POST</td><td>/payment/uploadmatchdepositreceipt/new</td><td>憑證上傳通知</td></tr>
+        <tr><td>14</td><td>fetchPromomoney</td><td>POST</td><td>/payment/promomoney</td><td>推薦金額</td></tr>
+        <tr><td>15</td><td>fetchRecentretro</td><td>GET</td><td>/payment/recentretroactivables</td><td>問題訂單列表</td></tr>
+        <tr><td>16</td><td>gamepayRetro</td><td>POST</td><td>/payment/gamepayretroactivablerecords</td><td>自助查單</td></tr>
+        <tr><td>17</td><td>giveretronotice</td><td>POST</td><td>/payment/giveretronotice</td><td>催單通知</td></tr>
+        <tr><td>18</td><td>requestRoactivable</td><td>POST</td><td>/payment/requestretroactivablerecord</td><td>查單申訴</td></tr>
+        <tr><td>19</td><td>rechargeNameList</td><td>GET</td><td>/payconfig/rechargenamelist</td><td>存款人姓名列表</td></tr>
+        <tr><td>20</td><td>firstpaytime</td><td>GET</td><td>/payconfig/firstpaytime</td><td>首存時間</td></tr>
+        <tr style="background:#1a2e3e"><td>21</td><td>getChannelListParam</td><td>POST</td><td>/withdrawconfig/transferparam/v3</td><td>提款通道列表</td></tr>
+        <tr style="background:#1a2e3e"><td>22</td><td>createWithdrawOrder</td><td>POST</td><td>/withdraworder/transfer</td><td>提款下單</td></tr>
+        <tr style="background:#1a2e3e"><td>23</td><td>getProgressOrder</td><td>POST</td><td>/withdraworder/listunfinishedorders</td><td>進行中提款訂單</td></tr>
+        <tr style="background:#1a2e3e"><td>24</td><td>getOrderStatus</td><td>GET</td><td>/withdraworder/getspecifiedorders</td><td>指定訂單狀態</td></tr>
+        <tr style="background:#1a2e3e"><td>25</td><td>getOneOrderData</td><td>POST</td><td>/withdraworder/lastorder</td><td>單筆提款訂單</td></tr>
+        <tr style="background:#1a2e3e"><td>26</td><td>sendWithdrawConfirm</td><td>POST</td><td>/withdraworder/updatereceivedstatus</td><td>到帳確認</td></tr>
+        <tr style="background:#1a2e3e"><td>27</td><td>getSuborderRecord</td><td>GET</td><td>/withdraworder/getsuborderrecordsbycreatetime</td><td>子訂單記錄</td></tr>
+        <tr style="background:#1a2e3e"><td>28</td><td>updateSuborder</td><td>PUT</td><td>/withdraworder/updatesuborderreceivedstatus</td><td>更新子訂單</td></tr>
+        <tr style="background:#1a2638"><td>29</td><td>getBindBank</td><td>GET</td><td>/playerbindinfo/bankcard</td><td>已綁定銀行卡</td></tr>
+        <tr style="background:#1a2638"><td>30</td><td>bindBankCard</td><td>POST</td><td>/playerbindinfo/bindbankcard</td><td>綁定銀行卡</td></tr>
+        <tr style="background:#1a2638"><td>31</td><td>deleteBankCard</td><td>POST</td><td>/playerbindinfo/deletebankcard</td><td>刪除銀行卡</td></tr>
+        <tr style="background:#1a2638"><td>32</td><td>fetchWithdrawPayInfo</td><td>POST</td><td>/playerbindinfo/withdrawpayinfo</td><td>支付寶/微信綁定</td></tr>
+        <tr style="background:#1a2638"><td>33</td><td>bindWithdrawAccount</td><td>POST</td><td>/playerbindinfo/bindwithdrawaccount</td><td>綁定支付寶/微信</td></tr>
+        <tr style="background:#1a2638"><td>34</td><td>bindWithdrawQR</td><td>POST</td><td>/playerbindinfo/bindwithdrawqr</td><td>綁定 QR Code</td></tr>
+        <tr style="background:#1a2638"><td>35</td><td>deleteWithdrawQR</td><td>POST</td><td>/playerbindinfo/delqrcodeimg</td><td>刪除 QR Code</td></tr>
+        <tr style="background:#1a2638"><td>36</td><td>bindVirtualAddress</td><td>POST</td><td>/playerbindinfo/binddigitaladdress</td><td>綁定虛擬幣地址</td></tr>
+        <tr style="background:#1a2638"><td>37</td><td>deleteVirtualAddress</td><td>POST</td><td>/playerbindinfo/deletedigitaladdress</td><td>刪除虛擬幣地址</td></tr>
+        <tr style="background:#1a2638"><td>38</td><td>refreshDigitalAddr</td><td>POST</td><td>/playerbindinfo/refreshdigitaladdress</td><td>DD 錢包地址刷新</td></tr>
+        <tr><td>39</td><td>failCountsIncrease</td><td>POST</td><td>/pfailcounts/incr</td><td>失敗次數累加</td></tr>
+        <tr><td>40</td><td>failCountsReset</td><td>POST</td><td>/pfailcounts/reset</td><td>失敗次數重置</td></tr>
+        <tr style="background:#1a2e1a"><td>41</td><td>getGameListBalance</td><td>POST</td><td>/wallet/gameListBalance</td><td>所有錢包餘額</td></tr>
+        <tr style="background:#1a2e1a"><td>42</td><td>gameAmountTransfer</td><td>POST</td><td>/wallet/gameAmountTransferV2</td><td>場館轉帳</td></tr>
+        <tr style="background:#1a2e1a"><td>43</td><td>collectAll</td><td>POST</td><td>/wallet/collectAll</td><td>一鍵歸集</td></tr>
+        <tr style="background:#1a2e1a"><td>44</td><td>getListGameWater</td><td>POST</td><td>/wallet/listgamewater</td><td>場館流水列表</td></tr>
+        <tr style="background:#1a2e1a"><td>45</td><td>refreshBalance</td><td>POST</td><td>/wallet/refreshBalance</td><td>刷新場館餘額</td></tr>
+        <tr style="background:#1a2e1a"><td>46</td><td>invitedGoldTransfer</td><td>POST</td><td>/wallet/invitedGoldTransfer</td><td>禮金轉中心錢包</td></tr>
+        <tr style="background:#1a2e1a"><td>47</td><td>getInvitedGold</td><td>GET</td><td>/wallet/invitedGold</td><td>邀請禮金餘額</td></tr>
+        <tr><td>48</td><td>transferConfigSettings</td><td>GET</td><td>/transferconfig/settings</td><td>轉帳設定</td></tr>
+        <tr><td>49</td><td>getBankList</td><td>POST</td><td>/bankconfig/getbanklist</td><td>銀行列表</td></tr>
+        <tr><td>50</td><td>uploadImageV2</td><td>POST</td><td>/resource/uploadimage/v2</td><td>上傳圖片</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RD-2: 存款 Schema -->
+  <div class="section" id="rd-deposit-schema" data-role="rd">
+    <div class="section-title"><span class="num rd">2</span> 存款 API Schema <span class="depth-badge depth-l3">L3</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#1 getChannelListNew — Request</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>amount</code></td><td>number</td><td>金額（元），無條件進位至整數</td></tr>
+          <tr><td><code>device</code></td><td>string</td><td>設備類型（runtime config）</td></tr>
+          <tr><td><code>supportMaintenance</code></td><td>boolean</td><td>固定 true</td></tr>
+        </table>
+        <p style="margin-top:8px"><strong>Response：</strong>info[], agency, discountConfig[], hostList[], usdtRate, gamePayTypes[], failCounts, payTypeSortSwitch, cryptoQuickConfig</p>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#2 normalPayUrl — Request</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>amount</code></td><td>number</td><td>充值金額（分）</td></tr>
+          <tr><td><code>payType</code></td><td>number</td><td>EPayType</td></tr>
+          <tr><td><code>payKey</code></td><td>number</td><td>通道 ID（ThirdKey）</td></tr>
+          <tr><td><code>bankCode</code></td><td>string</td><td>銀行代碼（選填）</td></tr>
+          <tr><td><code>accountName</code></td><td>string</td><td>存款人姓名（選填）</td></tr>
+          <tr><td><code>wrapPresentaionLayer</code></td><td>boolean</td><td>固定 true（重拉單）</td></tr>
+          <tr><td><code>milliseconds</code></td><td>number</td><td>時間戳</td></tr>
+          <tr><td><code>counter</code></td><td>number</td><td>重試次數</td></tr>
+        </table>
+        <p style="margin-top:8px"><strong>Response：</strong>code(1=成功), orderId, gold, status(0=進行中), createTime, expireTime, url{type, data}</p>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#8 cryptoFastUsdtPay — Request</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>payType</code></td><td>number</td><td>固定 26</td></tr>
+          <tr><td><code>digitalId</code></td><td>string</td><td>虛擬幣 ID</td></tr>
+          <tr><td><code>amount</code></td><td>number</td><td>充值金額（分）</td></tr>
+          <tr><td><code>refTransId</code></td><td>string</td><td>交易單號</td></tr>
+          <tr><td><code>payKey</code></td><td>number</td><td>通道 ID</td></tr>
+          <tr><td><code>imageArrayUrl</code></td><td>string[]</td><td>上傳圖片 URL</td></tr>
+        </table>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#10 cancelpayment — Request</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>orderId</code></td><td>string</td><td>訂單 ID</td></tr>
+          <tr><td><code>reason</code></td><td>string</td><td>取消理由 ID</td></tr>
+          <tr><td><code>plainReason</code></td><td>string</td><td>其他理由（reason="e" 時填入）</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RD-3: 提款 Schema -->
+  <div class="section" id="rd-withdraw-schema" data-role="rd">
+    <div class="section-title"><span class="num rd">3</span> 提款 API Schema <span class="depth-badge depth-l3">L3</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#21 getChannelListParam — Response 重要欄位</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>withdrawInfo[]</code></td><td>提款通道資料</td></tr>
+          <tr><td><code>withdrawInfoAddress[]</code></td><td>已綁定地址</td></tr>
+          <tr><td><code>withdrawOfferConfigList[]</code></td><td>提款優惠</td></tr>
+          <tr><td><code>withdrawWarn</code></td><td>是否顯示流水警告</td></tr>
+          <tr><td><code>withdrawLimit</code></td><td>今日最大提現次數</td></tr>
+          <tr><td><code>dailyDrawLimit</code></td><td>今日最大提款額度（分）</td></tr>
+          <tr><td><code>withdrawReserveGold</code></td><td>最低保留金（分）</td></tr>
+          <tr><td><code>withdrawGoldTimes</code></td><td>金額倍數（分）</td></tr>
+          <tr><td><code>usdtRate</code></td><td>虛擬幣匯率</td></tr>
+          <tr><td><code>switchBankAli</code></td><td>銀行卡先提開關</td></tr>
+          <tr><td><code>switchUsdtEbpay</code></td><td>虛擬幣首次驗證</td></tr>
+          <tr><td><code>maxBindCardNum</code></td><td>綁卡上限</td></tr>
+          <tr><td><code>maxWithdrawInTimeCount</code></td><td>同時提款上限</td></tr>
+          <tr><td><code>curWater / totalWater</code></td><td>流水進度</td></tr>
+          <tr><td><code>drawWaterLimitSwitch</code></td><td>強制提現開關</td></tr>
+          <tr><td><code>reserveList[]</code></td><td>預約提款選項</td></tr>
+        </table>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#22 createWithdrawOrder — Request</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>type</code></td><td>number</td><td>EWithdrawType</td></tr>
+          <tr><td><code>gold</code></td><td>number</td><td>提現金額（分）</td></tr>
+          <tr><td><code>sourceType</code></td><td>number</td><td>1=中心錢包, 2=邀請錢包</td></tr>
+          <tr><td><code>reserveId</code></td><td>number</td><td>預約 ID（非預約填 0）</td></tr>
+          <tr><td><code>account</code></td><td>string</td><td>卡號/虛擬地址</td></tr>
+          <tr><td><code>digitalId</code></td><td>string</td><td>虛擬幣地址 ID</td></tr>
+          <tr><td><code>digitalType</code></td><td>number</td><td>1=TRC20, 2=ERC20, 3=BSC, 4=EBpay...</td></tr>
+          <tr><td><code>digitalNum</code></td><td>number</td><td>虛擬幣數量</td></tr>
+        </table>
+        <p style="margin-top:8px"><strong>Response：</strong>gold, orderId, withdrawType, timeline[], estimatedTime, bonusAmount</p>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#26 sendWithdrawConfirm</h4>
+        <p>Request：{ orderId, receivedStatus(1=手動到帳/3=異常) }</p>
+        <p>Response：bonusAccepted, bonusAmount</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RD-4: 綁定 Schema -->
+  <div class="section" id="rd-bind-schema" data-role="rd">
+    <div class="section-title"><span class="num rd">4</span> 綁定 API Schema <span class="depth-badge depth-l3">L3</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#30 bindBankCard</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>name</code></td><td>string</td><td>真實姓名</td></tr>
+          <tr><td><code>cardNumber</code></td><td>string</td><td>銀行卡號</td></tr>
+          <tr><td><code>bankCode</code></td><td>string</td><td>開戶行代碼</td></tr>
+          <tr><td><code>phoneNumber</code></td><td>string</td><td>手機號碼</td></tr>
+          <tr><td><code>phoneCode</code></td><td>number</td><td>驗證碼</td></tr>
+        </table>
+        <p style="margin-top:8px">Response (data)：number — 剩餘驗證次數</p>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#36 bindVirtualAddress</h4>
+        <table class="type-table" style="font-size:12px">
+          <tr><td><code>digitalType</code></td><td>string</td><td>幣種（USDT, CNYB, EB...）</td></tr>
+          <tr><td><code>configType</code></td><td>number</td><td>1=TRC20, 2=ERC20...</td></tr>
+          <tr><td><code>address</code></td><td>string</td><td>綁定地址</td></tr>
+          <tr><td><code>aliasName</code></td><td>string</td><td>別名</td></tr>
+          <tr><td><code>phoneCode</code></td><td>number</td><td>手機驗證碼</td></tr>
+          <tr><td><code>desc</code></td><td>string</td><td>協議描述</td></tr>
+          <tr><td><code>new</code></td><td>boolean</td><td>固定 true</td></tr>
+        </table>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-api">SCHEMA</span>
+        <h4>#28 updateSuborderRecordStatus</h4>
+        <p>PUT /withdraworder/updatesuborderreceivedstatus</p>
+        <p>{ mainOrderId: string, subOrderId: string, receivedStatus: number(1/3) }</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RD-5: Error Codes -->
+  <div class="section" id="rd-error-codes" data-role="rd">
+    <div class="section-title"><span class="num rd">5</span> Error Codes <span class="depth-badge depth-l3">L3</span></div>
+
+    <div class="rule-grid">
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-warning">ERROR</span>
+        <h4>通用 errCode</h4>
+        <p><code>1</code> = 成功 | 其他 = 失敗（靜默或顯示 msg）</p>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-warning">ERROR</span>
+        <h4>normalPayUrl 特殊</h4>
+        <p><code>data.code !== 1</code> 且 &lt; 10秒：自動重試（counter++）</p>
+        <p><code>10308</code>：DD 錢包失敗 → 取 thirdExt URL 跳轉</p>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-warning">ERROR</span>
+        <h4>payUrl.type 對照</h4>
+        <p><code>1</code> = URL 三方跳轉 | <code>4</code> = card2card 銀行卡/USDT 轉帳 | <code>2/3</code> = 已廢棄</p>
+      </div>
+      <div class="rule-card rd-card">
+        <span class="rule-tag tag-warning">ERROR</span>
+        <h4>DD 錢包 — Err:013</h4>
+        <p><code>getDDConfig()</code> 無 URL → $showToast('获取连结失败(Err:013)，请联系客服')</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- QA SECTIONS (L4 Test Matrix) -->
+  <!-- ============================================================ -->
+
+  <!-- QA-1: 存款測項 -->
+  <div class="section" id="qa-deposit" data-role="qa">
+    <div class="section-title"><span class="num qa">1</span> 存款流程測項 (38 項) <span class="depth-badge depth-l4">L4</span></div>
+
+    <table class="test-table">
+      <thead>
+        <tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>未綁手機進存款頁</td><td>未綁手機</td><td>進入存款頁</td><td>顯示 BindPhone 元件</td><td class="p0">P0</td></tr>
+        <tr><td>2</td><td>所有通道關閉</td><td>後台全關</td><td>進入存款頁</td><td>顯示維護中(MaintainPay)</td><td class="p0">P0</td></tr>
+        <tr><td>3</td><td>單一通道維護</td><td>switchStatus=3</td><td>選擇該通道</td><td>顯示維護中</td><td class="p1">P1</td></tr>
+        <tr><td>4</td><td>代客充值入口</td><td>payType=0</td><td>選擇代客充值</td><td>跳轉 customerServicePay</td><td class="p1">P1</td></tr>
+        <tr><td>5</td><td>合併通道選擇</td><td>channelType=Merge</td><td>選擇通道</td><td>顯示 mergeChannelPay</td><td class="p0">P0</td></tr>
+        <tr><td>6</td><td>展開通道選擇</td><td>channelType=Expand</td><td>選擇通道</td><td>顯示 ChannelPayStep</td><td class="p0">P0</td></tr>
+        <tr><td>7</td><td>一般支付下單成功</td><td>已選通道+填金額</td><td>提交下單</td><td>訂單建立，顯示進行中</td><td class="p0">P0</td></tr>
+        <tr><td>8</td><td>連續拉單機制</td><td>首次 code!=1</td><td>自動</td><td>10秒內自動重試+counter++</td><td class="p0">P0</td></tr>
+        <tr><td>9</td><td>下單超過10秒</td><td>連續拉單中</td><td>等待</td><td>顯示錯誤 toast</td><td class="p1">P1</td></tr>
+        <tr><td>10</td><td>DD 錢包失敗跳轉</td><td>payType=40, err=10308</td><td>下單</td><td>取 thirdExt URL 跳轉</td><td class="p1">P1</td></tr>
+        <tr><td>11</td><td>快捷支付下單</td><td>payType=10</td><td>先上傳+填資訊</td><td>呼叫 fastBankPay</td><td class="p0">P0</td></tr>
+        <tr><td>12</td><td>USDT 快捷下單</td><td>payType=26</td><td>先上傳+填資訊</td><td>呼叫 cryptoFastUsdtPay</td><td class="p0">P0</td></tr>
+        <tr><td>13</td><td>次數達上限</td><td>remainingTimes=0</td><td>選擇通道</td><td>canRecharge=false</td><td class="p0">P0</td></tr>
+        <tr><td>14</td><td>共用次數達上限</td><td>remainingTimesShared=0</td><td>選擇通道</td><td>canRecharge=false</td><td class="p0">P0</td></tr>
+        <tr><td>15</td><td>姓名—無真實姓名</td><td>realName 空</td><td>提交</td><td>彈窗確認綁定姓名</td><td class="p1">P1</td></tr>
+        <tr><td>16</td><td>姓名—新姓名</td><td>不在列表</td><td>提交</td><td>彈窗確認「使用新姓名」</td><td class="p1">P1</td></tr>
+        <tr><td>17</td><td>姓名—已有姓名</td><td>在列表中</td><td>提交</td><td>直接下單</td><td class="p1">P1</td></tr>
+        <tr><td>18</td><td>訂單進行中</td><td>有未完成訂單</td><td>進入存款頁</td><td>顯示 RechargePayInfo</td><td class="p0">P0</td></tr>
+        <tr><td>19</td><td>倒計時歸零</td><td>訂單即將過期</td><td>等待</td><td>自動重新拉單</td><td class="p1">P1</td></tr>
+        <tr><td>20</td><td>訂單無 expireTime</td><td>createTime 有值</td><td>計算倒計時</td><td>createTime + 30min</td><td class="p2">P2</td></tr>
+        <tr><td>21</td><td>取消訂單</td><td>有進行中訂單</td><td>點取消</td><td>狀態改 Cancel(12)</td><td class="p0">P0</td></tr>
+        <tr><td>22</td><td>引導客服—拉單失敗</td><td>condition=3</td><td>多次失敗</td><td>counter &ge; throttle → 彈客服</td><td class="p1">P1</td></tr>
+        <tr><td>23</td><td>引導客服—系統取消</td><td>condition=12</td><td>公告關閉</td><td>counter &ge; throttle → 彈客服</td><td class="p1">P1</td></tr>
+        <tr><td>24</td><td>引導客服—手動取消</td><td>condition=13</td><td>多次手動取消</td><td>counter &ge; throttle → 彈客服</td><td class="p1">P1</td></tr>
+        <tr><td>25</td><td>推薦通道補足</td><td>recTag &lt; 2, switch=1</td><td>載入通道</td><td>從 isHot 補到 2 個</td><td class="p2">P2</td></tr>
+        <tr><td>26</td><td>無幣商過濾</td><td>agency.info 空</td><td>載入通道</td><td>過濾 payType=0</td><td class="p2">P2</td></tr>
+        <tr><td>27</td><td>USDT 快捷隱藏列表</td><td>payType=26</td><td>進入流程</td><td>showDepositListVisible=false</td><td class="p2">P2</td></tr>
+        <tr><td>28</td><td>存款完成自動刷新</td><td>isOrderProcess true→false</td><td>訂單完成</td><td>watchPaySuccess → 重拉通道</td><td class="p1">P1</td></tr>
+        <tr><td>29</td><td>優惠顯示</td><td>通道有 discount</td><td>選擇通道</td><td>顯示優惠百分比和額度</td><td class="p1">P1</td></tr>
+        <tr><td>30</td><td>USDT 匯率—通道級</td><td>cryptoRate 有值</td><td>選 USDT 通道</td><td>使用 cryptoRate/100</td><td class="p1">P1</td></tr>
+        <tr><td>31</td><td>USDT 匯率—全域</td><td>cryptoRate 無值</td><td>選 USDT 通道</td><td>使用 usdtRate/100</td><td class="p1">P1</td></tr>
+        <tr><td>32</td><td>首存 Banner</td><td>firstPayConfig.isActive=1</td><td>進入存款頁</td><td>顯示 FirstPayHintTab</td><td class="p2">P2</td></tr>
+        <tr><td>33</td><td>銀行卡需選銀行</td><td>payType in bankList</td><td>選擇通道</td><td>顯示銀行選擇</td><td class="p1">P1</td></tr>
+        <tr><td>34</td><td>憑證上傳—下單後</td><td>payType in upload</td><td>訂單建立後</td><td>顯示上傳按鈕</td><td class="p0">P0</td></tr>
+        <tr><td>35</td><td>憑證上傳通知</td><td>已上傳</td><td>上傳成功</td><td>notifyUploadMatch + toast</td><td class="p0">P0</td></tr>
+        <tr><td>36</td><td>存款自動跳轉</td><td>autoJumpPayType 有值</td><td>進入存款頁</td><td>自動選到對應通道</td><td class="p2">P2</td></tr>
+        <tr><td>37</td><td>假資料跑馬燈</td><td>正常</td><td>進入存款頁</td><td>顯示 FakeDataScroll</td><td class="p2">P2</td></tr>
+        <tr><td>38</td><td>隨機推薦百分比</td><td>任何通道</td><td>首次載入</td><td>userPreferredAmountRate = random(90~97)</td><td class="p2">P2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- QA-2: 提款測項 -->
+  <div class="section" id="qa-withdraw" data-role="qa">
+    <div class="section-title"><span class="num qa">2</span> 提款流程測項 (30 項) <span class="depth-badge depth-l4">L4</span></div>
+
+    <table class="test-table">
+      <thead>
+        <tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>39</td><td>未綁手機進提款</td><td>未綁手機</td><td>選任何通道</td><td>showBindPhone=true</td><td class="p0">P0</td></tr>
+        <tr><td>40</td><td>通道維護中</td><td>isOpenNew=3</td><td>選擇該通道</td><td>showMaintainPay=true</td><td class="p0">P0</td></tr>
+        <tr><td>41</td><td>銀行卡提款</td><td>type=2</td><td>選銀行卡</td><td>WithdrawTypeGroupBank</td><td class="p0">P0</td></tr>
+        <tr><td>42</td><td>USDT 提款</td><td>type=3</td><td>選 USDT</td><td>WithdrawTypeGroupUSDT</td><td class="p0">P0</td></tr>
+        <tr><td>43</td><td>虛擬幣提款</td><td>type=5,6,7...</td><td>選虛擬幣</td><td>WithdrawTypeGroupVirtual</td><td class="p0">P0</td></tr>
+        <tr><td>44</td><td>DD 錢包提款</td><td>type=17</td><td>選 DD</td><td>WithdrawDD（地址唯讀）</td><td class="p1">P1</td></tr>
+        <tr><td>45</td><td>支付寶提款</td><td>type=1</td><td>選支付寶</td><td>WithdrawTypeGroupDigital</td><td class="p0">P0</td></tr>
+        <tr><td>46</td><td>微信提款</td><td>type=18</td><td>選微信</td><td>WithdrawTypeGroupDigital</td><td class="p0">P0</td></tr>
+        <tr><td>47</td><td>代理代提</td><td>type=23</td><td>選代理代提</td><td>WithdrawTypeGroupDaiTi</td><td class="p1">P1</td></tr>
+        <tr><td>48</td><td>提款下單成功</td><td>填好金額+帳戶</td><td>提交</td><td>跳到 order-detail</td><td class="p0">P0</td></tr>
+        <tr><td>49</td><td>金額倍數限制</td><td>gold_times=10000</td><td>非100倍數</td><td>驗證失敗提示</td><td class="p0">P0</td></tr>
+        <tr><td>50</td><td>每日次數限制</td><td>count &ge; limit</td><td>提交</td><td>限制提示</td><td class="p0">P0</td></tr>
+        <tr><td>51</td><td>每日額度限制</td><td>額度已滿</td><td>提交</td><td>限制提示</td><td class="p0">P0</td></tr>
+        <tr><td>52</td><td>同時提款上限</td><td>orders &ge; max</td><td>提交</td><td>isOrderLimit=true</td><td class="p0">P0</td></tr>
+        <tr><td>53</td><td>最低保留金</td><td>餘額不足</td><td>提交</td><td>限制提示</td><td class="p0">P0</td></tr>
+        <tr><td>54</td><td>流水不足—可強制</td><td>drawWaterLimitSwitch=0</td><td>提交</td><td>彈窗：强制/继续打</td><td class="p0">P0</td></tr>
+        <tr><td>55</td><td>流水不足—不可強制</td><td>drawWaterLimitSwitch=1</td><td>提交</td><td>只有「确定」</td><td class="p0">P0</td></tr>
+        <tr><td>56</td><td>switch_bankali 限制</td><td>switch=true, 未做銀行/支付寶</td><td>選虛擬幣</td><td>彈窗需先銀行卡提款</td><td class="p0">P0</td></tr>
+        <tr><td>57</td><td>switch_usdtebpay</td><td>switch=true, 首次</td><td>選虛擬幣</td><td>彈窗需客服驗證</td><td class="p1">P1</td></tr>
+        <tr><td>58</td><td>提款優惠計算</td><td>discount.isOpen=1</td><td>輸入金額</td><td>顯示預計優惠</td><td class="p1">P1</td></tr>
+        <tr><td>59</td><td>邀請禮金 Tab</td><td>enable=true</td><td>進入提款頁</td><td>顯示 BONUS Tab</td><td class="p0">P0</td></tr>
+        <tr><td>60</td><td>禮金通道過濾</td><td>BONUS Tab</td><td>切到禮金</td><td>只顯示 supportInvitedGold</td><td class="p0">P0</td></tr>
+        <tr><td>61</td><td>禮金每日次數</td><td>cnt &ge; limit</td><td>禮金提款</td><td>限制提示</td><td class="p1">P1</td></tr>
+        <tr><td>62</td><td>銀行卡預約</td><td>type=4</td><td>選極速轉卡</td><td>使用 reserveList</td><td class="p1">P1</td></tr>
+        <tr><td>63</td><td>極速轉卡維護</td><td>type=4, isOpenNew=3</td><td>載入</td><td>reserveList=[]</td><td class="p1">P1</td></tr>
+        <tr><td>64</td><td>進行中訂單顯示</td><td>progressLength > 0</td><td>進入提款頁</td><td>頂部顯示 WithdrawOrder</td><td class="p0">P0</td></tr>
+        <tr><td>65</td><td>進度輪詢</td><td>有進行中訂單</td><td>等 15 秒</td><td>自動 refetch</td><td class="p1">P1</td></tr>
+        <tr><td>66</td><td>到帳確認—手動</td><td>status=1</td><td>確認到帳</td><td>sendConfirm + 彈獎勵</td><td class="p0">P0</td></tr>
+        <tr><td>67</td><td>到帳確認—異常</td><td>status=3</td><td>確認異常</td><td>sendConfirm + 記錄</td><td class="p0">P0</td></tr>
+        <tr><td>68</td><td>子訂單確認</td><td>拆單到帳</td><td>確認子單</td><td>updateSuborder</td><td class="p0">P0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- QA-3: 帳戶管理測項 -->
+  <div class="section" id="qa-bank" data-role="qa">
+    <div class="section-title"><span class="num qa">3</span> 帳戶管理測項 (13 項) <span class="depth-badge depth-l4">L4</span></div>
+
+    <table class="test-table">
+      <thead>
+        <tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>69</td><td>綁定銀行卡</td><td>有手機驗證碼</td><td>填寫+提交</td><td>bindBankCard → 更新列表</td><td class="p0">P0</td></tr>
+        <tr><td>70</td><td>綁卡上限</td><td>已達 maxBindCardsCount</td><td>嘗試新增</td><td>無法新增</td><td class="p1">P1</td></tr>
+        <tr><td>71</td><td>刪除銀行卡確認</td><td>已有綁定卡</td><td>點刪除</td><td>彈窗「无法重新绑定」→ 確認</td><td class="p0">P0</td></tr>
+        <tr><td>72</td><td>銀行卡排序</td><td>多張卡</td><td>載入列表</td><td>BC/ABC/ICBC/CBC/PSBC 優先</td><td class="p2">P2</td></tr>
+        <tr><td>73</td><td>綁定支付寶</td><td>未綁定</td><td>填寫+提交</td><td>bindWithdrawAccount → toast</td><td class="p0">P0</td></tr>
+        <tr><td>74</td><td>綁定微信</td><td>未綁定</td><td>填寫+提交</td><td>同上</td><td class="p0">P0</td></tr>
+        <tr><td>75</td><td>綁定 QR Code</td><td>已有帳號</td><td>上傳 QR</td><td>bindWithdrawQR → 成功</td><td class="p1">P1</td></tr>
+        <tr><td>76</td><td>刪除 QR Code</td><td>已綁 QR</td><td>點刪除</td><td>deleteWithdrawQR</td><td class="p1">P1</td></tr>
+        <tr><td>77</td><td>綁定虛擬幣地址</td><td>有驗證碼</td><td>填寫+提交</td><td>bindVirtualAddress → toast</td><td class="p0">P0</td></tr>
+        <tr><td>78</td><td>EASY/4E 共用地址</td><td>選 EASY(11) 或 4E(13)</td><td>查看地址</td><td>讀取 addressInfoList[3]</td><td class="p1">P1</td></tr>
+        <tr><td>79</td><td>刪除虛擬幣地址</td><td>已有地址</td><td>點刪除</td><td>彈窗確認 → 刪除</td><td class="p1">P1</td></tr>
+        <tr><td>80</td><td>DD 錢包地址刷新</td><td>DD 錢包</td><td>點刷新</td><td>refreshDigitalAddress</td><td class="p1">P1</td></tr>
+        <tr><td>81</td><td>新增地址提示彈窗</td><td>conditionType=2</td><td>新增地址</td><td>顯示提示 → 確認後繼續</td><td class="p2">P2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- QA-4: 轉帳測項 -->
+  <div class="section" id="qa-transfer" data-role="qa">
+    <div class="section-title"><span class="num qa">4</span> 轉帳流程測項 (7 項) <span class="depth-badge depth-l4">L4</span></div>
+
+    <table class="test-table">
+      <thead>
+        <tr><th>#</th><th>場景</th><th>前置條件</th><th>操作</th><th>預期結果</th><th>P</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>82</td><td>一鍵歸集</td><td>場館有餘額</td><td>點歸集</td><td>collectAll → 更新 totalBalance</td><td class="p0">P0</td></tr>
+        <tr><td>83</td><td>歸集冷卻</td><td>10秒內再點</td><td>點歸集</td><td>toast 提示等待</td><td class="p1">P1</td></tr>
+        <tr><td>84</td><td>場館轉帳</td><td>選好場館+金額</td><td>轉帳</td><td>gameAmountTransfer → 更新餘額</td><td class="p0">P0</td></tr>
+        <tr><td>85</td><td>場館活動鎖定</td><td>activityLock=true</td><td>嘗試轉帳</td><td>禁止轉帳</td><td class="p1">P1</td></tr>
+        <tr><td>86</td><td>場館維護鎖定</td><td>maintainLock=true</td><td>嘗試轉帳</td><td>禁止轉帳</td><td class="p1">P1</td></tr>
+        <tr><td>87</td><td>邀請禮金轉錢包</td><td>有邀請禮金</td><td>點轉入</td><td>invitedGoldTransfer</td><td class="p0">P0</td></tr>
+        <tr><td>88</td><td>餘額刷新冷卻</td><td>10秒內再刷</td><td>點刷新</td><td>toast 提示等待</td><td class="p2">P2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <!-- Footer -->
   <div style="text-align:center;padding:40px;color:#475569;font-size:12px;border-top:1px solid #1e293b;">
     <p>Source Code: <code>mango2-h5/pages/deposit/</code> | Figma: <code>xvqDn4NW3ljqw5xM1ES3gL</code> (5.1 存款)</p>
-    <p style="margin-top:4px">Generated 2026-04-08 | Windelf Knowledge Base</p>
+    <p style="margin-top:4px">Knowledge Base: <code>5-payment-detail.md</code> (1267 行 · 12 決策流程 · 50 API · 88 測項)</p>
+    <p style="margin-top:4px">Generated 2026-04-09 | L1-L4 Deep Integrated</p>
   </div>
 
   </div><!-- /.main-content -->
   </div><!-- /.layout -->
 
   <script>
+    // Role tab switching
+    function switchRole(role) {
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.role-tab[data-role="${role}"]`).classList.add('active');
+
+      document.querySelectorAll('.section').forEach(sec => {
+        const roles = (sec.getAttribute('data-role') || '').split(' ');
+        sec.classList.toggle('hidden', !roles.includes(role));
+      });
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const nr = btn.getAttribute('data-nav-role') || '';
+        btn.classList.toggle('hidden', nr !== role);
+      });
+
+      // Reset active nav
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const firstVisible = document.querySelector(`.nav-btn[data-nav-role="${role}"]:not(.hidden)`);
+      if (firstVisible) firstVisible.classList.add('active');
+
+      document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.role-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchRole(tab.getAttribute('data-role')));
+    });
+
+    // Nav button click → scroll + highlight
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -845,6 +1846,9 @@
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
+
+    // Default: show L1
+    switchRole('l1');
   </script>
 </body>
 </html>
