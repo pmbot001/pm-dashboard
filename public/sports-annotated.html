@@ -152,25 +152,27 @@
 
   <!-- Role Tabs -->
   <div class="role-bar">
-    <button class="role-tab active" data-role="pm"><span class="role-indicator ri-pm"></span>決策流程</button>
+    <button class="role-tab active" data-role="l1"><span class="role-indicator" style="background:#60a5fa"></span>功能概覽</button>
+    <button class="role-tab" data-role="pm"><span class="role-indicator ri-pm"></span>決策流程</button>
     <button class="role-tab" data-role="rd"><span class="role-indicator ri-rd"></span>API 規格</button>
     <button class="role-tab" data-role="qa"><span class="role-indicator ri-qa"></span>驗測矩陣</button>
   </div>
 
   <!-- Nav -->
   <div class="nav-bar">
+    <!-- L1 nav -->
+    <button class="nav-btn" data-target="flow" data-nav-role="l1">流程圖</button>
+    <button class="nav-btn" data-target="homepage" data-nav-role="l1">首頁框架</button>
+    <button class="nav-btn" data-target="matchlist" data-nav-role="l1">賽事列表</button>
+    <button class="nav-btn" data-target="matchdetail" data-nav-role="l1">賽事詳情</button>
+    <button class="nav-btn" data-target="cart" data-nav-role="l1">投注購物車</button>
+    <button class="nav-btn" data-target="combo" data-nav-role="l1">串關</button>
+    <button class="nav-btn" data-target="outright" data-nav-role="l1">冠軍玩法</button>
+    <button class="nav-btn" data-target="venue" data-nav-role="l1">場館系統</button>
+    <button class="nav-btn" data-target="search" data-nav-role="l1">搜尋篩選</button>
+    <button class="nav-btn" data-target="newbie" data-nav-role="l1">新手引導</button>
+    <button class="nav-btn" data-target="polling" data-nav-role="l1">API 輪詢</button>
     <!-- PM nav -->
-    <button class="nav-btn" data-target="flow" data-nav-role="pm">流程圖</button>
-    <button class="nav-btn" data-target="homepage" data-nav-role="pm">首頁框架</button>
-    <button class="nav-btn" data-target="matchlist" data-nav-role="pm">賽事列表</button>
-    <button class="nav-btn" data-target="matchdetail" data-nav-role="pm">賽事詳情</button>
-    <button class="nav-btn" data-target="cart" data-nav-role="pm">投注購物車</button>
-    <button class="nav-btn" data-target="combo" data-nav-role="pm">串關</button>
-    <button class="nav-btn" data-target="outright" data-nav-role="pm">冠軍玩法</button>
-    <button class="nav-btn" data-target="venue" data-nav-role="pm">場館系統</button>
-    <button class="nav-btn" data-target="search" data-nav-role="pm">搜尋篩選</button>
-    <button class="nav-btn" data-target="newbie" data-nav-role="pm">新手引導</button>
-    <button class="nav-btn" data-target="polling" data-nav-role="pm">API 輪詢</button>
     <button class="nav-btn" data-target="pm-cart-state" data-nav-role="pm">單注狀態機</button>
     <button class="nav-btn" data-target="pm-reserve" data-nav-role="pm">預約下注</button>
     <button class="nav-btn" data-target="pm-cashout" data-nav-role="pm">提前結算</button>
@@ -194,7 +196,7 @@
   <!-- ============================================ -->
 
   <!-- 1. Flow -->
-  <div class="section" id="flow" data-role="pm">
+  <div class="section" id="flow" data-role="l1">
     <div class="section-title"><span class="num">1</span> 核心流程 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">從進入首頁到完成投注的主要路徑</div>
 
@@ -245,7 +247,7 @@
   </div>
 
   <!-- 2. Homepage Framework -->
-  <div class="section" id="homepage" data-role="pm">
+  <div class="section" id="homepage" data-role="l1">
     <div class="section-title"><span class="num">2</span> 首頁框架 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">Header / Banner / 公告列 / SportBar — 整個首頁的外殼與收折行為</div>
     <div class="annotated-row">
@@ -287,7 +289,7 @@
   </div>
 
   <!-- 3. Match List -->
-  <div class="section" id="matchlist" data-role="pm">
+  <div class="section" id="matchlist" data-role="l1">
     <div class="section-title"><span class="num">3</span> 賽事列表 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">球種選擇、時間軸、聯賽篩選、賽事卡片 — 核心瀏覽體驗</div>
     <div class="annotated-row">
@@ -333,7 +335,7 @@
   </div>
 
   <!-- 4. Match Detail -->
-  <div class="section" id="matchdetail" data-role="pm">
+  <div class="section" id="matchdetail" data-role="l1">
     <div class="section-title"><span class="num">4</span> 賽事詳情 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">點擊賽事卡片後進入 — 影片/動畫、全盤口、聊天</div>
     <div class="annotated-row">
@@ -355,7 +357,7 @@
   </div>
 
   <!-- 5. Cart / Betting -->
-  <div class="section" id="cart" data-role="pm">
+  <div class="section" id="cart" data-role="l1">
     <div class="section-title"><span class="num">5</span> 投注購物車 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">單注投注流程 — 從選擇賠率到確認下注</div>
     <div class="annotated-row">
@@ -377,7 +379,7 @@
   </div>
 
   <!-- 6. Combo -->
-  <div class="section" id="combo" data-role="pm">
+  <div class="section" id="combo" data-role="l1">
     <div class="section-title"><span class="num">6</span> 串關投注 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">多場賽事組合投注 — 串關購物車</div>
     <div class="annotated-row">
@@ -399,7 +401,7 @@
   </div>
 
   <!-- 7. Outright -->
-  <div class="section" id="outright" data-role="pm">
+  <div class="section" id="outright" data-role="l1">
     <div class="section-title"><span class="num">7</span> 冠軍玩法 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">對賽事冠軍下注</div>
     <div class="annotated-row single">
@@ -415,7 +417,7 @@
   </div>
 
   <!-- 8. Venue System -->
-  <div class="section" id="venue" data-role="pm">
+  <div class="section" id="venue" data-role="l1">
     <div class="section-title"><span class="num">8</span> 場館系統 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">5 大體育場館，unify API 統一串接</div>
     <div class="annotated-row">
@@ -439,7 +441,7 @@
   </div>
 
   <!-- 9. Search -->
-  <div class="section" id="search" data-role="pm">
+  <div class="section" id="search" data-role="l1">
     <div class="section-title"><span class="num">9</span> 搜尋與篩選 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">賽事搜尋、聯賽篩選、早盤日期選擇</div>
     <div class="annotated-row">
@@ -453,7 +455,7 @@
   </div>
 
   <!-- 10. Newbie -->
-  <div class="section" id="newbie" data-role="pm">
+  <div class="section" id="newbie" data-role="l1">
     <div class="section-title"><span class="num">10</span> 新手引導 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">首次使用引導：充值 → 切換場館 → 下注</div>
     <div class="annotated-row">
@@ -467,7 +469,7 @@
   </div>
 
   <!-- 11. Polling -->
-  <div class="section" id="polling" data-role="pm">
+  <div class="section" id="polling" data-role="l1">
     <div class="section-title"><span class="num">11</span> API 輪詢 <span class="depth-badge depth-l1">L1</span></div>
     <div class="section-desc">即時資料更新策略</div>
     <div class="rule-grid">
@@ -1178,7 +1180,7 @@
   </div>
 
   <!-- Figma Overview (appendix) -->
-  <div class="section" id="overview" data-role="pm">
+  <div class="section" id="overview" data-role="l1">
     <div class="section-title">Figma 總覽</div>
     <div class="section-desc">Figma Section 1.1 體育 全景截圖（僅供參考）</div>
     <img src="/images/sports/section-sport-home.png" class="overview-img" alt="體育首頁總覽">
@@ -1222,8 +1224,8 @@
       });
     });
 
-    // Default: show PM
-    switchRole('pm');
+    // Default: show L1
+    switchRole('l1');
   </script>
 </body>
 </html>
