@@ -15,19 +15,55 @@
     .header p { color:#94a3b8; font-size:15px; }
     .header .badge { display:inline-block; background:#334155; color:#cbd5e1; border-radius:12px; padding:2px 12px; font-size:12px; margin:12px 4px 0; }
 
+    /* L1-L2-L3 framework explainer */
+    .framework-blurb {
+      max-width: 880px;
+      margin: 24px auto 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-left: 4px solid #60a5fa;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+    .framework-blurb b { color: #f1f5f9; }
+    .framework-blurb .layer-label {
+      display: inline-block;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 6px;
+      margin-right: 4px;
+    }
+    .framework-blurb .lbl-l1 { background:#1a2638; color:#93c5fd; }
+    .framework-blurb .lbl-l2 { background:#3b2f1a; color:#fbbf24; }
+    .framework-blurb .lbl-l3 { background:#2d1a3e; color:#c4b5fd; }
+    .framework-blurb a { color: #60a5fa; text-decoration: underline; }
+
     /* Stats */
-    .stats { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:24px auto; max-width:700px; padding:0 16px; }
-    .stat { background:#1e293b; border-radius:12px; padding:16px 24px; text-align:center; flex:1; min-width:130px; }
-    .stat-num { font-size:28px; font-weight:700; }
+    .stats { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:24px auto; max-width:780px; padding:0 16px; }
+    .stat { background:#1e293b; border-radius:12px; padding:16px 22px; text-align:center; flex:1; min-width:130px; }
+    .stat-num { font-size:26px; font-weight:700; }
     .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
 
     /* Grid */
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; max-width:1100px; margin:32px auto; padding:0 20px 60px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:20px; max-width:1200px; margin:32px auto; padding:0 20px 60px; }
 
     /* Card */
-    .card { background:#1e293b; border-radius:16px; padding:24px; border:1px solid #334155; transition:all .25s; cursor:pointer; position:relative; overflow:hidden; }
-    .card:hover { border-color:#475569; transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,.3); }
-    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:16px 16px 0 0; }
+    .card {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid #334155;
+      transition: all .25s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover { border-color:#475569; transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.3); }
+    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
     .card[data-accent="orange"]::before { background:linear-gradient(90deg,#f97316,#fbbf24); }
     .card[data-accent="green"]::before { background:linear-gradient(90deg,#10b981,#34d399); }
     .card[data-accent="pink"]::before { background:linear-gradient(90deg,#ec4899,#f472b6); }
@@ -37,25 +73,72 @@
     .card[data-accent="yellow"]::before { background:linear-gradient(90deg,#eab308,#facc15); }
     .card[data-accent="rose"]::before { background:linear-gradient(90deg,#f43f5e,#fb7185); }
 
-    .card-icon { font-size:36px; margin-bottom:12px; }
-    .card-title { font-size:20px; font-weight:700; margin-bottom:6px; }
-    .card-desc { font-size:13px; color:#94a3b8; margin-bottom:16px; line-height:1.5; }
+    .card-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:6px; }
+    .card-icon { font-size:32px; line-height:1; flex-shrink:0; }
+    .card-title-block { flex:1; min-width:0; }
+    .card-title { font-size:18px; font-weight:700; color:#f1f5f9; }
+    .card-desc { font-size:12.5px; color:#94a3b8; margin: 8px 0 16px; line-height:1.55; }
 
-    .card-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
-    .tag { font-size:11px; padding:3px 10px; border-radius:8px; font-weight:600; }
-    .tag-l1 { background:#334155; color:#94a3b8; }
-    .tag-l2 { background:#3b2f1a; color:#fbbf24; }
-    .tag-l3 { background:#2d1a3e; color:#c4b5fd; }
-    .tag-l4 { background:#1a2e1a; color:#86efac; }
-    .tag-wip { background:#991b1b33; color:#fca5a5; border:1px dashed #991b1b; }
+    /* Three layer entry buttons */
+    .layer-entries {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .layer-entry {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 4px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      text-decoration: none;
+      transition: all .15s;
+      font-size: 11px;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+    .layer-entry:hover { background: #263548; border-color:#475569; color:#e2e8f0; transform: translateY(-1px); }
+    .layer-entry .lcode { font-size:13px; font-weight:800; margin-bottom:2px; }
+    .layer-entry .lname { font-size:11px; }
+    .layer-entry .lstatus { font-size:13px; margin-top:3px; }
 
-    .card-meta { display:flex; justify-content:space-between; align-items:center; }
-    .card-count { font-size:12px; color:#64748b; }
-    .card-arrow { font-size:18px; color:#475569; transition:all .2s; }
-    .card:hover .card-arrow { color:#e2e8f0; transform:translateX(4px); }
+    .layer-entry.l1 .lcode { color:#93c5fd; }
+    .layer-entry.l2 .lcode { color:#fbbf24; }
+    .layer-entry.l3 .lcode { color:#c4b5fd; }
+
+    .layer-entry.has .lstatus { color:#86efac; }
+    .layer-entry.miss {
+      pointer-events: none;
+      opacity: .45;
+      cursor: not-allowed;
+    }
+    .layer-entry.miss .lstatus { color:#64748b; }
+    .layer-entry.miss::after {
+      content: "尚未建立";
+      display: block;
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: #64748b;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed #334155;
+    }
 
     /* Footer */
     .footer { text-align:center; padding:32px 16px 48px; color:#475569; font-size:13px; }
+    .footer a { color:#60a5fa; text-decoration:underline; }
 
     /* Responsive */
     @media(max-width:680px) {
@@ -68,159 +151,175 @@
 
   <div class="header">
     <h1>功能知識庫</h1>
-    <p>水果 2.0-APP (H5) — 模組標註文件 &amp; 深度知識</p>
-    <div><span class="badge">mango2-h5</span><span class="badge">PM / RD / QA</span><span class="badge">2026-04</span></div>
+    <p>水果 2.0-APP (H5) — 模組標註文件 &amp; 經驗資產</p>
+    <div>
+      <span class="badge">mango2-h5</span>
+      <span class="badge">PM / RD / QA</span>
+      <span class="badge">2026-04</span>
+      <span class="badge">L1-L2-L3 框架</span>
+    </div>
+
+    <div class="framework-blurb">
+      知識庫分為三層：
+      <span class="layer-label lbl-l1">L1 現況</span> 功能長什麼樣（PM 快速瀏覽、業主對齊）·
+      <span class="layer-label lbl-l2">L2 經驗</span> 動這功能會怎麼爆炸（寫需求前避雷讀物）·
+      <span class="layer-label lbl-l3">L3 API</span> 接口契約（跟 RD 對話估工）。<br>
+      每個模組三個獨立入口，從本頁分流。詳細定位看
+      <a href="framework.html">L1-L4 分層框架文件</a>。<br>
+      想了解知識庫背後的大圖與未來路線？看
+      <a href="roadmap.html">產品處路線圖：從知識庫到自動產需求 →</a>
+    </div>
   </div>
 
   <div class="stats">
     <div class="stat"><div class="stat-num" style="color:#60a5fa">8</div><div class="stat-label">模組</div></div>
-    <div class="stat"><div class="stat-num" style="color:#f97316">72</div><div class="stat-label">功能項</div></div>
-    <div class="stat"><div class="stat-num" style="color:#a78bfa">240+</div><div class="stat-label">API 端點</div></div>
-    <div class="stat"><div class="stat-num" style="color:#34d399">600+</div><div class="stat-label">驗測項</div></div>
+    <div class="stat"><div class="stat-num" style="color:#f97316">72</div><div class="stat-label">功能</div></div>
+    <div class="stat"><div class="stat-num" style="color:#fbbf24">1</div><div class="stat-label">L2 完整檔（sports）</div></div>
+    <div class="stat"><div class="stat-num" style="color:#fca5a5">13</div><div class="stat-label">踩坑記錄</div></div>
   </div>
 
   <div class="grid">
 
     <!-- 0 系統 -->
-    <a href="system-annotated.html" class="card" data-accent="green">
-      <div class="card-icon">🔐</div>
-      <div class="card-title">系統 / 登入 / 註冊</div>
+    <div class="card" data-accent="green">
+      <div class="card-header">
+        <div class="card-icon">🔐</div>
+        <div class="card-title-block">
+          <div class="card-title">系統 / 登入 / 註冊</div>
+        </div>
+      </div>
       <div class="card-desc">App 初始化流程、帳號/手機登入、註冊、Token 管理、路由守衛、維護頁、彈窗系統</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">14 標註區</span>
-        <span class="tag tag-l2">5 決策流程</span>
-        <span class="tag tag-l3">13 API</span>
-        <span class="tag tag-l4">56 測項</span>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="system-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <span class="layer-entry l2 miss"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✗</span></span>
+        <a class="layer-entry l3 has" href="system-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-      <div class="card-meta">
-        <span class="card-count">6 功能 · 30 sections</span>
-        <span class="card-arrow">&rarr;</span>
-      </div>
-    </a>
+      <div class="card-meta"><span>6 功能 · 30 sections</span></div>
+    </div>
 
     <!-- 1 體育 -->
-    <a href="sports-annotated.html" class="card" data-accent="orange">
-      <div class="card-icon">⚽</div>
-      <div class="card-title">首頁 / 體育賽事</div>
+    <div class="card" data-accent="orange">
+      <div class="card-header">
+        <div class="card-icon">⚽</div>
+        <div class="card-title-block">
+          <div class="card-title">首頁 / 體育賽事</div>
+        </div>
+      </div>
       <div class="card-desc">賽事列表、投注購物車、串關、冠軍玩法、場館系統（FB/OB/SABA/PM/DC）、提前結算、預約下注</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">12 標註區</span>
-        <span class="tag tag-l2">5 決策流程</span>
-        <span class="tag tag-l3">34 API</span>
-        <span class="tag tag-l4">70+ 測項</span>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="sports-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <a class="layer-entry l2 has" href="sports-L2.html"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✓</span></a>
+        <a class="layer-entry l3 has" href="sports-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-      <div class="card-meta">
-        <span class="card-count">14 功能 · 26 sections</span>
-        <span class="card-arrow">&rarr;</span>
-      </div>
-    </a>
+      <div class="card-meta"><span>14 功能 · 26 sections · 13 坑</span></div>
+    </div>
 
     <!-- 2 娛樂城 -->
-    <a href="entertainment-annotated.html" class="card" data-accent="pink">
-      <div class="card-icon">🎰</div>
-      <div class="card-title">娛樂城</div>
+    <div class="card" data-accent="pink">
+      <div class="card-header">
+        <div class="card-icon">🎰</div>
+        <div class="card-title-block">
+          <div class="card-title">娛樂城</div>
+        </div>
+      </div>
       <div class="card-desc">場館分類與進入、自研電子大廳、遊戲搜尋、錢包轉帳、AI 精選推薦、維護狀態處理</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">12 標註區</span>
-        <span class="tag tag-l2">6 決策流程</span>
-        <span class="tag tag-l3">8 API</span>
-        <span class="tag tag-l4">43 測項</span>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="entertainment-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <span class="layer-entry l2 miss"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✗</span></span>
+        <a class="layer-entry l3 has" href="entertainment-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-      <div class="card-meta">
-        <span class="card-count">3 功能 · 29 sections</span>
-        <span class="card-arrow">&rarr;</span>
-      </div>
-    </a>
+      <div class="card-meta"><span>3 功能 · 29 sections</span></div>
+    </div>
 
     <!-- 3 活動 -->
-    <a href="activities-annotated.html" class="card" data-accent="purple">
-      <div class="card-icon">🎁</div>
-      <div class="card-title">活動中心</div>
+    <div class="card" data-accent="purple">
+      <div class="card-header">
+        <div class="card-icon">🎁</div>
+        <div class="card-title-block">
+          <div class="card-title">活動中心</div>
+        </div>
+      </div>
       <div class="card-desc">邀請好友、返水、轉盤、主題抽獎、新手任務、Mission 系統、砍單 Rally、首存包賠、紅包雨</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">19 標註區</span>
-        <span class="tag tag-l2">7 決策流程</span>
-        <span class="tag tag-l3">60+ API</span>
-        <span class="tag tag-l4">94 測項</span>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="activities-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <span class="layer-entry l2 miss"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✗</span></span>
+        <a class="layer-entry l3 has" href="activities-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-      <div class="card-meta">
-        <span class="card-count">13 功能 · 36 sections</span>
-        <span class="card-arrow">&rarr;</span>
-      </div>
-    </a>
+      <div class="card-meta"><span>13 功能 · 36 sections · mission L2 部分</span></div>
+    </div>
 
     <!-- 4 直播 -->
-    <a href="live-annotated.html" class="card" data-accent="cyan">
-      <div class="card-icon">📺</div>
-      <div class="card-title">廣場 / 直播間</div>
+    <div class="card" data-accent="cyan">
+      <div class="card-header">
+        <div class="card-icon">📺</div>
+        <div class="card-title-block">
+          <div class="card-title">廣場 / 直播間</div>
+        </div>
+      </div>
       <div class="card-desc">廣場列表、9 種房型路由、直/橫屏直播間、聊天室 WebSocket、送禮、Funky 火箭、Cocos 遊戲</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">13 標註區</span>
-        <span class="tag tag-l2">10 決策流程</span>
-        <span class="tag tag-l3">35 API</span>
-        <span class="tag tag-l4">86 測項</span>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="live-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <span class="layer-entry l2 miss"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✗</span></span>
+        <a class="layer-entry l3 has" href="live-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-      <div class="card-meta">
-        <span class="card-count">10 功能 · 40 sections</span>
-        <span class="card-arrow">&rarr;</span>
-      </div>
-    </a>
+      <div class="card-meta"><span>10 功能 · 40 sections</span></div>
+    </div>
 
     <!-- 5 存提款 -->
-    <a href="deposit-annotated.html" class="card" data-accent="blue">
-      <div class="card-icon">💰</div>
-      <div class="card-title">存提款 / 金流</div>
-      <div class="card-desc">通道選擇、優惠計算、USDT 流程、提款狀態機、風控攔截、銀行卡管理、錢包轉帳</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">12 標註區</span>
-        <span class="tag tag-l2">12 決策流程</span>
-        <span class="tag tag-l3">50 API</span>
-        <span class="tag tag-l4">88 測項</span>
+    <div class="card" data-accent="blue">
+      <div class="card-header">
+        <div class="card-icon">💰</div>
+        <div class="card-title-block">
+          <div class="card-title">存提款 / 金流</div>
+        </div>
       </div>
-      <div class="card-meta">
-        <span class="card-count">12 功能 · 33 sections</span>
-        <span class="card-arrow">&rarr;</span>
+      <div class="card-desc">通道選擇、優惠計算、USDT 流程、提款狀態、風控攔截、銀行卡管理、錢包轉帳</div>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="deposit-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <span class="layer-entry l2 miss"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✗</span></span>
+        <a class="layer-entry l3 has" href="deposit-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-    </a>
+      <div class="card-meta"><span>12 功能 · 33 sections</span></div>
+    </div>
 
     <!-- 6 我的 -->
-    <a href="mine-annotated.html" class="card" data-accent="yellow">
-      <div class="card-icon">👤</div>
-      <div class="card-title">我的</div>
+    <div class="card" data-accent="yellow">
+      <div class="card-header">
+        <div class="card-icon">👤</div>
+        <div class="card-title-block">
+          <div class="card-title">我的</div>
+        </div>
+      </div>
       <div class="card-desc">VIP 等級計算、徽章系統、福利中心、背包兌換、投注記錄、場館轉帳、每日任務</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">23 標註區</span>
-        <span class="tag tag-l2">9 決策流程</span>
-        <span class="tag tag-l3">37 API</span>
-        <span class="tag tag-l4">87 測項</span>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="mine-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <span class="layer-entry l2 miss"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✗</span></span>
+        <a class="layer-entry l3 has" href="mine-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-      <div class="card-meta">
-        <span class="card-count">12 功能 · 47 sections</span>
-        <span class="card-arrow">&rarr;</span>
-      </div>
-    </a>
+      <div class="card-meta"><span>12 功能 · 47 sections</span></div>
+    </div>
 
-    <!-- 7-13 客服/爆料 -->
-    <a href="others-annotated.html" class="card" data-accent="rose">
-      <div class="card-icon">💬</div>
-      <div class="card-title">客服 / 爆料 / 其他</div>
-      <div class="card-desc">客服 iframe 狀態機、VIP 篩選、爆料發文/跟單、排行榜、落地頁路由、訪客攔截</div>
-      <div class="card-tags">
-        <span class="tag tag-l1">19 標註區</span>
-        <span class="tag tag-l2">8 決策流程</span>
-        <span class="tag tag-l3">17 API</span>
-        <span class="tag tag-l4">84 測項</span>
+    <!-- 7 客服/爆料 -->
+    <div class="card" data-accent="rose">
+      <div class="card-header">
+        <div class="card-icon">💬</div>
+        <div class="card-title-block">
+          <div class="card-title">客服 / 爆料 / 其他</div>
+        </div>
       </div>
-      <div class="card-meta">
-        <span class="card-count">8 功能 · 38 sections</span>
-        <span class="card-arrow">&rarr;</span>
+      <div class="card-desc">客服 iframe、VIP 篩選、爆料發文/跟單、排行榜、落地頁路由、訪客攔截</div>
+      <div class="layer-entries">
+        <a class="layer-entry l1 has" href="others-annotated.html"><span class="lcode">L1</span><span class="lname">現況</span><span class="lstatus">✓</span></a>
+        <span class="layer-entry l2 miss"><span class="lcode">L2</span><span class="lname">經驗</span><span class="lstatus">✗</span></span>
+        <a class="layer-entry l3 has" href="others-annotated.html"><span class="lcode">L3</span><span class="lname">API</span><span class="lstatus">✓</span></a>
       </div>
-    </a>
+      <div class="card-meta"><span>8 功能 · 38 sections</span></div>
+    </div>
 
   </div>
 
   <div class="footer">
-    資料來源：mango2-h5 逆向工程 + Figma + Jira · 最後更新 2026-04-09
+    資料來源：mango2-h5 逆向工程 + Figma + Jira · 框架定調 2026-04-11 · 最後更新 2026-04-11
   </div>
 
 </body>

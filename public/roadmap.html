@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>從知識庫到自動產需求 · 產品處路線圖</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <style>
+    /* Roadmap 獨有樣式 */
+    .rm-hero {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 60%, #1e1b4b 100%);
+      padding: 56px 24px 48px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+      position: relative;
+      overflow: hidden;
+    }
+    .rm-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 30%, rgba(251,191,36,0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(96,165,250,0.08), transparent 50%);
+      pointer-events: none;
+    }
+    .rm-hero > * { position: relative; z-index: 1; }
+    .rm-eyebrow { color: #fbbf24; font-size: 12px; letter-spacing: 4px; font-weight: 600; margin-bottom: 12px; }
+    .rm-hero h1 {
+      font-size: 42px;
+      background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 50%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+      letter-spacing: 2px;
+    }
+    .rm-hero .tagline { color: #cbd5e1; font-size: 17px; margin-bottom: 8px; }
+    .rm-hero .tagline strong { color: #fbbf24; }
+    .rm-hero .meta { color: #64748b; font-size: 12px; margin-top: 20px; }
+    .rm-hero .meta span { margin: 0 10px; }
+
+    .rm-container { max-width: 980px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .rm-section { margin-bottom: 64px; }
+    .rm-section-head { display: flex; align-items: center; margin-bottom: 24px; gap: 14px; }
+    .rm-section-num {
+      flex: 0 0 auto;
+      background: linear-gradient(135deg, #f97316, #fbbf24);
+      color: #0f172a;
+      font-weight: 800;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 44px;
+      font-size: 20px;
+    }
+    .rm-section h2 { font-size: 28px; color: #f1f5f9; margin: 0; flex: 1; }
+    .rm-section h3 { font-size: 18px; color: #fbbf24; margin: 28px 0 14px; }
+    .rm-section p { color: #cbd5e1; line-height: 1.9; margin-bottom: 14px; font-size: 15px; }
+    .rm-section strong { color: #f1f5f9; }
+    .rm-section em { color: #fbbf24; font-style: normal; }
+
+    /* 核心洞察區 */
+    .insight-box {
+      background: #1e293b;
+      border-left: 4px solid #fbbf24;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin: 20px 0;
+    }
+    .insight-box .label {
+      color: #fbbf24;
+      font-size: 11px;
+      letter-spacing: 3px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .insight-box h4 { color: #f1f5f9; font-size: 18px; margin-bottom: 10px; font-weight: 700; }
+    .insight-box p { margin-bottom: 0; color: #cbd5e1; }
+
+    /* 兩欄對比 */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 24px 0;
+    }
+    .compare-col {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 22px 24px;
+      border-top: 3px solid #475569;
+    }
+    .compare-col.left { border-top-color: #60a5fa; }
+    .compare-col.right { border-top-color: #a78bfa; }
+    .compare-col h4 { color: #f1f5f9; font-size: 16px; margin-bottom: 14px; }
+    .compare-col .row { display: flex; margin-bottom: 10px; font-size: 13px; }
+    .compare-col .row .k { color: #64748b; min-width: 68px; flex: 0 0 auto; }
+    .compare-col .row .v { color: #cbd5e1; flex: 1; }
+
+    /* 流程框 */
+    .flow-steps {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 20px 0;
+      border: 1px solid #334155;
+    }
+    .flow-steps .step-title { color: #fbbf24; font-size: 13px; margin-bottom: 14px; font-weight: 600; }
+    .flow-steps .quote {
+      font-size: 16px;
+      color: #f1f5f9;
+      font-style: italic;
+      padding: 12px 16px;
+      background: #0f172a;
+      border-radius: 8px;
+      border-left: 3px solid #60a5fa;
+      margin-bottom: 16px;
+    }
+    .flow-steps .arrow { text-align: center; color: #475569; font-size: 20px; margin: 8px 0; }
+    .flow-steps .brain-box {
+      background: #0f172a;
+      border: 1px dashed #475569;
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+    .flow-steps .brain-label { color: #94a3b8; font-size: 12px; margin-bottom: 10px; font-style: italic; }
+    .flow-steps .brain-box ol { margin: 0 0 0 20px; color: #cbd5e1; font-size: 14px; }
+    .flow-steps .brain-box li { margin-bottom: 6px; line-height: 1.7; }
+    .flow-steps .brain-box .translate { color: #60a5fa; }
+    .flow-steps .brain-box .verify { color: #fbbf24; }
+    .flow-steps .brain-box .output { color: #a78bfa; }
+
+    /* 階段時間軸 */
+    .stages {
+      position: relative;
+      padding-left: 40px;
+      margin: 24px 0;
+    }
+    .stages::before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 12px;
+      bottom: 12px;
+      width: 2px;
+      background: linear-gradient(180deg, #475569 0%, #fbbf24 50%, #a78bfa 100%);
+    }
+    .stage {
+      position: relative;
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 22px 26px;
+      margin-bottom: 18px;
+      border: 1px solid #334155;
+    }
+    .stage::before {
+      content: '';
+      position: absolute;
+      left: -31px;
+      top: 24px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #475569;
+      border: 3px solid #0f172a;
+    }
+    .stage.current { border-color: #60a5fa; box-shadow: 0 0 0 1px #60a5fa; }
+    .stage.current::before { background: #60a5fa; box-shadow: 0 0 12px #60a5fa; }
+    .stage.target { border-color: #fbbf24; box-shadow: 0 0 0 1px #fbbf24; }
+    .stage.target::before { background: #fbbf24; box-shadow: 0 0 12px #fbbf24; }
+
+    .stage .stage-num { display: inline-block; color: #64748b; font-size: 12px; letter-spacing: 2px; font-weight: 700; margin-bottom: 6px; }
+    .stage .stage-tag { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 10px; }
+    .stage .stage-tag.now { background: #1a3a5f; color: #60a5fa; }
+    .stage .stage-tag.target-tag { background: #3b2f1a; color: #fbbf24; }
+    .stage h4 { color: #f1f5f9; font-size: 17px; margin-bottom: 10px; font-weight: 700; }
+    .stage p { color: #cbd5e1; font-size: 14px; line-height: 1.75; margin-bottom: 10px; }
+    .stage .highlight {
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      border-left: 3px solid #fbbf24;
+    }
+    .stage .highlight p { margin: 0; font-size: 13px; color: #fbbf24; }
+    .stage .highlight ul { margin: 8px 0 0 18px; color: #cbd5e1; font-size: 13px; }
+    .stage .highlight li { margin-bottom: 4px; }
+
+    /* 落差卡 */
+    .gap-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .gap-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 24px 28px;
+      border-left: 4px solid #ef4444;
+    }
+    .gap-card .gap-label {
+      display: inline-block;
+      background: #991b1b;
+      color: #fecaca;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .gap-card h4 { color: #f1f5f9; font-size: 17px; margin-bottom: 10px; }
+    .gap-card p { color: #cbd5e1; font-size: 14px; line-height: 1.75; margin-bottom: 0; }
+    .gap-card .sub { color: #94a3b8; font-size: 13px; margin-top: 10px; font-style: italic; }
+
+    /* 行動區塊 */
+    .action-box {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1e1b4b 100%);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin: 20px 0;
+      border: 1px solid #334155;
+    }
+    .action-box h4 { color: #fbbf24; font-size: 17px; margin-bottom: 16px; }
+    .action-box .term { color: #f1f5f9; font-size: 14px; margin-bottom: 8px; font-weight: 700; }
+    .action-box ol { margin: 0 0 0 20px; color: #cbd5e1; font-size: 14px; }
+    .action-box ol li { margin-bottom: 10px; line-height: 1.75; }
+    .action-box .term-block { margin-bottom: 20px; }
+    .action-box .term-block:last-child { margin-bottom: 0; }
+
+    /* 結論 */
+    .conclusion {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      border: 1px solid #475569;
+      border-radius: 16px;
+      padding: 36px 36px;
+      margin: 32px 0;
+    }
+    .conclusion .label { color: #fbbf24; font-size: 11px; letter-spacing: 4px; font-weight: 700; margin-bottom: 14px; }
+    .conclusion p { font-size: 16px; line-height: 1.9; color: #e2e8f0; margin-bottom: 12px; }
+    .conclusion .key { color: #fbbf24; font-weight: 700; }
+    .conclusion ol { margin: 14px 0 0 24px; color: #cbd5e1; font-size: 15px; }
+    .conclusion ol li { margin-bottom: 6px; line-height: 1.8; }
+
+    /* Footer */
+    .rm-footer { text-align: center; padding: 32px 16px; color: #475569; font-size: 13px; border-top: 1px solid #1e293b; }
+    .rm-footer a { color: #60a5fa; text-decoration: none; margin: 0 8px; }
+    .rm-footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 680px) {
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="rm-hero">
+    <div class="rm-eyebrow">PRODUCT PROCESS ROADMAP · v1.0</div>
+    <h1>從知識庫到自動產需求</h1>
+    <div class="tagline">為什麼我們要做 L1 / L2 / L3，<strong>以及這件事後面的大圖</strong></div>
+    <div class="meta">
+      <span>產品處路線圖</span>
+      <span>·</span>
+      <span>定調：Hanniber</span>
+      <span>·</span>
+      <span>2026-04-11</span>
+    </div>
+    <div style="margin-top: 20px;">
+      <a href="features.html" style="color:#60a5fa; font-size:13px;">← 回到功能知識庫</a>
+    </div>
+  </div>
+
+  <div class="rm-container">
+
+    <!-- §0 問題定義 -->
+    <div class="rm-section">
+      <div class="rm-section-head">
+        <span class="rm-section-num">0</span>
+        <h2>我們現在的問題</h2>
+      </div>
+
+      <p>PM 改 A 功能的時候，常常撞到 B 功能——因為對 B 不熟、沒看到耦合、踩了別人踩過的坑。</p>
+
+      <p>這個現象不是個人能力問題，是<strong>系統性問題</strong>：產品越複雜、功能越耦合，PM 靠個人記憶撐不住。而且新 PM 上來的學習曲線越來越陡——一年前的 PM 可以「靠經驗」，現在的 PM 經驗不夠就會一直翻車。</p>
+
+      <div class="insight-box">
+        <div class="label">THE GOAL</div>
+        <h4>我們最終想要的</h4>
+        <p>讓系統可以<strong>自動產制需求</strong>——業主一句話，系統輸出完整的需求規格。PM 從「寫規格的人」變成「審核與戰略判斷的人」。</p>
+      </div>
+
+      <p>但從現狀到這個目標中間有一段很大的落差。這份文件把落差具體化，並說明我們現在做的 L1/L2/L3 知識庫在這個大圖裡的位置。</p>
+    </div>
+
+    <!-- §1 核心洞察 -->
+    <div class="rm-section">
+      <div class="rm-section-head">
+        <span class="rm-section-num">1</span>
+        <h2>核心洞察：這兩件事不是同一軸</h2>
+      </div>
+
+      <p>很多人會直覺以為「L2 做得夠完整 → 自然就能自動產需求」。這是錯的假設。</p>
+
+      <div class="compare-grid">
+        <div class="compare-col left">
+          <h4>L1 / L2 / L3 知識庫</h4>
+          <div class="row"><span class="k">輸入：</span><span class="v">系統（程式碼、Jira）</span></div>
+          <div class="row"><span class="k">輸出：</span><span class="v">給人讀的文件</span></div>
+          <div class="row"><span class="k">目的：</span><span class="v">讓人讀懂系統</span></div>
+          <div class="row"><span class="k">挑戰：</span><span class="v">抽象 + 分類</span></div>
+          <div class="row"><span class="k">失敗：</span><span class="v">文件太多沒人看</span></div>
+        </div>
+        <div class="compare-col right">
+          <h4>自動產需求系統</h4>
+          <div class="row"><span class="k">輸入：</span><span class="v">業主的意圖（一句話）</span></div>
+          <div class="row"><span class="k">輸出：</span><span class="v">給 RD 執行的規格</span></div>
+          <div class="row"><span class="k">目的：</span><span class="v">讓系統讀懂人</span></div>
+          <div class="row"><span class="k">挑戰：</span><span class="v">消除歧義 + 影響範圍</span></div>
+          <div class="row"><span class="k">失敗：</span><span class="v">需求寫錯誤導實作</span></div>
+        </div>
+      </div>
+
+      <div class="insight-box">
+        <div class="label">KEY TAKEAWAY</div>
+        <h4>方向相反的兩件事</h4>
+        <p>你不會因為寫了很多 L2，系統就「自然」會產需求。<strong>L2 會成為自動產需求系統的燃料，但燃料不等於引擎</strong>。兩件事要分開推進、但最終會合流。</p>
+      </div>
+    </div>
+
+    <!-- §2 PM 寫需求實際在做什麼 -->
+    <div class="rm-section">
+      <div class="rm-section-head">
+        <span class="rm-section-num">2</span>
+        <h2>解剖 PM 寫需求這件事</h2>
+      </div>
+
+      <p>要談「自動化」就要先解剖「手動」到底做了什麼。PM 寫需求實際上是一個<em>翻譯 + 校對</em>的過程：</p>
+
+      <div class="flow-steps">
+        <div class="step-title">業主說：</div>
+        <div class="quote">「我想讓新手玩家第一次存款後看到包賠彈窗」</div>
+        <div class="arrow">↓</div>
+        <div class="brain-label">PM 腦袋裡跑的事（現在靠經驗）：</div>
+        <div class="brain-box">
+          <ol>
+            <li><span class="translate">翻譯：</span>「新手」是誰？綁手機算嗎？首存算嗎？</li>
+            <li><span class="translate">翻譯：</span>「第一次存款」什麼時機觸發？</li>
+            <li><span class="translate">翻譯：</span>「包賠彈窗」是現有的還是新的？</li>
+            <li><span class="verify">校對：</span>這會動到哪些現有流程？</li>
+            <li><span class="verify">校對：</span>會不會跟已有的彈窗衝突？</li>
+            <li><span class="verify">校對：</span>各場館表現一致嗎？</li>
+            <li><span class="verify">校對：</span>有沒有類似需求踩過坑？</li>
+            <li><span class="output">輸出：</span>寫成規格、畫時序、列驗收</li>
+          </ol>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="quote">規格文件 → RD 實作</div>
+      </div>
+
+      <div class="insight-box">
+        <div class="label">落差的具體位置</div>
+        <h4>L1/L2/L3 只解決 4-7，沒解決 1-3 和 8</h4>
+        <p>我們現在做的知識庫解決的是<strong>「校對」階段</strong>——影響範圍、跨模組、踩坑、場館差異。但「翻譯」階段（1-3）和「結構化輸出」階段（8）完全沒碰。<em>這就是你感覺到的落差的具體位置</em>。</p>
+      </div>
+    </div>
+
+    <!-- §3 五個階段 -->
+    <div class="rm-section">
+      <div class="rm-section-head">
+        <span class="rm-section-num">3</span>
+        <h2>從現狀到終極目標的五個階段</h2>
+      </div>
+
+      <p>這不是一步跳過去的。中間有五個現實的里程碑，每個階段都有明確的能力提升、清楚的下一步。</p>
+
+      <div class="stages">
+        <div class="stage">
+          <div class="stage-num">STAGE 0</div>
+          <h4>PM 從零手寫</h4>
+          <p>靠個人經驗加搜尋。產出品質跟 PM 資歷成正比。新 PM 翻車頻率高、資深 PM 是 bottleneck。</p>
+        </div>
+
+        <div class="stage current">
+          <div class="stage-num">STAGE 1 <span class="stage-tag now">現在</span></div>
+          <h4>PM 手寫 + 知識庫輔助查詢</h4>
+          <p>PM 寫之前先查 L1 / L2 / L3，少踩坑、少漏影響範圍。<strong>這就是我們現在在做的事</strong>——L1 瀏覽、L2 經驗、L3 API 三層知識庫。</p>
+          <div class="highlight">
+            <p>這階段的成效指標</p>
+            <ul>
+              <li>新 PM onboarding 時間縮短</li>
+              <li>同一個坑不再重複踩</li>
+              <li>跨模組影響漏算頻率下降</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="stage target">
+          <div class="stage-num">STAGE 2 <span class="stage-tag target-tag">下一步</span></div>
+          <h4>PM 寫草稿 + Agent 審稿</h4>
+          <p>PM 寫完需求初稿 → 丟給 agent 審 → agent 對照 L2 pitfalls + 模組邊界，回報「這個需求漏了 A、B、C 點，類似需求踩過 TSD-XXXX 的坑」。</p>
+          <div class="highlight">
+            <p>為什麼這是最現實的下個跳點</p>
+            <ul>
+              <li>L1 / L2 / L3 已經備好了（燃料齊全）</li>
+              <li>「審稿」比「寫稿」技術門檻低太多——只需要檢查完整性，不需要解決歧義</li>
+              <li>產出是「已有稿 + 缺漏清單」，不是從無到有</li>
+              <li>PM 仍然負責最終決定——不是被取代，是被檢查</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="stage-num">STAGE 3</div>
+          <h4>業主提需求 + Agent 起草 + PM 校稿</h4>
+          <p>業主用一句話丟需求 → agent 查 L2 + 歷史類似需求 → 起草 5-7 成完整度的草稿 → PM 審一遍改錯、補戰略判斷。</p>
+          <div class="highlight">
+            <p>這階段的關鍵依賴</p>
+            <ul>
+              <li>Agent 需要「類似需求的歷史樣本」做參考</li>
+              <li>需要結構化的「業主訴求 → 最終規格 → 實作結果」配對資料</li>
+              <li><strong>這個資料庫是我們目前完全沒有的東西</strong>——Jira 有單但沒有結構化的回饋迴圈</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="stage-num">STAGE 4</div>
+          <h4>Agent 起草 + 自動影響範圍檢查 + PM 核准</h4>
+          <p>同階段 3，但 agent 會主動跑影響範圍檢查（跨模組依賴圖、歷史踩坑配對、版本排程衝突）。PM 只負責核准或退回。</p>
+        </div>
+
+        <div class="stage">
+          <div class="stage-num">STAGE 5</div>
+          <h4>Agent 全自動 + 例外才找 PM</h4>
+          <p>Agent 自信度夠高、歷史類似需求成功率夠高時，直接出規格給 RD。PM 只處理 agent 標「不確定」的需求，專注在戰略判斷與例外處理。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- §4 三個落差 -->
+    <div class="rm-section">
+      <div class="rm-section-head">
+        <span class="rm-section-num">4</span>
+        <h2>我們從 Stage 1 到 Stage 5 之間欠的三件事</h2>
+      </div>
+
+      <p>從現在的階段到終極目標，落差不是「知識庫深度不夠」，而是<strong>三個我們還沒開始建的東西</strong>：</p>
+
+      <div class="gap-cards">
+        <div class="gap-card">
+          <div class="gap-label">落差 A</div>
+          <h4>系統輸入端還是「人話」</h4>
+          <p>業主的一句話要變成結構化的需求意圖——這需要 <em>意圖識別</em> 和 <em>歧義消除對話能力</em>。業主說「新手」，agent 要會反問「你的新手定義是 A 還是 B？」。</p>
+          <p class="sub">這塊 L2 完全幫不上忙，是獨立的能力建構。</p>
+        </div>
+
+        <div class="gap-card">
+          <div class="gap-label">落差 B</div>
+          <h4>沒有「需求 → 結果」的結構化歷史</h4>
+          <p>我們知道 Jira 有哪些單、知道踩過哪些坑，但<strong>不知道</strong>：過去類似需求最後做出來的規格長什麼樣、拆成幾張子單、上線後改了幾次。</p>
+          <p class="sub">這是自動產需求最重要的燃料，但 Jira 單沒有「業主原始訴求 → 最終實作規格」的配對資料。現在不開始收集，一年後也還是沒有。</p>
+        </div>
+
+        <div class="gap-card">
+          <div class="gap-label">落差 C</div>
+          <h4>沒有「需求完整性」的可驗證標準</h4>
+          <p>PM 寫完需求怎麼知道夠完整？現在靠 review 會議、靠經驗。自動化需要可量化的完整性判斷——<em>覆蓋所有受影響模組？列出跟歷史類似需求的差異？標明版本排程與回滾策略？</em></p>
+          <p class="sub">這個「完整性 schema」我們也沒有，而且需要由資深 PM 定義才有意義。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- §5 行動計畫 -->
+    <div class="rm-section">
+      <div class="rm-section-head">
+        <span class="rm-section-num">5</span>
+        <h2>所以我們該做什麼</h2>
+      </div>
+
+      <p>不要跳級追 Stage 5，要老實地為 Stage 2 鋪路。</p>
+
+      <div class="action-box">
+        <h4>短期（接下來半年到一年）</h4>
+
+        <div class="term-block">
+          <div class="term">1. 繼續把 L2 做完（7 個模組）</div>
+          <ol>
+            <li>這是燃料，是 Stage 1 → Stage 2 必備的前置。現在只做完體育，還有活動、直播、存提款、娛樂城、我的、系統、其他。</li>
+          </ol>
+        </div>
+
+        <div class="term-block">
+          <div class="term">2. 建立「需求審稿 agent」試點</div>
+          <ol>
+            <li>這就是 Stage 2，離現狀最近的跳點。</li>
+            <li>用現有 L2 + pitfalls 讓 agent 能審 PM 的需求草稿、回報缺漏。</li>
+            <li>成功了就推給全 PM 使用，失敗了也能知道 L2 深度還不夠，回頭補。</li>
+          </ol>
+        </div>
+
+        <div class="term-block">
+          <div class="term">3. 開始收集「需求 → 結果」的結構化歷史</div>
+          <ol>
+            <li>每次 PM 寫完需求、RD 做完、QA 測完、上線後，把「業主原始訴求 / PM 初稿 / 最終規格 / 實際實作 / 是否踩坑」五欄填成表。</li>
+            <li>這是 Stage 3 的燃料。<strong>現在不收集，一年後也還是沒有。</strong></li>
+            <li>格式可以從簡單開始——一個 Google Sheet 或 Notion table 都行，重點是養成記錄習慣。</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="action-box">
+        <h4>中期（一年後）</h4>
+        <div class="term-block">
+          <div class="term">試 Stage 3：Agent 起草 + PM 校稿</div>
+          <ol>
+            <li>有了審稿 agent + 需求歷史資料庫之後，讓 agent 嘗試從零起草需求。</li>
+            <li>目標是「5-7 成完整度」，剩下的 PM 補戰略判斷。</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="action-box">
+        <h4>長期</h4>
+        <div class="term-block">
+          <div class="term">Stage 3 穩定後再談 Stage 4 / 5</div>
+          <ol>
+            <li>自動影響範圍檢查、例外處理、全自動出規格。</li>
+            <li>這階段的挑戰已經不是 L2 夠不夠深，而是 <em>信心度模型</em> 和 <em>例外偵測</em>——那是另一個量級的工程。</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- §6 結論 -->
+    <div class="rm-section">
+      <div class="conclusion">
+        <div class="label">ONE-LINER</div>
+        <p>「讓 PM 理解需求成本下降」到「系統自動產需求」之間，差的不是知識庫深度，而是<span class="key">三個我們還沒開始建的東西</span>：</p>
+        <ol>
+          <li>意圖識別（業主 → 結構化需求）</li>
+          <li>需求-結果配對的歷史資料庫</li>
+          <li>需求完整性的可驗證 schema</li>
+        </ol>
+        <p style="margin-top: 20px;">L2 / L3 會成為這些的燃料，但不是引擎本身。</p>
+        <p><span class="key">要一步一步來</span>，中間有個很現實的跳點叫 <em style="color:#fbbf24;">審稿 agent</em>，那是我們做完 L2 之後該瞄準的下個目標。</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rm-footer">
+    <div>產品處路線圖 v1.0 · 2026-04-11</div>
+    <div style="margin-top: 10px;">
+      <a href="features.html">← 功能知識庫</a>
+      <a href="framework.html">L1-L4 分層框架</a>
+      <a href="sports-L2.html">體育 L2 試點 →</a>
+    </div>
+  </div>
+
+</body>
+</html>

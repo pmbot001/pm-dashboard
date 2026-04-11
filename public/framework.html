@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知識庫分層框架 L1-L4 · 產品處</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <style>
+    /* framework 頁的獨有樣式 */
+    .fw-hero { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); padding:56px 24px 40px; text-align:center; border-bottom:1px solid #1e293b; }
+    .fw-hero h1 { font-size:40px; background:linear-gradient(90deg,#fbbf24,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent; margin-bottom:12px; letter-spacing:2px; }
+    .fw-hero .tagline { color:#cbd5e1; font-size:18px; margin-bottom:8px; }
+    .fw-hero .meta { color:#64748b; font-size:13px; margin-top:16px; }
+    .fw-hero .meta span { margin:0 8px; }
+
+    .fw-container { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+    .fw-section { margin-bottom:56px; }
+    .fw-section-num { display:inline-block; background:linear-gradient(135deg,#f97316,#fbbf24); color:#0f172a; font-weight:700; width:40px; height:40px; border-radius:50%; text-align:center; line-height:40px; margin-right:12px; font-size:18px; }
+    .fw-section h2 { font-size:26px; color:#f1f5f9; margin-bottom:20px; display:flex; align-items:center; }
+    .fw-section h3 { font-size:18px; color:#fbbf24; margin:24px 0 12px; }
+    .fw-section p { color:#cbd5e1; line-height:1.85; margin-bottom:14px; font-size:15px; }
+    .fw-section strong { color:#f1f5f9; }
+    .fw-section ul { margin:12px 0 16px 24px; color:#cbd5e1; }
+    .fw-section li { margin-bottom:8px; line-height:1.75; }
+
+    .fw-table-wrap { overflow-x:auto; margin:20px 0; }
+    .fw-table { width:100%; border-collapse:collapse; background:#1e293b; border-radius:10px; overflow:hidden; }
+    .fw-table th { background:#0f172a; color:#fbbf24; padding:14px 18px; text-align:left; font-size:13px; font-weight:600; border-bottom:1px solid #334155; }
+    .fw-table td { padding:14px 18px; color:#cbd5e1; font-size:14px; border-bottom:1px solid #334155; vertical-align:top; }
+    .fw-table tr:last-child td { border-bottom:none; }
+    .fw-table .layer-l1 { color:#8b9199; font-weight:700; }
+    .fw-table .layer-l2 { color:#fbbf24; font-weight:700; }
+    .fw-table .layer-l3 { color:#60a5fa; font-weight:700; }
+    .fw-table .layer-l4 { color:#94a3b8; font-weight:700; }
+    .fw-table .highlight-row { background:#27324a; }
+    .fw-table .highlight-row td { color:#f1f5f9; }
+
+    .pain-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin:20px 0; }
+    .pain-card { background:#1e293b; border-radius:12px; padding:20px; border-top:3px solid #ef4444; }
+    .pain-card .tag { color:#ef4444; font-weight:700; font-size:24px; margin-bottom:8px; }
+    .pain-card h4 { color:#f1f5f9; font-size:15px; margin-bottom:10px; }
+    .pain-card p { color:#94a3b8; font-size:13px; line-height:1.6; margin:0; }
+
+    .layer-defs { display:grid; gap:14px; margin:20px 0; }
+    .layer-def { display:flex; background:#1e293b; border-radius:10px; overflow:hidden; }
+    .layer-def .badge { width:80px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#ffffff; }
+    .layer-def .badge.l1 { background:#475569; }
+    .layer-def .badge.l2 { background:#d97706; }
+    .layer-def .badge.l3 { background:#0284c7; }
+    .layer-def .badge.l4 { background:#334155; }
+    .layer-def .body { padding:16px 20px; flex:1; }
+    .layer-def .en { color:#64748b; font-size:11px; letter-spacing:1.5px; font-weight:600; margin-bottom:4px; }
+    .layer-def .zh { color:#f1f5f9; font-size:17px; font-weight:700; }
+    .layer-def.star { outline:2px solid #fbbf24; }
+    .layer-def .star-tag { align-self:center; margin-right:16px; color:#fbbf24; font-size:12px; font-weight:700; }
+
+    .quote-final { background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%); border:1px solid #334155; border-radius:16px; padding:36px 32px; margin:32px 0; text-align:center; }
+    .quote-final p { font-size:20px; line-height:1.8; color:#f1f5f9; margin-bottom:12px; }
+    .quote-final .accent { color:#fbbf24; font-style:italic; font-size:22px; font-weight:700; margin-top:16px; }
+    .quote-final .mini { color:#94a3b8; font-size:14px; margin-top:8px; }
+
+    .criterion-table td:first-child { font-weight:700; color:#fbbf24; white-space:nowrap; }
+
+    .fw-footer { text-align:center; padding:32px 16px; color:#475569; font-size:13px; border-top:1px solid #1e293b; }
+    .fw-footer a { color:#60a5fa; text-decoration:none; margin:0 8px; }
+    .fw-footer a:hover { text-decoration:underline; }
+
+    .ex-pair { background:#1e293b; border-radius:10px; padding:16px 20px; margin:10px 0; border-left:3px solid #334155; }
+    .ex-pair .ex-text { color:#cbd5e1; font-size:14px; margin-bottom:6px; }
+    .ex-pair .ex-label { display:inline-block; padding:2px 10px; border-radius:6px; font-size:12px; font-weight:700; margin-right:10px; }
+    .ex-pair .ex-label.l1 { background:#475569; color:#fff; }
+    .ex-pair .ex-label.l2 { background:#d97706; color:#fff; }
+    .ex-pair .ex-label.l3 { background:#0284c7; color:#fff; }
+    .ex-pair .ex-label.l4 { background:#334155; color:#fff; }
+  </style>
+</head>
+<body>
+
+  <div class="fw-hero">
+    <div style="color:#fbbf24; font-size:12px; letter-spacing:4px; font-weight:600; margin-bottom:8px;">PRODUCT KNOWLEDGE BASE · v1.0</div>
+    <h1>知識庫分層框架</h1>
+    <div class="tagline">L1 → L2 → L3 → L4</div>
+    <div class="tagline" style="font-size:15px; color:#94a3b8;">為什麼 PM 要懂這四層，以及整理知識庫的真正目的</div>
+    <div class="meta"><span>產品處內部準則</span><span>·</span><span>定調：Hanniber</span><span>·</span><span>2026-04-11</span></div>
+    <div style="margin-top:24px;"><a href="features.html" style="color:#60a5fa; font-size:13px;">← 回到功能知識庫</a></div>
+  </div>
+
+  <div class="fw-container">
+
+    <!-- §0 為什麼要分層 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">0</span>為什麼要分層</h2>
+      <p>早期我們只有「把功能寫清楚」一種目標，結果寫出來的文件總是掉進三個陷阱之一：</p>
+      <div class="pain-cards">
+        <div class="pain-card">
+          <div class="tag">太淺</div>
+          <h4>PM 寫需求還是翻車</h4>
+          <p>規格寫完了，上線一樣爆，因為跨模組影響沒寫進去</p>
+        </div>
+        <div class="pain-card">
+          <div class="tag">太深</div>
+          <h4>淪為技術文件</h4>
+          <p>塞滿 API / DB / 檔案路徑，PM 看了用不上、RD 有程式碼</p>
+        </div>
+        <div class="pain-card">
+          <div class="tag">太雜</div>
+          <h4>沒人想維護</h4>
+          <p>功能改一次文件就全部過期，整理的人心累、看的人不信</p>
+        </div>
+      </div>
+      <p><strong>根本原因</strong>：用同一種顆粒度、同時服務所有讀者。</p>
+      <p>分層的核心洞察是：<strong>不同資訊有不同的保鮮期、不同的讀者、不同的使用時機</strong>。把它們混在一起整理，就是在用維護成本最高的方式、服務最窄的族群。</p>
+    </div>
+
+    <!-- §1 四層定義 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">1</span>四層定義</h2>
+      <h3>最短版</h3>
+      <div class="layer-defs">
+        <div class="layer-def"><div class="badge l1">L1</div><div class="body"><div class="en">WHAT</div><div class="zh">現在這功能長什麼樣</div></div></div>
+        <div class="layer-def star"><div class="badge l2">L2</div><div class="body"><div class="en">WHY IT BREAKS</div><div class="zh">動這功能會怎麼爆炸</div></div><div class="star-tag">★ CP 值最高</div></div>
+        <div class="layer-def"><div class="badge l3">L3</div><div class="body"><div class="en">HOW IT INTERFACES</div><div class="zh">這功能怎麼接外面</div></div></div>
+        <div class="layer-def"><div class="badge l4">L4</div><div class="body"><div class="en">HOW IT'S IMPLEMENTED</div><div class="zh">這功能內部怎麼寫</div></div></div>
+      </div>
+
+      <h3>完整對照</h3>
+      <div class="fw-table-wrap">
+        <table class="fw-table">
+          <thead>
+            <tr><th>層</th><th>回答的問題</th><th>主要讀者</th><th>使用時機</th><th>保鮮期</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="layer-l1">L1</td><td>這功能是什麼？</td><td>PM / QA / 業主</td><td>寫需求、驗收、跟業主對齊</td><td>隨版本變（短）</td></tr>
+            <tr class="highlight-row"><td class="layer-l2">L2</td><td>這功能有哪些坑？</td><td>中階以上 PM</td><td>寫需求前的盤點、估影響範圍</td><td><strong>長壽（越用越值）</strong></td></tr>
+            <tr><td class="layer-l3">L3</td><td>這功能怎麼運作？</td><td>PM ↔ RD 溝通介面</td><td>估工、跟 RD 對話、debug 討論</td><td>跟程式改（中）</td></tr>
+            <tr><td class="layer-l4">L4</td><td>這功能怎麼實作？</td><td>RD / 架構師</td><td>寫程式、改 bug</td><td>跟程式改（短）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- §2 L1 vs L2 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">2</span>L1 vs L2 的邊界（最容易混淆）</h2>
+      <p>很多人以為「把規格寫細一點就是 L2」——錯。</p>
+      <ul>
+        <li><strong>L1 寫得再細</strong>仍然在描述「功能本身」（what）</li>
+        <li><strong>L2 的本質是「歷史 + 關聯」</strong>（why it breaks）</li>
+      </ul>
+
+      <h3>L2 的三個判斷特徵</h3>
+      <ul>
+        <li><strong>可追溯到具體事件</strong>：Jira 單、上線事故、運營抱怨</li>
+        <li><strong>跨功能</strong>：不是單一功能內部邏輯，是跟別人的耦合</li>
+        <li><strong>反直覺</strong>：直覺能想到的就不算 L2（是 L1）</li>
+      </ul>
+
+      <h3>任務系統對照舉例</h3>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l1">L1</span>任務系統有簽到、每日、新手三種</div><div style="color:#64748b; font-size:12px;">直覺可得、功能本身</div></div>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l2">L2</span>三種並存不能砍舊的，因為舊 aId 還被運營活動關聯（GOR-6437）</div><div style="color:#64748b; font-size:12px;">反直覺、跨模組、有事故證據</div></div>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l1">L1</span>新手任務完成後獎勵進背包</div><div style="color:#64748b; font-size:12px;">功能規則</div></div>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l2">L2</span>改任務條件會動到轉盤/裂變/賽事，因為共用條件引擎（GOR-6359）</div><div style="color:#64748b; font-size:12px;">結構性耦合、踩過坑</div></div>
+    </div>
+
+    <!-- §3 L3 vs L4 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">3</span>L3 vs L4 的邊界</h2>
+      <p><strong>判斷法</strong>：這個資訊換一個 RD 實作方式會不會改？</p>
+      <ul>
+        <li><strong>會改 → L4</strong>（實作細節、PM 別碰）</li>
+        <li><strong>不會改 → L3</strong>（對外介面、PM 要懂）</li>
+      </ul>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l3">L3</span>/mission/moreList/v2 這個 API 路徑</div><div style="color:#64748b; font-size:12px;">API 契約不會因重寫而改</div></div>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l4">L4</span>這 API 的 handler 寫在哪個 service</div><div style="color:#64748b; font-size:12px;">實作決策</div></div>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l3">L3</span>errorCode=13104 代表審核中</div><div style="color:#64748b; font-size:12px;">狀態定義是契約</div></div>
+      <div class="ex-pair"><div class="ex-text"><span class="ex-label l4">L4</span>任務狀態存在 redis 還是 DB</div><div style="color:#64748b; font-size:12px;">實作決策</div></div>
+    </div>
+
+    <!-- §4 夠用就好 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">4</span>每層「夠用就好」的門檻</h2>
+      <div class="fw-table-wrap">
+        <table class="fw-table">
+          <thead><tr><th>層</th><th>不足的症狀</th><th>過度的症狀（越界）</th></tr></thead>
+          <tbody>
+            <tr><td class="layer-l1">L1</td><td>需求業主看不懂、QA 測不出來</td><td>把 UI 細節列 100 頁（Figma 就有）</td></tr>
+            <tr><td class="layer-l2">L2</td><td>需求上線爆炸、同個坑踩兩次</td><td>PM 寫起技術分析報告</td></tr>
+            <tr><td class="layer-l3">L3</td><td>跟 RD 對話雞同鴨講、估工完全沒底</td><td>PM 開始畫 ER 圖、設計 API</td></tr>
+            <tr><td class="layer-l4">L4</td><td>—（PM 不碰）</td><td>PM 去改 .vue 檔</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- §5 PM 能力校正 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">5</span>PM 能力校正標準</h2>
+      <div class="fw-table-wrap">
+        <table class="fw-table criterion-table">
+          <thead><tr><th>資歷</th><th>要求層級</th><th>驗收方式</th></tr></thead>
+          <tbody>
+            <tr><td>初階 PM</td><td>獨立完成 L1，L2 要 review</td><td>需求文件有「跨模組影響」章節</td></tr>
+            <tr class="highlight-row"><td>中階 PM</td><td>獨立完成 L1 + L2</td><td>寫得出「歷史坑 + 避雷計畫」</td></tr>
+            <tr><td>資深 PM</td><td>L1 + L2 + L3 輔助判斷</td><td>能對 RD 估工提出質疑</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>關鍵原則</strong>：L1 + L2 是門檻、L3 加分、L4 不碰。</p>
+    </div>
+
+    <!-- §6 過期管理 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">6</span>過期管理策略</h2>
+      <p><strong>關鍵洞察</strong>：L1 / L3 會一直過期、L2 大多不會過期。花力氣整理 L2，報酬率最高。</p>
+      <ul>
+        <li><strong>L1 接受過期</strong>：每個版本動到的部分，該版 PM 順手更新。不要幻想一次整理完。</li>
+        <li><strong>L2 只增不減</strong>：踩坑只會累積不會消失。新坑寫進去，舊坑就算功能重做也還是歷史教訓。</li>
+        <li><strong>L3 讓它過期</strong>：需要時對著程式碼重生成，不值得手動維護。</li>
+        <li><strong>L4 不整理</strong>：程式碼本身就是 L4。</li>
+      </ul>
+      <h3>什麼會改，什麼不會改</h3>
+      <div class="fw-table-wrap">
+        <table class="fw-table">
+          <thead><tr><th>類型</th><th>範例</th><th>改變頻率</th></tr></thead>
+          <tbody>
+            <tr><td>當下狀態</td><td>現在任務有 16 種條件、aId=30000</td><td>每版都可能變</td></tr>
+            <tr><td>歷史事件</td><td>GOR-6373 redis 頂不住</td><td><strong>永遠不會變</strong>（已發生）</td></tr>
+            <tr><td>結構性關係</td><td>條件引擎是跨活動共用的</td><td>很少變（改了就是大重構）</td></tr>
+            <tr><td>決策與教訓</td><td>加條件類型要前後端同版</td><td><strong>越用越鞏固</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- §7 真正的目的 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">7</span>整理知識庫的四個真正目的</h2>
+      <p>避免「為了整理而整理」，請時時校準這四個目的：</p>
+
+      <h3>① 把個人經驗變成組織資產</h3>
+      <p>現在的現實是——功能的坑只在資深 PM 腦袋裡。那個 PM 離職、調組、請產假，知識就歸零。新 PM 接手就是再踩一次同樣的坑。整理 L2 = 把腦袋裡的東西變成檔案裡的東西。功能會改，但「為什麼會翻車」的教訓會留下來。</p>
+
+      <h3>② 降低判斷成本，不是消除判斷</h3>
+      <p>知識庫真正的用途是：<strong>讓 PM 做判斷時不用每次從零開始想</strong>。沒知識庫，PM 想「加這個條件會不會有問題？」要翻 Jira 兩小時還可能漏。有知識庫，翻踩坑總表 30 秒——「喔這是共用引擎類，要列測試範圍」。功能改了，具體條件可能不一樣，但「這類改動屬於共用引擎類」的<strong>判斷框架不會變</strong>。</p>
+
+      <h3>③ 建立團隊溝通的共同語言</h3>
+      <p>當你跟同事說「任務系統要注意跨模組」，她點頭——但她心裡的「跨模組」跟你心裡的「跨模組」可能不是同一件事。有了 L2 文件，你可以說「去翻 3-activities-mission-L2.md §2 依賴地圖」——<strong>大家看到的是同一份東西</strong>。這個價值跟功能改不改無關，是對齊的價值。</p>
+
+      <h3>④ 讓知識庫本身成為能力評估工具</h3>
+      <p>L1 / L2 / L3 分層就是一把尺：新 PM 來，給她 L1 文件看她能不能寫出需求、給 L2 文件看她能不能列出影響範圍、寫需求時漏了 L2 寫過的坑——這是能力問題不是資訊問題。<strong>沒有文件時你無法區分「她不知道」和「她不會判斷」。有文件後，責任歸屬變清楚。</strong></p>
+    </div>
+
+    <!-- 一句話總結 -->
+    <div class="fw-section">
+      <h2><span class="fw-section-num">∞</span>一句話總結</h2>
+      <div class="quote-final">
+        <p>整理知識庫的目的不是記錄「功能現在長什麼樣」（那會過期），</p>
+        <p>而是沉澱「這個功能怎麼思考、怎麼避雷、怎麼跟別人溝通」（這會累積）。</p>
+        <div class="accent">功能會變，思考框架不會。</div>
+        <div class="mini">你在整理的其實是後者。</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="fw-footer">
+    <div>版本 v1.0 · 2026-04-11 定調</div>
+    <div style="margin-top:10px;">
+      <a href="features.html">← 功能知識庫</a>
+      <a href="sports-L2.html">體育 L2 試點 →</a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!--
+  L2 頁面骨架樣板（Hanniber 2026-04-11 C 方案）
+  ============================================
+  使用方式：複製這份檔案 → 改名 {module}-L2.html → 替換以下 PLACEHOLDER：
+
+    {{MODULE_ICON}}        例：⚽
+    {{MODULE_NAME}}        例：體育賽事
+    {{MODULE_SLUG}}        例：sports（用於 annotated/L2/L3 檔名）
+    {{PAGE_TITLE}}         例：體育賽事 — L2 經驗資產
+    {{L1_HREF}}            例：sports-annotated.html
+    {{L2_HREF}}            例：sports-L2.html
+    {{L3_HREF}}            例：sports-L3.html  （沒做就用 #）
+    {{L3_DISABLED_CLASS}}  例：disabled  （已備齊就空字串）
+    {{NAV_ITEMS}}          §0~§7 nav-btn 列表
+    {{CONTENT}}            八個 .section 主體
+    {{LAST_UPDATE}}        例：2026-04-11
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{PAGE_TITLE}}</title>
+  <link rel="stylesheet" href="/css/kb-shared.css">
+</head>
+<body>
+
+  <div class="layout">
+
+    <!-- ============ Sidebar ============ -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <a href="features.html" class="sidebar-back">&larr; 回模組總覽</a>
+        <div class="sidebar-title">{{MODULE_ICON}} {{MODULE_NAME}}</div>
+        <div class="sidebar-sub">L2 經驗資產 · PM 避雷讀物</div>
+      </div>
+      <div class="sidebar-nav">
+        {{NAV_ITEMS}}
+      </div>
+    </nav>
+
+    <!-- ============ Main Content ============ -->
+    <div class="main-content">
+
+      <!-- ============ Header ============ -->
+      <div class="page-header" id="top">
+        <div class="layer-tabs">
+          <a href="{{L1_HREF}}">L1 現況</a>
+          <a href="{{L2_HREF}}" class="active">L2 經驗</a>
+          <a href="{{L3_HREF}}" class="{{L3_DISABLED_CLASS}}">L3 API</a>
+        </div>
+        <div class="breadcrumb">功能知識庫 / {{MODULE_NAME}} / L2</div>
+        <h1>{{MODULE_NAME}} · L2 經驗資產</h1>
+        <div class="sub">動這功能會怎麼爆炸 · PM 寫需求前必讀</div>
+
+        <div class="kb-notice">
+          <b>本頁是什麼：</b>L2 經驗資產 — 中階以上 PM 寫 {{MODULE_NAME}} 需求前的避雷讀物。<br>
+          <b>本頁不是什麼：</b>不是規格書（規格在 L1 annotated 頁），不是 API 文件（API 在 L3）。<br>
+          <b>內容來源：</b>主管訪談 + Code 反推 + 13 筆歷史踩坑 records。
+        </div>
+      </div>
+
+      <!-- ============ Content Sections ============ -->
+      {{CONTENT}}
+
+      <!-- ============ Footer ============ -->
+      <div class="footer">
+        <p>{{MODULE_NAME}} · L2 經驗資產</p>
+        <div class="footer-links">
+          <a href="{{L1_HREF}}">看 L1 功能現況 &rarr;</a>
+          <a href="{{L3_HREF}}" class="{{L3_DISABLED_CLASS}}">看 L3 API 契約 &rarr;</a>
+          <a href="pitfalls.html">跨模組踩坑總表 &rarr;</a>
+        </div>
+        <p style="margin-top:12px;">最後更新：{{LAST_UPDATE}}</p>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+
+  <script>
+    // Sidebar nav scroll + highlight
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const el = document.getElementById(btn.getAttribute('data-target'));
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Pitfall card expand/collapse
+    document.querySelectorAll('.pitfall-summary').forEach(s => {
+      s.addEventListener('click', () => s.parentElement.classList.toggle('open'));
+    });
+  </script>
+</body>
+</html>
