@@ -889,6 +889,682 @@
         </div>
       </div>
 
+      <!-- ============================================================ -->
+      <!-- 補充頁面邏輯 2.7 ~ 2.28（來自 sports-L2-supplement.md）       -->
+      <!-- ============================================================ -->
+
+      <!-- === 賽事詳情子系統 === -->
+      <div class="section" id="sec-supplement-detail">
+        <div class="section-title"><span class="num">12</span> 賽事詳情 — 子系統</div>
+        <div class="section-desc">聊天室、鬥雞、推單、曬單、排行榜、賽況、自動彈窗等賽事詳情頁內的獨立子系統</div>
+
+        <!-- 2.7 聊天室系統 -->
+        <div class="logic-merge-divider">頁面邏輯 2.7：聊天室系統 — 14 條規則 + 3 子系統</div>
+        <details class="page-logic-card">
+          <summary>
+            聊天室系統
+            <span class="rule-count">14 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>房間 openstate=0 或連線錯誤</td><td>聊天室關閉，顯示「此聊天室暫未開放」</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可控制開關；WebSocket 連線失敗也會關閉</td></tr>
+                <tr><td>2</td><td>使用者進入聊天室</td><td>自動載入歡迎語 + 透過 API 拉最近 50 筆歷史訊息</td><td><span class="cost-tag cost-code">程式層</span></td><td>歡迎語來自後台 extdata.welcomemessage；歷史紀錄 API 版和 WebSocket 版並存，目前走 API</td></tr>
+                <tr><td>3</td><td>使用者下拉重新整理</td><td>載入更早的歷史訊息（往前 50 筆）</td><td><span class="cost-tag cost-code">程式層</span></td><td>isMoreHistory 控制是否還有更多紀錄</td></tr>
+                <tr><td>4</td><td>使用者發送文字訊息</td><td>透過 WebSocket 發送，支援 @標記其他玩家</td><td><span class="cost-tag cost-code">程式層</span></td><td>如果使用者有稱號（badge），訊息會帶上稱號圖片和等級</td></tr>
+                <tr><td>5</td><td>使用者發送貼圖</td><td>透過 WebSocket 發送貼圖訊息</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>使用者發送曬單</td><td>透過 WebSocket 發送曬單資料</td><td><span class="cost-tag cost-code">程式層</span></td><td>曬單同時走聊天室 WebSocket，不是獨立 API</td></tr>
+                <tr><td>7</td><td>收到競猜盤口推送</td><td>只有盤口狀態為「開盤」且 showopen=true 才顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td>競猜盤口跟場館盤口是兩套系統；PK 模式下會區分 PK / Pool / Odds 三種類型</td></tr>
+                <tr><td>8</td><td>「純直播模式」開啟</td><td>過濾掉 clientType &gt;= 2 的訊息 + 不顯示曬單</td><td><span class="cost-tag cost-config">設定層</span></td><td>純直播模式下整個聊天室內容大幅精簡</td></tr>
+                <tr><td>9</td><td>使用者個人化設定：關閉曬單/投注成功/競猜投注成功</td><td>分別過濾對應訊息類型</td><td><span class="cost-tag cost-config">設定層</span></td><td>三個獨立開關：shareOrderMessage、betSuccessMessage、liveBetSuccessMessage</td></tr>
+                <tr><td>10</td><td>未結算曬單 + 遊客 + 房型=3 + 後台關閉遊客顯示</td><td>不顯示未結算曬單給遊客</td><td><span class="cost-tag cost-config">設定層</span></td><td>showbetsunsettledvisitordisplay=0 時觸發；只影響特定房型</td></tr>
+                <tr><td>11</td><td>聊天室內點選盤口/推單/競猜通知</td><td>自動將盤口資料塞入購物車 + 切換到對應 tab</td><td><span class="cost-tag cost-code">程式層</span></td><td>下注來源標記為 betSourceType.live，跟其他下注來源區分；同時做打點追蹤</td></tr>
+                <tr><td>12</td><td>收到轉盤中獎通知</td><td>在聊天室顯示中獎訊息</td><td><span class="cost-tag cost-code">程式層</span></td><td>跨模組耦合：轉盤系統的中獎通知會注入聊天室</td></tr>
+                <tr><td>13</td><td>管理員刪除訊息</td><td>前端即時從列表移除對應訊息</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>後台管理員操作，前端只能被動接收</td></tr>
+                <tr><td>14</td><td>水平滑動聊天室區域</td><td>切換到相鄰的 bottom tab（向左=下一個，向右=上一個）</td><td><span class="cost-tag cost-code">程式層</span></td><td>滑動距離需超過螢幕寬度 30% 才觸發</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                聊天室主檔：pages/match-detail/components/ChatRoom/index.vue<br>
+                聊天室 hook：pages/match-detail/components/ChatRoom/useChatRoom.ts<br>
+                WebSocket 事件：composables/useChatRoom/constants.ts → EventType<br>
+                訊息類型：types/chat.ts → ChatTyp
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.7-1 結果預測子系統 -->
+        <details class="page-logic-card">
+          <summary>
+            2.7-1 結果預測子系統（ResultPredict）
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>房型為鬥雞房或存款房</td><td>不顯示隊伍預測</td><td><span class="cost-tag cost-code">程式層</span></td><td>只有一般賽事房才有</td></tr>
+                <tr><td>2</td><td>該場館沒有可包賠的 1x2 盤口</td><td>不顯示隊伍預測</td><td><span class="cost-tag cost-config">設定層</span></td><td>各場館支援的盤口類型不同（im/saba/fb/ob 各有獨立 bettype 對照表）</td></tr>
+                <tr><td>3</td><td>沒有首存包賠權限</td><td>不顯示隊伍預測</td><td><span class="cost-tag cost-config">設定層</span></td><td>hasFirstPayPermission 控制</td></tr>
+                <tr><td>4</td><td>定時輪詢各隊支持數</td><td>遊客 30 秒 / 登入+滾球 10 秒 / 登入+非滾球 20 秒</td><td><span class="cost-tag cost-code">程式層</span></td><td>三種頻率會動態切換；登入狀態或賽事狀態改變會重置 interval</td></tr>
+                <tr><td>5</td><td>API 回傳的和局（draw）為 undefined</td><td>從預測結果清單中移除「和」選項</td><td><span class="cost-tag cost-code">程式層</span></td><td>籃球等運動沒有和局</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                結果預測：pages/match-detail/components/ChatRoom/useResultPredict.ts
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.7-2 發言條件子系統 -->
+        <details class="page-logic-card">
+          <summary>
+            2.7-2 發言條件子系統（SpeechGuide）
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>一般直播間</td><td>檢查四項條件：註冊天數、VIP 等級、充值金額、綁定手機</td><td><span class="cost-tag cost-config">設定層</span></td><td>每個直播間獨立設定門檻</td></tr>
+                <tr><td>2</td><td>娛樂直播間</td><td>檢查三項條件：打賞次數、單次送禮金額、充值金額</td><td><span class="cost-tag cost-config">設定層</span></td><td>跟一般直播間的條件完全不同</td></tr>
+                <tr><td>3</td><td>條件不符合</td><td>顯示紅色不符合提示 + 對應的前往按鈕（前往綁定 / 前往存款 / 前往下注）</td><td><span class="cost-tag cost-code">程式層</span></td><td>「前往下注」會彈二次確認：「是否離開此直播間前往其他場館完成下注？」</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                發言條件：pages/match-detail/components/ChatRoom/SpeechGuide.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.7-3 直播任務子系統 -->
+        <details class="page-logic-card">
+          <summary>
+            2.7-3 直播任務子系統（LiveTask）
+            <span class="rule-count">4 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者已登入且有任務列表</td><td>在聊天室上方顯示任務進度 Swiper</td><td><span class="cost-tag cost-code">程式層</span></td><td>透過 Teleport 嵌入隊伍預測區域旁邊</td></tr>
+                <tr><td>2</td><td>展開任務列表</td><td>根據螢幕空間動態計算最大高度</td><td><span class="cost-tag cost-code">程式層</span></td><td>高度 = 螢幕 - 頂部固定區 - 輸入框 - 間距 - 預測區域</td></tr>
+                <tr><td>3</td><td>隊伍預測區域存在</td><td>任務面板 Teleport 到預測區域內</td><td><span class="cost-tag cost-code">程式層</span></td><td>10 秒內偵測不到目標元素就停止監聽</td></tr>
+                <tr><td>4</td><td>點選「查看更多任務」</td><td>跳轉到 /mine/rewardsTasks</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                直播任務：pages/match-detail/components/ChatRoom/components/LiveTask/index.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.8 鬥雞系統 -->
+        <div class="logic-merge-divider">頁面邏輯 2.8：鬥雞系統 — 18 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            鬥雞系統
+            <span class="rule-count">18 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者未登入</td><td>自動彈出登入彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td>鬥雞房必須登入才能操作</td></tr>
+                <tr><td>2</td><td>使用者登入後進入鬥雞房</td><td>依序執行：進入遊戲流程（錢包轉帳）→ 取得 Token → 撈賽事列表 → 撈賽事詳情 → 撈賽果 → 建立 WebSocket</td><td><span class="cost-tag cost-code">程式層</span></td><td>初始化流程有嚴格順序，API 全部載完才啟動 WebSocket</td></tr>
+                <tr><td>3</td><td>WebSocket 收到 match_updated</td><td>更新賽事狀態 + 賽果詳情 + 回合下注資料</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>賽事狀態由場館（ws168）即時推送</td></tr>
+                <tr><td>4</td><td>WebSocket 收到 odds_updated</td><td>更新特定注項的賠率</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>5</td><td>WebSocket 收到 bet_limit_updated</td><td>更新投注上下限</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>6</td><td>API 尚未載完就收到 WebSocket 訊息</td><td>暫存到 pendingSocketUpdates，API 完成後批次處理</td><td><span class="cost-tag cost-code">程式層</span></td><td>防止資料順序錯亂</td></tr>
+                <tr><td>7</td><td>使用者點選注項（龍/和/鳳）</td><td>設定選中狀態；如果已有選擇籌碼，直接加注到該注項</td><td><span class="cost-tag cost-code">程式層</span></td><td>不能同時下注龍和鳳，系統會彈 toast 警告</td></tr>
+                <tr><td>8</td><td>使用者選擇籌碼</td><td>預設六種籌碼（5/50/100/200/1k/5k）；可自訂籌碼設定存 localStorage</td><td><span class="cost-tag cost-config">設定層</span></td><td>自訂籌碼跟鬥雞帳號無關，綁裝置</td></tr>
+                <tr><td>9</td><td>下注金額超過上限或低於下限</td><td>彈 toast 提示限額</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>上下限由場館動態下發</td></tr>
+                <tr><td>10</td><td>使用者餘額不足</td><td>彈 toast「餘額不足」</td><td><span class="cost-tag cost-code">程式層</span></td><td>餘額是場館錢包餘額，不是主帳戶</td></tr>
+                <tr><td>11</td><td>使用者按「下注」</td><td>呼叫場館 API 送出下注（帶 sportId / arenaId / roundId / outcomeType / odds / gold）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>12</td><td>出現勝利者（data.winner 有值）</td><td>30 秒倒數後自動刷新場館錢包餘額</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>13</td><td>使用者按「續押」</td><td>複製上一局的下注配置，金額 x1</td><td><span class="cost-tag cost-code">程式層</span></td><td>如果上一局沒有下注記錄，按鈕無效</td></tr>
+                <tr><td>14</td><td>使用者按「加倍」</td><td>複製上一局的下注配置，金額 x2</td><td><span class="cost-tag cost-code">程式層</span></td><td>加倍後仍會檢查上下限</td></tr>
+                <tr><td>15</td><td>使用者按「取消」</td><td>清除當前回合所有下注金額（不影響已送出的）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>16</td><td>賽局狀態為「開獎中」或「取消」</td><td>即時更新賽果統計（不等 API）</td><td><span class="cost-tag cost-code">程式層</span></td><td>WebSocket 即時推送</td></tr>
+                <tr><td>17</td><td>全屏模式</td><td>顯示「投注/走勢圖」兩個頁籤切換</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>18</td><td>下注資訊持久化</td><td>每次下注後存 localStorage（按 fightNo + roundId 分組）</td><td><span class="cost-tag cost-code">程式層</span></td><td>重新進入頁面會恢復上一局的下注狀態</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                鬥雞房頁面：pages/match-detail/CockFightRoom.vue<br>
+                鬥雞面板：pages/match-detail/components/CockFighting/index.vue<br>
+                鬥雞核心 composable：composables/useCockFighting/index.ts<br>
+                場館 API：apis/ember-ws168-portal/<br>
+                WebSocket 端點：{gatewayConfig}/ember-ws168-portal/ws
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.9 推單系統 -->
+        <div class="logic-merge-divider">頁面邏輯 2.9：推單系統 — 6 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            推單系統
+            <span class="rule-count">6 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>開啟推單面板</td><td>同時撈「本場推單」和「其他賽事推單」；預設顯示有資料的那個 tab</td><td><span class="cost-tag cost-code">程式層</span></td><td>兩個 API 並行呼叫</td></tr>
+                <tr><td>2</td><td>本場推單列表過濾</td><td>排除三類無效推單：①當前時間 > 截止時間 ②賽事 ID 不符 ③符合撤單時機</td><td><span class="cost-tag cost-code">程式層</span></td><td>撤單時機由 canceledOrderMap 定義，按場館+球種+period 判斷</td></tr>
+                <tr><td>3</td><td>其他賽事推單</td><td>按主播 uId 撈取，排除當前直播間，分頁載入（每頁 10 筆）</td><td><span class="cost-tag cost-code">程式層</span></td><td>支援翻頁 lastKey + lastMatchTime 分頁</td></tr>
+                <tr><td>4</td><td>WebSocket 收到新推單通知</td><td>自動更新主播推單計數 + 重置已讀狀態</td><td><span class="cost-tag cost-code">程式層</span></td><td>推單未讀會在 tab 上顯示紅點</td></tr>
+                <tr><td>5</td><td>純直播模式或沒有主播</td><td>不顯示推單入口</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>6</td><td>使用者未登入</td><td>不顯示推單入口</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                推單列表：pages/match-detail/components/RecommendOrder/RecommendOrderList.vue<br>
+                推單 composable：pages/match-detail/composables/useRecommendOrder.ts
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.10 曬單系統 -->
+        <div class="logic-merge-divider">頁面邏輯 2.10：曬單系統 — 6 條規則 + 1 子系統</div>
+        <details class="page-logic-card">
+          <summary>
+            曬單系統
+            <span class="rule-count">6 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>開啟曬單面板</td><td>預設顯示「已結算」tab；撈取使用者的注單記錄</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>注單過濾規則（四重）</td><td>①必須是單注 ②必須是同一場賽事 ③下注金額 >= 房間設定的最低金額 ④注單狀態為已確認(2)或已結算(5)</td><td><span class="cost-tag cost-config">設定層</span></td><td>已結算和未結算各有獨立的最低金額門檻（showbetssettledrechargelimit / showbetsunsettledrechargelimit）</td></tr>
+                <tr><td>3</td><td>已結算 tab</td><td>撈最近 30 天的已結算注單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>未結算 tab</td><td>撈所有未結算注單（不限時間）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>使用者選擇注單並確認曬單</td><td>將注單資料透過 WebSocket 發送到聊天室 + 打點上報</td><td><span class="cost-tag cost-code">程式層</span></td><td>打點包含直播間 ID、注單 ID、賽事 ID、金額、盤口類型、下注內容、可贏金額</td></tr>
+                <tr><td>6</td><td>鬥雞房或存款房</td><td>不顯示曬單功能</td><td><span class="cost-tag cost-code">程式層</span></td><td>曬單只在賽事房間可用</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                曬單列表：pages/match-detail/components/ShareOrder/ShareOrderList.vue<br>
+                API：apis.unify.getOrderList()
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.10-1 砍單進度子系統 -->
+        <details class="page-logic-card">
+          <summary>
+            2.10-1 砍單進度子系統（RallyProgress）
+            <span class="rule-count">4 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Rally 活動進行中</td><td>在曬單面板中顯示砍單進度卡片</td><td><span class="cost-tag cost-config">設定層</span></td><td>跨模組耦合：砍單是活動模組（Rally）的功能，注入體育</td></tr>
+                <tr><td>2</td><td>點選「砍單詳情」</td><td>跳轉到 /activity/rally/rallyDetail</td><td><span class="cost-tag cost-code">程式層</span></td><td>全屏模式下跳轉前會先開啟遮羞布</td></tr>
+                <tr><td>3</td><td>盤口為冠軍盤</td><td>顯示冠軍名稱而非「早盤 + 盤口名」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>盤口為串關</td><td>顯示「串關」+ 串關顯示標題</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                砍單進度列表：pages/match-detail/components/ShareOrder/RallyProgressList.vue<br>
+                砍單進度卡片：pages/match-detail/components/ShareOrder/RallyProgressCard.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.11 排行榜 -->
+        <div class="logic-merge-divider">頁面邏輯 2.11：排行榜 — 5 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            排行榜
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>開啟排行榜面板</td><td>呼叫 API 撈取當前直播間的排行資料</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>三個 tab：投注榜/賠率榜/綜合榜</td><td>切換顯示不同排行內容</td><td><span class="cost-tag cost-code">程式層</span></td><td>投注榜和賠率榜共用 BetAndOddsContent 組件，綜合榜獨立組件</td></tr>
+                <tr><td>3</td><td>點選排行榜中的玩家</td><td>切換到使用者詳情頁面（Playinfo）</td><td><span class="cost-tag cost-code">程式層</span></td><td>詳情頁會顯示該玩家在此直播間的歷史</td></tr>
+                <tr><td>4</td><td>主播切換（activeLiveId 變化）</td><td>自動重新撈取排行資料</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>全屏模式</td><td>面板從右側滑入（而非底部）</td><td><span class="cost-tag cost-code">程式層</span></td><td>高度佔滿整個螢幕</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                排行榜入口：pages/match-detail/components/Ranking/index.vue<br>
+                API：apis.showbet.getStreamingRank()
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.12 賽況資料 -->
+        <div class="logic-merge-divider">頁面邏輯 2.12：賽況資料 — 6 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            賽況資料
+            <span class="rule-count">6 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入賽況 tab</td><td>預設顯示「賽況」子 tab（MatchResults）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>六個子 tab</td><td>賽況 / 陣容 / 分析 / 情報 / 新聞 / 統計</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>「統計」tab 只對籃球顯示</td><td>根據 sportId 判斷是否為籃球</td><td><span class="cost-tag cost-code">程式層</span></td><td>其他球種看不到統計 tab</td></tr>
+                <tr><td>4</td><td>賽況（MatchResults）</td><td>依球種顯示不同版面：足球版 / 籃球版 / 通用版</td><td><span class="cost-tag cost-code">程式層</span></td><td>足球和籃球有專屬組件</td></tr>
+                <tr><td>5</td><td>全屏模式</td><td>內容區域高度自適應</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>所有賽況資料</td><td>來自場館下發</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>我方只能格式化顯示</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                賽況入口：pages/match-detail/components/MatchLiveStates/index.vue<br>
+                賽況結果：MatchLiveStates/components/MatchResults/index.vue（含 FootballGame / BasketballGame）<br>
+                統計：MatchLiveStates/components/Statistic.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.13 自動彈窗排程 -->
+        <div class="logic-merge-divider">頁面邏輯 2.13：自動彈窗排程 — 11 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            自動彈窗排程
+            <span class="rule-count">11 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入賽事詳情頁</td><td>啟動自動彈窗排程，依序輪播四種彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td>順序固定：首存 → 新手轉盤 → 主播推單 → 賽事分享</td></tr>
+                <tr><td>2</td><td>使用者已登入</td><td>四種彈窗都跑</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>使用者未登入</td><td>跳過「主播推單」（需登入）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>每個彈窗間隔</td><td>2 分鐘</td><td><span class="cost-tag cost-code">程式層</span></td><td>固定值 _IntervalBetweenGroups = 120 秒</td></tr>
+                <tr><td>5</td><td>一輪跑完冷卻時間</td><td>已充值：20 分鐘 / 未充值：10 分鐘</td><td><span class="cost-tag cost-code">程式層</span></td><td>冷卻後從頭開始下一輪</td></tr>
+                <tr><td>6</td><td>全屏模式或有其他 auto popup 待處理</td><td>暫停倒數計時器</td><td><span class="cost-tag cost-code">程式層</span></td><td>退出全屏或關閉其他彈窗後恢復</td></tr>
+                <tr><td>7</td><td>首存彈窗邏輯</td><td>未登入→顯示規則說明；已登入+有預設包賠盤口→顯示推薦下注詳情</td><td><span class="cost-tag cost-config">設定層</span></td><td>需要包賠 tab 存在才會觸發</td></tr>
+                <tr><td>8</td><td>新手轉盤彈窗邏輯</td><td>依 isNewPlayerValid 統一判斷（活動開關+時間+領取狀態+過期）</td><td><span class="cost-tag cost-config">設定層</span></td><td>跨模組耦合：活動模組控制</td></tr>
+                <tr><td>9</td><td>主播推單彈窗邏輯</td><td>需同時滿足：已登入 + 非純直播 + 有主播 + 有推單資料</td><td><span class="cost-tag cost-config">設定層</span></td><td>會呼叫兩支 API 確認是否有推單</td></tr>
+                <tr><td>10</td><td>賽事分享彈窗邏輯</td><td>後台 sharePopUpsSwitch 開啟才觸發</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>11</td><td>某個彈窗檢查不符合條件</td><td>自動跳到下一個，不等 2 分鐘</td><td><span class="cost-tag cost-code">程式層</span></td><td>while 迴圈直到找到可顯示的或全部跑完</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                自動彈窗：pages/match-detail/composables/useAutoPopup.ts<br>
+                依賴 store：usePopupStore / useCartsStore / useLiveStore / useShareStore
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 互動元件 === -->
+      <div class="section" id="sec-supplement-interaction">
+        <div class="section-title"><span class="num">13</span> 互動元件</div>
+        <div class="section-desc">PK 通知、跟單、競猜、送禮等玩家互動功能</div>
+
+        <!-- 2.14 PK 通知系統 -->
+        <div class="logic-merge-divider">頁面邏輯 2.14：PK 通知系統 — 5 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            PK 通知系統
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>收到 PK 對戰資訊（pkId 有值）</td><td>播放 PK 動畫 3 秒，然後切換到進度條</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>PK 進行中</td><td>顯示 PK 進度條 + 剩餘時間倒數</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>PK 結束</td><td>隱藏動畫和進度條</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>使用者點選 PK 對戰入口</td><td>開啟 CombatPopup（顯示當前回合/主播/PK ID）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>PK 進度完成後</td><td>可切換到浮動模式（floating）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                PK 通知：VideoPlayer/components/PkNotice/index.vue<br>
+                PK 動畫：PkNotice/PkAnimation.vue<br>
+                對戰彈窗：PkNotice/CombatPopup.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.15 跟單彈窗 -->
+        <div class="logic-merge-divider">頁面邏輯 2.15：跟單彈窗 — 4 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            跟單彈窗
+            <span class="rule-count">4 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>收到跟單推送</td><td>推入待顯示佇列</td><td><span class="cost-tag cost-code">程式層</span></td><td>佇列按先進先出排序</td></tr>
+                <tr><td>2</td><td>佇列有待顯示項目</td><td>自動播放：每筆顯示 3 秒 + 淡出 0.3 秒</td><td><span class="cost-tag cost-code">程式層</span></td><td>一次只顯示一筆</td></tr>
+                <tr><td>3</td><td>佇列播完</td><td>自動停止</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>顯示內容</td><td>跟單者暱稱 + 盤口資訊（隊名/賠率/handicap/下注金額）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                跟單彈窗：VideoPlayer/components/FollowBetPopup/index.vue<br>
+                跟單邏輯：pages/match-detail/composables/useFollowBet.ts
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.16 競猜子組件 -->
+        <div class="logic-merge-divider">頁面邏輯 2.16：競猜子組件 — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            競猜子組件（LiveBetting 相關）
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>主播發起競猜</td><td>在聊天室中顯示競猜盤口訊息</td><td><span class="cost-tag cost-code">程式層</span></td><td>區分三種類型：PK / Pool / Odds</td></tr>
+                <tr><td>2</td><td>盤口狀態非「開盤」</td><td>不顯示盤口卡片</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>3</td><td>新盤口出現</td><td>bottom tab 的「競猜」tab 顯示紅點</td><td><span class="cost-tag cost-code">程式層</span></td><td>hasNewMarket watch 控制</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                競猜推送處理：useChatRoom.ts → handleBetMatchMarket()
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.17 送禮流程 -->
+        <div class="logic-merge-divider">頁面邏輯 2.17：送禮流程 — 5 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            送禮流程
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>開啟送禮面板</td><td>撈取禮物列表（依 agentId）</td><td><span class="cost-tag cost-config">設定層</span></td><td>禮物列表由後台配置</td></tr>
+                <tr><td>2</td><td>使用者選擇禮物 + 數量</td><td>可選 x1/x5/x10/x50/x100</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>使用者餘額不足</td><td>提示前往充值</td><td><span class="cost-tag cost-code">程式層</span></td><td>餘額顯示的是主帳戶餘額</td></tr>
+                <tr><td>4</td><td>PK 進行中送禮</td><td>自動記錄 PK 對戰日誌（pkCombatLog）</td><td><span class="cost-tag cost-code">程式層</span></td><td>跨功能耦合：送禮會影響 PK 進度</td></tr>
+                <tr><td>5</td><td>後台未開啟禮物權限</td><td>不顯示禮物按鈕</td><td><span class="cost-tag cost-config">設定層</span></td><td>permissions.isShowGift 控制</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                送禮面板：pages/match-detail/components/GiftGivingSheet/index.vue<br>
+                API：apis.chatroomGift.getGiftList() / apis.chatroomGift.donateGift()
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 進階功能 === -->
+      <div class="section" id="sec-supplement-advanced">
+        <div class="section-title"><span class="num">14</span> 進階功能</div>
+        <div class="section-desc">篩選、推薦投注、賽程表、OtherRoom 等進階功能區</div>
+
+        <!-- 2.18 篩選設定 -->
+        <div class="logic-merge-divider">頁面邏輯 2.18：篩選設定 — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            篩選設定
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者點選篩選按鈕</td><td>顯示聯賽篩選面板（按字母排序）</td><td><span class="cost-tag cost-code">程式層</span></td><td>支援中文拼音首字母排序</td></tr>
+                <tr><td>2</td><td>使用者勾選/取消聯賽</td><td>即時篩選賽事列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>篩選設定彈窗</td><td>可設定「盤口數量」「推薦模式」等進階選項</td><td><span class="cost-tag cost-config">設定層</span></td><td>共 286 行，含多個設定項</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                篩選選項：pages/home/index/sport/components/FilterOption.vue（191 行）<br>
+                篩選設定：pages/home/index/sport/components/FilterSettingPopup.vue（286 行）
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.19 推薦投注 -->
+        <div class="logic-merge-divider">頁面邏輯 2.19：推薦投注 — 5 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            推薦投注
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者已登入且在體育首頁</td><td>顯示推薦投注入口</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>開啟推薦投注面板</td><td>分「聯賽」和「主播」兩個 tab</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>支援搜尋</td><td>可依關鍵字搜尋聯賽或主播</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>推薦列表折疊</td><td>一次只展開一個聯賽/主播的推單（手風琴模式）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>未登入</td><td>不顯示推薦投注入口</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                推薦投注：pages/home/index/sport/components/RecommendBet/index.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.20 賽程表 -->
+        <div class="logic-merge-divider">頁面邏輯 2.20：賽程表（Schedule）— 5 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            賽程表（Schedule）
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>純直播模式（pushType=2）</td><td>顯示獨立的賽程表頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>此頁面是從 live 模組 copy 過來的</td></tr>
+                <tr><td>2</td><td>選擇場館</td><td>切換到該場館的賽程</td><td><span class="cost-tag cost-config">設定層</span></td><td>場館列表來自 sportVendorListIncludeImEsport</td></tr>
+                <tr><td>3</td><td>分頁載入</td><td>每頁 30 筆賽事</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>關注賽事</td><td>可收藏/取消收藏特定賽事</td><td><span class="cost-tag cost-code">程式層</span></td><td>sportId=1000 代表「關注」特殊分類</td></tr>
+                <tr><td>5</td><td>切換球種</td><td>重新撈取對應球種的賽程</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                賽程表：pages/schedule/index.vue<br>
+                原始來源：pages/live/components/Schedule/index.vue（copy 版）
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.21 OtherRoom -->
+        <div class="logic-merge-divider">頁面邏輯 2.21：OtherRoom — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            OtherRoom
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>賽事場館類型為 other</td><td>使用 OtherRoom 模板（而非一般賽事詳情頁）</td><td><span class="cost-tag cost-code">程式層</span></td><td>結構跟 CockFightRoom 類似：都是獨立的房間模板</td></tr>
+                <tr><td>2</td><td>共用元件</td><td>聊天輸入框 / 禮物 / 邀請 / 玩家轉移 / 主播離線 / 串關按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td>跟一般賽事房共用大量子組件</td></tr>
+                <tr><td>3</td><td>含直播任務</td><td>有 LiveTask + WatchTimer 組件</td><td><span class="cost-tag cost-code">程式層</span></td><td>多了「觀看倒計時」功能</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                OtherRoom：pages/match-detail/OtherRoom.vue（262 行）
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 第三梯隊 === -->
+      <div class="section" id="sec-supplement-tier3">
+        <div class="section-title"><span class="num">15</span> 第三梯隊（輔助元件）</div>
+        <div class="section-desc">新手引導、影片控制列、比分/跑馬燈、皮膚入口</div>
+
+        <!-- 2.22 新手引導三件套 -->
+        <div class="logic-merge-divider">頁面邏輯 2.22：新手引導三件套 — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            新手引導三件套
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>新手首次進入體育首頁</td><td>NewMemberHintTrigger 檢查是否需要顯示引導</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>引導內容</td><td>TeachNewbieProfession 教學面板 + BubbleHint 氣泡提示</td><td><span class="cost-tag cost-code">程式層</span></td><td>兩個組件配合使用</td></tr>
+                <tr><td>3</td><td>引導完成</td><td>記錄已完成狀態，不再顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                新手觸發：pages/home/index/sport/components/NewMemberHintTrigger.vue<br>
+                新手教學：pages/home/index/sport/components/TeachNewbieProfession.vue<br>
+                氣泡提示：pages/home/index/sport/components/BubbleHint.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.23 VideoPlayer ControlView -->
+        <div class="logic-merge-divider">頁面邏輯 2.23：VideoPlayer ControlView — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            VideoPlayer ControlView
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>半屏模式</td><td>使用 HalfControlView（精簡控制列）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>全屏模式</td><td>使用 FullControlView（完整控制列）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>影片初次播放</td><td>顯示 VideoSoundTip（聲音提示）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                半屏控制：VideoPlayer/components/ControlView/HalfControlView.vue<br>
+                全屏控制：VideoPlayer/components/ControlView/FullControlView.vue<br>
+                聲音提示：VideoPlayer/components/ControlView/VideoSoundTip.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.24 比分/對手/跑馬燈 -->
+        <div class="logic-merge-divider">頁面邏輯 2.24：比分/對手/跑馬燈 — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            比分/對手/跑馬燈
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>MatchPeriodScores</td><td>顯示賽事各節比分</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>比分由場館下發</td></tr>
+                <tr><td>2</td><td>OpponentScoreDetail</td><td>顯示對手詳細比分</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>3</td><td>MarqueeAnnouncement</td><td>體育首頁跑馬燈公告</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台配置公告內容</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                各節比分：pages/home/index/sport/components/MatchPeriodScores.vue<br>
+                對手比分：pages/match-detail/components/OpponentScoreDetail.vue<br>
+                跑馬燈：pages/home/index/sport/components/MarqueeAnnouncement.vue
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <!-- 2.25 Vendor 皮膚入口 -->
+        <div class="logic-merge-divider">頁面邏輯 2.25：Vendor 皮膚入口 — 2 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            Vendor 皮膚入口
+            <span class="rule-count">2 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>特定場館（yxbg/yxrg 等）</td><td>走不同的皮膚模板入口</td><td><span class="cost-tag cost-config">設定層</span></td><td>皮膚系統在 product-context.md 有說明</td></tr>
+                <tr><td>2</td><td>皮膚切換</td><td>影響整體配色和 UI 元件樣式</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
       <!-- === Figma 總覽（附錄）=== -->
       <div class="section" id="sec-figma">
         <div class="section-title">Figma 總覽</div>
@@ -906,7 +1582,7 @@
           <span class="tool-num">1</span>
           <h2>User Flow</h2>
         </div>
-        <p class="tool-section-desc">使用者走過的路徑。寫需求時先畫這個，確認動線對了再往下。共 4 張。</p>
+        <p class="tool-section-desc">使用者走過的路徑。寫需求時先畫這個，確認動線對了再往下。共 7 張。</p>
 
         <!-- 1.1 下注動線 -->
         <div class="mermaid-card" id="uf-1-1">
@@ -1045,6 +1721,123 @@ flowchart LR
             </div>
           </details>
         </div>
+        <!-- 1.5 聊天室互動流程 -->
+        <div class="mermaid-card" id="uf-1-5">
+          <div class="mermaid-card-title">1.5 聊天室互動流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入賽事詳情頁"] --> B["聊天室 tab"]
+    B --> C{"房間是否開放？"}
+    C -- "否" --> D["顯示「暫未開放」"]
+    C -- "是" --> E["載入歡迎語 + 歷史訊息"]
+    E --> F["瀏覽聊天訊息"]
+    F --> G{"使用者操作"}
+    G -- "發送文字" --> H["WebSocket 送出"]
+    G -- "發送貼圖" --> H
+    G -- "點選聊天中的盤口" --> I["盤口塞入購物車"]
+    I --> J["切換到下注 tab"]
+    G -- "點選競猜通知" --> K["切換到競猜 tab"]
+    G -- "下拉重整" --> L["載入更早的歷史訊息"]
+    G -- "左右滑動" --> M["切換到相鄰 tab"]
+    H --> F
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>聊天室 WebSocket 和 API 歷史紀錄的 key 大小寫不一致，前端做了 convertKeysToLowerCase 轉換</li>
+              <li>「純直播模式」開啟時聊天室內容大幅精簡，會過濾掉 clientType &gt;= 2 的訊息</li>
+              <li>聊天室點盤口下注的來源標記為 betSourceType.live，跟其他來源區分</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 1.6 鬥雞下注流程 -->
+        <div class="mermaid-card" id="uf-1-6">
+          <div class="mermaid-card-title">1.6 鬥雞下注流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入鬥雞房"] --> B{"已登入？"}
+    B -- "否" --> C["彈出登入"]
+    B -- "是" --> D["初始化流程"]
+    D --> E["錢包轉帳"]
+    E --> F["取得場館 Token"]
+    F --> G["撈賽事列表（只會有一場）"]
+    G --> H["撈賽事詳情 + 賽果"]
+    H --> I["建立 WebSocket 連線"]
+    I --> J["等待開盤"]
+    J --> K{"賽局開盤？"}
+    K -- "否" --> J
+    K -- "是" --> L["選擇注項（龍/和/鳳）"]
+    L --> M["選擇籌碼金額"]
+    M --> N{"檢查限額"}
+    N -- "超過上限或低於下限" --> O["Toast 提示"]
+    N -- "龍鳳互斥" --> P["Toast：不能同時下注龍和鳳"]
+    N -- "通過" --> Q["累加下注金額"]
+    Q --> R["按「下注」送出"]
+    R --> S{"下注成功？"}
+    S -- "是" --> T["等待開獎"]
+    S -- "否" --> U["錯誤提示"]
+    T --> V{"有勝利者？"}
+    V -- "是" --> W["30 秒後刷新餘額"]
+    V -- "取消" --> X["賽果記「取消」"]
+    W --> Y{"續押/加倍？"}
+    Y -- "續押" --> Z["複製上一局 x1"]
+    Y -- "加倍" --> AA["複製上一局 x2"]
+    Y -- "否" --> J
+    Z --> L
+    AA --> L
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>鬥雞使用獨立的場館錢包（ws168），不是主帳戶餘額</li>
+              <li>初始化流程有嚴格順序：API 全部載完才啟動 WebSocket</li>
+              <li>下注記錄存 localStorage（綁裝置），清瀏覽器資料會丟失續押/加倍的參考資料</li>
+              <li>鬥雞賽事只會有一場（ws168 場館固定），業主提「同時開多場鬥雞」直接回覆場館不支援</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 1.7 自動彈窗排程流程 -->
+        <div class="mermaid-card" id="uf-1-7">
+          <div class="mermaid-card-title">1.7 自動彈窗排程流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入賽事詳情頁"] --> B["啟動排程計時器"]
+    B --> C["等待 2 分鐘"]
+    C --> D["檢查首存彈窗"]
+    D -- "可顯示" --> E["顯示首存彈窗"]
+    D -- "不可" --> F["檢查新手轉盤"]
+    F -- "可顯示" --> G["顯示新手轉盤"]
+    F -- "不可" --> H["檢查主播推單"]
+    H -- "可顯示" --> I["顯示推單面板"]
+    H -- "不可" --> J["檢查賽事分享"]
+    J -- "可顯示" --> K["顯示分享彈窗"]
+    J -- "不可" --> L["一輪跑完"]
+    E --> M["等待 2 分鐘"]
+    G --> M
+    I --> M
+    K --> M
+    M --> N["繼續下一個彈窗"]
+    L --> O{"已充值？"}
+    O -- "是" --> P["冷卻 20 分鐘"]
+    O -- "否" --> Q["冷卻 10 分鐘"]
+    P --> D
+    Q --> D
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>輪播順序固定：首存 → 新手轉盤 → 主播推單 → 賽事分享</li>
+              <li>冷卻時間寫死在前端（已充值 20 分鐘 / 未充值 10 分鐘），改冷卻時間需發版</li>
+              <li>全屏模式或有其他 auto popup 待處理時暫停倒數</li>
+              <li>耦合四個子系統（首存/轉盤/推單/分享），任一子系統的開關邏輯改動都要回測自動彈窗</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div><!-- /tab-panel userflow -->
 
@@ -1057,7 +1850,7 @@ flowchart LR
           <span class="tool-num">2</span>
           <h2>泳道圖</h2>
         </div>
-        <p class="tool-section-desc">使用者 <-> 前端 <-> 後端 <-> 場館的互動序列。跟 RD 對齊時用這個。共 6 張。</p>
+        <p class="tool-section-desc">使用者 <-> 前端 <-> 後端 <-> 場館的互動序列。跟 RD 對齊時用這個。共 8 張。</p>
 
         <!-- 3.1 單注下注流程 -->
         <div class="mermaid-card" id="sl-3-1">
@@ -1360,6 +2153,113 @@ sequenceDiagram
             </div>
           </details>
         </div>
+        <!-- 3.7 鬥雞下注泳道 -->
+        <div class="mermaid-card" id="sl-3-7">
+          <div class="mermaid-card-title">3.7 鬥雞下注泳道</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端（鬥雞）
+    participant V as 場館（WS168）
+
+    U->>FE: 進入鬥雞房
+    FE->>BE: 進入遊戲流程（錢包轉帳）
+    BE-->>FE: 轉帳完成
+    FE->>BE: 取得場館 Token
+    BE-->>FE: 回傳 Token + vendorAccount
+    FE->>BE: 撈賽事列表（getCockFightMatchList）
+    BE->>V: 查詢當前賽事
+    V-->>BE: 回傳賽事（arenaId / roundId / fightNo）
+    BE-->>FE: 回傳賽事資料
+    FE->>BE: 撈賽事詳情（getCockFightMatchDetail）
+    BE-->>FE: 回傳盤口 + 各注項賠率 + 投注限額
+    FE->>V: 建立 WebSocket（ws168-portal/ws）
+    V-->>FE: 連線成功
+
+    loop 賽局進行中
+        V->>FE: match_updated（賽事狀態更新）
+        V->>FE: odds_updated（賠率更新）
+        V->>FE: bet_limit_updated（限額更新）
+    end
+
+    U->>FE: 選注項 + 選籌碼
+    FE->>FE: 檢查限額（上限/下限/餘額/龍鳳互斥）
+    alt 檢查通過
+        FE->>FE: 累加下注金額到注項
+        U->>FE: 按「下注」
+        FE->>BE: POST 下注（postCockFightOrderBet）
+        BE->>V: 轉發下注請求
+        V-->>BE: 回傳下注結果
+        BE-->>FE: 下注成功/失敗
+        FE->>FE: 儲存下注記錄到 localStorage
+    else 檢查不通過
+        FE-->>U: Toast 錯誤提示
+    end
+
+    V->>FE: match_updated（winner 有值 = 開獎）
+    FE->>FE: 30 秒倒數後刷新場館錢包餘額
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>鬥雞使用獨立的場館錢包和 WebSocket（ws168），跟一般體育下注完全分開</li>
+              <li>初始化有嚴格順序：API 全部載完才啟動 WebSocket；未載完就收到 WS 訊息會暫存到 pendingSocketUpdates</li>
+              <li>賠率和投注限額由場館即時推送，我方無法調整</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3.8 聊天室訊息流 -->
+        <div class="mermaid-card" id="sl-3-8">
+          <div class="mermaid-card-title">3.8 聊天室訊息流</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant WS as WebSocket 服務
+    participant API as 聊天室 API
+
+    U->>FE: 進入聊天室
+    FE->>API: 撈歷史訊息（getChatRecord, limit=50）
+    API-->>FE: 回傳歷史訊息
+    FE->>FE: 顯示歡迎語 + 歷史訊息
+
+    FE->>WS: 註冊聊天室事件 middleware
+
+    par 即時訊息接收
+        WS->>FE: Chatroom_Text_CS（新訊息）
+        FE->>FE: 過濾重複 + 過濾設定 → 顯示
+    and 系統推送
+        WS->>FE: Chatroom_AutoMessage_S（自動發話）
+        FE->>FE: 加入聊天列表
+    and 投注推送
+        WS->>FE: Chatroom_SuccessBetMessage_S（投注成功）
+        FE->>FE: 加入聊天列表
+    and 競猜推送
+        WS->>FE: UserPlat_BetMatchMarket_S（競猜盤口）
+        FE->>FE: 判斷是否開盤 + showopen → 顯示
+    end
+
+    U->>FE: 發送訊息
+    FE->>WS: 送出文字（帶稱號 + @標記）
+
+    U->>FE: 點選聊天中的盤口
+    FE->>FE: 找到對應 market + selection
+    FE->>FE: 塞入購物車（addSingleCartData）
+    FE->>FE: 標記下注來源（betSourceType.live）
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>聊天室同時有 API（歷史紀錄）和 WebSocket（即時訊息）兩條資料通道</li>
+              <li>WebSocket 和 API 的 key 大小寫不一致，需額外做 convertKeysToLowerCase 轉換</li>
+              <li>使用者個人化設定可過濾三類訊息：曬單、投注成功、競猜投注成功</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div><!-- /tab-panel swimlane -->
 
@@ -1375,13 +2275,13 @@ sequenceDiagram
         <p class="tool-section-desc">擋需求、評風險用這個。業主提的做不到、或做了會爆炸的事全在這裡。</p>
 
         <div class="stats-pill">
-          34 條限制 · <span style="color:#f87171">7 場館</span> <span style="color:#fbbf24">14 耦合</span> <span style="color:#60a5fa">6 技術</span> <span style="color:#94a3b8">7 業務</span>
+          47 條限制 · <span style="color:#f87171">10 場館</span> <span style="color:#fbbf24">22 耦合</span> <span style="color:#60a5fa">9 技術</span> <span style="color:#94a3b8">9 業務</span>
         </div>
 
         <!-- 4.1 場館限制 -->
         <div class="constraint-category" id="cat-venue">
           <div class="constraint-header">
-            <h3 style="color:#f87171;">場館限制（7 條）</h3>
+            <h3 style="color:#f87171;">場館限制（10 條）</h3>
           </div>
           <p class="constraint-pm-guide">PM 碰到這類需求，不要轉 RD 評估工時，直接告訴業主「技術做不到」。</p>
 
@@ -1392,12 +2292,15 @@ sequenceDiagram
           <details class="constraint-card cat-venue"><summary>#5 預約下注只有 fb 場館支援</summary><div class="constraint-detail"><div class="label">描述</div>reserveBetVendor = [fb]，其他場館 API 不支援預約功能，硬做也接不上。<div class="label">影響範圍</div>購物車預約下注功能<div class="label">來源</div>Code 場館差異化</div></details>
           <details class="constraint-card cat-venue"><summary>#6 直播影片來源不能改</summary><div class="constraint-detail"><div class="label">描述</div>livestreams[] 的 flv/m3u8/iframe URL 都是場館下發，我方無法替換或加工畫面。<div class="label">影響範圍</div>賽事詳情頁直播播放器<div class="label">來源</div>Code 直播資料結構</div></details>
           <details class="constraint-card cat-venue"><summary>#7 盤口名稱核心 type 不能改</summary><div class="constraint-detail"><div class="label">描述</div>場館給 bettype / bettypename 的 key，前端只能改 i18n 翻譯層，核心 bettype 定義動不了。<div class="label">影響範圍</div>盤口顯示、簡易盤配置<div class="label">來源</div>Code 盤口資料結構</div></details>
+          <details class="constraint-card cat-venue"><summary>#8 鬥雞賽事只會有一場（ws168 場館固定）</summary><div class="constraint-detail"><div class="label">描述</div>ws168 場館固定同一時間只有一場鬥雞賽事，無法同時開多場。<div class="label">影響範圍</div>鬥雞房賽事列表、下注流程<div class="label">來源</div>Code 場館限制（ws168）</div></details>
+          <details class="constraint-card cat-venue"><summary>#9 鬥雞的賠率和投注限額由場館即時推送</summary><div class="constraint-detail"><div class="label">描述</div>鬥雞的賠率和投注上下限透過 WebSocket 由 ws168 場館即時推送（odds_updated / bet_limit_updated），我方無法調整。<div class="label">影響範圍</div>鬥雞下注流程、賠率顯示<div class="label">來源</div>Code 場館 WebSocket</div></details>
+          <details class="constraint-card cat-venue"><summary>#10 鬥雞不能同時下注龍和鳳</summary><div class="constraint-detail"><div class="label">描述</div>ws168 場館規則：同一回合不能同時押龍和鳳，前端做校驗擋住並彈 toast 警告。<div class="label">影響範圍</div>鬥雞下注校驗<div class="label">來源</div>Code 場館規則</div></details>
         </div>
 
         <!-- 4.2 模組耦合 -->
         <div class="constraint-category" id="cat-coupling">
           <div class="constraint-header">
-            <h3 style="color:#fbbf24;">模組耦合（14 條）</h3>
+            <h3 style="color:#fbbf24;">模組耦合（22 條）</h3>
           </div>
           <p class="constraint-pm-guide">PM 收到這類改動需求時，要把「同步測 B」的範圍寫進需求單的 QA scope。</p>
 
@@ -1415,12 +2318,20 @@ sequenceDiagram
           <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #12 聊天室引導語 ↔ 四條路由</summary><div class="constraint-detail"><div class="label">改 A...</div>改 /mine/rewardsTasks、/deposit、/home/sport、/bind-phone 路由<div class="label">...要同步測 B</div>體育聊天室的 SpeechGuide 跳轉會壞<div class="label">來源</div>Code 路由依賴</div></details>
           <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #13 場館 enum ↔ 全站</summary><div class="constraint-detail"><div class="label">改 A...</div>改 SPORT_VENDOR enum 或 SPORT_VENDOR_BY_SRCTYPE<div class="label">...要同步測 B</div>全體育模組 + mine/bet-record + predict API 全要回測<div class="label">來源</div>Code 全域 enum</div></details>
           <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #14 match-detail 共用殼 ↔ 93 個檔案</summary><div class="constraint-detail"><div class="label">改 A...</div>重構 pages/match-detail 任何共用元件<div class="label">...要同步測 B</div>open-room / deposit / gossiping / live 各娛樂場館 / chat / 首頁推薦<div class="label">來源</div>Code（93 個反向依賴）</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #15 聊天室 ↔ 轉盤系統中獎通知</summary><div class="constraint-detail"><div class="label">改 A...</div>改轉盤中獎通知格式（InviteWheelWinning）<div class="label">...要同步測 B</div>聊天室訊息顯示<div class="label">來源</div>Code 跨模組注入</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #16 聊天室競猜盤口 ↔ useLiveBetting</summary><div class="constraint-detail"><div class="label">改 A...</div>改競猜模組（useLiveBetting）<div class="label">...要同步測 B</div>聊天室的盤口卡片顯示<div class="label">來源</div>Code 模組依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #17 曬單系統 ↔ Rally 活動砍單進度</summary><div class="constraint-detail"><div class="label">改 A...</div>改 Rally 活動模組（RallyProgress）<div class="label">...要同步測 B</div>曬單面板的砍單卡片<div class="label">來源</div>Code 跨模組注入</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #18 送禮功能 ↔ PK 對戰日誌</summary><div class="constraint-detail"><div class="label">改 A...</div>改 PK 對戰邏輯（pkCombatLog）<div class="label">...要同步測 B</div>送禮打點<div class="label">來源</div>Code 跨功能耦合</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #19 自動彈窗排程 ↔ 四個子系統</summary><div class="constraint-detail"><div class="label">改 A...</div>改首存/轉盤/推單/分享任一子系統的開關邏輯<div class="label">...要同步測 B</div>自動彈窗的輪播順序和觸發條件<div class="label">來源</div>Code 跨模組耦合</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #20 鬥雞系統 ↔ 獨立場館錢包 + 專屬 WebSocket</summary><div class="constraint-detail"><div class="label">改 A...</div>改錢包轉帳流程<div class="label">...要同步測 B</div>鬥雞的初始化流程（進入遊戲 → 轉帳 → Token → 賽事 → WebSocket 全鏈路）<div class="label">來源</div>Code 獨立資金通道</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #21 直播任務 Teleport ↔ 隊伍預測 DOM</summary><div class="constraint-detail"><div class="label">改 A...</div>改隊伍預測的 DOM 結構<div class="label">...要同步測 B</div>直播任務 Teleport 定位可能失效<div class="label">來源</div>Code DOM 依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #22 賽程表（Schedule）↔ live 模組 copy 版</summary><div class="constraint-detail"><div class="label">改 A...</div>改 live 的 Schedule<div class="label">...要同步測 B</div>體育的 Schedule 不會同步更新，需手動同步<div class="label">來源</div>Code 複製版問題</div></details>
         </div>
 
         <!-- 4.3 技術限制 -->
         <div class="constraint-category" id="cat-tech">
           <div class="constraint-header">
-            <h3 style="color:#60a5fa;">技術限制（6 條）</h3>
+            <h3 style="color:#60a5fa;">技術限制（9 條）</h3>
           </div>
           <p class="constraint-pm-guide">PM 碰到這類需求，先別答應工時，拉 RD 評估可行性再回覆。</p>
 
@@ -1430,12 +2341,15 @@ sequenceDiagram
           <details class="constraint-card cat-tech"><summary>#4 雙前端同步（Vue-H5 / Uni-APP）維護成本</summary><div class="constraint-detail"><div class="label">描述</div>體育 bug 修復必須拆 [前端][Vue-H5] + [前端][Uni-APP] 雙子單，APP 還有審核期。H5 修了 APP 沒跟上會反覆復現。<div class="label">歷史證據</div><a href="https://mgbilibili.atlassian.net/browse/TSD-5326">TSD-5326</a>，APP 盤口消失「還是復現」<div class="label">來源</div>L2-sport-008 + Jira checklist</div></details>
           <details class="constraint-card cat-tech"><summary>#5 prod / test / slave 三環境 schema drift</summary><div class="constraint-detail"><div class="label">描述</div>DB schema 變更如果沒有三套環境同步，直播競猜開獎等依賴 DB 結構的功能會直接失敗。<div class="label">歷史證據</div><a href="https://mgbilibili.atlassian.net/browse/TSD-5305">TSD-5305</a>，直播競猜開獎失敗<div class="label">來源</div>L2-sport-005</div></details>
           <details class="constraint-card cat-tech"><summary>#6 後端單點人力瓶頸（Lily Shen / Alfred Yang）</summary><div class="constraint-detail"><div class="label">描述</div>體育模組的 TiDB 切換、house keeping、schema 變更、自動化活動修復全壓在這兩位身上，sprint capacity 經常不夠。<div class="label">歷史證據</div>GOR-6205 / 6042 / 6369 / 6464 全部壓同兩人<div class="label">來源</div>Jira checklist 單點風險</div></details>
+          <details class="constraint-card cat-tech"><summary>#7 聊天室 WebSocket 和 API 的 key 大小寫不一致</summary><div class="constraint-detail"><div class="label">描述</div>歷史紀錄 API 和 WebSocket 即時訊息的欄位 key 大小寫不一致，前端需額外做 convertKeysToLowerCase 轉換。如果後端改了欄位命名要同步前端。<div class="label">影響範圍</div>聊天室歷史訊息載入<div class="label">來源</div>Code 資料格式不一致</div></details>
+          <details class="constraint-card cat-tech"><summary>#8 鬥雞的下注記錄存 localStorage（非 server-side）</summary><div class="constraint-detail"><div class="label">描述</div>鬥雞的續押/加倍功能依賴 localStorage 儲存的上一局下注記錄。清瀏覽器資料 = 丟失參考資料。<div class="label">影響範圍</div>鬥雞續押、加倍功能<div class="label">來源</div>Code 本地儲存設計</div></details>
+          <details class="constraint-card cat-tech"><summary>#9 自動彈窗排程的冷卻時間寫死在前端</summary><div class="constraint-detail"><div class="label">描述</div>自動彈窗的冷卻時間（已充值 20 分鐘 / 未充值 10 分鐘）和間隔（2 分鐘）都寫死在前端 _IntervalBetweenGroups，改冷卻時間需發版，無法後台調整。<div class="label">影響範圍</div>賽事詳情頁自動彈窗排程<div class="label">來源</div>Code 硬編碼</div></details>
         </div>
 
         <!-- 4.4 業務限制 -->
         <div class="constraint-category" id="cat-biz">
           <div class="constraint-header">
-            <h3 style="color:#94a3b8;">業務限制（7 條）</h3>
+            <h3 style="color:#94a3b8;">業務限制（9 條）</h3>
           </div>
           <p class="constraint-pm-guide">業主問到這些，PM 直接回「不行」，不用拉會議討論。</p>
 
@@ -1446,6 +2360,8 @@ sequenceDiagram
           <details class="constraint-card cat-biz"><summary>#5 per-user 盤口差異化</summary><div class="constraint-detail"><div class="label">描述</div>盤口是場館級下發，MatchItem / MarketItem 沒有 user-specific 欄位。能做的是 VIP 的下注限制 / 金額限制 / 快捷金額，不是盤口本身。<div class="label">影響範圍</div>賽事列表、賽事詳情、購物車<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
           <details class="constraint-card cat-biz"><summary>#6 延後結算</summary><div class="constraint-detail"><div class="label">描述</div>結算時間完全由場館控制，我方沒有任何 API 可以延後或提前觸發結算。<div class="label">影響範圍</div>注單結算流程<div class="label">來源</div>Hanniber 定調</div></details>
           <details class="constraint-card cat-biz"><summary>#7 跨場館合併盤口</summary><div class="constraint-detail"><div class="label">描述</div>把 fb 的上半場跟 ob 的下半場湊一張串關單，技術上各場館是獨立的下注通道，串關只能在同一場館內。<div class="label">影響範圍</div>串關購物車<div class="label">來源</div>Code 場館架構</div></details>
+          <details class="constraint-card cat-biz"><summary>#8 曬單最低金額由後台按房間設定</summary><div class="constraint-detail"><div class="label">描述</div>已結算和未結算各有獨立的最低金額門檻（showbetssettledrechargelimit / showbetsunsettledrechargelimit），不同房間的曬單門檻不同。PM 不能假設統一門檻。<div class="label">影響範圍</div>曬單功能<div class="label">來源</div>Code 房間設定</div></details>
+          <details class="constraint-card cat-biz"><summary>#9 聊天室發言條件每個房間獨立</summary><div class="constraint-detail"><div class="label">描述</div>聊天室發言條件（VIP/充值/註冊天數/綁手機）每個房間獨立設定，且一般直播間和娛樂直播間的條件項目完全不同。PM 測試時需確認測試的是哪個房間的設定。<div class="label">影響範圍</div>聊天室發言權限<div class="label">來源</div>Code 房間設定</div></details>
         </div>
       </div>
     </div><!-- /tab-panel constraints -->
