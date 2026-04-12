@@ -259,7 +259,7 @@
   <div class="rm-hero">
     <div class="rm-eyebrow">PRODUCT PROCESS ROADMAP · v1.0</div>
     <h1>從知識庫到自動產需求</h1>
-    <div class="tagline">為什麼我們要做 L1 / L2 / L3，<strong>以及這件事後面的大圖</strong></div>
+    <div class="tagline">為什麼我們要做模組知識庫，<strong>以及這件事後面的大圖</strong></div>
     <div class="meta">
       <span>產品處路線圖</span>
       <span>·</span>
@@ -291,7 +291,7 @@
         <p>讓系統可以<strong>自動產制需求</strong>——業主一句話，系統輸出完整的需求規格。PM 從「寫規格的人」變成「審核與戰略判斷的人」。</p>
       </div>
 
-      <p>但從現狀到這個目標中間有一段很大的落差。這份文件把落差具體化，並說明我們現在做的 L1/L2/L3 知識庫在這個大圖裡的位置。</p>
+      <p>但從現狀到這個目標中間有一段很大的落差。這份文件把落差具體化，並說明我們現在做的模組知識庫在這個大圖裡的位置。</p>
     </div>
 
     <!-- §1 核心洞察 -->
@@ -301,11 +301,11 @@
         <h2>核心洞察：這兩件事不是同一軸</h2>
       </div>
 
-      <p>很多人會直覺以為「L2 做得夠完整 → 自然就能自動產需求」。這是錯的假設。</p>
+      <p>很多人會直覺以為「知識庫做得夠完整 → 自然就能自動產需求」。這是錯的假設。</p>
 
       <div class="compare-grid">
         <div class="compare-col left">
-          <h4>L1 / L2 / L3 知識庫</h4>
+          <h4>模組知識庫（我們在做的）</h4>
           <div class="row"><span class="k">輸入：</span><span class="v">系統（程式碼、Jira）</span></div>
           <div class="row"><span class="k">輸出：</span><span class="v">給人讀的文件</span></div>
           <div class="row"><span class="k">目的：</span><span class="v">讓人讀懂系統</span></div>
@@ -325,7 +325,7 @@
       <div class="insight-box">
         <div class="label">KEY TAKEAWAY</div>
         <h4>方向相反的兩件事</h4>
-        <p>你不會因為寫了很多 L2，系統就「自然」會產需求。<strong>L2 會成為自動產需求系統的燃料，但燃料不等於引擎</strong>。兩件事要分開推進、但最終會合流。</p>
+        <p>你不會因為知識庫做得夠完整，系統就「自然」會產需求。<strong>知識庫會成為自動產需求系統的燃料，但燃料不等於引擎</strong>。兩件事要分開推進、但最終會合流。</p>
       </div>
     </div>
 
@@ -361,8 +361,8 @@
 
       <div class="insight-box">
         <div class="label">落差的具體位置</div>
-        <h4>L1/L2/L3 只解決 4-7，沒解決 1-3 和 8</h4>
-        <p>我們現在做的知識庫解決的是<strong>「校對」階段</strong>——影響範圍、跨模組、踩坑、場館差異。但「翻譯」階段（1-3）和「結構化輸出」階段（8）完全沒碰。<em>這就是你感覺到的落差的具體位置</em>。</p>
+        <h4>知識庫只解決 4-7，沒解決 1-3 和 8</h4>
+        <p>我們現在做的知識庫（功能總覽 + User Flow + 泳道圖 + 跨服務限制）解決的是<strong>「校對」階段</strong>——影響範圍、跨模組、踩坑、場館差異。但「翻譯」階段（1-3）和「結構化輸出」階段（8）完全沒碰。<em>這就是你感覺到的落差的具體位置</em>。</p>
       </div>
     </div>
 
@@ -385,7 +385,7 @@
         <div class="stage current">
           <div class="stage-num">STAGE 1 <span class="stage-tag now">現在</span></div>
           <h4>PM 手寫 + 知識庫輔助查詢</h4>
-          <p>PM 寫之前先查 L1 / L2 / L3，少踩坑、少漏影響範圍。<strong>這就是我們現在在做的事</strong>——L1 瀏覽、L2 經驗、L3 API 三層知識庫。</p>
+          <p>PM 寫之前先查知識庫，少踩坑、少漏影響範圍。<strong>這就是我們現在在做的事</strong>——每個模組一頁，包含功能總覽、User Flow、泳道圖、跨服務限制、API 五個頁籤。</p>
           <div class="highlight">
             <p>這階段的成效指標</p>
             <ul>
@@ -399,11 +399,11 @@
         <div class="stage target">
           <div class="stage-num">STAGE 2 <span class="stage-tag target-tag">下一步</span></div>
           <h4>PM 寫草稿 + Agent 審稿</h4>
-          <p>PM 寫完需求初稿 → 丟給 agent 審 → agent 對照 L2 pitfalls + 模組邊界，回報「這個需求漏了 A、B、C 點，類似需求踩過 TSD-XXXX 的坑」。</p>
+          <p>PM 寫完需求初稿 → 丟給 agent 審 → agent 對照踩坑記錄 + 跨服務限制 + 模組邊界，回報「這個需求漏了 A、B、C 點，類似需求踩過 TSD-XXXX 的坑」。</p>
           <div class="highlight">
             <p>為什麼這是最現實的下個跳點</p>
             <ul>
-              <li>L1 / L2 / L3 已經備好了（燃料齊全）</li>
+              <li>模組知識庫已經備好了（燃料齊全）</li>
               <li>「審稿」比「寫稿」技術門檻低太多——只需要檢查完整性，不需要解決歧義</li>
               <li>產出是「已有稿 + 缺漏清單」，不是從無到有</li>
               <li>PM 仍然負責最終決定——不是被取代，是被檢查</li>
@@ -414,7 +414,7 @@
         <div class="stage">
           <div class="stage-num">STAGE 3</div>
           <h4>業主提需求 + Agent 起草 + PM 校稿</h4>
-          <p>業主用一句話丟需求 → agent 查 L2 + 歷史類似需求 → 起草 5-7 成完整度的草稿 → PM 審一遍改錯、補戰略判斷。</p>
+          <p>業主用一句話丟需求 → agent 查知識庫 + 歷史類似需求 → 起草 5-7 成完整度的草稿 → PM 審一遍改錯、補戰略判斷。</p>
           <div class="highlight">
             <p>這階段的關鍵依賴</p>
             <ul>
@@ -453,7 +453,7 @@
           <div class="gap-label">落差 A</div>
           <h4>系統輸入端還是「人話」</h4>
           <p>業主的一句話要變成結構化的需求意圖——這需要 <em>意圖識別</em> 和 <em>歧義消除對話能力</em>。業主說「新手」，agent 要會反問「你的新手定義是 A 還是 B？」。</p>
-          <p class="sub">這塊 L2 完全幫不上忙，是獨立的能力建構。</p>
+          <p class="sub">這塊知識庫完全幫不上忙，是獨立的能力建構。</p>
         </div>
 
         <div class="gap-card">
@@ -485,9 +485,9 @@
         <h4>短期（接下來半年到一年）</h4>
 
         <div class="term-block">
-          <div class="term">1. 繼續把 L2 做完（7 個模組）</div>
+          <div class="term">1. 繼續把剩餘 7 個模組的知識庫做完</div>
           <ol>
-            <li>這是燃料，是 Stage 1 → Stage 2 必備的前置。現在只做完體育，還有活動、直播、存提款、娛樂城、我的、系統、其他。</li>
+            <li>這是燃料，是 Stage 1 → Stage 2 必備的前置。現在只做完體育（五 tab 完整版），還有活動、直播、存提款、娛樂城、我的、系統、其他。</li>
           </ol>
         </div>
 
@@ -495,8 +495,8 @@
           <div class="term">2. 建立「需求審稿 agent」試點</div>
           <ol>
             <li>這就是 Stage 2，離現狀最近的跳點。</li>
-            <li>用現有 L2 + pitfalls 讓 agent 能審 PM 的需求草稿、回報缺漏。</li>
-            <li>成功了就推給全 PM 使用，失敗了也能知道 L2 深度還不夠，回頭補。</li>
+            <li>用現有知識庫（泳道圖 + 跨服務限制 + 踩坑記錄）讓 agent 能審 PM 的需求草稿、回報缺漏。</li>
+            <li>成功了就推給全 PM 使用，失敗了也能知道知識庫深度還不夠，回頭補。</li>
           </ol>
         </div>
 
@@ -527,7 +527,7 @@
           <div class="term">Stage 3 穩定後再談 Stage 4 / 5</div>
           <ol>
             <li>自動影響範圍檢查、例外處理、全自動出規格。</li>
-            <li>這階段的挑戰已經不是 L2 夠不夠深，而是 <em>信心度模型</em> 和 <em>例外偵測</em>——那是另一個量級的工程。</li>
+            <li>這階段的挑戰已經不是知識庫夠不夠深，而是 <em>信心度模型</em> 和 <em>例外偵測</em>——那是另一個量級的工程。</li>
           </ol>
         </div>
       </div>
@@ -543,8 +543,8 @@
           <li>需求-結果配對的歷史資料庫</li>
           <li>需求完整性的可驗證 schema</li>
         </ol>
-        <p style="margin-top: 20px;">L2 / L3 會成為這些的燃料，但不是引擎本身。</p>
-        <p><span class="key">要一步一步來</span>，中間有個很現實的跳點叫 <em style="color:#fbbf24;">審稿 agent</em>，那是我們做完 L2 之後該瞄準的下個目標。</p>
+        <p style="margin-top: 20px;">模組知識庫會成為這些的燃料，但不是引擎本身。</p>
+        <p><span class="key">要一步一步來</span>，中間有個很現實的跳點叫 <em style="color:#fbbf24;">審稿 agent</em>，那是我們做完知識庫之後該瞄準的下個目標。</p>
       </div>
     </div>
 
@@ -554,8 +554,8 @@
     <div>產品處路線圖 v1.0 · 2026-04-11</div>
     <div style="margin-top: 10px;">
       <a href="features.html">← 功能知識庫</a>
-      <a href="framework.html">L1-L4 分層框架</a>
-      <a href="sports-L2.html">體育 L2 試點 →</a>
+      <a href="framework.html">分層框架（內部）</a>
+      <a href="sports.html">體育知識庫 →</a>
     </div>
   </div>
 
