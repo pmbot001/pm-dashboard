@@ -7,18 +7,45 @@
   <link rel="stylesheet" href="css/kb-shared.css">
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
-    /* ===== Tab Nav (sticky pill) ===== */
-    .tab-nav {
+    /* ===== Compact Sticky Header ===== */
+    .compact-header {
       position: sticky;
       top: 0;
       z-index: 150;
       background: #0f172a;
       border-bottom: 1px solid #334155;
-      padding: 10px 16px;
+      padding: 8px 16px;
       display: flex;
-      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      height: 60px;
+      box-sizing: border-box;
+    }
+    .compact-header-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb {
+      font-size: 12px;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
+    .compact-header-breadcrumb a:hover { color: #94a3b8; }
+    .compact-header-pills {
+      display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    /* ===== Tab Nav (kept for pill styles) ===== */
+    .tab-nav {
+      /* hidden — replaced by .compact-header */
+      display: none !important;
     }
     .tab-pill {
       display: inline-block;
@@ -48,7 +75,7 @@
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 28px;
       overflow: hidden;
     }
     .mermaid-card-title {
@@ -99,7 +126,7 @@
     /* Page logic collapsible card */
     .page-logic-card {
       background: #1e293b; border: 1px solid #334155; border-radius: 10px;
-      margin-bottom: 12px; overflow: hidden;
+      margin-bottom: 18px; overflow: hidden;
     }
     .page-logic-card summary {
       padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
@@ -141,7 +168,7 @@
     .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
     .constraint-card {
       background: #1e293b; border: 1px solid #334155; border-radius: 8px;
-      margin-bottom: 8px; overflow: hidden;
+      margin-bottom: 14px; overflow: hidden;
     }
     .constraint-card.cat-venue { border-left: 3px solid #f87171; }
     .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
@@ -179,13 +206,11 @@
 
     /* Tool section (reused for User Flow / Swimlane / Constraints) */
     .tool-section {
-      max-width: 960px; margin: 0 auto; padding: 40px 16px 20px;
+      max-width: 960px; margin: 0 auto; padding: 50px 16px 30px;
     }
     .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
     .tool-section-header .tool-num {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 36px; height: 36px; background: #f97316; color: #fff;
-      border-radius: 50%; font-size: 16px; font-weight: 700; flex-shrink: 0;
+      display: none;
     }
     .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
     .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
@@ -208,11 +233,12 @@
     .side-nav {
       position: fixed;
       left: 0;
-      top: 0;
+      top: 60px;
       width: 220px;
-      height: 100vh;
+      height: calc(100vh - 60px);
       background: #111827;
       border-right: 1px solid #1e293b;
+      border-top: 1px solid #334155;
       z-index: 140;
       display: flex;
       flex-direction: column;
@@ -289,33 +315,28 @@
 
   <div class="main-content v2-main">
 
-    <!-- ============ Header ============ -->
-    <div class="page-header" id="top">
-      <div class="breadcrumb"><a href="features.html">功能知識庫</a> / 體育賽事</div>
-      <h1>⚽ 體育賽事</h1>
-      <div class="sub">首頁 / 體育賽事 — 賽事列表、投注購物車、串關、冠軍玩法、場館系統</div>
-
-      <div class="kb-notice">
-        <b>本頁包含什麼：</b>體育模組的完整知識庫，分四個 tab——功能總覽（截圖 + 標註 + 頁面邏輯）、User Flow、泳道圖、跨服務限制。<br>
-        <b>改動成本三層：</b>
-        <span class="cost-tag cost-locked">場館限制</span> 場館 / 第三方下發
-        <span class="cost-tag cost-config">設定層</span> 後台可配
-        <span class="cost-tag cost-code">程式層</span> 要發版
+    <!-- ============ Compact Sticky Header ============ -->
+    <nav class="compact-header" id="tabnav">
+      <span class="compact-header-title">⚽ 體育賽事</span>
+      <span class="compact-header-breadcrumb"><a href="features.html">功能知識庫</a> / 體育賽事</span>
+      <div class="compact-header-pills">
+        <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
+        <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
+        <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
+        <a class="tab-pill" href="#constraints" data-tab="constraints">跨服務限制</a>
       </div>
-    </div>
-
-    <!-- ============ Tab Nav (sticky pill) ============ -->
-    <nav class="tab-nav" id="tabnav">
-      <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
-      <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
-      <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
-      <a class="tab-pill" href="#constraints" data-tab="constraints">跨服務限制</a>
     </nav>
 
     <!-- ================================================================ -->
     <!-- TAB 1: 功能總覽                                                   -->
     <!-- ================================================================ -->
     <div class="tab-panel active" id="overview">
+
+      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
+        改動成本：<span class="cost-tag cost-locked">場館限制</span> 場館下發
+        <span class="cost-tag cost-config">設定層</span> 後台可配
+        <span class="cost-tag cost-code">程式層</span> 要發版
+      </div>
 
       <!-- === 賠率呈現規則（跨頁面通用，放最上方）=== -->
       <div class="section" id="nav-odds">
@@ -331,8 +352,8 @@
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>場館回傳 raw oddsvalue</td><td>前端 calcOdds() 換算為使用者選定的賠率制（馬來/香港/歐洲/印尼）</td><td><span class="cost-tag cost-code">程式層</span></td><td>賠率顯示 bug 先查前端 calcOdds，不是查後端</td></tr>
-                <tr><td>2</td><td>使用者切換賠率制</td><td>前端重新跑 calcOdds()，不重打 API</td><td><span class="cost-tag cost-code">程式層</span></td><td>切換是即時的、免 API，但換算公式改了要發版</td></tr>
+                <tr><td>1</td><td>場館回傳 raw oddsvalue</td><td>前端換算賠率為使用者選定的賠率制（馬來/香港/歐洲/印尼）</td><td><span class="cost-tag cost-code">程式層</span></td><td>賠率顯示 bug 先查前端換算邏輯，不是查後端</td></tr>
+                <tr><td>2</td><td>使用者切換賠率制</td><td>前端重新換算賠率，不重打 API</td><td><span class="cost-tag cost-code">程式層</span></td><td>切換是即時的、免 API，但換算公式改了要發版</td></tr>
                 <tr><td>3</td><td>bettype = 大小盤 或 讓球盤</td><td>顯示 K 值（handicap）</td><td><span class="cost-tag cost-code">程式層</span></td><td>其他盤口（勝負/波膽/首進球）沒有 K。UI 需求不能預設所有盤口都顯示 K</td></tr>
                 <tr><td>4</td><td>輪詢後新賠率 vs 舊賠率</td><td>前端比對，升 → 升箭頭、降 → 降箭頭</td><td><span class="cost-tag cost-code">程式層</span></td><td>箭頭是前端自己比對的，不是場館告訴你升降</td></tr>
                 <tr><td>5</td><td>首頁賽事列表（簡易盤）</td><td>經 simpleMarketConfig 篩選，只顯示配置內的盤口</td><td><span class="cost-tag cost-code">程式層</span></td><td>saba/fb/ob 各有獨立 config，不同場館首頁盤口不一樣是正常的</td></tr>
@@ -609,7 +630,7 @@
               <tbody>
                 <tr><td>1</td><td>使用者進入賽事詳情頁</td><td>載入場館下發的賽事資料</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>隊名/icon/比分/賠率全來自場館，我方無法修改</td></tr>
                 <tr><td>2</td><td>盤口顯示鎖盤狀態</td><td>前端禁止點選，顯示鎖定 icon</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>場館 islocked 控制，鎖盤就是鎖盤</td></tr>
-                <tr><td>3</td><td>使用者切換賠率制（馬/港/歐/印）</td><td>前端即時換算顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td>換算公式在 calcOdds，只改顯示不改實際賠率</td></tr>
+                <tr><td>3</td><td>使用者切換賠率制（馬/港/歐/印）</td><td>前端即時換算顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td>換算公式在前端，只改顯示不改實際賠率</td></tr>
                 <tr><td>4</td><td>使用者點選盤口</td><td>加入購物車</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>5</td><td>使用者點下方分頁 tab</td><td>切換顯示對應內容（聊天/競猜/賽況/包賠/爆料/下注單）</td><td><span class="cost-tag cost-code">程式層</span></td><td>tab 順序和內容前端寫死，改排序要發版</td></tr>
                 <tr><td>6</td><td>競猜盤口出現</td><td>主播 PK 推送的盤口，獨立於場館盤口</td><td><span class="cost-tag cost-code">程式層</span></td><td>競猜盤口跟場館盤口是<b>兩套系統</b>，PM 不要混講</td></tr>
@@ -1942,14 +1963,14 @@ sequenceDiagram
     participant V as 場館（FB/OB/SABA/...）
 
     U->>FE: 點選盤口加入購物車
-    FE->>FE: 更新購物車 store（覆蓋舊盤口）
+    FE->>FE: 更新購物車（覆蓋舊盤口）
     U->>FE: 輸入金額，按下注
-    FE->>BE: 撈最新賠率（getBetInfo）
+    FE->>BE: 撈最新賠率
     BE->>V: 查詢即時賠率
     V-->>BE: 回傳最新賠率
     BE-->>FE: 回傳賠率（可能已變動）
     alt 賠率未變動
-        FE->>BE: POST /order/place-bet（送出下注）
+        FE->>BE: 送出下注
         BE->>V: 轉發下注請求
         V-->>BE: 回傳成交結果
         BE-->>FE: 下注成功，回傳注單 ID
@@ -1957,7 +1978,7 @@ sequenceDiagram
     else 賠率已變動（TSD-5073 踩坑）
         FE-->>U: 彈窗：賠率從 X 變成 Y，是否接受？
         U->>FE: 接受新賠率
-        FE->>BE: POST /order/place-bet（帶新賠率）
+        FE->>BE: 送出下注（帶新賠率）
         BE->>V: 轉發下注請求
         V-->>BE: 回傳成交結果
         BE-->>FE: 下注成功
@@ -1994,16 +2015,16 @@ sequenceDiagram
     participant V as 場館（多個）
 
     U->>FE: 選第一場盤口加入串關
-    FE->>FE: push 到 comboCartList
+    FE->>FE: 加入串關清單
     U->>FE: 選第二場盤口加入串關
-    FE->>FE: push 到 comboCartList + 計算組合賠率
+    FE->>FE: 加入串關清單 + 計算組合賠率
     U->>FE: 輸入金額，按下注
     FE->>BE: 撈所有盤口最新賠率
     BE->>V: 分別向各場館查詢
     V-->>BE: 回傳各盤口最新賠率
     alt 所有盤口賠率未變
         BE-->>FE: 確認賠率一致
-        FE->>BE: POST /order/place-bet（串關模式）
+        FE->>BE: 送出下注（串關模式）
         BE->>V: 轉發串關請求
         V-->>BE: 回傳串關成交結果
         BE-->>FE: 成功
@@ -2049,7 +2070,7 @@ sequenceDiagram
         BE-->>FE: 回傳 Cash Out 金額
         FE-->>U: 顯示「提前結算」按鈕 + 預估金額
         U->>FE: 點選提前結算
-        FE->>BE: POST Cash Out 請求
+        FE->>BE: 送出提前結算請求
         BE->>V: 轉發結算請求
         V-->>BE: 確認結算（金額可能微調）
         BE-->>FE: 結算成功
@@ -2129,7 +2150,7 @@ sequenceDiagram
 
     Note over 前端: 使用者進入賽事列表或詳情頁
 
-    前端->>後端: 呼叫 matchList() 或 matchDetail()
+    前端->>後端: 呼叫 賽事列表 或 賽事詳情 API
     後端->>場館: 向對應場館查詢賽事+盤口資料
     場館-->>後端: 回傳 raw data（markets[].selections[].oddsvalue + handicap + bettype + islocked）
     Note right of 場館: oddsvalue 是場館的原始數字，不是最終顯示值
@@ -2139,8 +2160,8 @@ sequenceDiagram
     前端->>使用者設定: 讀取使用者偏好的賠率制（OddsType: 1馬來/2香港/3歐洲/4印尼）
     使用者設定-->>前端: 回傳 OddsType
 
-    Note over 前端: calcOdds() 將 raw oddsvalue 換算為使用者選定的賠率制顯示值
-    Note over 前端: calcOdds 是前端做的，不是後端
+    Note over 前端: 換算賠率 — 將 raw oddsvalue 換算為使用者選定的賠率制顯示值
+    Note over 前端: 賠率換算是前端做的，不是後端
 
     alt bettype = 大小盤 或 讓球盤
         前端->>前端: 顯示 K 值（handicap）
@@ -2154,9 +2175,9 @@ sequenceDiagram
           </div>
           <div class="pm-notice">
             <ul>
-              <li>場館下發的 <code>oddsvalue</code> 是 raw 數字，前端 <code>calcOdds()</code> 才做馬/港/歐/印換算——<b>賠率顯示有 bug 先查前端換算邏輯，不是查後端</b></li>
+              <li>場館下發的 oddsvalue 是 raw 數字，前端換算賠率才做馬/港/歐/印換算——<b>賠率顯示有 bug 先查前端換算邏輯，不是查後端</b></li>
               <li>K 值只有大小盤和讓球盤才有。UI 需求不能預設「所有盤口都顯示 K 值」，否則勝負盤會顯示空白</li>
-              <li>使用者可以在設定裡切換賠率制，切換後只是前端重新算一次 <code>calcOdds()</code>，不會重打 API</li>
+              <li>使用者可以在設定裡切換賠率制，切換後只是前端重新換算賠率，不會重打 API</li>
             </ul>
           </div>
           <details class="rd-ref">
@@ -2185,12 +2206,12 @@ sequenceDiagram
     participant 購物車
 
     loop 定期輪詢（polling interval）
-        前端->>後端: 輪詢 matchList / matchDetail
+        前端->>後端: 輪詢 賽事列表 / 賽事詳情 API
         後端->>場館: 查詢最新賠率
         場館-->>後端: 回傳最新 oddsvalue + islocked + marketstatus
         後端-->>前端: 聚合回傳
 
-        前端->>前端: calcOdds() 換算新賠率
+        前端->>前端: 換算賠率
 
         前端->>前端: 比對新舊賠率
 
@@ -2326,7 +2347,7 @@ sequenceDiagram
 
     U->>FE: 點選聊天中的盤口
     FE->>FE: 找到對應 market + selection
-    FE->>FE: 塞入購物車（addSingleCartData）
+    FE->>FE: 塞入購物車（單注資料）
     FE->>FE: 標記下注來源（betSourceType.live）
             </div>
           </div>
@@ -2363,7 +2384,7 @@ sequenceDiagram
           </div>
           <p class="constraint-pm-guide">PM 碰到這類需求，不要轉 RD 評估工時，直接告訴業主「技術做不到」。</p>
 
-          <details class="constraint-card cat-venue"><summary>#1 賠率不能改</summary><div class="constraint-detail"><div class="label">描述</div>oddsvalue 從場館即時下發，前端只做 calcOdds 在馬/港/歐/印四種制之間換算顯示。沒有任何加價、減價、偏移的管道。<div class="label">影響範圍</div>全體育投注流程（購物車、簡易盤、賽事詳情、跟單、推單）<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
+          <details class="constraint-card cat-venue"><summary>#1 賠率不能改</summary><div class="constraint-detail"><div class="label">描述</div>oddsvalue 從場館即時下發，前端只做賠率換算在馬/港/歐/印四種制之間換算顯示。沒有任何加價、減價、偏移的管道。<div class="label">影響範圍</div>全體育投注流程（購物車、簡易盤、賽事詳情、跟單、推單）<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
           <details class="constraint-card cat-venue"><summary>#2 結算時機不能改</summary><div class="constraint-detail"><div class="label">描述</div>結算時間由場館決定，前端只讀 rbtimestatus 和 eventstatus。Cash Out 也是場館提供的能力，不是我方可調的時序。<div class="label">影響範圍</div>注單結算、Cash Out、賽事狀態顯示<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
           <details class="constraint-card cat-venue"><summary>#3 盤口鎖盤狀態不能繞過</summary><div class="constraint-detail"><div class="label">描述</div>market.islocked = true 時前端必須擋住下注，不能偷偷接收。這是場館控制的狀態。<div class="label">影響範圍</div>購物車送單驗證、盤口顯示<div class="label">來源</div>Code 場館下發規則</div></details>
           <details class="constraint-card cat-venue"><summary>#4 賽事基本資料不能改</summary><div class="constraint-detail"><div class="label">描述</div>主客隊名稱、icon、聯賽名、即時比分、紅黃牌/角球、賽事時間全部場館下發，URL 也是場館的。<div class="label">影響範圍</div>賽事詳情頁、賽事列表卡片、購物車 TicketInfo<div class="label">來源</div>Code 場館資料結構</div></details>
@@ -2691,18 +2712,7 @@ sequenceDiagram
   // Add class to layout for CSS
   document.querySelector('.layout').classList.add('has-side-nav');
 
-  // Align side-nav top with tab-nav
-  function alignSideNavTop() {
-    const tabNav = document.getElementById('tabnav');
-    if (tabNav) {
-      const h = tabNav.offsetTop + tabNav.offsetHeight;
-      const sideNav = document.getElementById('sideNav');
-      sideNav.style.top = h + 'px';
-      sideNav.style.height = 'calc(100vh - ' + h + 'px)';
-    }
-  }
-  alignSideNavTop();
-  window.addEventListener('resize', alignSideNavTop);
+  // Side-nav alignment is now handled via CSS (top: 60px, height: calc(100vh - 60px))
 
   // Deep link on load
   const validTabs = ['overview', 'userflow', 'swimlane', 'constraints', 'api'];
