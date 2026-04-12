@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>體育賽事 — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ===== Tab Nav (sticky pill) ===== */
+    .tab-nav {
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tab-pill {
+      display: inline-block;
+      font-size: 13px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      color: #94a3b8;
+      background: #1e293b;
+      border: 1px solid #334155;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all .15s;
+      cursor: pointer;
+    }
+    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
+    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    /* Tab content panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Full-width layout (no sidebar) */
+    .v2-main { margin-left: 0 !important; }
+
+    /* ===== Mermaid card ===== */
+    .mermaid-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f1f5f9;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mermaid-card-body {
+      padding: 20px;
+      overflow-x: auto;
+    }
+    .mermaid-card-body .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* PM 注意 yellow box */
+    .pm-notice {
+      background: #2a2210;
+      border-left: 3px solid #fbbf24;
+      padding: 12px 16px;
+      margin: 0 18px 4px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+
+    /* RD 參考 collapsible */
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary {
+      font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; user-select: none;
+    }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px;
+      background: #0f172a; border-radius: 6px; margin-top: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace; line-height: 1.8;
+    }
+
+    /* Page logic collapsible card */
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 12px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before {
+      content: "▸"; color: #64748b; font-size: 14px; transition: transform .2s;
+    }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body {
+      padding: 0 18px 16px; border-top: 1px solid #334155;
+    }
+    .convergence-warning {
+      background: #3b1a1a; border: 1px solid #7f1d1d; border-radius: 8px;
+      padding: 12px 16px; margin: 12px 0 0; font-size: 13px; color: #fca5a5; font-weight: 600;
+    }
+
+    /* Logic table */
+    .logic-table {
+      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;
+    }
+    .logic-table th {
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px;
+    }
+    .logic-table td {
+      background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155;
+      color: #cbd5e1; vertical-align: top;
+    }
+    .logic-table tr:hover td { background: #263548; }
+
+    /* Constraint section blocks */
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 8px; overflow: hidden;
+    }
+    .constraint-card.cat-venue { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "▸"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+
+    /* Stats pill */
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+
+    .sev-stars { color: #f87171; font-size: 12px; }
+
+    /* Tool section (reused for User Flow / Swimlane / Constraints) */
+    .tool-section {
+      max-width: 960px; margin: 0 auto; padding: 40px 16px 20px;
+    }
+    .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-section-header .tool-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; background: #f97316; color: #fff;
+      border-radius: 50%; font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+
+    .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
+
+    /* Page logic divider in overview tab */
+    .logic-merge-divider {
+      margin: 28px 0 16px;
+      padding: 10px 16px;
+      background: #1a2638;
+      border-left: 3px solid #f97316;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f97316;
+    }
+
+    /* API placeholder */
+    .api-placeholder {
+      max-width: 960px; margin: 60px auto; text-align: center;
+      padding: 60px 20px;
+      background: #1e293b; border: 1px dashed #334155; border-radius: 12px;
+    }
+    .api-placeholder h3 { font-size: 20px; color: #64748b; margin-bottom: 8px; }
+    .api-placeholder p { font-size: 14px; color: #475569; }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="main-content v2-main">
+
+    <!-- ============ Header ============ -->
+    <div class="page-header" id="top">
+      <div class="breadcrumb"><a href="features.html">功能知識庫</a> / 體育賽事</div>
+      <h1>⚽ 體育賽事</h1>
+      <div class="sub">首頁 / 體育賽事 — 賽事列表、投注購物車、串關、冠軍玩法、場館系統</div>
+
+      <div class="kb-notice">
+        <b>本頁包含什麼：</b>體育模組的完整知識庫，分五個 tab——功能總覽（截圖 + 標註 + 頁面邏輯）、User Flow、泳道圖、跨服務限制、API 契約。<br>
+        <b>改動成本三層：</b>
+        <span class="cost-tag cost-locked">場館限制</span> 場館 / 第三方下發
+        <span class="cost-tag cost-config">設定層</span> 後台可配
+        <span class="cost-tag cost-code">程式層</span> 要發版
+      </div>
+    </div>
+
+    <!-- ============ Tab Nav (sticky pill) ============ -->
+    <nav class="tab-nav" id="tabnav">
+      <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
+      <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
+      <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
+      <a class="tab-pill" href="#constraints" data-tab="constraints">跨服務限制</a>
+      <a class="tab-pill" href="#api" data-tab="api">API</a>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- TAB 1: 功能總覽                                                   -->
+    <!-- ================================================================ -->
+    <div class="tab-panel active" id="overview">
+
+      <!-- === 賠率呈現規則（跨頁面通用，放最上方）=== -->
+      <div class="section">
+        <div class="section-title"><span class="num">0</span> 跨頁面通用：賠率呈現規則</div>
+        <div class="section-desc">所有頁面共用的賠率顯示邏輯，不屬於任何單一頁面</div>
+
+        <details class="page-logic-card" open>
+          <summary>
+            賠率呈現規則
+            <span class="rule-count">6 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>場館回傳 raw oddsvalue</td><td>前端 calcOdds() 換算為使用者選定的賠率制（馬來/香港/歐洲/印尼）</td><td><span class="cost-tag cost-code">程式層</span></td><td>賠率顯示 bug 先查前端 calcOdds，不是查後端</td></tr>
+                <tr><td>2</td><td>使用者切換賠率制</td><td>前端重新跑 calcOdds()，不重打 API</td><td><span class="cost-tag cost-code">程式層</span></td><td>切換是即時的、免 API，但換算公式改了要發版</td></tr>
+                <tr><td>3</td><td>bettype = 大小盤 或 讓球盤</td><td>顯示 K 值（handicap）</td><td><span class="cost-tag cost-code">程式層</span></td><td>其他盤口（勝負/波膽/首進球）沒有 K。UI 需求不能預設所有盤口都顯示 K</td></tr>
+                <tr><td>4</td><td>輪詢後新賠率 vs 舊賠率</td><td>前端比對，升 → 升箭頭、降 → 降箭頭</td><td><span class="cost-tag cost-code">程式層</span></td><td>箭頭是前端自己比對的，不是場館告訴你升降</td></tr>
+                <tr><td>5</td><td>首頁賽事列表（簡易盤）</td><td>經 simpleMarketConfig 篩選，只顯示配置內的盤口</td><td><span class="cost-tag cost-code">程式層</span></td><td>saba/fb/ob 各有獨立 config，不同場館首頁盤口不一樣是正常的</td></tr>
+                <tr><td>6</td><td>新手版 vs 專家版</td><td>新手版用 NEWBIE_MARKET_CONFIG 進一步縮減盤口</td><td><span class="cost-tag cost-config">設定層</span></td><td>「新手看到的盤口太少」→ 先確認是設計意圖還是 config 漏配</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                calcOdds：utils/sport/index.ts<br>
+                OddsType enum：utils/sport/index.ts<br>
+                simpleMarketConfig：utils/sport/sabaConfig.ts / fbConfig.ts / obConfig.ts<br>
+                NEWBIE_MARKET_CONFIG：provider<br>
+                K 值欄位：SelectionItem.handicap
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">玩家從打開體育到完成下注會走過的路徑</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>體育不是只有「下注」一條動線。玩家實際上有三條路：下注、觀賽（看主播）、跟單 / 爆料。寫需求時先確認你要動的是哪一條，因為三條的 owner、上版節奏、相依模組都不一樣。
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">主流程：瀏覽 → 下注</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入首頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">切換場館<br><small>FB / OB / SABA / 自營</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選球種<br><small>足 / 籃 / 電競…</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選時段<br><small>滾球 / 今日 / 早盤 / 串關 / 冠軍</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">賽事列表</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">點賠率</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">購物車下注</div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">串關流程</div>
+          <div class="flow-row">
+            <div class="flow-step">選多場賠率</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">加入串關購物車</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選串關方式<br><small>3 串 1 / 自由串</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">送單</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 2. 首頁框架 + 頁面邏輯 2.1 === -->
+      <div class="section" id="sec-homepage">
+        <div class="section-title"><span class="num">2</span> 首頁框架</div>
+        <div class="section-desc">Header、Banner、場館切換列 — 整個體育首頁的外殼</div>
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/sports/screen-sport-home.png" alt="體育首頁">
+            <div class="screen-label">體育首頁（預設展開）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/sports/screen-scroll-collapsed.png" alt="滑動收合">
+            <div class="screen-label">滑動後收合狀態</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>Header Bar <span class="cost-tag cost-code">程式層</span></h4>
+              <p>永遠貼在頂部的那條灰色列。左到右：側欄開關、Logo、儲值按鈕、餘額、客服 Icon。</p>
+              <ul>
+                <li>餘額會自動更新，手動點旁邊也能刷新（但有冷卻時間，不讓玩家狂點）</li>
+                <li>餘額本身是從錢包系統拉的，體育動不了；要改錢包顯示規則找錢包 PM</li>
+              </ul>
+              <div class="pm-note">Header 的文字 / 圖示 / 排列順序都是寫死的。想改版面要發版。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>往下滑會收合 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>玩家往下滑超過一段距離後，Banner 消失、Header 變小，讓賽事列表盡量填滿畫面。</p>
+              <div class="pm-note">收合的觸發距離是寫死的。想改收合時機要發版。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>場館切換列 SportBar <span class="cost-tag cost-code">程式層</span></h4>
+              <p>橢圓型切換列：「娛樂 / 體育」切換 + 杯賽入口。杯賽模式下顏色會整個切換成白色系。</p>
+              <div class="pm-note">左右順序、顯示文字、顏色切換規則都是寫死的。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>Banner 輪播 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>自動輪播的活動橫幅。運營在後台設定要上哪幾張、上架 / 下架時間、點了連去哪。</p>
+              <ul>
+                <li>設定了起迄時間的，過期會自動消失</li>
+                <li>沒有圖片檔的會被過濾掉</li>
+              </ul>
+              <div class="pm-note">上 / 下 Banner 是運營日常操作，不用發版。但圖片尺寸 / 排版 / 動畫是寫死的。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 3. 賽事列表 === -->
+      <div class="section" id="sec-matchlist">
+        <div class="section-title"><span class="num">3</span> 賽事列表</div>
+        <div class="section-desc">球種、時段、聯賽篩選、賽事卡片 — 體育最核心的瀏覽頁</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>賽事卡片上的所有資料（隊名、Logo、時間、賠率、紅黃牌、比分）<b>都是場館下發的</b>，我們場館限制。業主問「能不能調賽事顯示的內容？」要先確認他指的是「場館資料」還是「我們自己加的 UI 元素」——前者動不了。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/sports/screen-sport-logged-in.png" alt="已登入展開">
+            <div class="screen-label">已登入展開狀態</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/sports/screen-professional-view.png" alt="專業版">
+            <div class="screen-label">專業版視圖</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>球種快捷列 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>頂部的足 / 籃 / 網 / 電競… tab，會顯示每個球種有幾場賽事。點一下切換球種就會重新拉列表。</p>
+              <div class="pm-note">哪些球種顯示、是否開放，取決於場館那邊給了什麼。我們能做的是在後台白名單決定要不要把那個球種露出來。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>時段切換 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>時段有：滾球、今日、早盤、串關、冠軍。</p>
+              <ul>
+                <li>沒賽事的時段會被隱藏</li>
+                <li>預設優先顯示順序：滾球 &gt; 今日 &gt; 早盤 &gt; 串關 &gt; 冠軍</li>
+                <li>早盤 / 串關會多出一列日期選擇器</li>
+              </ul>
+              <div class="pm-note">時段的名稱、順序、「自動挑第一個有賽事的時段」這規則都是寫死的。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>賽事卡片 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>每張卡顯示：主客隊名 + 隊徽 + 比分 + 時間 + 最多 3 個可點的賠率按鈕。</p>
+              <div class="pm-note">隊名、隊徽、比分、時間、紅黃牌、角球 <b>全都是場館下發的</b>，動不了。要改要去跟場館反映（幾乎不會成功）。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>簡易盤 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>卡片上直接顯示的那幾個快速下注盤口（通常是讓球 / 大小 / 勝負）。每個場館能放哪幾個盤口規則不一樣。</p>
+              <div class="pm-note">每個場館的簡易盤組合是前端寫死的，要動要發版，而且要場館一個一個確認。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>新手版 / 專家版切換 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>專家版會顯示更多盤口與資訊，新手版簡化。運營在後台可以配置每個皮膚的預設版型。</p>
+            </div>
+          </div>
+        </div>
+
+        <table class="type-table">
+          <thead><tr><th>時段</th><th>說明</th><th>運營 / PM 要知道</th></tr></thead>
+          <tbody>
+            <tr><td>滾球（LIVE）</td><td>進行中的賽事</td><td>比分即時更新、最熱門的時段</td></tr>
+            <tr><td>今日</td><td>今天要開打的</td><td>—</td></tr>
+            <tr><td>早盤</td><td>未來幾天的預選賽事</td><td>會多出日期篩選</td></tr>
+            <tr><td>串關</td><td>可以串在一起下注的賽事</td><td>會多出日期篩選</td></tr>
+            <tr><td>冠軍</td><td>整個賽季冠軍歸屬下注</td><td>是獨立列表，跟上面四個不通用</td></tr>
+            <tr><td>關注</td><td>玩家自己收藏的賽事</td><td>個人資料，不能跨裝置同步</td></tr>
+          </tbody>
+        </table>
+
+        <!-- 合併：頁面邏輯 2.1 首頁體育區 -->
+        <div class="logic-merge-divider">頁面邏輯：首頁體育區（BaseSportLayout）— 9 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            首頁體育區（BaseSportLayout）
+            <span class="rule-count">9 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者切換場館 tab</td><td>切到該場館的賽事列表，API 帶不同 vendor 參數</td><td><span class="cost-tag cost-config">設定層</span></td><td>後端 serverAvailable 控制哪些場館顯示；8 個場館不是對等的</td></tr>
+                <tr><td>2</td><td>使用者切換球類 tab</td><td>切到該球類的賽事列表</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>球類由場館下發 sportId，部分球類要後台白名單</td></tr>
+                <tr><td>3</td><td>使用者切換日期分頁（滾球/今日/早盤/串關/冠軍）</td><td>前端切 PERIOD_TYPES 分支，API 呼叫參數不同</td><td><span class="cost-tag cost-code">程式層</span></td><td>改文案「滾球/今日/早盤」不只是改 tab 名字，是切到不同 API 分支</td></tr>
+                <tr><td>4</td><td>使用者在簡易盤點選盤口</td><td>直接加入購物車（單注模式覆蓋舊的）</td><td><span class="cost-tag cost-code">程式層</span></td><td>每個場館有獨立的 simpleMarketConfig，場館間行為不一致</td></tr>
+                <tr><td>5</td><td>使用者切換新手版/專家版</td><td>切換盤口配置</td><td><span class="cost-tag cost-config">設定層</span></td><td>新手版由後台控制</td></tr>
+                <tr><td>6</td><td>使用者切換單盤口/多盤口</td><td>顯示模式變更</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>使用者搜尋聯賽</td><td>彈出搜尋面板，依關鍵字篩選</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>賽事帶有包賠標示</td><td>首存包賠的賽事顯示特殊 tag</td><td><span class="cost-tag cost-code">程式層</span>+<span class="cost-tag cost-config">設定層</span></td><td>依賴活動模組 useFirstPay，改首存包賠要回測體育列表</td></tr>
+                <tr><td>9</td><td>任務系統條件觸發</td><td>體育列表頁顯示任務進度</td><td><span class="cost-tag cost-config">設定層</span></td><td>任務系統的條件引擎直接引進體育列表頁，改任務條件類型會影響體育列表顯示（<a href="https://mgbilibili.atlassian.net/browse/TSD-5200">TSD-5200</a> 踩坑）</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/home/index/sport/components/BaseSportLayout.vue → MatchList.vue → MatchItem.vue<br>
+                核心 API：apis.unify.matchList() / matchListSimplify() / outrightList() / tournamentList()<br>
+                簡易盤配置：utils/sport/sabaConfig.ts / fbConfig.ts / obConfig.ts<br>
+                任務系統耦合：composables/useFindPageMission + @luxon/missions
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 4. 賽事詳情 + 頁面邏輯 2.2 === -->
+      <div class="section" id="sec-matchdetail">
+        <div class="section-title"><span class="num">4</span> 賽事詳情</div>
+        <div class="section-desc">點進一場賽事後的完整資訊頁</div>
+
+        <div class="pm-focus">
+          <b>PM 警報：</b>賽事詳情的底層頁面殼是「共用殼」，被開房、充值直播房、爆料、真人娛樂、聊天室等多個模組共用。<b>任何「改賽事詳情頁佈局」的提議都是大需求</b>，不是小改動。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/sports/screen-match-detail-bet.png" alt="賽事詳情下單">
+            <div class="screen-label">賽事詳情 — 下單頁</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/sports/screen-match-video.png" alt="賽事詳情影片">
+            <div class="screen-label">賽事詳情 — 影片 / 動畫</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>頂部比分板 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>主客隊名、Logo、即時比分、半場比分、紅黃牌、角球。上方可以切換：影片 / 動畫 / 比分板。</p>
+              <div class="pm-note">全部都是場館給的資料，動不了。包括「這場顯示不顯示紅黃牌」也是場館決定。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>下方分頁 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>聊天 / 包賠 / <b>下單</b> / 競猜 / 賽況 / 爆料，預設停在「下單」。</p>
+              <div class="pm-note">分頁的數量、順序、哪個預設、名稱 <b>全是前端寫死的</b>。想改分頁要發版。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>全盤口列表 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>分類：熱門 / 讓球 / 大小 / 勝平負 / 比分 / 單雙。盤口本身與賠率都是場館給的。</p>
+              <div class="pm-note">盤口「分組名稱」我們可以改（翻譯層），但「這個盤口屬於哪一類」場館決定。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>影片播放 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>比賽直播影片，來源是場館給的串流網址。支援子母畫面 (PiP) 邊看邊下注。</p>
+              <div class="pm-note">影片能不能看、有沒有播、畫質多少，全是場館決定。業主抱怨「影片不清楚」要回絕。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>競猜 / 主播 PK 盤口 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>跟場館盤口是<b>兩套</b>。這是我們主播自己推的 PK 題目，跟真實下注沒關係。</p>
+              <div class="pm-note">業主或業務跟你說「競猜盤的贏率太高」時，要分清楚他講的是場館真實盤口還是主播 PK 競猜——兩件事。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>晒單 / 排行榜 / 推單 / 邀請 / 禮物 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>直播房旁邊的各種互動按鈕。每個房間可以獨立決定要不要開。</p>
+              <div class="pm-note">這些是運營每個房間獨立配的，不是全域開關。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>包賠 / 活動進度條 / 直播任務 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>首存包賠彈窗、Rally 活動進度、直播任務進度。都是其他模組注入進來的。</p>
+              <div class="pm-note">想動這些東西要找對應模組的 PM（活動 PM / 任務 PM），體育不管。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 合併：頁面邏輯 2.2 賽事詳情頁 -->
+        <div class="logic-merge-divider">頁面邏輯：賽事詳情頁（match-detail）— 12 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            賽事詳情頁（match-detail）
+            <span class="rule-count">12 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者進入賽事詳情頁</td><td>載入場館下發的賽事資料</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>隊名/icon/比分/賠率全來自場館，我方無法修改</td></tr>
+                <tr><td>2</td><td>盤口顯示鎖盤狀態</td><td>前端禁止點選，顯示鎖定 icon</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>場館 islocked 控制，鎖盤就是鎖盤</td></tr>
+                <tr><td>3</td><td>使用者切換賠率制（馬/港/歐/印）</td><td>前端即時換算顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td>換算公式在 calcOdds，只改顯示不改實際賠率</td></tr>
+                <tr><td>4</td><td>使用者點選盤口</td><td>加入購物車</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>使用者點下方分頁 tab</td><td>切換顯示對應內容（聊天/競猜/賽況/包賠/爆料/下注單）</td><td><span class="cost-tag cost-code">程式層</span></td><td>tab 順序和內容前端寫死，改排序要發版</td></tr>
+                <tr><td>6</td><td>競猜盤口出現</td><td>主播 PK 推送的盤口，獨立於場館盤口</td><td><span class="cost-tag cost-code">程式層</span></td><td>競猜盤口跟場館盤口是<b>兩套系統</b>，PM 不要混講</td></tr>
+                <tr><td>7</td><td>後台開啟晒單/排行/推單/禮物/邀請按鈕</td><td>根據房間權限 permissions.isShow* 顯示或隱藏</td><td><span class="cost-tag cost-config">設定層</span></td><td>每個房間獨立設定</td></tr>
+                <tr><td>8</td><td>有直播來源時</td><td>顯示直播影片（場館下發 URL）</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>flv/m3u8/iframe，URL 是場館的</td></tr>
+                <tr><td>9</td><td>使用者開啟畫中畫</td><td>小視窗播放直播</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>10</td><td>首存包賠活動開啟</td><td>顯示包賠彈窗</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台 firstPayConfig.isActive 控制</td></tr>
+                <tr><td>11</td><td>Rally 活動進行中</td><td>顯示進度條和曬單</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動模組注入，改 Rally = 改活動模組，要回測體育</td></tr>
+                <tr><td>12</td><td>只有大小盤或讓球盤</td><td>才會顯示球頭 K 值</td><td><span class="cost-tag cost-code">程式層</span></td><td>不是每個盤口都有 K。勝負盤、首進球、波膽等沒有 K，PM 寫 UI 需求時不能預設所有盤口都顯示 K</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/match-detail/[vendor]/[sport]/[matchId].vue<br>
+                核心 composable：useMatchDetail.ts + useDetailProvider.ts + useViewModel.ts<br>
+                API：/api/unify/v2/:platform/match/detail<br>
+                進房初始化：useEnterRoomInit.ts（被開房對賭、充值、真人娛樂共用）
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 5. 投注購物車 + 頁面邏輯 2.3 === -->
+      <div class="section" id="sec-cart">
+        <div class="section-title"><span class="num">5</span> 投注購物車</div>
+        <div class="section-desc">玩家點下賠率到送出注單的那個彈出框</div>
+
+        <div class="pm-focus">
+          <b>PM 警報：</b>購物車是體育所有動線的匯合點——它同時承接「首頁簡易盤直接下注、推單、跟單、追注、首存包賠預設」五種來源。業主說「購物車很快啦、小改而已」的時候一律警覺，<b>預設為大需求，工時 +30%</b>。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/sports/screen-cart-single-bet.png" alt="單項投注">
+            <div class="screen-label">單項投注</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/sports/screen-bet-success.png" alt="投注成功">
+            <div class="screen-label">投注成功</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>單注流程</h4>
+              <p>點賠率 → 購物車展開 → 輸入金額 → 確認 → 送出 → 顯示「等待結果」→ 成功 / 失敗彈窗。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>購物車畫面 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>從上到下：場館名稱 + 餘額、選中的盤口 + @賠率、金額輸入框、可贏金額提示、送出按鈕。</p>
+              <div class="pm-note">版面、欄位順序、文案全部寫死。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>下注金額上下限 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>每筆下注的最低 / 最高金額是場館 + VIP 等級雙軸決定的，後端回傳。快捷金額按鈕（100 / 500 / 1000…）也是後台配的。</p>
+              <div class="pm-note">業主想「調整最低下注額」要去後台改 VIP x 場館配置，不用發版。但修改公式（例：加一個新的計算維度）要發版。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>賠率即時變動 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>玩家在購物車裡猶豫的時候，後端會推最新賠率過來。賠率變了會提示，玩家可以接受新賠率、拒絕、或設定「自動接受更好的賠率」。</p>
+              <div class="pm-note">賠率本身動不了（場館給的）。但「變動後的處理規則」我們可以改（接受 / 拒絕 / 彈窗）——那是前端寫死的。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>重複下注保護 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>同一盤口 + 同樣金額 + 短時間內重複點 → 彈窗確認「你是不是按到兩次？」玩家可以勾「不再提示」。</p>
+              <div class="pm-note">冷卻時間、觸發條件都是寫死的。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>餘額不足 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>金額 &gt; 餘額 → 彈窗提示「餘額不足」，按鈕直接導去充值頁。</p>
+              <div class="pm-note">測試帳號會顯示「此為測試帳號，無法操作」而不是導去充值。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>五種下注來源 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>購物車可以從這五個地方打開：</p>
+              <ul>
+                <li>首頁簡易盤直接點賠率</li>
+                <li>推單（主播推的單被玩家點進去）</li>
+                <li>跟單（複製其他玩家的注單）</li>
+                <li>追注（上一注輸了追加）</li>
+                <li>首存包賠（預先幫玩家擺好）</li>
+              </ul>
+              <div class="pm-note">動購物車的需求 <b>每條來源的 flow 都要跑一次</b>。別只驗「從賽事列表點進去」這一條。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 合併：頁面邏輯 2.3 投注購物車 -->
+        <div class="logic-merge-divider">頁面邏輯：投注購物車（carts store）— 13 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            投注購物車（carts store）
+            <span class="rule-count">13 條規則</span>
+          </summary>
+          <div class="card-body">
+            <div class="convergence-warning">
+              ⚠ 收斂點 — 購物車是體育系統的收斂點：所有下注路徑最後都打這一個 store。任何「只是改一下購物車」的需求——預設為大需求，工時 +30%。
+            </div>
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者點選盤口加入購物車</td><td>單注模式：覆蓋舊盤口；串關模式：push 進陣列</td><td><span class="cost-tag cost-code">程式層</span></td><td>五種來源走同一個 store</td></tr>
+                <tr><td>2</td><td>使用者按下注前</td><td>系統自動撈最新賠率比對</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>賠率變動非我方控制</td></tr>
+                <tr><td>3</td><td>賠率在下注送出到成交之間變動</td><td>彈窗讓使用者選擇「接受新賠率」或「拒絕」</td><td><span class="cost-tag cost-locked">場館限制</span></td><td><a href="https://mgbilibili.atlassian.net/browse/TSD-5073">TSD-5073</a> 踩坑：前端必須阻塞流程顯示新賠率</td></tr>
+                <tr><td>4</td><td>使用者餘額不足</td><td>彈窗引導前往充值頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>使用者連按同一個盤口</td><td>重複下注保護彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>使用者輸入金額</td><td>校驗四組邊界：最低 / 最高 / 場館限額 / 餘額</td><td><span class="cost-tag cost-config">設定層</span></td><td>快捷金額由後台配，<a href="https://mgbilibili.atlassian.net/browse/TSD-5085">TSD-5085</a> 踩坑：APP 快捷鍵邏輯跟 H5 不一致</td></tr>
+                <tr><td>7</td><td>使用者切換串關模式</td><td>多盤口加入，自動計算組合賠率</td><td><span class="cost-tag cost-code">程式層</span></td><td>串關可能有場館限制（不是所有場館都能混串）</td></tr>
+                <tr><td>8</td><td>預約下注（fb 場館）</td><td>設定觸發條件，條件達成自動送單</td><td><span class="cost-tag cost-config">設定層</span></td><td>只有 fb 場館支援</td></tr>
+                <tr><td>9</td><td>Cash Out 按鈕</td><td>場館決定有沒有此功能</td><td><span class="cost-tag cost-config">設定層</span></td><td>Cash Out 是場館提供的，我方控制不了規則</td></tr>
+                <tr><td>10</td><td>跟單/推單帶入購物車</td><td>betSourceType 區分來源，各有獨立邏輯</td><td><span class="cost-tag cost-code">程式層</span></td><td>五種來源都要分開測</td></tr>
+                <tr><td>11</td><td>首存包賠預設帶入</td><td>活動模組灌入 firstPayDefaultCartData</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>12</td><td>下注成功/失敗</td><td>顯示結果彈窗 + 打點上報</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>13</td><td>VIP / 風控限制</td><td>根據後端回傳限制下注金額或拒絕</td><td><span class="cost-tag cost-config">設定層</span></td><td>彩金 / 流水倍數 / 下注限制由後端控制</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：stores/carts.ts（1172 行）<br>
+                下注 API：apis.unify.bet()<br>
+                預約 API：apis.unify.reserve() / reserveLimit()<br>
+                Cash Out API：apis.unify.getCashOut()
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 6. 串關 / 預約 / 提前結算 === -->
+      <div class="section" id="sec-combo">
+        <div class="section-title"><span class="num">6</span> 串關 / 預約下注 / 提前結算</div>
+        <div class="section-desc">三個進階玩法，場館支援度完全不對稱</div>
+
+        <div class="pm-focus">
+          <b>PM 警報：</b>這三個功能各場館支援度差很多。任何「全體育生效」的需求，先問「所有場館都包含在內嗎？」——通常答案是「只有 fb / 只有幾個場館」。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/sports/screen-cart-combo-bet.png" alt="串關投注">
+            <div class="screen-label">串關投注</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/sports/screen-cart-reserve.png" alt="預約功能">
+            <div class="screen-label">預約下注</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>串關 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>選多場賠率 → 加入串關購物車 → 選串關方式（3 串 1、自由串等）→ 送單。<b>統一通過或統一失敗</b>，不會單場結算。</p>
+              <div class="pm-note">各場館的「串關方式名稱」不同（例：SABA 叫法跟 FB 叫法不一樣），不能以為玩家看到的是同一套。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>預約下注 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>盤口還沒開的時候先預約一個目標賠率，等開盤後如果賠率達到就自動下注。</p>
+              <div class="pm-note">只有 FB 場館支援。其他場館都沒有。業主問「預約下注怎麼不能用」先確認他在哪個場館。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>提前結算 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>賽事還沒結束就把注單「提早賣掉」，鎖住部分獲利 / 減少損失。</p>
+              <ul>
+                <li><b>FB</b>：支援部分結算、預約結算、最多結 5 次</li>
+                <li><b>OB / SABA</b>：只能全額結，一次結清</li>
+                <li><b>IM-Esport</b>：不支援</li>
+              </ul>
+              <div class="pm-note">能不能提前結算、結算的金額 / 比例全都是場館決定的，前端只顯示。業主想「調整提前結算比例」要回絕——動不了。</div>
+            </div>
+          </div>
+        </div>
+        <img src="/images/sports/section-cart.png" class="overview-img" alt="購物車 / 串關總覽">
+      </div>
+
+      <!-- === 7. 冠軍玩法 + 頁面邏輯 2.4 === -->
+      <div class="section" id="sec-outright">
+        <div class="section-title"><span class="num">7</span> 冠軍玩法</div>
+        <div class="section-desc">對整個賽季的冠軍歸屬下注</div>
+        <div class="annotated-row single">
+          <div class="screen-col">
+            <img src="/images/sports/screen-outright.png" alt="冠軍玩法">
+            <div class="screen-label">冠軍賽事列表</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>冠軍流程 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>切到「冠軍」時段 → 先選聯賽 → 看各隊伍奪冠賠率 → 選一隊下注。</p>
+              <div class="pm-note">冠軍玩法是獨立列表，跟一般賽事列表完全不通用（不會混在一起顯示）。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>FB 冠軍的特殊行為 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>FB 冠軍下注後<b>不會加入「關注列表」</b>，這是 FB 場館的特殊行為。其他場館正常會加進去。</p>
+              <div class="pm-note">這是歷史事故定下來的（Jira <a href="https://mgbilibili.atlassian.net/browse/GOR-879">GOR-879</a>），不要試著「修正」它。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 合併：頁面邏輯 2.4 冠軍玩法頁 -->
+        <div class="logic-merge-divider">頁面邏輯：冠軍玩法頁 — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            冠軍玩法頁
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者在首頁選「冠軍」分頁</td><td>切到 PERIOD_TYPES.OUTRIGHT，呼叫 outrightList() API</td><td><span class="cost-tag cost-code">程式層</span></td><td>冠軍盤口結構跟一般賽事不同，是「聯賽級」而非「賽事級」</td></tr>
+                <tr><td>2</td><td>使用者點選冠軍盤口</td><td>加入購物車</td><td><span class="cost-tag cost-code">程式層</span></td><td>冠軍盤口走同一個購物車 store</td></tr>
+                <tr><td>3</td><td>顯示冠軍賠率</td><td>場館下發</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>賠率不能自行調整</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                API：apis.unify.outrightList()<br>
+                分頁常數：composables/useSimpleMarket/constants.ts → PERIOD_TYPES.OUTRIGHT
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 8. 場館系統 + 頁面邏輯 2.5 === -->
+      <div class="section" id="sec-venue">
+        <div class="section-title"><span class="num">8</span> 場館系統</div>
+        <div class="section-desc">我們不是做市商，是「多場館賽事聚合器」</div>
+
+        <div class="pm-focus">
+          <b>體育系統的本質：</b>我們不自己出賽事、不自己定賠率、不自己做直播。所有這些都是向 8 個場館（FB / IM / OB / SABA / YOO / IM-Esport / LiveCasino / WS168）拿的。我們是聚合入口。<br>
+          <b>這決定了你的權力邊界</b>：賠率、賽事、比分、影片、直播，全部動不了。業主想調這些的需求要當場拒絕。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col"><img src="/images/sports/screen-sidebar.png" alt="側邊欄"><div class="screen-label">側邊欄 — 場館切換</div></div>
+          <div class="screen-col"><img src="/images/sports/screen-venue-maintenance.png" alt="維護"><div class="screen-label">場館維護中</div></div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>場館切換 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>切換場館時，會清空原本的球種、時段選擇，重新拉新場館的資料。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>維護中畫面 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>場館維護中時，整個賽事列表區會被「維護中」頁面取代。維護狀態由運營在後台切換，或場館那邊通知。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>場館不對稱 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>8 個場館不是對等的：支援的功能、玩法、時段、盤口類型各不相同。</p>
+              <div class="pm-note">任何「全體育生效」的需求都要先問 RD：<b>每個場館都包含在內嗎？</b></div>
+            </div>
+          </div>
+        </div>
+
+        <table class="type-table">
+          <thead><tr><th>場館</th><th>玩家印象</th><th>特殊行為</th></tr></thead>
+          <tbody>
+            <tr><td>FB</td><td>功能最全</td><td>唯一支援預約下注、提前結算最完整、冠軍不加關注</td></tr>
+            <tr><td>OB</td><td>電競強</td><td>電競玩法特殊、部分玩法要整數投注</td></tr>
+            <tr><td>SABA</td><td>標準</td><td>玩法名稱跟別家不同</td></tr>
+            <tr><td>IM（自營）</td><td>自營盤</td><td>簡易盤規則是自己定的</td></tr>
+            <tr><td>YOO / WS168 / LiveCasino</td><td>次要場館</td><td>功能支援度最少，各種新功能通常不包含</td></tr>
+            <tr><td>IM-Esport</td><td>電競專場</td><td>不支援提前結算</td></tr>
+          </tbody>
+        </table>
+
+        <!-- 合併：頁面邏輯 2.5 賽事結果頁 -->
+        <div class="logic-merge-divider">頁面邏輯：賽事結果頁 — 3 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            賽事結果頁
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>使用者進入賽果頁</td><td>顯示已結束賽事的比分與結算結果</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>結算時間由場館決定</td></tr>
+                <tr><td>2</td><td>依聯賽分組顯示</td><td>場館下發的聯賽 ID 分組</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>3</td><td>注意此頁是 copy 版</td><td>pages/result/index.vue 實質是 pages/mine/match-result 的 copy</td><td><span class="cost-tag cost-code">程式層</span></td><td>改源頭（Mine 的投注紀錄）要同步改體育賽果頁，反之亦然</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/result/index.vue（copy 自 pages/mine/match-result）<br>
+                引用：LeagueList.vue、ResultList.vue、useMatchResult.js
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 9. 搜尋與篩選 === -->
+      <div class="section" id="sec-search">
+        <div class="section-title"><span class="num">9</span> 搜尋與篩選</div>
+        <div class="section-desc">賽事搜尋、聯賽篩選、早盤日期選擇</div>
+        <div class="annotated-row">
+          <div class="screen-col"><img src="/images/sports/screen-search.png" alt="搜尋"><div class="screen-label">賽事搜尋</div></div>
+          <div class="screen-col"><img src="/images/sports/screen-league-filter.png" alt="篩選"><div class="screen-label">篩選聯賽</div></div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>賽事搜尋 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>輸入文字匹配「賽事名」或「球隊名」。最近搜過的字會留在本機，<b>換裝置不同步</b>。</p>
+              <div class="pm-note">業主問「搜尋紀錄為什麼換手機就沒了」要直接回絕——不值得做同步。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>聯賽篩選 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>可多選聯賽。選了之後列表只顯示該些聯賽的賽事。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 10. 新手引導 === -->
+      <div class="section" id="sec-newbie">
+        <div class="section-title"><span class="num">10</span> 新手引導</div>
+        <div class="section-desc">首次進體育的玩家會看到的三步教學</div>
+        <div class="annotated-row">
+          <div class="screen-col"><img src="/images/sports/screen-newbie-deposit.png" alt="新手存款"><div class="screen-label">教學 — 存款位置</div></div>
+          <div class="screen-col"><img src="/images/sports/screen-newbie-venue-switch.png" alt="新手場館"><div class="screen-label">教學 — 切換場館</div></div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>三步引導 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>教學步驟：1 告訴你儲值按鈕在哪 → 2 告訴你場館切換在哪 → 3 告訴你怎麼點賠率。完成後不再出現。</p>
+              <div class="pm-note">想改教學內容 / 順序 / 指向要發版。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>特定皮膚的每日提示 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>有些皮膚會每天首次進場時顯示「場館切換」提示。</p>
+              <div class="pm-note">「哪些皮膚啟用」是寫死的。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 11. 即時更新 === -->
+      <div class="section" id="sec-polling">
+        <div class="section-title"><span class="num">11</span> 即時更新</div>
+        <div class="section-desc">賠率 / 比分如何自動重新整理</div>
+        <div class="rule-grid">
+          <div class="rule-card">
+            <h4><span class="type-tag type-rule">規則</span>自動更新頻率 <span class="cost-tag cost-code">程式層</span></h4>
+            <p>登入狀態下，賠率與賽事列表每幾秒自動更新一次。未登入狀態頻率較低。</p>
+            <div class="pm-note">頻率是前端寫死的。業主問「為什麼我看到的賠率跟其他人的不一樣？」先確認他是不是未登入狀態。</div>
+          </div>
+          <div class="rule-card">
+            <h4><span class="type-tag type-rule">規則</span>切換時取消舊請求 <span class="cost-tag cost-code">程式層</span></h4>
+            <p>玩家切場館 / 切球種 / 切時段太快時，前端會把還在跑的上一個請求取消掉，避免畫面跳來跳去。</p>
+          </div>
+          <div class="rule-card">
+            <h4><span class="type-tag type-rule">規則</span>頁面背景時停止更新 <span class="cost-tag cost-code">程式層</span></h4>
+            <p>玩家切到其他 tab 或把 app 切到背景時，自動更新會暫停；回到前景時自動恢復。</p>
+            <div class="pm-note">這是省流量的設計。業主問「為什麼我打開 app 後要等一下賠率才會動」要解釋這是正常行為。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === Figma 總覽（附錄）=== -->
+      <div class="section" id="sec-figma">
+        <div class="section-title">Figma 總覽</div>
+        <div class="section-desc">Figma Section 1.1 體育 全景截圖（僅供參考）</div>
+        <img src="/images/sports/section-sport-home.png" class="overview-img" alt="體育首頁總覽">
+      </div>
+    </div><!-- /tab-panel overview -->
+
+    <!-- ================================================================ -->
+    <!-- TAB 2: User Flow                                                  -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="userflow">
+      <div class="tool-section">
+        <div class="tool-section-header">
+          <span class="tool-num">1</span>
+          <h2>User Flow</h2>
+        </div>
+        <p class="tool-section-desc">使用者走過的路徑。寫需求時先畫這個，確認動線對了再往下。共 4 張。</p>
+
+        <!-- 1.1 下注動線 -->
+        <div class="mermaid-card" id="uf-1-1">
+          <div class="mermaid-card-title">1.1 下注動線（主線）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入體育首頁"] --> B["選場館 tab"]
+    B --> C["選球類"]
+    C --> D["瀏覽賽事列表"]
+    D --> E{"簡易盤直接下注?"}
+    E -- "是" --> F["加入購物車"]
+    E -- "否" --> G["進入賽事詳情頁"]
+    G --> H["選擇盤口"]
+    H --> F
+    F --> I{"單注 or 串關?"}
+    I -- "單注" --> J["輸入金額 → 送出下注"]
+    I -- "串關" --> K["繼續選其他賽事盤口"]
+    K --> F
+    J --> L{"下注成功?"}
+    L -- "成功" --> M["下注成功 → 投注記錄"]
+    L -- "失敗：賠率變動" --> N["彈窗：接受新賠率？"]
+    L -- "失敗：其他原因" --> O["失敗原因彈窗"]
+    N -- "接受" --> J
+    N -- "拒絕" --> F
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>「賠率變動」分支是 <a href="https://mgbilibili.atlassian.net/browse/TSD-5073">TSD-5073</a> 踩過的坑——下注送出到成交之間賠率可能變動，前端必須阻塞流程讓使用者確認</li>
+              <li>五種下注來源（簡易盤 / 推單 / 跟單 / 追注 / 首存包賠）最後都匯到同一個購物車，改購物車邏輯 = 大需求</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              首頁體育入口：pages/home/index/sport/components/BaseSportLayout.vue<br>
+              購物車 store：stores/carts.ts（1172 行）<br>
+              下注 API：apis.unify.bet()
+            </div>
+          </details>
+        </div>
+
+        <!-- 1.2 觀賽動線 -->
+        <div class="mermaid-card" id="uf-1-2">
+          <div class="mermaid-card-title">1.2 觀賽動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["賽事詳情頁"] --> B["上方直播影片區"]
+    B --> C{"有直播來源?"}
+    C -- "有" --> D["觀看即時直播"]
+    C -- "沒有" --> E["顯示比分動畫"]
+    A --> F["下方分頁 tab"]
+    F --> G["點選主播頭像"]
+    G --> H["主播資訊彈窗"]
+    H --> I["進入主播主頁 /streamer/detail"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li><b>「查看主播主頁」跳的是 /streamer/detail，不是 /live/xxx</b>。主播系統和直播房是兩件事，PM 常搞混</li>
+              <li>直播影片 URL 來自場館下發（flv / m3u8 / iframe），我方場館限制來源</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              主播跳轉：pages/match-detail/components/StreamerPopup.vue → navigateTo('/streamer/detail')<br>
+              影片播放：utils/video.getLiveStreamUrl<br>
+              主播資訊：pages/match-detail/components/VideoPlayer/components/Sheet/AnchorInfoSheet.vue
+            </div>
+          </details>
+        </div>
+
+        <!-- 1.3 爆料動線 -->
+        <div class="mermaid-card" id="uf-1-3">
+          <div class="mermaid-card-title">1.3 爆料動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["賽事詳情頁"] --> B["底部分頁 tab"]
+    B --> C["點選「爆料」tab"]
+    C --> D["顯示爆料文章列表"]
+    D --> E["點選某篇爆料"]
+    E --> F["進入爆料詳情頁"]
+    F --> G{"跟單?"}
+    G -- "是" --> H["複製注單到購物車"]
+    G -- "否" --> I["瀏覽後返回"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>爆料組件從 gossiping（八卦）模組 import（CardList / PredictIdComponent），<b>改爆料模組的 PM 必須回測體育賽事詳情頁的競猜 tab</b></li>
+              <li>跟單帶入購物車時 betSourceType = follow，跟簡易盤下注是不同來源，測試要分開驗</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              爆料引用：pages/match-detail/components/PredictDetail.vue → import @/pages/gossiping/CardList.vue<br>
+              跟單 API：apis/predict/index.ts
+            </div>
+          </details>
+        </div>
+
+        <!-- 1.4 預約下注動線 -->
+        <div class="mermaid-card" id="uf-1-4">
+          <div class="mermaid-card-title">1.4 預約下注動線（例外路徑）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["賽事詳情頁"] --> B["選擇盤口"]
+    B --> C{"場館支援預約?"}
+    C -- "fb 場館" --> D["開啟預約下注"]
+    D --> E["設定觸發條件"]
+    E --> F["送出預約單"]
+    F --> G["等待條件觸發"]
+    G --> H{"條件達成?"}
+    H -- "是" --> I["自動送單下注"]
+    H -- "超時未達成" --> J["預約單失效"]
+    C -- "其他場館" --> K["無預約功能"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li><b>預約下注只有 fb 場館支援</b>（reserveBetVendor = [fb]）。PM 看這張流程圖就知道：其他 7 個場館沒有這條路</li>
+              <li>業主提「所有場館都要預約下注」→ 直接回覆場館不支援</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              預約 API：apis.unify.reserve() / reserveLimit()<br>
+              場館判斷：utils/sport/index.ts → reserveBetVendor
+            </div>
+          </details>
+        </div>
+      </div>
+    </div><!-- /tab-panel userflow -->
+
+    <!-- ================================================================ -->
+    <!-- TAB 3: 泳道圖                                                     -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="swimlane">
+      <div class="tool-section">
+        <div class="tool-section-header">
+          <span class="tool-num">2</span>
+          <h2>泳道圖</h2>
+        </div>
+        <p class="tool-section-desc">使用者 <-> 前端 <-> 後端 <-> 場館的互動序列。跟 RD 對齊時用這個。共 6 張。</p>
+
+        <!-- 3.1 單注下注流程 -->
+        <div class="mermaid-card" id="sl-3-1">
+          <div class="mermaid-card-title">3.1 單注下注流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant V as 場館（FB/OB/SABA/...）
+
+    U->>FE: 點選盤口加入購物車
+    FE->>FE: 更新購物車 store（覆蓋舊盤口）
+    U->>FE: 輸入金額，按下注
+    FE->>BE: 撈最新賠率（getBetInfo）
+    BE->>V: 查詢即時賠率
+    V-->>BE: 回傳最新賠率
+    BE-->>FE: 回傳賠率（可能已變動）
+    alt 賠率未變動
+        FE->>BE: POST /order/place-bet（送出下注）
+        BE->>V: 轉發下注請求
+        V-->>BE: 回傳成交結果
+        BE-->>FE: 下注成功，回傳注單 ID
+        FE-->>U: 顯示下注成功 + 導向投注記錄
+    else 賠率已變動（TSD-5073 踩坑）
+        FE-->>U: 彈窗：賠率從 X 變成 Y，是否接受？
+        U->>FE: 接受新賠率
+        FE->>BE: POST /order/place-bet（帶新賠率）
+        BE->>V: 轉發下注請求
+        V-->>BE: 回傳成交結果
+        BE-->>FE: 下注成功
+        FE-->>U: 顯示下注成功
+    else 使用者拒絕新賠率
+        FE-->>U: 返回購物車，保留盤口
+    end
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>「賠率變動」是體育下注最常見的異常路徑，<a href="https://mgbilibili.atlassian.net/browse/TSD-5073">TSD-5073</a> 教訓是 APP 投注顯示讓分 -5.5 實際變成 -6.5</li>
+              <li>前端<b>必須阻塞流程</b>讓使用者確認新賠率，不能靜默接受</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              stores/carts.ts → placeBet()<br>
+              apis.unify.bet() → /order/place-bet
+            </div>
+          </details>
+        </div>
+
+        <!-- 3.2 串關下注流程 -->
+        <div class="mermaid-card" id="sl-3-2">
+          <div class="mermaid-card-title">3.2 串關下注流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant V as 場館（多個）
+
+    U->>FE: 選第一場盤口加入串關
+    FE->>FE: push 到 comboCartList
+    U->>FE: 選第二場盤口加入串關
+    FE->>FE: push 到 comboCartList + 計算組合賠率
+    U->>FE: 輸入金額，按下注
+    FE->>BE: 撈所有盤口最新賠率
+    BE->>V: 分別向各場館查詢
+    V-->>BE: 回傳各盤口最新賠率
+    alt 所有盤口賠率未變
+        BE-->>FE: 確認賠率一致
+        FE->>BE: POST /order/place-bet（串關模式）
+        BE->>V: 轉發串關請求
+        V-->>BE: 回傳串關成交結果
+        BE-->>FE: 成功
+        FE-->>U: 顯示串關下注成功
+    else 部分盤口賠率變動
+        BE-->>FE: 回傳哪些盤口變動了
+        FE-->>U: 彈窗：顯示變動的盤口和新賠率
+        U->>FE: 接受 / 拒絕 / 移除變動盤口
+    end
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>串關跟單注不同：多盤口可能跨不同場館，場館間的限制規則不一定相容</li>
+              <li>代理後台串關注單的顯示是「整張輸贏」還是「第一場狀態」？三端要對齊（<a href="https://mgbilibili.atlassian.net/browse/TSD-5099">TSD-5099</a> 踩坑）</li>
+              <li>不是所有場館的盤口都能混串</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              stores/carts.ts → comboCartList<br>
+              串關計算：utils/sport/parlay.ts
+            </div>
+          </details>
+        </div>
+
+        <!-- 3.3 提前結算 -->
+        <div class="mermaid-card" id="sl-3-3">
+          <div class="mermaid-card-title">3.3 提前結算（Cash Out）流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant V as 場館
+
+    FE->>BE: 查詢注單是否支援 Cash Out
+    BE->>V: 查詢 Cash Out 可用性
+    V-->>BE: 回傳可用 / 不可用 + 結算金額
+    alt 場館支援 Cash Out
+        BE-->>FE: 回傳 Cash Out 金額
+        FE-->>U: 顯示「提前結算」按鈕 + 預估金額
+        U->>FE: 點選提前結算
+        FE->>BE: POST Cash Out 請求
+        BE->>V: 轉發結算請求
+        V-->>BE: 確認結算（金額可能微調）
+        BE-->>FE: 結算成功
+        FE-->>U: 顯示結算結果
+    else 場館不支援
+        BE-->>FE: 不顯示按鈕
+    end
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>Cash Out 是場館決定有沒有的功能，不是我方能開啟的。業主問「為什麼某些注單沒有提前結算」→ 回答「場館不支援」</li>
+              <li>結算金額由場館即時計算，我方無法調整</li>
+              <li>「延後結算保留 cash-out」是四大紅線之一，直接拒絕</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              apis.unify.getCashOut()<br>
+              注單查詢：apis.unify.betRecord()
+            </div>
+          </details>
+        </div>
+
+        <!-- 3.4 賽事資料更新 -->
+        <div class="mermaid-card" id="sl-3-4">
+          <div class="mermaid-card-title">3.4 賽事資料更新流程（輪詢）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant FE as 前端
+    participant BE as 後端
+    participant V as 場館
+
+    loop 定期輪詢（依頁面而異）
+        FE->>BE: 撈最新賽事資料
+        BE->>V: 查詢場館即時資料
+        V-->>BE: 回傳賽事狀態 + 比分 + 盤口 + 賠率
+        BE-->>FE: 回傳更新後的資料
+        alt 盤口有變動
+            FE->>FE: 更新畫面 + 標記賠率升降箭頭
+            FE->>FE: 如果購物車中有該盤口 → 提示賠率已變動
+        else 盤口鎖盤
+            FE->>FE: 禁止點選 + 顯示鎖定 icon
+        else 賽事結束
+            FE->>FE: 從列表移除或標為已結束
+        end
+    end
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>賽事資料全由場館下發，前端只能格式化顯示。比分、時鐘方向、盤口狀態都是場館說了算</li>
+              <li>大賽事時段（杯賽開幕、世界盃、NBA 季後賽）輪詢流量暴增，<a href="https://mgbilibili.atlassian.net/browse/TSD-5145">TSD-5145</a> 踩坑：直播 + 體育投注一起卡。新功能上線前要找運維預先擴容</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              輪詢邏輯：composables/useMatchPolling.ts<br>
+              資料更新：apis.unify.matchList() / matchDetail()
+            </div>
+          </details>
+        </div>
+
+        <!-- 3.5 賠率取得與顯示流程 -->
+        <div class="mermaid-card" id="sl-3-5">
+          <div class="mermaid-card-title">3.5 賠率取得與顯示流程（進頁面自動觸發）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant 使用者設定
+    participant 前端
+    participant 後端
+    participant 場館
+
+    Note over 前端: 使用者進入賽事列表或詳情頁
+
+    前端->>後端: 呼叫 matchList() 或 matchDetail()
+    後端->>場館: 向對應場館查詢賽事+盤口資料
+    場館-->>後端: 回傳 raw data（markets[].selections[].oddsvalue + handicap + bettype + islocked）
+    Note right of 場館: oddsvalue 是場館的原始數字，不是最終顯示值
+
+    後端-->>前端: 聚合回傳（統一格式）
+
+    前端->>使用者設定: 讀取使用者偏好的賠率制（OddsType: 1馬來/2香港/3歐洲/4印尼）
+    使用者設定-->>前端: 回傳 OddsType
+
+    Note over 前端: calcOdds() 將 raw oddsvalue 換算為使用者選定的賠率制顯示值
+    Note over 前端: calcOdds 是前端做的，不是後端
+
+    alt bettype = 大小盤 或 讓球盤
+        前端->>前端: 顯示 K 值（handicap）
+    else 其他盤口（勝負/波膽/首進球...）
+        前端->>前端: 不顯示 K 值
+    end
+    Note over 前端: K 值判斷也是前端邏輯
+
+    前端->>前端: 渲染賠率到畫面
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>場館下發的 <code>oddsvalue</code> 是 raw 數字，前端 <code>calcOdds()</code> 才做馬/港/歐/印換算——<b>賠率顯示有 bug 先查前端換算邏輯，不是查後端</b></li>
+              <li>K 值只有大小盤和讓球盤才有。UI 需求不能預設「所有盤口都顯示 K 值」，否則勝負盤會顯示空白</li>
+              <li>使用者可以在設定裡切換賠率制，切換後只是前端重新算一次 <code>calcOdds()</code>，不會重打 API</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              賠率換算邏輯：utils/sport/index.ts → calcOdds()<br>
+              OddsType enum：utils/sport/index.ts → OddsType (1=馬來/2=香港/3=歐洲/4=印尼)<br>
+              賽事詳情 API：/api/unify/v2/:platform/match/detail<br>
+              賽事列表 API：apis.unify.matchList() / matchListSimplify()<br>
+              四層資料 Type：apis/sports/sports.d.ts → BasicMatchItem / MarketItem / SelectionItem<br>
+              K 值欄位：SelectionItem.handicap<br>
+              bettype 定義：MarketItem.bettype + bettypename
+            </div>
+          </details>
+        </div>
+
+        <!-- 3.6 賠率即時更新流程 -->
+        <div class="mermaid-card" id="sl-3-6">
+          <div class="mermaid-card-title">3.6 賠率即時更新流程（輪詢）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant 前端
+    participant 後端
+    participant 場館
+    participant 購物車
+
+    loop 定期輪詢（polling interval）
+        前端->>後端: 輪詢 matchList / matchDetail
+        後端->>場館: 查詢最新賠率
+        場館-->>後端: 回傳最新 oddsvalue + islocked + marketstatus
+        後端-->>前端: 聚合回傳
+
+        前端->>前端: calcOdds() 換算新賠率
+
+        前端->>前端: 比對新舊賠率
+
+        alt 賠率上升
+            前端->>前端: 顯示升箭頭（綠色/紅色依設計）
+        else 賠率下降
+            前端->>前端: 顯示降箭頭
+        else 盤口鎖盤（islocked = true）
+            前端->>前端: 該盤口禁止點選、灰化顯示
+        else 賠率未變
+            前端->>前端: 維持原樣
+        end
+
+        前端->>購物車: 檢查：使用者購物車是否有此盤口？
+        alt 購物車有該盤口且賠率已變
+            購物車->>前端: 觸發賠率變動提示（提醒使用者賠率已更新）
+        else 購物車有該盤口且盤口鎖盤
+            購物車->>前端: 該注單標記無法下注
+        end
+    end
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>賠率升降箭頭是前端自己比對新舊值產生的——<b>不是場館告訴你「升了還降了」</b>，是前端自己算的</li>
+              <li>鎖盤（<code>islocked</code>）是場館級的硬控制，前端只能顯示灰化，沒有任何 override 方式</li>
+              <li>輪詢頻率影響使用者體驗和伺服器成本——改輪詢間隔要同時評估 UX 和後端負載</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              購物車 store：stores/carts.ts（1172 行）<br>
+              賠率比對與箭頭邏輯：前端 MatchItem / SelectionItem 渲染層<br>
+              鎖盤欄位：MarketItem.islocked / MarketItem.marketstatus<br>
+              下注前撈最新賠率：apis.unify.getBetInfo()<br>
+              購物車賠率變動提示：stores/carts.ts 裡的賠率比對邏輯
+            </div>
+          </details>
+        </div>
+      </div>
+    </div><!-- /tab-panel swimlane -->
+
+    <!-- ================================================================ -->
+    <!-- TAB 4: 跨服務限制                                                 -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="constraints">
+      <div class="tool-section">
+        <div class="tool-section-header">
+          <span class="tool-num">3</span>
+          <h2>跨服務限制</h2>
+        </div>
+        <p class="tool-section-desc">擋需求、評風險用這個。業主提的做不到、或做了會爆炸的事全在這裡。</p>
+
+        <div class="stats-pill">
+          34 條限制 · <span style="color:#f87171">7 場館</span> <span style="color:#fbbf24">14 耦合</span> <span style="color:#60a5fa">6 技術</span> <span style="color:#94a3b8">7 業務</span>
+        </div>
+
+        <!-- 4.1 場館限制 -->
+        <div class="constraint-category" id="cat-venue">
+          <div class="constraint-header">
+            <h3 style="color:#f87171;">場館限制（7 條）</h3>
+          </div>
+          <p class="constraint-pm-guide">PM 碰到這類需求，不要轉 RD 評估工時，直接告訴業主「技術做不到」。</p>
+
+          <details class="constraint-card cat-venue"><summary>#1 賠率不能改</summary><div class="constraint-detail"><div class="label">描述</div>oddsvalue 從場館即時下發，前端只做 calcOdds 在馬/港/歐/印四種制之間換算顯示。沒有任何加價、減價、偏移的管道。<div class="label">影響範圍</div>全體育投注流程（購物車、簡易盤、賽事詳情、跟單、推單）<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
+          <details class="constraint-card cat-venue"><summary>#2 結算時機不能改</summary><div class="constraint-detail"><div class="label">描述</div>結算時間由場館決定，前端只讀 rbtimestatus 和 eventstatus。Cash Out 也是場館提供的能力，不是我方可調的時序。<div class="label">影響範圍</div>注單結算、Cash Out、賽事狀態顯示<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
+          <details class="constraint-card cat-venue"><summary>#3 盤口鎖盤狀態不能繞過</summary><div class="constraint-detail"><div class="label">描述</div>market.islocked = true 時前端必須擋住下注，不能偷偷接收。這是場館控制的狀態。<div class="label">影響範圍</div>購物車送單驗證、盤口顯示<div class="label">來源</div>Code 場館下發規則</div></details>
+          <details class="constraint-card cat-venue"><summary>#4 賽事基本資料不能改</summary><div class="constraint-detail"><div class="label">描述</div>主客隊名稱、icon、聯賽名、即時比分、紅黃牌/角球、賽事時間全部場館下發，URL 也是場館的。<div class="label">影響範圍</div>賽事詳情頁、賽事列表卡片、購物車 TicketInfo<div class="label">來源</div>Code 場館資料結構</div></details>
+          <details class="constraint-card cat-venue"><summary>#5 預約下注只有 fb 場館支援</summary><div class="constraint-detail"><div class="label">描述</div>reserveBetVendor = [fb]，其他場館 API 不支援預約功能，硬做也接不上。<div class="label">影響範圍</div>購物車預約下注功能<div class="label">來源</div>Code 場館差異化</div></details>
+          <details class="constraint-card cat-venue"><summary>#6 直播影片來源不能改</summary><div class="constraint-detail"><div class="label">描述</div>livestreams[] 的 flv/m3u8/iframe URL 都是場館下發，我方無法替換或加工畫面。<div class="label">影響範圍</div>賽事詳情頁直播播放器<div class="label">來源</div>Code 直播資料結構</div></details>
+          <details class="constraint-card cat-venue"><summary>#7 盤口名稱核心 type 不能改</summary><div class="constraint-detail"><div class="label">描述</div>場館給 bettype / bettypename 的 key，前端只能改 i18n 翻譯層，核心 bettype 定義動不了。<div class="label">影響範圍</div>盤口顯示、簡易盤配置<div class="label">來源</div>Code 盤口資料結構</div></details>
+        </div>
+
+        <!-- 4.2 模組耦合 -->
+        <div class="constraint-category" id="cat-coupling">
+          <div class="constraint-header">
+            <h3 style="color:#fbbf24;">模組耦合（14 條）</h3>
+          </div>
+          <p class="constraint-pm-guide">PM 收到這類改動需求時，要把「同步測 B」的範圍寫進需求單的 QA scope。</p>
+
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #1 購物車 ↔ 五種下注來源</summary><div class="constraint-detail"><div class="label">改 A...</div>改 stores/carts.ts<div class="label">...要同步測 B</div>首頁簡易盤 / 賽事詳情 / 推單 / 跟單 / 追注 / 曬單 / 冠軍盤 / 預約下注 / Cash Out 全部路徑<div class="label">來源</div>Code + Narrative</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #2 體育詳情 ↔ 爆料（gossiping）</summary><div class="constraint-detail"><div class="label">改 A...</div>改 pages/gossiping 的 CardList / AvatarContent<div class="label">...要同步測 B</div>體育賽事詳情頁的「競猜 tab」和「主播彈窗」<div class="label">來源</div>Code 模組依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #3 體育詳情 ↔ 直播娛樂（live-casino）</summary><div class="constraint-detail"><div class="label">改 A...</div>改 pages/live/live-casino 的 Transfer / Offline dialog<div class="label">...要同步測 B</div>體育詳情頁的轉房流程和主播離線流程<div class="label">來源</div>Code 模組依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #4 體育詳情 ↔ Rally 活動</summary><div class="constraint-detail"><div class="label">改 A...</div>改 pages/activity/index/rally<div class="label">...要同步測 B</div>體育詳情頁的 Rally 進度條、曬單列表、幫砍彈窗<div class="label">來源</div>Code 模組依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #5 體育列表 ↔ 任務條件引擎</summary><div class="constraint-detail"><div class="label">改 A...</div>改任務系統 conditionTypeLv1<div class="label">...要同步測 B</div>體育列表頁的 useFindPageMission 顯示（已出過 <a href="https://mgbilibili.atlassian.net/browse/TSD-5200">TSD-5200</a> 事故）<div class="label">來源</div>Code + Narrative</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #6 進房初始化 ↔ 四個模組</summary><div class="constraint-detail"><div class="label">改 A...</div>改 useEnterRoomInit<div class="label">...要同步測 B</div>體育詳情 / 開房對賭 / 充值直播房 / 真人娛樂房<div class="label">來源</div>Code 共用元件</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #7 首存包賠 ↔ 三個入口</summary><div class="constraint-detail"><div class="label">改 A...</div>改 useFirstPay / FirstPayPopup<div class="label">...要同步測 B</div>首頁體育賠率標示 + 賽事詳情包賠彈窗 + 購物車預設資料<div class="label">來源</div>Code 模組依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #8 賠率格式化 ↔ 爆料</summary><div class="constraint-detail"><div class="label">改 A...</div>改 useFormatBetList.combineMarketSelectionsAndPropriety<div class="label">...要同步測 B</div>爆料主播的賠率顯示 + 體育詳情下注列表<div class="label">來源</div>Code 共用函式</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #9 全域 game store ↔ 四個頁面</summary><div class="constraint-detail"><div class="label">改 A...</div>改 stores/game.ts 的 gameList / sportVendorList<div class="label">...要同步測 B</div>首頁體育 tab、排程頁、賽果頁、Mine 投注紀錄<div class="label">來源</div>Code 全域 store</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #10 schedule / result 頁 ↔ 源頭</summary><div class="constraint-detail"><div class="label">改 A...</div>改 pages/live/components/Schedule 或 pages/mine/match-result<div class="label">...要同步測 B</div>體育的 pages/schedule/ 和 pages/result/（copy 版要同步）<div class="label">來源</div>Code 複製版問題</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #11 競猜 / PK ↔ 直播娛樂</summary><div class="constraint-detail"><div class="label">改 A...</div>改 useLiveBetting / PK 相關<div class="label">...要同步測 B</div>體育詳情競猜 tab + 真人娛樂 + LiveBettingSheet<div class="label">來源</div>Code 模組依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;</span> #12 聊天室引導語 ↔ 四條路由</summary><div class="constraint-detail"><div class="label">改 A...</div>改 /mine/rewardsTasks、/deposit、/home/sport、/bind-phone 路由<div class="label">...要同步測 B</div>體育聊天室的 SpeechGuide 跳轉會壞<div class="label">來源</div>Code 路由依賴</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #13 場館 enum ↔ 全站</summary><div class="constraint-detail"><div class="label">改 A...</div>改 SPORT_VENDOR enum 或 SPORT_VENDOR_BY_SRCTYPE<div class="label">...要同步測 B</div>全體育模組 + mine/bet-record + predict API 全要回測<div class="label">來源</div>Code 全域 enum</div></details>
+          <details class="constraint-card cat-coupling"><summary><span class="sev-stars">&#9733;&#9733;&#9733;</span> #14 match-detail 共用殼 ↔ 93 個檔案</summary><div class="constraint-detail"><div class="label">改 A...</div>重構 pages/match-detail 任何共用元件<div class="label">...要同步測 B</div>open-room / deposit / gossiping / live 各娛樂場館 / chat / 首頁推薦<div class="label">來源</div>Code（93 個反向依賴）</div></details>
+        </div>
+
+        <!-- 4.3 技術限制 -->
+        <div class="constraint-category" id="cat-tech">
+          <div class="constraint-header">
+            <h3 style="color:#60a5fa;">技術限制（6 條）</h3>
+          </div>
+          <p class="constraint-pm-guide">PM 碰到這類需求，先別答應工時，拉 RD 評估可行性再回覆。</p>
+
+          <details class="constraint-card cat-tech"><summary>#1 MongoDB 撐不住自動化活動的批次重置</summary><div class="constraint-detail"><div class="label">描述</div>新版賽事分頁的自動化活動觸發「重置任務進度」時，對 MongoDB 批次寫入量瞬間衝高，活動檔位數 x 會員量一大就壓垮 DB。已釀 S 級事故。<div class="label">歷史證據</div><a href="https://mgbilibili.atlassian.net/browse/TSD-5266">TSD-5266</a>，2026-03，影響全業主，處理 24 分鐘<div class="label">來源</div>L2-sport-004</div></details>
+          <details class="constraint-card cat-tech"><summary>#2 體育注單表查詢受 mysql/tidb 切換流程綁定</summary><div class="constraint-detail"><div class="label">描述</div>cloud_data_game_transaction_sport 資料量大到必須拆 TiDB，切換流程需 SRE + RD 配合 8 步驟，任何牽涉注單表 schema 的需求工時要 +30%。<div class="label">歷史證據</div><a href="https://mgbilibili.atlassian.net/browse/GOR-6205">GOR-6205</a>（2025-12 到 2026-04 仍在驗收）+ GOR-6369 / GOR-6042 同家族<div class="label">來源</div>L2-sport-006</div></details>
+          <details class="constraint-card cat-tech"><summary>#3 直播 + 體育共用 infra 的流量峰值瓶頸</summary><div class="constraint-detail"><div class="label">描述</div>直播列表、聊天室、體育投注盤口共用 API gateway / DB slave / Redis，大賽事在線人數瞬間衝高時三個功能一起卡死。<div class="label">歷史證據</div><a href="https://mgbilibili.atlassian.net/browse/TSD-5145">TSD-5145</a>，2026-01，S 級事故，影響水果/TB，處理 1 小時 36 分鐘<div class="label">來源</div>L2-sport-013</div></details>
+          <details class="constraint-card cat-tech"><summary>#4 雙前端同步（Vue-H5 / Uni-APP）維護成本</summary><div class="constraint-detail"><div class="label">描述</div>體育 bug 修復必須拆 [前端][Vue-H5] + [前端][Uni-APP] 雙子單，APP 還有審核期。H5 修了 APP 沒跟上會反覆復現。<div class="label">歷史證據</div><a href="https://mgbilibili.atlassian.net/browse/TSD-5326">TSD-5326</a>，APP 盤口消失「還是復現」<div class="label">來源</div>L2-sport-008 + Jira checklist</div></details>
+          <details class="constraint-card cat-tech"><summary>#5 prod / test / slave 三環境 schema drift</summary><div class="constraint-detail"><div class="label">描述</div>DB schema 變更如果沒有三套環境同步，直播競猜開獎等依賴 DB 結構的功能會直接失敗。<div class="label">歷史證據</div><a href="https://mgbilibili.atlassian.net/browse/TSD-5305">TSD-5305</a>，直播競猜開獎失敗<div class="label">來源</div>L2-sport-005</div></details>
+          <details class="constraint-card cat-tech"><summary>#6 後端單點人力瓶頸（Lily Shen / Alfred Yang）</summary><div class="constraint-detail"><div class="label">描述</div>體育模組的 TiDB 切換、house keeping、schema 變更、自動化活動修復全壓在這兩位身上，sprint capacity 經常不夠。<div class="label">歷史證據</div>GOR-6205 / 6042 / 6369 / 6464 全部壓同兩人<div class="label">來源</div>Jira checklist 單點風險</div></details>
+        </div>
+
+        <!-- 4.4 業務限制 -->
+        <div class="constraint-category" id="cat-biz">
+          <div class="constraint-header">
+            <h3 style="color:#94a3b8;">業務限制（7 條）</h3>
+          </div>
+          <p class="constraint-pm-guide">業主問到這些，PM 直接回「不行」，不用拉會議討論。</p>
+
+          <details class="constraint-card cat-biz"><summary>#1 VIP 賠率差異化</summary><div class="constraint-detail"><div class="label">描述</div>oddsvalue 沒有 VIP 變體欄位。想對 VIP 做優惠，走「返水 / 彩金 / 活動 / 流水減免」這些業務側路徑，不是改賠率。<div class="label">影響範圍</div>VIP 體系、體育賠率顯示<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
+          <details class="constraint-card cat-biz"><summary>#2 自動下注 / 追漲追跌</summary><div class="constraint-detail"><div class="label">描述</div>自動化交易屬重大合規風險，不論場館技術上能不能做，業務上都不能做。<div class="label">影響範圍</div>購物車下注流程<div class="label">來源</div>Hanniber 定調 + 合規</div></details>
+          <details class="constraint-card cat-biz"><summary>#3 前端截取直播畫面做二次分發</summary><div class="constraint-detail"><div class="label">描述</div>直播影片版權屬場館 / 內容提供方，截取或轉發構成侵權。<div class="label">影響範圍</div>賽事詳情頁直播播放器、分享功能<div class="label">來源</div>版權法規</div></details>
+          <details class="constraint-card cat-biz"><summary>#4 鎖盤期間偷偷接收下注</summary><div class="constraint-detail"><div class="label">描述</div>islocked = true 就該擋，繞過鎖盤接單是違規行為。場館設鎖盤就是不允許此時段下注。<div class="label">影響範圍</div>購物車送單驗證<div class="label">來源</div>場館合約 + 合規</div></details>
+          <details class="constraint-card cat-biz"><summary>#5 per-user 盤口差異化</summary><div class="constraint-detail"><div class="label">描述</div>盤口是場館級下發，MatchItem / MarketItem 沒有 user-specific 欄位。能做的是 VIP 的下注限制 / 金額限制 / 快捷金額，不是盤口本身。<div class="label">影響範圍</div>賽事列表、賽事詳情、購物車<div class="label">來源</div>Hanniber 定調 + Code 紅線</div></details>
+          <details class="constraint-card cat-biz"><summary>#6 延後結算</summary><div class="constraint-detail"><div class="label">描述</div>結算時間完全由場館控制，我方沒有任何 API 可以延後或提前觸發結算。<div class="label">影響範圍</div>注單結算流程<div class="label">來源</div>Hanniber 定調</div></details>
+          <details class="constraint-card cat-biz"><summary>#7 跨場館合併盤口</summary><div class="constraint-detail"><div class="label">描述</div>把 fb 的上半場跟 ob 的下半場湊一張串關單，技術上各場館是獨立的下注通道，串關只能在同一場館內。<div class="label">影響範圍</div>串關購物車<div class="label">來源</div>Code 場館架構</div></details>
+        </div>
+      </div>
+    </div><!-- /tab-panel constraints -->
+
+    <!-- ================================================================ -->
+    <!-- TAB 5: API                                                        -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="api">
+      <div class="api-placeholder">
+        <h3>API 契約尚未建立</h3>
+        <p>此區域預留給體育模組的 API 契約文件，後續由 Windelf 產出後補上。</p>
+      </div>
+    </div><!-- /tab-panel api -->
+
+    <!-- ============ Footer ============ -->
+    <div class="footer">
+      <p>體育賽事 — 功能知識庫</p>
+      <div class="footer-links">
+        <a href="features.html">模組總覽</a>
+        <a href="framework.html">框架說明</a>
+        <a href="roadmap.html">路線圖</a>
+      </div>
+      <p style="margin-top:12px;">最後更新：2026-04-12</p>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
+
+<script>
+  // Mermaid init
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      lineColor: '#475569',
+      secondaryColor: '#334155'
+    }
+  });
+
+  // Tab switching
+  const tabPills = document.querySelectorAll('.tab-pill');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+
+    // Render mermaid diagrams when their tab becomes visible
+    if (!mermaidRendered[tabId]) {
+      const panel = document.getElementById(tabId);
+      const diagrams = panel.querySelectorAll('.mermaid');
+      if (diagrams.length > 0) {
+        mermaid.run({ nodes: diagrams });
+        mermaidRendered[tabId] = true;
+      }
+    }
+
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabPills.forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab(pill.getAttribute('data-tab'));
+    });
+  });
+
+  // Deep link on load
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints', 'api'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) {
+    switchTab(hash);
+  } else {
+    // Render mermaid in default (overview) tab — overview has no mermaid, but init anyway
+    mermaidRendered['overview'] = true;
+  }
+</script>
+</body>
+</html>

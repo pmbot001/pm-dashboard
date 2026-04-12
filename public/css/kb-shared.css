@@ -286,6 +286,7 @@ a { color: #60a5fa; }
   border-radius: 6px;
   font-weight: 700;
   margin-left: auto;
+  white-space: nowrap;
 }
 .cost-locked { background: #3b1a1a; color: #fca5a5; border: 1px solid #7f1d1d; }
 .cost-config { background: #3b2f1a; color: #fde68a; border: 1px solid #78350f; }
