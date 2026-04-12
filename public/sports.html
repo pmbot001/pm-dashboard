@@ -40,8 +40,8 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* Full-width layout (no sidebar) */
-    .v2-main { margin-left: 0 !important; }
+    /* Full-width layout (no sidebar) — overridden by .has-side-nav */
+    .v2-main { margin-left: 0; }
 
     /* ===== Mermaid card ===== */
     .mermaid-card {
@@ -204,11 +204,89 @@
       color: #f97316;
     }
 
+    /* ===== Side Nav (sticky left) ===== */
+    .side-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 220px;
+      height: 100vh;
+      background: #111827;
+      border-right: 1px solid #1e293b;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      padding-top: 0;
+    }
+    .side-nav-inner {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0 24px;
+      scrollbar-width: thin;
+      scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .side-nav-inner::-webkit-scrollbar-track { background: transparent; }
+
+    .side-nav .sn-title {
+      padding: 12px 16px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block;
+      padding: 6px 16px 6px 18px;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all .12s;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .side-nav .sn-item:hover {
+      color: #e2e8f0;
+      background: #1e293b;
+    }
+    .side-nav .sn-item.active {
+      color: #fff;
+      border-left-color: #f97316;
+      background: rgba(249,115,22,.06);
+    }
+
+    /* Push main content right when side-nav exists */
+    .has-side-nav .main-content.v2-main {
+      margin-left: 220px !important;
+    }
+    /* tab-nav is inside .main-content so it inherits the margin-left push */
+
+    /* Mobile: hide side nav */
+    @media (max-width: 768px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+    }
+
   </style>
 </head>
 <body>
 
 <div class="layout">
+  <!-- ============ Side Nav (desktop only) ============ -->
+  <aside class="side-nav" id="sideNav">
+    <div class="side-nav-inner" id="sideNavInner"></div>
+  </aside>
+
   <div class="main-content v2-main">
 
     <!-- ============ Header ============ -->
@@ -240,7 +318,7 @@
     <div class="tab-panel active" id="overview">
 
       <!-- === 賠率呈現規則（跨頁面通用，放最上方）=== -->
-      <div class="section">
+      <div class="section" id="nav-odds">
         <div class="section-title"><span class="num">0</span> 跨頁面通用：賠率呈現規則</div>
         <div class="section-desc">所有頁面共用的賠率顯示邏輯，不屬於任何單一頁面</div>
 
@@ -427,7 +505,7 @@
         </table>
 
         <!-- 合併：頁面邏輯 2.1 首頁體育區 -->
-        <div class="logic-merge-divider">頁面邏輯：首頁體育區（BaseSportLayout）— 9 條規則</div>
+        <div class="logic-merge-divider" id="nav-homepage">頁面邏輯：首頁體育區（BaseSportLayout）— 9 條規則</div>
         <details class="page-logic-card">
           <summary>
             首頁體育區（BaseSportLayout）
@@ -519,7 +597,7 @@
         </div>
 
         <!-- 合併：頁面邏輯 2.2 賽事詳情頁 -->
-        <div class="logic-merge-divider">頁面邏輯：賽事詳情頁（match-detail）— 12 條規則</div>
+        <div class="logic-merge-divider" id="nav-matchdetail">頁面邏輯：賽事詳情頁（match-detail）— 12 條規則</div>
         <details class="page-logic-card">
           <summary>
             賽事詳情頁（match-detail）
@@ -620,7 +698,7 @@
         </div>
 
         <!-- 合併：頁面邏輯 2.3 投注購物車 -->
-        <div class="logic-merge-divider">頁面邏輯：投注購物車（carts store）— 13 條規則</div>
+        <div class="logic-merge-divider" id="nav-cart">頁面邏輯：投注購物車（carts store）— 13 條規則</div>
         <details class="page-logic-card">
           <summary>
             投注購物車（carts store）
@@ -729,7 +807,7 @@
         </div>
 
         <!-- 合併：頁面邏輯 2.4 冠軍玩法頁 -->
-        <div class="logic-merge-divider">頁面邏輯：冠軍玩法頁 — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-outright">頁面邏輯：冠軍玩法頁 — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             冠軍玩法頁
@@ -798,7 +876,7 @@
         </table>
 
         <!-- 合併：頁面邏輯 2.5 賽事結果頁 -->
-        <div class="logic-merge-divider">頁面邏輯：賽事結果頁 — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-result">頁面邏輯：賽事結果頁 — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             賽事結果頁
@@ -899,7 +977,7 @@
         <div class="section-desc">聊天室、鬥雞、推單、曬單、排行榜、賽況、自動彈窗等賽事詳情頁內的獨立子系統</div>
 
         <!-- 2.7 聊天室系統 -->
-        <div class="logic-merge-divider">頁面邏輯 2.7：聊天室系統 — 14 條規則 + 3 子系統</div>
+        <div class="logic-merge-divider" id="nav-chatroom">頁面邏輯 2.7：聊天室系統 — 14 條規則 + 3 子系統</div>
         <details class="page-logic-card">
           <summary>
             聊天室系統
@@ -1013,7 +1091,7 @@
         </details>
 
         <!-- 2.8 鬥雞系統 -->
-        <div class="logic-merge-divider">頁面邏輯 2.8：鬥雞系統 — 18 條規則</div>
+        <div class="logic-merge-divider" id="nav-cockfight">頁面邏輯 2.8：鬥雞系統 — 18 條規則</div>
         <details class="page-logic-card">
           <summary>
             鬥雞系統
@@ -1057,7 +1135,7 @@
         </details>
 
         <!-- 2.9 推單系統 -->
-        <div class="logic-merge-divider">頁面邏輯 2.9：推單系統 — 6 條規則</div>
+        <div class="logic-merge-divider" id="nav-tipsing">頁面邏輯 2.9：推單系統 — 6 條規則</div>
         <details class="page-logic-card">
           <summary>
             推單系統
@@ -1086,7 +1164,7 @@
         </details>
 
         <!-- 2.10 曬單系統 -->
-        <div class="logic-merge-divider">頁面邏輯 2.10：曬單系統 — 6 條規則 + 1 子系統</div>
+        <div class="logic-merge-divider" id="nav-showbet">頁面邏輯 2.10：曬單系統 — 6 條規則 + 1 子系統</div>
         <details class="page-logic-card">
           <summary>
             曬單系統
@@ -1141,7 +1219,7 @@
         </details>
 
         <!-- 2.11 排行榜 -->
-        <div class="logic-merge-divider">頁面邏輯 2.11：排行榜 — 5 條規則</div>
+        <div class="logic-merge-divider" id="nav-ranking">頁面邏輯 2.11：排行榜 — 5 條規則</div>
         <details class="page-logic-card">
           <summary>
             排行榜
@@ -1169,7 +1247,7 @@
         </details>
 
         <!-- 2.12 賽況資料 -->
-        <div class="logic-merge-divider">頁面邏輯 2.12：賽況資料 — 6 條規則</div>
+        <div class="logic-merge-divider" id="nav-matchdata">頁面邏輯 2.12：賽況資料 — 6 條規則</div>
         <details class="page-logic-card">
           <summary>
             賽況資料
@@ -1199,7 +1277,7 @@
         </details>
 
         <!-- 2.13 自動彈窗排程 -->
-        <div class="logic-merge-divider">頁面邏輯 2.13：自動彈窗排程 — 11 條規則</div>
+        <div class="logic-merge-divider" id="nav-autopop">頁面邏輯 2.13：自動彈窗排程 — 11 條規則</div>
         <details class="page-logic-card">
           <summary>
             自動彈窗排程
@@ -1239,7 +1317,7 @@
         <div class="section-desc">PK 通知、跟單、競猜、送禮等玩家互動功能</div>
 
         <!-- 2.14 PK 通知系統 -->
-        <div class="logic-merge-divider">頁面邏輯 2.14：PK 通知系統 — 5 條規則</div>
+        <div class="logic-merge-divider" id="nav-pk">頁面邏輯 2.14：PK 通知系統 — 5 條規則</div>
         <details class="page-logic-card">
           <summary>
             PK 通知系統
@@ -1268,7 +1346,7 @@
         </details>
 
         <!-- 2.15 跟單彈窗 -->
-        <div class="logic-merge-divider">頁面邏輯 2.15：跟單彈窗 — 4 條規則</div>
+        <div class="logic-merge-divider" id="nav-follow">頁面邏輯 2.15：跟單彈窗 — 4 條規則</div>
         <details class="page-logic-card">
           <summary>
             跟單彈窗
@@ -1295,7 +1373,7 @@
         </details>
 
         <!-- 2.16 競猜子組件 -->
-        <div class="logic-merge-divider">頁面邏輯 2.16：競猜子組件 — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-quiz">頁面邏輯 2.16：競猜子組件 — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             競猜子組件（LiveBetting 相關）
@@ -1320,7 +1398,7 @@
         </details>
 
         <!-- 2.17 送禮流程 -->
-        <div class="logic-merge-divider">頁面邏輯 2.17：送禮流程 — 5 條規則</div>
+        <div class="logic-merge-divider" id="nav-gift">頁面邏輯 2.17：送禮流程 — 5 條規則</div>
         <details class="page-logic-card">
           <summary>
             送禮流程
@@ -1354,7 +1432,7 @@
         <div class="section-desc">篩選、推薦投注、賽程表、OtherRoom 等進階功能區</div>
 
         <!-- 2.18 篩選設定 -->
-        <div class="logic-merge-divider">頁面邏輯 2.18：篩選設定 — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-filter">頁面邏輯 2.18：篩選設定 — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             篩選設定
@@ -1380,7 +1458,7 @@
         </details>
 
         <!-- 2.19 推薦投注 -->
-        <div class="logic-merge-divider">頁面邏輯 2.19：推薦投注 — 5 條規則</div>
+        <div class="logic-merge-divider" id="nav-recommend">頁面邏輯 2.19：推薦投注 — 5 條規則</div>
         <details class="page-logic-card">
           <summary>
             推薦投注
@@ -1407,7 +1485,7 @@
         </details>
 
         <!-- 2.20 賽程表 -->
-        <div class="logic-merge-divider">頁面邏輯 2.20：賽程表（Schedule）— 5 條規則</div>
+        <div class="logic-merge-divider" id="nav-schedule">頁面邏輯 2.20：賽程表（Schedule）— 5 條規則</div>
         <details class="page-logic-card">
           <summary>
             賽程表（Schedule）
@@ -1435,7 +1513,7 @@
         </details>
 
         <!-- 2.21 OtherRoom -->
-        <div class="logic-merge-divider">頁面邏輯 2.21：OtherRoom — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-otherroom">頁面邏輯 2.21：OtherRoom — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             OtherRoom
@@ -1466,7 +1544,7 @@
         <div class="section-desc">新手引導、影片控制列、比分/跑馬燈、皮膚入口</div>
 
         <!-- 2.22 新手引導三件套 -->
-        <div class="logic-merge-divider">頁面邏輯 2.22：新手引導三件套 — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-newbie">頁面邏輯 2.22：新手引導三件套 — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             新手引導三件套
@@ -1493,7 +1571,7 @@
         </details>
 
         <!-- 2.23 VideoPlayer ControlView -->
-        <div class="logic-merge-divider">頁面邏輯 2.23：VideoPlayer ControlView — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-player">頁面邏輯 2.23：VideoPlayer ControlView — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             VideoPlayer ControlView
@@ -1520,7 +1598,7 @@
         </details>
 
         <!-- 2.24 比分/對手/跑馬燈 -->
-        <div class="logic-merge-divider">頁面邏輯 2.24：比分/對手/跑馬燈 — 3 條規則</div>
+        <div class="logic-merge-divider" id="nav-score">頁面邏輯 2.24：比分/對手/跑馬燈 — 3 條規則</div>
         <details class="page-logic-card">
           <summary>
             比分/對手/跑馬燈
@@ -1547,7 +1625,7 @@
         </details>
 
         <!-- 2.25 Vendor 皮膚入口 -->
-        <div class="logic-merge-divider">頁面邏輯 2.25：Vendor 皮膚入口 — 2 條規則</div>
+        <div class="logic-merge-divider" id="nav-skin">頁面邏輯 2.25：Vendor 皮膚入口 — 2 條規則</div>
         <details class="page-logic-card">
           <summary>
             Vendor 皮膚入口
@@ -2396,12 +2474,192 @@ sequenceDiagram
     }
   });
 
-  // Tab switching
+  // ===== Side Nav Data =====
+  const sideNavData = {
+    overview: {
+      title: '功能總覽',
+      items: [
+        { id: 'nav-odds', label: '賠率呈現規則' },
+        { group: '核心頁面' },
+        { id: 'nav-homepage', label: '首頁體育區' },
+        { id: 'nav-matchdetail', label: '賽事詳情頁' },
+        { id: 'nav-cart', label: '投注購物車' },
+        { id: 'nav-outright', label: '冠軍玩法' },
+        { id: 'nav-result', label: '賽事結果' },
+        { group: '詳情子系統' },
+        { id: 'nav-chatroom', label: '聊天室' },
+        { id: 'nav-cockfight', label: '鬥雞系統' },
+        { id: 'nav-tipsing', label: '推單' },
+        { id: 'nav-showbet', label: '曬單' },
+        { id: 'nav-ranking', label: '排行榜' },
+        { id: 'nav-matchdata', label: '賽況資料' },
+        { id: 'nav-autopop', label: '自動彈窗' },
+        { group: '互動元件' },
+        { id: 'nav-pk', label: 'PK 通知' },
+        { id: 'nav-follow', label: '跟單' },
+        { id: 'nav-quiz', label: '競猜' },
+        { id: 'nav-gift', label: '送禮' },
+        { group: '進階功能' },
+        { id: 'nav-filter', label: '篩選' },
+        { id: 'nav-recommend', label: '推薦投注' },
+        { id: 'nav-schedule', label: '賽程表' },
+        { id: 'nav-otherroom', label: 'OtherRoom' },
+        { group: '其他' },
+        { id: 'nav-newbie', label: '新手引導' },
+        { id: 'nav-player', label: '播放器控制' },
+        { id: 'nav-score', label: '比分/跑馬燈' },
+        { id: 'nav-skin', label: '皮膚入口' }
+      ]
+    },
+    userflow: {
+      title: 'User Flow',
+      items: [
+        { id: 'uf-1-1', label: '下注動線' },
+        { id: 'uf-1-2', label: '觀賽動線' },
+        { id: 'uf-1-3', label: '爆料動線' },
+        { id: 'uf-1-4', label: '預約下注' },
+        { id: 'uf-1-5', label: '聊天室互動' },
+        { id: 'uf-1-6', label: '鬥雞下注' },
+        { id: 'uf-1-7', label: '自動彈窗排程' }
+      ]
+    },
+    swimlane: {
+      title: '泳道圖',
+      items: [
+        { id: 'sl-3-1', label: '單注下注' },
+        { id: 'sl-3-2', label: '串關下注' },
+        { id: 'sl-3-3', label: 'Cash Out' },
+        { id: 'sl-3-4', label: '賽事資料輪詢' },
+        { id: 'sl-3-5', label: '賠率取得' },
+        { id: 'sl-3-6', label: '賠率即時更新' },
+        { id: 'sl-3-7', label: '鬥雞下注' },
+        { id: 'sl-3-8', label: '聊天室訊息流' }
+      ]
+    },
+    constraints: {
+      title: '跨服務限制',
+      items: [
+        { id: 'cat-venue', label: '\uD83D\uDD34 場館限制' },
+        { id: 'cat-coupling', label: '\uD83D\uDFE1 模組耦合' },
+        { id: 'cat-tech', label: '\uD83D\uDD35 技術限制' },
+        { id: 'cat-biz', label: '\u26AB 業務限制' }
+      ]
+    }
+  };
+
+  // ===== Side Nav Rendering =====
+  const sideNavInner = document.getElementById('sideNavInner');
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+  let activeNavItems = [];
+
+  function renderSideNav(tabId) {
+    const data = sideNavData[tabId];
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+
+    let html = '<div class="sn-title">' + data.title + '</div>';
+    data.items.forEach(item => {
+      if (item.group) {
+        html += '<div class="sn-group">' + item.group + '</div>';
+      } else {
+        html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
+      }
+    });
+    sideNavInner.innerHTML = html;
+
+    // Bind click events
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Setup scroll spy
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    // Cleanup previous observer
+    if (scrollSpyObserver) {
+      scrollSpyObserver.disconnect();
+      scrollSpyObserver = null;
+    }
+
+    const data = sideNavData[tabId];
+    if (!data) return;
+
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+
+    // Track which sections are visible
+    const visibleSections = new Map();
+
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          visibleSections.set(entry.target.id, entry.boundingClientRect.top);
+        } else {
+          visibleSections.delete(entry.target.id);
+        }
+      });
+
+      // Find the topmost visible section
+      let topId = null;
+      let topY = Infinity;
+      visibleSections.forEach((y, id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < topY) { topY = rect.top; topId = id; }
+        }
+      });
+
+      // If no section visible, find the closest one above viewport
+      if (!topId && targets.length > 0) {
+        let closestAbove = null;
+        let closestDist = -Infinity;
+        targets.forEach(t => {
+          const rect = t.getBoundingClientRect();
+          if (rect.top < 0 && rect.top > closestDist) {
+            closestDist = rect.top;
+            closestAbove = t.id;
+          }
+        });
+        if (closestAbove) topId = closestAbove;
+      }
+
+      if (topId) highlightNavItem(topId);
+    }, {
+      rootMargin: '-80px 0px -60% 0px',
+      threshold: 0
+    });
+
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-target') === id);
+    });
+    // Scroll the active nav item into view within the sidebar
+    const activeEl = sideNavInner.querySelector('.sn-item.active');
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  // ===== Tab switching =====
   const tabPills = document.querySelectorAll('.tab-pill');
   const tabPanels = document.querySelectorAll('.tab-panel');
   let mermaidRendered = {};
 
   function switchTab(tabId) {
+    currentTabId = tabId;
     tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
     tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
 
@@ -2415,6 +2673,9 @@ sequenceDiagram
       }
     }
 
+    // Update side nav
+    renderSideNav(tabId);
+
     history.replaceState(null, '', '#' + tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -2426,14 +2687,31 @@ sequenceDiagram
     });
   });
 
+  // ===== Init =====
+  // Add class to layout for CSS
+  document.querySelector('.layout').classList.add('has-side-nav');
+
+  // Align side-nav top with tab-nav
+  function alignSideNavTop() {
+    const tabNav = document.getElementById('tabnav');
+    if (tabNav) {
+      const h = tabNav.offsetTop + tabNav.offsetHeight;
+      const sideNav = document.getElementById('sideNav');
+      sideNav.style.top = h + 'px';
+      sideNav.style.height = 'calc(100vh - ' + h + 'px)';
+    }
+  }
+  alignSideNavTop();
+  window.addEventListener('resize', alignSideNavTop);
+
   // Deep link on load
   const validTabs = ['overview', 'userflow', 'swimlane', 'constraints', 'api'];
   const hash = location.hash.slice(1);
   if (validTabs.includes(hash)) {
     switchTab(hash);
   } else {
-    // Render mermaid in default (overview) tab — overview has no mermaid, but init anyway
     mermaidRendered['overview'] = true;
+    renderSideNav('overview');
   }
 </script>
 </body>
