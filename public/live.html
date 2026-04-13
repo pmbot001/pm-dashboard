@@ -125,7 +125,7 @@
       margin-bottom: 18px; overflow: hidden;
     }
     .page-logic-card summary {
-      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      padding: 16px 20px; font-size: 18px; font-weight: 700; color: #f1f5f9;
       cursor: pointer; display: flex; align-items: center; gap: 10px;
       user-select: none; list-style: none;
     }
@@ -135,20 +135,20 @@
     }
     .page-logic-card[open] summary::before { transform: rotate(90deg); color: #06b6d4; }
     .page-logic-card summary:hover { background: #263548; }
-    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .rule-count { font-size: 13px; color: #64748b; font-weight: 400; }
     .page-logic-card .card-body {
       padding: 0 18px 16px; border-top: 1px solid #334155;
     }
 
     /* Logic table */
     .logic-table {
-      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;
+      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px;
     }
     .logic-table th {
-      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px;
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 14px;
     }
     .logic-table td {
-      background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155;
+      background: #1e293b; padding: 12px 14px; border-bottom: 1px solid #334155;
       color: #cbd5e1; vertical-align: top;
     }
     .logic-table tr:hover td { background: #263548; }
@@ -167,7 +167,7 @@
     .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
     .constraint-card.cat-biz { border-left: 3px solid #64748b; }
     .constraint-card summary {
-      padding: 10px 14px; font-size: 14px; font-weight: 600; color: #e2e8f0;
+      padding: 10px 14px; font-size: 15px; font-weight: 600; color: #e2e8f0;
       cursor: pointer; user-select: none; list-style: none;
       display: flex; align-items: center; gap: 8px;
     }
@@ -179,7 +179,7 @@
     .constraint-card summary:hover { background: #263548; }
     .constraint-detail {
       padding: 10px 14px 14px; border-top: 1px solid #334155;
-      font-size: 14px; color: #cbd5e1; line-height: 1.7;
+      font-size: 15px; color: #cbd5e1; line-height: 1.7;
     }
     .constraint-detail .label {
       font-size: 11px; font-weight: 700; color: #64748b;
@@ -190,7 +190,7 @@
     /* Stats pill */
     .stats-pill {
       display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
-      border-radius: 20px; padding: 8px 18px; font-size: 14px; color: #e2e8f0;
+      border-radius: 20px; padding: 8px 18px; font-size: 15px; color: #e2e8f0;
       font-weight: 600; margin-bottom: 20px;
     }
 
@@ -199,8 +199,8 @@
       max-width: 960px; margin: 0 auto; padding: 50px 16px 30px;
     }
     .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .tool-section-header h2 { font-size: 24px; font-weight: 700; color: #f1f5f9; }
-    .tool-section-desc { color: #94a3b8; font-size: 15px; margin-bottom: 20px; }
+    .tool-section-header h2 { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 16px; margin-bottom: 20px; }
     .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
 
     /* Page logic merge divider */
@@ -292,10 +292,15 @@
       .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
     }
 
+
+    /* Module title */
+    .module-title-text {
+      font-size: 20px; font-weight: 700; color: #f1f5f9; white-space: nowrap;
+    }
     /* Module switcher dropdown */
     .module-switcher {
-      background: #1e293b; color: #e2e8f0; border: 1px solid #334155;
-      border-radius: 8px; padding: 4px 8px; font-size: 13px; font-weight: 600;
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      border-radius: 6px; padding: 3px 6px; font-size: 12px; font-weight: 500;
       cursor: pointer; outline: none; appearance: none;
       -webkit-appearance: none; -moz-appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -318,6 +323,7 @@
 
     <!-- ============ Compact Sticky Header ============ -->
     <nav class="compact-header" id="tabnav">
+        <span class="module-title-text">📺 廣場/直播間</span>
         <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html" selected>📺 廣場/直播間</option><option value="mine.html">👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
         <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
         <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
@@ -334,9 +340,9 @@
       <div class="tool-section">
 
       <!-- tag legend -->
-      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:15px;color:#94a3b8;">
         改動成本：
-        <span><span class="cost-tag cost-locked">場館限制</span> 改不了</span>
+        <span><span class="cost-tag cost-locked">場館限制</span> 場館下發</span>
         <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
         <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
       </div>
@@ -445,13 +451,13 @@
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>進入直播 Tab</td><td>並行載入 3 件事：關注列表、直播列表、類別標籤</td><td><span class="cost-tag cost-code">程式層</span></td><td>Promise.allSettled，任一失敗不影響其他</td></tr>
-                <tr><td>2</td><td>二級頁籤由後端配置</td><td>前端在第一個位置插入「關注」（固定 ID: 999）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>分類順序 = 後端決定</td></tr>
+                <tr><td>2</td><td>二級頁籤由後端配置</td><td>前端在第一個位置插入「關注」（固定 ID: 999）</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>分類順序 = 後端決定</td></tr>
                 <tr><td>3</td><td>三級標籤依選中 category 動態顯示</td><td>第一個固定「全部」（labelId: 0）</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可配哪些標籤出現</td></tr>
                 <tr><td>4</td><td>點擊關注頁籤 + 未登入</td><td>觸發登入 Sheet</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>5</td><td>搜尋文字有值</td><td>比對 6 個欄位（主播暱稱/聯賽/標題/賽事名/分類名/標籤名），不區分大小寫</td><td><span class="cost-tag cost-code">程式層</span></td><td>是前端篩選，不是後端搜尋</td></tr>
                 <tr><td>6</td><td>全部 Tab + 無搜尋</td><td>第 4、5 張卡片之間插入廣告列（AdRow）</td><td><span class="cost-tag cost-code">程式層</span></td><td>非全部 Tab 或有搜尋時不插廣告</td></tr>
                 <tr><td>7</td><td>關注頁 + 有待播節目</td><td>列表下方顯示 ReserveCard 待播節目表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>8</td><td>每 3 秒</td><td>WebSocket 發送聊天計數請求，更新各卡片的聊天訊息數</td><td><span class="cost-tag cost-locked">改不了</span></td><td>WS 輪詢頻率寫死 3 秒</td></tr>
+                <tr><td>8</td><td>每 3 秒</td><td>WebSocket 發送聊天計數請求，更新各卡片的聊天訊息數</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>WS 輪詢頻率寫死 3 秒</td></tr>
                 <tr><td>9</td><td>新手用戶 + 有任務 + 有直播間</td><td>顯示 FocusSlotGuide 新手引導遮罩</td><td><span class="cost-tag cost-code">程式層</span></td><td>依賴任務系統</td></tr>
                 <tr><td>10</td><td>頁面切換回來（onActivated）</td><td>恢復 WS 輪詢 + 重新 fetchLiveList</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
@@ -513,7 +519,7 @@
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>進入頁面</td><td>強制切換暗色主題</td><td><span class="cost-tag cost-code">程式層</span></td><td>離開時還原。改主題系統要注意強制覆蓋</td></tr>
-                <tr><td>2</td><td>進入頁面</td><td>video.js 初始化 HLS 串流（autoplay + muted）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>瀏覽器政策：必須先靜音才能自動播放</td></tr>
+                <tr><td>2</td><td>進入頁面</td><td>video.js 初始化 HLS 串流（autoplay + muted）</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>瀏覽器政策：必須先靜音才能自動播放</td></tr>
                 <tr><td>3</td><td>偵測到使用者互動</td><td>自動解除靜音</td><td><span class="cost-tag cost-code">程式層</span></td><td>checkAndUnmute 遞歸檢查</td></tr>
                 <tr><td>4</td><td>串流播放失敗</td><td>首次立即重試，之後每 3 秒重試</td><td><span class="cost-tag cost-code">程式層</span></td><td>canplaythrough 觸發後停止</td></tr>
                 <tr><td>5</td><td>主播切換直播間</td><td>更新 HLS 來源</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
@@ -571,12 +577,12 @@
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>進入直播間</td><td>WebSocket 連線建立，加入聊天室頻道</td><td><span class="cost-tag cost-locked">改不了</span></td><td>WS 連線由 useEnterRoomInit 統一管理</td></tr>
+                <tr><td>1</td><td>進入直播間</td><td>WebSocket 連線建立，加入聊天室頻道</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>WS 連線由 useEnterRoomInit 統一管理</td></tr>
                 <tr><td>2</td><td>收到訊息</td><td>依類型分類：一般/系統公告/晒單/跟單推送/禁言通知</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>3</td><td>新訊息 + 使用者在底部</td><td>自動滾動到最新訊息</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-4722 優化的智能置底邏輯</td></tr>
                 <tr><td>4</td><td>新訊息 + 使用者不在底部</td><td>不自動捲動，顯示提示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>5</td><td>場館判斷</td><td>依場館分派不同 handler（fb/ob/im/im-esport）</td><td><span class="cost-tag cost-code">程式層</span></td><td>useChatRoom/index.ts 的 getUseSport</td></tr>
-                <tr><td>6</td><td>openstate === 0 或連線異常</td><td>聊天區不可用（Funky 房切到投注版面）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>後台或場館控制的聊天室開關</td></tr>
+                <tr><td>6</td><td>openstate === 0 或連線異常</td><td>聊天區不可用（Funky 房切到投注版面）</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>後台或場館控制的聊天室開關</td></tr>
               </tbody>
             </table>
             <details class="rd-ref">
@@ -615,9 +621,9 @@
                 <tr><td>4</td><td>點擊進入 + 未登入</td><td>觸發登入 Sheet，登入後自動繼續</td><td><span class="cost-tag cost-code">程式層</span></td><td>pendingEnterRoomAction 記住待執行動作</td></tr>
                 <tr><td>5</td><td>進入加密房間</td><td>呼叫 requiredPassword API 判斷是否需要密碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>6</td><td>非早盤期間的加密房間</td><td>直接拒絕進入</td><td><span class="cost-tag cost-code">程式層</span></td><td>時間判斷：matchDate &lt; now</td></tr>
-                <tr><td>7</td><td>進入房間後</td><td>WS 進房（ChatroomType=4, srctp 固定 fb=8）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>場館來源寫死 fb</td></tr>
+                <tr><td>7</td><td>進入房間後</td><td>WS 進房（ChatroomType=4, srctp 固定 fb=8）</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>場館來源寫死 fb</td></tr>
                 <tr><td>8</td><td>建立房間</td><td>4 步驟精靈：選賽事 → 盤口 → 房設 → 分享</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>9</td><td>賽事結束</td><td>標記已結束狀態</td><td><span class="cost-tag cost-locked">改不了</span></td><td>來自後端 WS 推送</td></tr>
+                <tr><td>9</td><td>賽事結束</td><td>標記已結束狀態</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>來自後端 WS 推送</td></tr>
                 <tr><td>10</td><td>開房費用</td><td>GET /community/fee 取得配置</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可調整</td></tr>
               </tbody>
             </table>
@@ -727,7 +733,7 @@
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>未登入進入</td><td>toast + 登入 Sheet + 導回 /live</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>2</td><td>場館 8946 不可用</td><td>toast + 導回 /live</td><td><span class="cost-tag cost-locked">改不了</span></td><td>場館維護狀態由後端控制</td></tr>
+                <tr><td>2</td><td>場館 8946 不可用</td><td>toast + 導回 /live</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>場館維護狀態由後端控制</td></tr>
                 <tr><td>3</td><td>正常進入</td><td>enterGame API → 取得 token → sendMessage('init')</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>4</td><td>遊戲中點擊下注</td><td>sendMessage('placeOrder', { stake, event })</td><td><span class="cost-tag cost-code">程式層</span></td><td>buttonEnabled 控制可否下注</td></tr>
                 <tr><td>5</td><td>自動下注確認</td><td>sendMessage('autoPlace', { stake, loop })</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
@@ -769,7 +775,7 @@
                 <tr><td>2</td><td>手動轉帳模式</td><td>彈出轉帳彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>3</td><td>Cocos iframe 就緒（Init）</td><td>停止 loading → initGame</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>4</td><td>遊戲結束通知</td><td>依 type 分派：下播/切遊戲/轉移/斷線</td><td><span class="cost-tag cost-code">程式層</span></td><td>10 種 EndGameNoticeType</td></tr>
-                <tr><td>5</td><td>主播切換遊戲（WS）</td><td>送 ChangeGame → 重新 initGame</td><td><span class="cost-tag cost-locked">改不了</span></td><td>主播端操作</td></tr>
+                <tr><td>5</td><td>主播切換遊戲（WS）</td><td>送 ChangeGame → 重新 initGame</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>主播端操作</td></tr>
                 <tr><td>6</td><td>遊戲面板切換</td><td>5 種面板：遊戲/投注記錄/資訊/開路/聊天</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>7</td><td>遊戲狀態推送</td><td>顯示文字：讀取中/開盤中/開獎中</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>8</td><td>玩家獲勝 + 聊天面板</td><td>前端顯示勝利動畫 3 秒</td><td><span class="cost-tag cost-code">程式層</span></td><td>遊戲面板時 Cocos 自行顯示</td></tr>
@@ -937,8 +943,8 @@
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>所有直播間進入</td><td>透過 useEnterRoomInit 統一管理 WS 進/離房</td><td><span class="cost-tag cost-code">程式層</span></td><td>共用組件位於 match-detail 模組，直播間也依賴它</td></tr>
-                <tr><td>2</td><td>所有直播間</td><td>roomConfig + roomData 由 WS 即時推送</td><td><span class="cost-tag cost-locked">改不了</span></td><td></td></tr>
-                <tr><td>3</td><td>直播流 URL</td><td>來自 LiveItem.mediaStream（HLS）或 mediaFlvStream（FLV）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>串流來源由場館下發</td></tr>
+                <tr><td>2</td><td>所有直播間</td><td>roomConfig + roomData 由 WS 即時推送</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>3</td><td>直播流 URL</td><td>來自 LiveItem.mediaStream（HLS）或 mediaFlvStream（FLV）</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>串流來源由場館下發</td></tr>
                 <tr><td>4</td><td>圖片 URL</td><td>需拼接 remoteStaticPath + 相對路徑</td><td><span class="cost-tag cost-code">程式層</span></td><td>全站通用規則</td></tr>
                 <tr><td>5</td><td>登入攔截</td><td>多處使用 userStore.requireLogin() 統一處理</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>

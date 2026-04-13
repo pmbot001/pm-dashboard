@@ -122,7 +122,7 @@
       margin-bottom: 18px; overflow: hidden;
     }
     .page-logic-card summary {
-      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      padding: 16px 20px; font-size: 18px; font-weight: 700; color: #f1f5f9;
       cursor: pointer; display: flex; align-items: center; gap: 10px;
       user-select: none; list-style: none;
     }
@@ -132,19 +132,19 @@
     }
     .page-logic-card[open] summary::before { transform: rotate(90deg); color: #eab308; }
     .page-logic-card summary:hover { background: #263548; }
-    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .rule-count { font-size: 13px; color: #64748b; font-weight: 400; }
     .page-logic-card .card-body {
       padding: 0 18px 16px; border-top: 1px solid #334155;
     }
 
     .logic-table {
-      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;
+      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px;
     }
     .logic-table th {
-      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px;
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 14px;
     }
     .logic-table td {
-      background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155;
+      background: #1e293b; padding: 12px 14px; border-bottom: 1px solid #334155;
       color: #cbd5e1; vertical-align: top;
     }
     .logic-table tr:hover td { background: #263548; }
@@ -174,7 +174,7 @@
     .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
     .constraint-card.cat-biz { border-left: 3px solid #64748b; }
     .constraint-card summary {
-      padding: 10px 14px; font-size: 14px; font-weight: 600; color: #e2e8f0;
+      padding: 10px 14px; font-size: 15px; font-weight: 600; color: #e2e8f0;
       cursor: pointer; user-select: none; list-style: none;
       display: flex; align-items: center; gap: 8px;
     }
@@ -186,7 +186,7 @@
     .constraint-card summary:hover { background: #263548; }
     .constraint-detail {
       padding: 10px 14px 14px; border-top: 1px solid #334155;
-      font-size: 14px; color: #cbd5e1; line-height: 1.7;
+      font-size: 15px; color: #cbd5e1; line-height: 1.7;
     }
     .constraint-detail .label {
       font-size: 11px; font-weight: 700; color: #64748b;
@@ -196,7 +196,7 @@
 
     .stats-pill {
       display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
-      border-radius: 20px; padding: 8px 18px; font-size: 14px; color: #e2e8f0;
+      border-radius: 20px; padding: 8px 18px; font-size: 15px; color: #e2e8f0;
       font-weight: 600; margin-bottom: 20px;
     }
 
@@ -204,8 +204,8 @@
       max-width: 960px; margin: 0 auto; padding: 50px 16px 30px;
     }
     .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .tool-section-header h2 { font-size: 24px; font-weight: 700; color: #f1f5f9; }
-    .tool-section-desc { color: #94a3b8; font-size: 15px; margin-bottom: 20px; }
+    .tool-section-header h2 { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 16px; margin-bottom: 20px; }
     .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
 
     /* Side Nav */
@@ -279,10 +279,15 @@
     }
 
 
+
+    /* Module title */
+    .module-title-text {
+      font-size: 20px; font-weight: 700; color: #f1f5f9; white-space: nowrap;
+    }
     /* Module switcher dropdown */
     .module-switcher {
-      background: #1e293b; color: #e2e8f0; border: 1px solid #334155;
-      border-radius: 8px; padding: 4px 8px; font-size: 13px; font-weight: 600;
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      border-radius: 6px; padding: 3px 6px; font-size: 12px; font-weight: 500;
       cursor: pointer; outline: none; appearance: none;
       -webkit-appearance: none; -moz-appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -303,6 +308,7 @@
   <div class="main-content v2-main">
 
     <nav class="compact-header" id="tabnav">
+        <span class="module-title-text">👤 我的</span>
         <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html">📺 廣場/直播間</option><option value="mine.html" selected>👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
         <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
         <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
@@ -319,9 +325,9 @@
       <div class="tool-section">
 
       <!-- tag legend -->
-      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:15px;color:#94a3b8;">
         改動成本：
-        <span><span class="cost-tag cost-locked">改不了</span> 業務/場館決定</span>
+        <span><span class="cost-tag cost-locked">場館限制</span> 場館下發</span>
         <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
         <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
       </div>
@@ -458,12 +464,12 @@
             <table class="logic-table">
               <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
               <tr><td>1</td><td>暱稱未設定</td><td>顯示「点击修改昵称」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>暱稱審核中</td><td>顯示「系统审核中」不可點擊</td><td><span class="cost-tag cost-locked">改不了</span></td><td>後台審核</td></tr>
+              <tr><td>2</td><td>暱稱審核中</td><td>顯示「系统审核中」不可點擊</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>後台審核</td></tr>
               <tr><td>3</td><td>暱稱已設定 + 可修改</td><td>間隔天數到才可改</td><td><span class="cost-tag cost-config">設定層</span></td><td>changeAliasInterval</td></tr>
               <tr><td>4</td><td>暱稱已設定 + 冷卻中</td><td>「X天后可修改」</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
               <tr><td>5</td><td>暱稱提交</td><td>禁特殊字元、中文算2字元、≤14字元、數字≤3</td><td><span class="cost-tag cost-code">程式層</span></td><td>zod 驗證</td></tr>
-              <tr><td>6</td><td>暱稱重複/敏感詞</td><td>toast 對應錯誤</td><td><span class="cost-tag cost-locked">改不了</span></td><td>後端檢查</td></tr>
-              <tr><td>7</td><td>性別/生日</td><td>只能設定一次</td><td><span class="cost-tag cost-locked">改不了</span></td><td>不可逆</td></tr>
+              <tr><td>6</td><td>暱稱重複/敏感詞</td><td>toast 對應錯誤</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>後端檢查</td></tr>
+              <tr><td>7</td><td>性別/生日</td><td>只能設定一次</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>不可逆</td></tr>
               <tr><td>8</td><td>登出</td><td>清 token → 跳登入頁</td><td><span class="cost-tag cost-code">程式層</span></td><td>1000ms throttle</td></tr>
               <tr><td>9</td><td>純直播模式</td><td>隱藏暱稱/稱號，新增即將開放項</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
             </table>
@@ -506,7 +512,7 @@
               <tr><td>1</td><td>isPayAmount=1</td><td>升級取 min(存款進度, 流水進度)</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可開關存款條件</td></tr>
               <tr><td>2</td><td>isPayAmount!=1</td><td>只看流水進度</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
               <tr><td>3</td><td>豪禮可領取</td><td>「领取豪礼」→ applyVipOrder</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>生日禮金-未滿90天</td><td>提示文案，不可領</td><td><span class="cost-tag cost-locked">改不了</span></td><td>防薅規則</td></tr>
+              <tr><td>4</td><td>生日禮金-未滿90天</td><td>提示文案，不可領</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>防薅規則</td></tr>
               <tr><td>5</td><td>測試帳號</td><td>隱藏豪禮申請 + 地址設定</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               <tr><td>6</td><td>保級彈窗</td><td>保級資訊從 checkVipPlayer 取</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5230</td></tr>
             </table>
@@ -522,12 +528,12 @@
 
         <div class="annotated-row">
           <div class="screen-col">
-            <img src="/images/mine/welfare.png" alt="福利中心">
+            <img src="/images/mine/screen-welfare-center.png" alt="福利中心">
             <div class="screen-label">福利中心</div>
           </div>
           <div class="screen-col">
-            <img src="/images/mine/screen-backpack.png" alt="背包">
-            <div class="screen-label">背包中心</div>
+            <img src="/images/mine/screen-welfare-claim.png" alt="領取獎勵">
+            <div class="screen-label">領取獎勵</div>
           </div>
           <div class="rules-col">
             <div class="rule-card">
@@ -548,7 +554,7 @@
               <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
               <tr><td>1</td><td>預設載入</td><td>待領取 + 近7日 + 全部</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               <tr><td>2</td><td>單筆領取</td><td>debounce 800ms → 1s 延遲刷新</td><td><span class="cost-tag cost-code">程式層</span></td><td>防重複點擊</td></tr>
-              <tr><td>3</td><td>領取需綁定</td><td>彈窗引導綁定手機/銀行卡</td><td><span class="cost-tag cost-locked">改不了</span></td><td>errCode 103/104/105</td></tr>
+              <tr><td>3</td><td>領取需綁定</td><td>彈窗引導綁定手機/銀行卡</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>errCode 103/104/105</td></tr>
               <tr><td>4</td><td>一鍵領取部分失敗</td><td>彈窗計數 +「继续」遞迴再領</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               <tr><td>5</td><td>已失效判斷</td><td>claimExpireTime < now → 已失效</td><td><span class="cost-tag cost-code">程式層</span></td><td>前端判斷</td></tr>
               <tr><td>6</td><td>日期篩選</td><td>今日/近3日/近7日/近15日/自訂</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
@@ -567,7 +573,7 @@
 
         <div class="annotated-row">
           <div class="screen-col">
-            <img src="/images/mine/backpack.png" alt="背包中心">
+            <img src="/images/mine/screen-backpack.png" alt="背包中心">
             <div class="screen-label">背包管理</div>
           </div>
           <div class="screen-col">
@@ -616,7 +622,7 @@
               <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
               <tr><td>1</td><td>三 Tab 分類</td><td>體育/直播/遊戲各自的記錄列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               <tr><td>2</td><td>遊戲記錄首次載入</td><td>同時撈未結算+已結算，未結算優先</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>結算狀態</td><td>贏/輸/已取消</td><td><span class="cost-tag cost-locked">改不了</span></td><td>場館回傳</td></tr>
+              <tr><td>3</td><td>結算狀態</td><td>贏/輸/已取消</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>場館回傳</td></tr>
               <tr><td>4</td><td>遊戲 8928</td><td>解析 betDetails JSON</td><td><span class="cost-tag cost-code">程式層</span></td><td>特定遊戲特殊格式</td></tr>
               <tr><td>5</td><td>分頁</td><td>每頁 20 筆，<20 = 最後一頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
             </table>
@@ -635,7 +641,7 @@
           <div class="card-body">
             <table class="logic-table">
               <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>場館選擇</td><td>必須經過中心錢包，不支援互轉</td><td><span class="cost-tag cost-locked">改不了</span></td><td>核心架構</td></tr>
+              <tr><td>1</td><td>場館選擇</td><td>必須經過中心錢包，不支援互轉</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>核心架構</td></tr>
               <tr><td>2</td><td>轉出=中心</td><td>轉入自動選第二個場館</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               <tr><td>3</td><td>轉出=場館</td><td>轉入鎖定中心錢包</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               <tr><td>4</td><td>金額超過餘額</td><td>toast + 修正為最大可轉金額</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>

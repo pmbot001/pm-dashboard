@@ -71,7 +71,7 @@
       margin-bottom: 28px; overflow: hidden;
     }
     .mermaid-card-title {
-      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      padding: 16px 20px; font-size: 18px; font-weight: 700; color: #f1f5f9;
       border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 8px;
     }
     .mermaid-card-body { padding: 20px; overflow-x: auto; }
@@ -103,7 +103,7 @@
       margin-bottom: 18px; overflow: hidden;
     }
     .page-logic-card summary {
-      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      padding: 16px 20px; font-size: 18px; font-weight: 700; color: #f1f5f9;
       cursor: pointer; display: flex; align-items: center; gap: 10px;
       user-select: none; list-style: none;
     }
@@ -113,18 +113,18 @@
     }
     .page-logic-card[open] summary::before { transform: rotate(90deg); color: #8b5cf6; }
     .page-logic-card summary:hover { background: #263548; }
-    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .rule-count { font-size: 13px; color: #64748b; font-weight: 400; }
     .page-logic-card .card-body { padding: 0 18px 16px; border-top: 1px solid #334155; }
 
     /* Logic table */
     .logic-table {
-      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;
+      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px;
     }
     .logic-table th {
-      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px;
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 14px;
     }
     .logic-table td {
-      background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155;
+      background: #1e293b; padding: 12px 14px; border-bottom: 1px solid #334155;
       color: #cbd5e1; vertical-align: top;
     }
     .logic-table tr:hover td { background: #263548; }
@@ -143,7 +143,7 @@
     .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
     .constraint-card.cat-biz { border-left: 3px solid #64748b; }
     .constraint-card summary {
-      padding: 10px 14px; font-size: 14px; font-weight: 600; color: #e2e8f0;
+      padding: 10px 14px; font-size: 15px; font-weight: 600; color: #e2e8f0;
       cursor: pointer; user-select: none; list-style: none;
       display: flex; align-items: center; gap: 8px;
     }
@@ -155,7 +155,7 @@
     .constraint-card summary:hover { background: #263548; }
     .constraint-detail {
       padding: 10px 14px 14px; border-top: 1px solid #334155;
-      font-size: 14px; color: #cbd5e1; line-height: 1.7;
+      font-size: 15px; color: #cbd5e1; line-height: 1.7;
     }
     .constraint-detail .label {
       font-size: 11px; font-weight: 700; color: #64748b;
@@ -166,15 +166,15 @@
     /* Stats pill */
     .stats-pill {
       display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
-      border-radius: 20px; padding: 8px 18px; font-size: 14px; color: #e2e8f0;
+      border-radius: 20px; padding: 8px 18px; font-size: 15px; color: #e2e8f0;
       font-weight: 600; margin-bottom: 20px;
     }
 
     /* Tool section */
     .tool-section { max-width: 960px; margin: 0 auto; padding: 50px 16px 30px; }
     .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .tool-section-header h2 { font-size: 24px; font-weight: 700; color: #f1f5f9; }
-    .tool-section-desc { color: #94a3b8; font-size: 15px; margin-bottom: 20px; }
+    .tool-section-header h2 { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 16px; margin-bottom: 20px; }
     .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
 
     /* Logic merge divider in overview tab */
@@ -199,7 +199,7 @@
     .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
     .side-nav-inner::-webkit-scrollbar-track { background: transparent; }
     .side-nav .sn-title {
-      padding: 12px 16px 6px; font-size: 13px; font-weight: 700;
+      padding: 12px 16px 6px; font-size: 15px; font-weight: 700;
       color: #e2e8f0; border-bottom: 1px solid #1e293b; margin-bottom: 4px;
     }
     .side-nav .sn-group {
@@ -226,10 +226,15 @@
       .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
     }
 
+
+    /* Module title */
+    .module-title-text {
+      font-size: 20px; font-weight: 700; color: #f1f5f9; white-space: nowrap;
+    }
     /* Module switcher dropdown */
     .module-switcher {
-      background: #1e293b; color: #e2e8f0; border: 1px solid #334155;
-      border-radius: 8px; padding: 4px 8px; font-size: 13px; font-weight: 600;
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      border-radius: 6px; padding: 3px 6px; font-size: 12px; font-weight: 500;
       cursor: pointer; outline: none; appearance: none;
       -webkit-appearance: none; -moz-appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -252,6 +257,7 @@
 
     <!-- ============ Compact Sticky Header ============ -->
     <nav class="compact-header" id="tabnav">
+        <span class="module-title-text">🎁 活動中心</span>
         <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html" selected>🎁 活動中心</option><option value="live.html">📺 廣場/直播間</option><option value="mine.html">👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
         <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
         <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
@@ -267,7 +273,7 @@
       <div class="tool-section">
 
       <!-- tag legend -->
-      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:15px;color:#94a3b8;">
         改動成本：
         <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
         <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
