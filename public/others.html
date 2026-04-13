@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客服/爆料/其他 — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    .compact-header {
+      position: sticky; top: 0; z-index: 150; background: #0f172a;
+      border-bottom: 1px solid #334155; padding: 8px 16px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      height: 60px; box-sizing: border-box;
+    }
+    .compact-header-title { font-size: 24px; font-weight: 700; color: #f1f5f9; white-space: nowrap; }
+    .compact-header-breadcrumb { font-size: 12px; color: #64748b; white-space: nowrap; }
+    .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
+    .compact-header-breadcrumb a:hover { color: #94a3b8; }
+    .compact-header-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+    .tab-nav { display: none !important; }
+    .tab-pill {
+      display: inline-block; font-size: 13px; padding: 8px 20px; border-radius: 20px;
+      color: #94a3b8; background: #1e293b; border: 1px solid #334155;
+      text-decoration: none; font-weight: 600; transition: all .15s; cursor: pointer;
+    }
+    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
+    .tab-pill.active { background: #f43f5e; color: #fff; border-color: #f43f5e; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .v2-main { margin-left: 0; }
+    .mermaid-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      margin-bottom: 28px; overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 8px;
+    }
+    .mermaid-card-body { padding: 20px; overflow-x: auto; }
+    .mermaid-card-body .mermaid { display: flex; justify-content: center; }
+    .pm-notice {
+      background: #2a2210; border-left: 3px solid #fbbf24; padding: 12px 16px;
+      margin: 0 18px 4px; border-radius: 6px; font-size: 13px; color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary { font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; user-select: none; }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px; background: #0f172a;
+      border-radius: 6px; margin-top: 4px; font-family: 'SF Mono','Fira Code',monospace; line-height: 1.8;
+    }
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 18px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before { content: "▸"; color: #64748b; font-size: 14px; transition: transform .2s; }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f43f5e; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body { padding: 0 18px 16px; border-top: 1px solid #334155; }
+    .logic-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .logic-table th { background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px; }
+    .logic-table td { background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155; color: #cbd5e1; vertical-align: top; }
+    .logic-table tr:hover td { background: #263548; }
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .constraint-card.cat-venue { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "▸"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f43f5e; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+    .tool-section { max-width: 960px; margin: 0 auto; padding: 50px 16px 30px; }
+    .logic-merge-divider {
+      margin: 28px 0 16px; padding: 10px 16px; background: #1a2638;
+      border-left: 3px solid #f43f5e; border-radius: 6px;
+      font-size: 14px; font-weight: 700; color: #f43f5e;
+    }
+    .side-nav {
+      position: fixed; left: 0; top: 60px; width: 220px; height: calc(100vh - 60px);
+      background: #111827; border-right: 1px solid #1e293b; border-top: 1px solid #334155;
+      z-index: 140; display: flex; flex-direction: column; padding-top: 0;
+    }
+    .side-nav-inner {
+      flex: 1; overflow-y: auto; padding: 8px 0 24px;
+      scrollbar-width: thin; scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .side-nav .sn-title {
+      padding: 12px 16px 6px; font-size: 13px; font-weight: 700; color: #e2e8f0;
+      border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 2px; font-size: 11px; font-weight: 600; color: #475569; letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block; padding: 6px 16px 6px 18px; font-size: 13px; color: #94a3b8;
+      cursor: pointer; border-left: 3px solid transparent; transition: all .12s;
+      text-decoration: none; line-height: 1.4;
+    }
+    .side-nav .sn-item:hover { color: #e2e8f0; background: #1e293b; }
+    .side-nav .sn-item.active { color: #fff; border-left-color: #f43f5e; background: rgba(244,63,94,.06); }
+    .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
+    @media(max-width: 900px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+      .compact-header { flex-direction: column; height: auto; padding: 12px; gap: 8px; }
+      .compact-header-pills { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });</script>
+
+<div class="layout">
+  <nav class="side-nav" id="sideNav"><div class="side-nav-inner" id="sideNavInner"></div></nav>
+
+  <div class="main-content v2-main">
+    <header class="compact-header">
+      <span class="compact-header-breadcrumb"><a href="features.html">知識庫</a> / 客服·爆料</span>
+      <span class="compact-header-title">💬 客服 / 爆料 / ���他</span>
+      <div class="compact-header-pills">
+        <span class="tab-pill active" data-tab="overview">功能總覽</span>
+        <span class="tab-pill" data-tab="userflow">User Flow</span>
+        <span class="tab-pill" data-tab="swimlane">泳道圖</span>
+        <span class="tab-pill" data-tab="constraints">跨服務限制</span>
+      </div>
+    </header>
+
+    <!-- TAB 1: 功能總覽 -->
+    <div class="tab-panel active" id="overview">
+      <div class="tool-section">
+        <div class="kb-notice">
+          <b>模組概覽：</b>客服系統（全局 iframe、VIP 線道分流）、爆料頻道（主播預測 + 跟單）、特色頁（落地頁/下載引導）、消息中心。
+        </div>
+        <div class="stats-pill" style="margin-top: 20px;">
+          <span>10 頁面邏輯卡</span><span>|</span><span>4 踩坑 Records</span><span>|</span><span>17 API</span>
+        </div>
+
+        <!-- 客服 -->
+        <div class="logic-merge-divider" id="sec-cs">7.1 線上客服</div>
+
+        <details class="page-logic-card" id="sec-cs-entry">
+          <summary>客服進入邏輯 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條���</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>點擊客服圖示</td><td>openCustomService() → 拉線道設定</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>VIP 等級篩選</td><td>只顯示 vipBegin~vipEnd 符合的線道</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台設定 VIP 分流</td></tr>
+              <tr><td>3</td><td>只有 1 條線道</td><td>直接開啟</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>多條線道</td><td>BottomSheet 選擇</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>csType=1（官方）</td><td>開啟 IframeContainer + MD5 簽名</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>csType=2（三方）</td><td>開啟 IframeCommon</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>7</td><td>幣商跳轉（imDealer）</td><td>隨機取 csType=1 線道直接開</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>8</td><td>切換客服類型 + 有進行中對話</td><td>彈確認窗「回到對話」or「開新」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">stores/service/index.ts:openCustomService()<br>apis/config/index.ts:getCsLineConfig</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-cs-state">
+          <summary>客服 iframe 狀態管理 <span class="rule-count">4 狀態 + 7 postMessage</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>狀態</th><th>說明</th><th>改動成本</th></tr>
+              <tr><td>close</td><td>未開啟</td><td><span class="cost-tag cost-code">程式層</span></td></tr>
+              <tr><td>large</td><td>全版（100dvh）</td><td><span class="cost-tag cost-code">程式層</span></td></tr>
+              <tr><td>small</td><td>半版（325px 浮動，可拖曳）</td><td><span class="cost-tag cost-code">程式層</span></td></tr>
+              <tr><td>hidden</td><td>隱藏（暫離，對話保持中）</td><td><span class="cost-tag cost-code">程式層</span></td></tr>
+            </table>
+            <p style="margin-top:12px;font-size:13px;color:#94a3b8;">postMessage 動作：jump / close / view / queue / tips / move / keyboard</p>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">components/customService/IframeContainer.vue (283行)<br>stores/service/type.ts:serviceStatusType</div></details>
+          </div>
+        </details>
+
+        <!-- 爆料 -->
+        <div class="logic-merge-divider" id="sec-gossip">13. 爆料</div>
+
+        <details class="page-logic-card" id="sec-gossip-home">
+          <summary>爆料首頁 <span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>gamePredictEnabled=false</td><td>onMounted 跳轉 /live</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台開關</td></tr>
+              <tr><td>2</td><td>4 個 Tab</td><td>已關注/依聯賽/依時間/熱度榜</td><td><span class="cost-tag cost-code">程式層</span></td><td>預設 byLeague</td></tr>
+              <tr><td>3</td><td>URL query currentTabType</td><td>跳轉指定 Tab 後清除 query</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>Tab 切換中</td><td>loading 鎖定防重複點擊</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>RankBoard</td><td>首頁顯示前三名榜單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>訪客模式</td><td>依 gamePredictVisitorDisplayMode 攔截</td><td><span class="cost-tag cost-config">設定層</span></td><td>mode=1 允許訪客</td></tr>
+              <tr><td>7</td><td>搜索入口</td><td>點擊跳轉 /gossiping/search</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/gossiping/index.vue (181行)</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-gossip-detail">
+          <summary>爆料文章詳情 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>路由 /gossiping/:predictorId</td><td>雙重請求 detail + content</td><td><span class="cost-tag cost-code">程式層</span></td><td>富文本分離</td></tr>
+              <tr><td>2</td><td>多場賽事</td><td>左右橫向滑動 + 頁碼指示器</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>跟單投注</td><td>選盤口 → formatCartData → 購物車</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>按讚</td><td>POST /predict/like（需登入）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>分享</td><td>先取分享底圖再開 shareStore</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>關注主播</td><td>觸發 GossipFollow 新手任務引導</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>7</td><td>從開房進入</td><td>fromOpenRoom=true 額外邏輯</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>8</td><td>訪客查看</td><td>依 visitorDisplayMode 攔截</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/gossiping/[predictorId]/index.vue (859行)</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-gossip-search">
+          <summary>爆料搜索 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>搜索歷史</td><td>上限 5 筆，localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>熱搜</td><td>後台設定熱門關鍵字</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>排序</td><td>球種/人氣/預設 3 種</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>GOR-5628</td><td>新增關鍵字搜尋機制</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/gossiping/search.vue (415行)</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-gossip-rank">
+          <summary>爆料榜單 <span class="rule-count">4 種榜</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>榜單</th><th>API</th><th>說明</th></tr>
+              <tr><td>命中榜</td><td>GET /predict/winRateRanking</td><td>預測命中率排名</td></tr>
+              <tr><td>連紅榜</td><td>GET /predict/winComboRanking</td><td>連續命中排名</td></tr>
+              <tr><td>跟單榜</td><td>GET /predict/followBetRanking</td><td>跟單次數排名</td></tr>
+              <tr><td>熱度榜</td><td>GET /predict/viewRanking</td><td>觀看數排名</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/gossiping/rank-detail/index.vue (276行)</div></details>
+          </div>
+        </details>
+
+        <!-- 特色頁 / 消息 -->
+        <div class="logic-merge-divider" id="sec-others">8. 特色頁 / 消息中心</div>
+
+        <details class="page-logic-card" id="sec-landing">
+          <summary>白產/轉盤落地頁 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>白產落地頁</td><td>雲平台設置內容 + 廣告版位</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>2</td><td>廣告連結類型</td><td>無/APP下載/H5入口/網址 4 種</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>iOS 新用戶</td><td>下載超級簽/企業包/三方超級簽</td><td><span class="cost-tag cost-config">設定層</span></td><td>打點判斷新舊</td></tr>
+              <tr><td>4</td><td>iOS 舊用戶</td><td>下載 iOS 輕量版</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>5</td><td>下載完成（iOS）</td><td>一鍵信任彈窗 → 跳設置頁</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5495</td></tr>
+              <tr><td>6</td><td>轉盤落地頁</td><td>抽獎轉盤 + 分享提醒</td><td><span class="cost-tag cost-code">程式層</span></td><td>次數 > 99 顯示 99+</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-message">
+          <summary>消息中心 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>needLogin</td><td>需登入才能進入</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>通知（type=2）</td><td>分頁載入 pageSize=20</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>活動（type=1）</td><td>同通知結構</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>公告/賽事公告</td><td>來自 getNotice API</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>5</td><td>批量操作模式</td><td>多選 + 刪除/已讀</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>未讀數</td><td>Tab badge 同步 popupStore</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/message-center/</div></details>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- TAB 2: User Flow -->
+    <div class="tab-panel" id="userflow">
+      <div class="tool-section">
+        <div class="stats-pill"><span>4 User Flow</span></div>
+
+        <div class="mermaid-card" id="uf-cs">
+          <div class="mermaid-card-title">客服進入流程</div>
+          <div class="pm-notice"><ul>
+            <li>幣商跳轉來的玩家跳過線道選擇，隨機取一條直接開</li>
+            <li>sign 用 MD5 加密：uid+agentid+mac+uname+avatar+theme+kefuSign</li>
+          </ul></div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[點擊客服圖示] --> B[openCustomService]
+    B --> C["POST /config/getCsLineConfig"]
+    C --> D[取得 specialLine + normalLine]
+    D --> E{VIP 等級篩選}
+    E --> F[過濾符合 vipBegin~vipEnd 的線道]
+    F --> G{幣商跳轉?}
+    G -->|imDealer 有資料| H[隨機取 csType=1 線道直接開]
+    G -->|否| I{線道數量}
+    I -->|1 條| J[直接開啟]
+    I -->|多條| K[BottomSheet 選擇線道]
+    K --> J
+    J --> L{csType?}
+    L -->|1 官方| M[開啟 IframeContainer]
+    L -->|2 三方| N[開啟 IframeCommon]
+    M --> O["iframe 載入 kfUrl + MD5 簽名"]
+    N --> P[iframe 載入三方網址]
+    H --> M
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-gossip">
+          <div class="mermaid-card-title">爆料瀏覽 + 跟單流程</div>
+          <div class="pm-notice"><ul>
+            <li>gamePredictEnabled=false 時整個爆料模組跳轉到 /live</li>
+            <li>訪客模式由 gamePredictVisitorDisplayMode 控制</li>
+          </ul></div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[進入爆料首頁] --> B{gamePredictEnabled?}
+    B -->|false| C[跳轉 /live]
+    B -->|true| D[預設顯示 byLeague Tab]
+    D --> E[4 個 Tab 切換]
+    E -->|已關注| F[StreamerList]
+    E -->|依聯賽| G[LeagueList]
+    E -->|依時間| H["PredictorList sort=0"]
+    E -->|熱度榜| I["PredictorList sort=1"]
+    D --> J[RankBoard 前三名榜單]
+    J --> K[點擊查看更多]
+    K --> L[/gossiping/rank-detail]
+    F & G & H & I --> M[CardList 文章卡片]
+    M --> N{訪客模式?}
+    N -->|攔截| O[彈出登入 Sheet]
+    N -->|允許| P[點擊文章]
+    P --> Q[/gossiping/:predictorId]
+    Q --> R["GET /v3/predict/detail"]
+    R --> S["GET /predict/content"]
+    S --> T[顯示盤口 + 跟單按鈕]
+    T --> U{跟單投注}
+    U --> V[加入購物車]
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-landing">
+          <div class="mermaid-card-title">落地頁路由流程</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[外部連結進入落地頁] --> B{頁面類型}
+    B -->|白產落地頁| C[雲平台設置內容]
+    B -->|轉盤落地頁| D[抽獎轉盤]
+    C --> E[廣告版位]
+    E --> F{連結類型}
+    F -->|無| G[不執行動作]
+    F -->|APP下載| H[判斷裝置]
+    F -->|H5入口| I[跳轉推廣域名]
+    F -->|網址| J[跳轉設置網址]
+    H --> K{iOS 用戶類型}
+    K -->|新用戶| L[下載超級簽/企業包]
+    K -->|舊用戶| M[下載 iOS 輕量版]
+    L & M --> N{"下載完成? (iOS)"}
+    N --> O[顯示一鍵信任彈窗]
+    O --> P[跳轉設置頁安裝描述檔]
+    D --> Q{登入狀態}
+    Q -->|未登入| R[不顯示抽獎次數按鈕]
+    Q -->|已登入| S{"抽獎次數 > 0?"}
+    S -->|是| T[轉盤轉動 → 得獎彈窗]
+    S -->|否| U["toast 抽獎次數不足"]
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-message">
+          <div class="mermaid-card-title">消息中心流程</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[進入消息中心] --> B{已登入?}
+    B -->|否| C[攔截 needLogin]
+    B -->|是| D[4 Tab 切換]
+    D -->|通知 type=2| E["POST /user/getMailWithPagination"]
+    D -->|活�� type=1| E
+    D -->|公告| F["POST /config/notice/v2"]
+    D -->|賽事公告| F
+    E --> G[分頁載入 pageSize=20]
+    G --> H{批量操作模式?}
+    H -->|是| I[多選 checkbox]
+    I --> J["刪除 POST /user/deleteMail"]
+    I --> K["已讀 POST /user/readMail"]
+    H -->|否| L[點擊查看詳情]
+    F --> M[公告列表]
+    M --> N[未讀數 badge 同步]
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: 泳道圖 -->
+    <div class="tab-panel" id="swimlane">
+      <div class="tool-section">
+        <div class="stats-pill"><span>4 泳道圖</span></div>
+
+        <div class="mermaid-card" id="sw-cs-init">
+          <div class="mermaid-card-title">客服 iframe 初始化互動</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant App as 客服元件
+    participant Store as serviceStore
+    participant API as 後端 API
+    participant CS as 客服 iframe
+
+    U->>App: 點擊客服圖示
+    App->>API: POST /config/getCsLineConfig
+    API-->>Store: csLineConfig + csLiveConfig + csAgentConfig
+
+    Store->>Store: VIP 等級篩選線道
+
+    alt 幣商來的 (imDealer)
+        Store->>Store: 隨機取 csType=1 線道
+    else 多條線道
+        App-->>U: BottomSheet 選擇
+        U->>App: 選擇線道
+    end
+
+    alt csType = 1 官方
+        App->>CS: 載入 kfUrl + MD5 簽名參數
+        Note over CS: uid/uname/agentid/token/mac/kefuSign
+        CS-->>App: postMessage 事件
+        Note over App: jump/close/view/queue/tips/move/keyboard
+    else csType = 2 三方
+        App->>CS: IframeCommon 載入三方 URL
+    end
+
+    opt 有進行中對話
+        App->>API: POST custom/getChatInfo
+        API-->>App: 10分鐘內對話存在
+        App-->>U: 自動恢復對話
+    end
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-gossip-post">
+          <div class="mermaid-card-title">爆料文章詳情互動</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant Page as 爆料詳情頁
+    participant API as 後端 API
+    participant Cart as 購物車
+
+    U->>Page: 點擊文章卡片
+
+    par 並行請求
+        Page->>API: GET /v3/predict/detail
+        API-->>Page: 文章主體 + matches 盤口
+    and
+        Page->>API: GET /predict/content
+        API-->>Page: HTML 富文本內容
+    end
+
+    Page-->>U: 顯示文章 + 盤口列表
+
+    opt 多場賽事
+        U->>Page: 左右滑動切換賽事
+    end
+
+    U->>Page: 選擇盤口跟單
+    Page->>Page: formatCartData 格式化
+    Page->>Cart: 加入購物車 ComboCartBtn
+
+    opt 按讚
+        U->>Page: 點擊讚
+        Page->>API: POST /predict/like
+    end
+
+    opt 分享
+        U->>Page: 點擊分享
+        Page->>API: GET /config/share-image/gossip
+        API-->>Page: 分享底圖
+        Page->>Page: shareStore.openShare()
+    end
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-ranking">
+          <div class="mermaid-card-title">榜單資料載入</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant Page as 榜單頁面
+    participant API as 後端 API
+
+    U->>Page: 進入榜單 from RankBoard 或 Tab
+    Page->>Page: 讀取 URL query type
+
+    alt type = hitBoard
+        Page->>API: GET /predict/winRateRanking
+    else type = winRowBoard
+        Page->>API: GET /predict/winComboRanking
+    else type = followBoard
+        Page->>API: GET /predict/followBetRanking
+    else type = popularBoard
+        Page->>API: GET /predict/viewRanking
+    end
+
+    API-->>Page: TOP 10 排名資料
+    Page-->>U: 顯示排行榜
+
+    U->>Page: 切換 Tab
+    Page->>Page: router.replace 更新 URL query
+    Page->>API: 重新請求對應 API
+
+    U->>Page: 點擊主播
+    Page-->>U: 跳轉 /gossiping/info
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-visitor">
+          <div class="mermaid-card-title">訪客攔截判斷</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 訪客
+    participant App as 爆料頁面
+    participant Config as baseConfig
+    participant Guard as 路由守衛
+
+    U->>App: 進入爆料頁面
+    App->>Config: 讀取 gamePredictVisitorDisplayMode
+
+    alt mode = 1 允許訪客
+        App-->>U: 顯示爆料列表
+        U->>App: 點擊文章
+        App-->>U: 顯示文章詳情
+        U->>App: 嘗試跟單/按讚
+        App->>Guard: 檢查登入狀態
+        Guard-->>U: 彈出登入 Sheet
+    else mode 非 1 攔截
+        App->>Guard: 攔截未登入訪客
+        Guard-->>U: 彈出登入 Sheet
+        Note over U: 無法瀏覽任何爆料內容
+    end
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: 跨服務限制 -->
+    <div class="tab-panel" id="constraints">
+      <div class="tool-section">
+        <div class="stats-pill"><span>12 跨服務限制</span></div>
+
+        <div class="constraint-category" id="cst-tech">
+          <div class="constraint-header"><h3>技術限制</h3></div>
+
+          <details class="constraint-card cat-tech">
+            <summary>客服 iframe 跨域 postMessage 通訊</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>官方客服透過 postMessage 通訊（7 種 action），跨域環境下偶爾 message 遺失。
+              <div class="label">影響</div>測試域名未在白名單內會導致客服功能異常。
+              <div class="label">PM 對策</div>新環境上線前確認客服 iframe domain 已加入白名單。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>爆料詳情雙重請求設計</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>detail（盤口+metadata）和 content（HTML 富文本）分開請求。
+              <div class="label">影響</div>首次載入稍慢，但降低主請求回應大小。
+              <div class="label">PM 對策</div>有意設計，非 bug。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>客服 iframe 全局持久不卸載</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>掛在 app layout 層，不隨頁面切換卸載。全螢幕橫屏時隱藏。
+              <div class="label">影響</div>常駐佔用記憶體；橫屏遊戲中無法使用客服。
+              <div class="label">PM 對策</div>已知行為。
+            </div>
+          </details>
+        </div>
+
+        <div class="constraint-category" id="cst-coupling">
+          <div class="constraint-header"><h3>模組耦合</h3></div>
+
+          <details class="constraint-card cat-coupling">
+            <summary>爆料入口散布多個模組</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>爆料入口在首頁、直播間、賽事詳情等，各入口的訪客檢查未統一。
+              <div class="label">影響</div>部分入口可能遺漏 gamePredictVisitorDisplayMode 檢查。
+              <div class="label">PM 對策</div>新增爆料入口需確認訪客攔截。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>跟單投注整合體育購物車</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>爆料跟單透過 formatCartData 格式化後加入體育購物車。
+              <div class="label">影響</div>購物車結構改動會影響爆料跟單。
+              <div class="label">PM 對策</div>體育購物車重構需同步測試爆料跟單。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>消息中心未讀數由 popupStore 驅動</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>公告未讀數從 popupStore.getNotReadNoticeCount 同步到 Tab badge。
+              <div class="label">影響</div>popupStore 初始化延遲會導致 badge 數字暫時為 0。
+              <div class="label">PM 對策</div>已知行為。
+            </div>
+          </details>
+        </div>
+
+        <div class="constraint-category" id="cst-config">
+          <div class="constraint-header"><h3>設定層限制</h3></div>
+
+          <details class="constraint-card cat-biz">
+            <summary>客服 VIP 線道分流由後台設定</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>getCsLineConfig 回傳的線道含 vipBegin~vipEnd，前端依此過濾。
+              <div class="label">影響</div>VIP 升降級後線道切換不即時（快取值）。
+              <div class="label">PM 對策</div>VIP 相關客服問題需後台調整。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>gamePredictEnabled 控制爆料開關</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>後台關閉時，爆料首頁 onMounted 直接跳轉 /live。
+              <div class="label">影響</div>整個爆料模組一鍵關閉。
+              <div class="label">PM 對策</div>關閉前確認不影響活躍用戶。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>gamePredictVisitorDisplayMode 訪客模式</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>mode=1 允許訪客瀏覽，其他值攔截。
+              <div class="label">影響</div>部分入口未統一檢查此開關。
+              <div class="label">PM 對策</div>確認所有爆料入口的訪客邏輯。
+            </div>
+          </details>
+        </div>
+
+        <div class="constraint-category" id="cst-biz">
+          <div class="constraint-header"><h3>業務限制</h3></div>
+
+          <details class="constraint-card cat-biz">
+            <summary>落地頁新舊用戶判斷依賴打點記錄</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>新/舊用戶判斷是否曾下載過 APP，依打點記錄。
+              <div class="label">影響</div>清除瀏覽器資料後可能誤判為新用戶。
+              <div class="label">PM 對策</div>打點記錄不可跨瀏覽器/裝置。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>URL 簽名用 MD5 加密</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>客服 URL 的 sign 用 MD5(uid+agentid+mac+uname+avatar+theme+kefuSign)。
+              <div class="label">影響</div>kefuSign 是 runtime config 環境變數，不同環境值不同。
+              <div class="label">PM 對策</div>新環境需確認 kefuSign 已設定。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>爆料草稿管理已暫停</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>GOR-5554 草稿管理曾規劃但未上線。
+              <div class="label">影響</div>主播無法儲存草稿，編輯中離開即遺失。
+              <div class="label">PM 對策</div>如需重啟需重新開需求。
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const sideNavData = {
+    overview: {
+      title: '功能總覽',
+      items: [
+        { id: 'sec-cs', label: '7.1 線上客服' },
+        { id: 'sec-cs-entry', label: '客服進入邏輯' },
+        { id: 'sec-cs-state', label: 'iframe 狀態管理' },
+        { id: 'sec-gossip', label: '13. 爆料' },
+        { id: 'sec-gossip-home', label: '爆料首頁' },
+        { id: 'sec-gossip-detail', label: '文章詳情' },
+        { id: 'sec-gossip-search', label: '搜索' },
+        { id: 'sec-gossip-rank', label: '榜單' },
+        { id: 'sec-others', label: '8. 特色頁/消息' },
+        { id: 'sec-landing', label: '落地頁' },
+        { id: 'sec-message', label: '消息中心' },
+      ]
+    },
+    userflow: {
+      title: 'User Flow',
+      items: [
+        { id: 'uf-cs', label: '客服進入流程' },
+        { id: 'uf-gossip', label: '爆料瀏覽+跟單' },
+        { id: 'uf-landing', label: '落地頁路由' },
+        { id: 'uf-message', label: '消息中心' },
+      ]
+    },
+    swimlane: {
+      title: '泳道圖',
+      items: [
+        { type: 'group', label: '使用者動作' },
+        { id: 'sw-cs-init', label: '客服 iframe 初始化' },
+        { id: 'sw-gossip-post', label: '爆料文章詳情' },
+        { id: 'sw-ranking', label: '榜單資料載入' },
+        { type: 'group', label: '系統自動' },
+        { id: 'sw-visitor', label: '訪客攔截判斷' },
+      ]
+    },
+    constraints: {
+      title: '跨服務限制',
+      items: [
+        { id: 'cst-tech', label: '技術限制 (3)' },
+        { id: 'cst-coupling', label: '模組耦合 (3)' },
+        { id: 'cst-config', label: '設定層限制 (3)' },
+        { id: 'cst-biz', label: '業務限制 (3)' },
+      ]
+    }
+  };
+
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+  const sideNavInner = document.getElementById('sideNavInner');
+
+  function renderSideNav(tabId) {
+    const data = sideNavData[tabId];
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+    let html = `<div class="sn-title">${data.title}</div>`;
+    data.items.forEach(item => {
+      if (item.type === 'group') html += `<div class="sn-group">${item.label}</div>`;
+      else html += `<a class="sn-item" data-target="${item.id}" href="#${item.id}">${item.label}</a>`;
+    });
+    sideNavInner.innerHTML = html;
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(() => highlightNavItem(el.getAttribute('data-target')), 300); }
+      });
+    });
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
+    const data = sideNavData[tabId]; if (!data) return;
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+    const visibleSections = new Map();
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top); else visibleSections.delete(entry.target.id); });
+      let topId = null, topY = Infinity;
+      visibleSections.forEach((y, id) => { const el = document.getElementById(id); if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } } });
+      if (!topId && targets.length > 0) { let d = -Infinity; targets.forEach(t => { const r = t.getBoundingClientRect(); if (r.top < 0 && r.top > d) { d = r.top; topId = t.id; } }); }
+      if (topId) highlightNavItem(topId);
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => el.classList.toggle('active', el.getAttribute('data-target') === id));
+    const a = sideNavInner.querySelector('.sn-item.active'); if (a) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  const tabPills = document.querySelectorAll('.tab-pill');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    currentTabId = tabId;
+    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+    if (!mermaidRendered[tabId]) { const panel = document.getElementById(tabId); const d = panel.querySelectorAll('.mermaid'); if (d.length > 0) { mermaid.run({ nodes: d }); mermaidRendered[tabId] = true; } }
+    renderSideNav(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabPills.forEach(pill => pill.addEventListener('click', e => { e.preventDefault(); switchTab(pill.getAttribute('data-tab')); }));
+
+  document.querySelector('.layout').classList.add('has-side-nav');
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) switchTab(hash); else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
+</script>
+</body>
+</html>

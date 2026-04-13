@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>系��/登入/註冊 — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ===== Compact Sticky Header ===== */
+    .compact-header {
+      position: sticky; top: 0; z-index: 150; background: #0f172a;
+      border-bottom: 1px solid #334155; padding: 8px 16px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      height: 60px; box-sizing: border-box;
+    }
+    .compact-header-title { font-size: 24px; font-weight: 700; color: #f1f5f9; white-space: nowrap; }
+    .compact-header-breadcrumb { font-size: 12px; color: #64748b; white-space: nowrap; }
+    .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
+    .compact-header-breadcrumb a:hover { color: #94a3b8; }
+    .compact-header-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+
+    .tab-nav { display: none !important; }
+    .tab-pill {
+      display: inline-block; font-size: 13px; padding: 8px 20px; border-radius: 20px;
+      color: #94a3b8; background: #1e293b; border: 1px solid #334155;
+      text-decoration: none; font-weight: 600; transition: all .15s; cursor: pointer;
+    }
+    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
+    .tab-pill.active { background: #10b981; color: #fff; border-color: #10b981; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .v2-main { margin-left: 0; }
+
+    /* ===== Mermaid card ===== */
+    .mermaid-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      margin-bottom: 28px; overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 8px;
+    }
+    .mermaid-card-body { padding: 20px; overflow-x: auto; }
+    .mermaid-card-body .mermaid { display: flex; justify-content: center; }
+
+    .pm-notice {
+      background: #2a2210; border-left: 3px solid #fbbf24; padding: 12px 16px;
+      margin: 0 18px 4px; border-radius: 6px; font-size: 13px; color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary { font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; user-select: none; }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px; background: #0f172a;
+      border-radius: 6px; margin-top: 4px; font-family: 'SF Mono','Fira Code',monospace; line-height: 1.8;
+    }
+
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 18px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before { content: "▸"; color: #64748b; font-size: 14px; transition: transform .2s; }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #10b981; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body { padding: 0 18px 16px; border-top: 1px solid #334155; }
+
+    .logic-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .logic-table th { background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px; }
+    .logic-table td { background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155; color: #cbd5e1; vertical-align: top; }
+    .logic-table tr:hover td { background: #263548; }
+
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .constraint-card.cat-venue { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "▸"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #10b981; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+
+    .tool-section { max-width: 960px; margin: 0 auto; padding: 50px 16px 30px; }
+    .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+    .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
+
+    .logic-merge-divider {
+      margin: 28px 0 16px; padding: 10px 16px; background: #1a2638;
+      border-left: 3px solid #10b981; border-radius: 6px;
+      font-size: 14px; font-weight: 700; color: #10b981;
+    }
+
+    /* ===== Side Nav ===== */
+    .side-nav {
+      position: fixed; left: 0; top: 60px; width: 220px; height: calc(100vh - 60px);
+      background: #111827; border-right: 1px solid #1e293b; border-top: 1px solid #334155;
+      z-index: 140; display: flex; flex-direction: column; padding-top: 0;
+    }
+    .side-nav-inner {
+      flex: 1; overflow-y: auto; padding: 8px 0 24px;
+      scrollbar-width: thin; scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .side-nav .sn-title {
+      padding: 12px 16px 6px; font-size: 13px; font-weight: 700; color: #e2e8f0;
+      border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 2px; font-size: 11px; font-weight: 600; color: #475569; letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block; padding: 6px 16px 6px 18px; font-size: 13px; color: #94a3b8;
+      cursor: pointer; border-left: 3px solid transparent; transition: all .12s;
+      text-decoration: none; line-height: 1.4;
+    }
+    .side-nav .sn-item:hover { color: #e2e8f0; background: #1e293b; }
+    .side-nav .sn-item.active { color: #fff; border-left-color: #10b981; background: rgba(16,185,129,.06); }
+
+    .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
+
+    @media(max-width: 900px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+      .compact-header { flex-direction: column; height: auto; padding: 12px; gap: 8px; }
+      .compact-header-pills { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });</script>
+
+<div class="layout">
+  <nav class="side-nav" id="sideNav">
+    <div class="side-nav-inner" id="sideNavInner"></div>
+  </nav>
+
+  <div class="main-content v2-main">
+    <header class="compact-header">
+      <span class="compact-header-breadcrumb"><a href="features.html">知識庫</a> / 系統</span>
+      <span class="compact-header-title">🔐 系統/登入/註冊</span>
+      <div class="compact-header-pills">
+        <span class="tab-pill active" data-tab="overview">功能總覽</span>
+        <span class="tab-pill" data-tab="userflow">User Flow</span>
+        <span class="tab-pill" data-tab="swimlane">泳道圖</span>
+        <span class="tab-pill" data-tab="constraints">跨服務限制</span>
+      </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: 功能總覽                            -->
+    <!-- ========================================== -->
+    <div class="tab-panel active" id="overview">
+      <div class="tool-section">
+        <div class="kb-notice">
+          <b>模組概覽：</b>系統模組是所有玩家進入 App 前必經的基礎架構層。包含初始化流程、登入/註冊、路由守衛、維護/封鎖頁面。
+        </div>
+
+        <div class="stats-pill" style="margin-top: 20px;">
+          <span>6 頁面邏輯卡</span>
+          <span>|</span>
+          <span>4 踩坑 Records</span>
+          <span>|</span>
+          <span>13 API</span>
+        </div>
+
+        <!-- ===== 0.1 初始化 ===== -->
+        <div class="logic-merge-divider" id="sec-init">0.1 App ��始化</div>
+
+        <details class="page-logic-card" id="sec-init-flow">
+          <summary>初始化流程 <span class="rule-count">9 步驟</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>步驟</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>useDeviceUuid()</td><td>取得/產生裝置指紋</td><td><span class="cost-tag cost-code">程式層</span></td><td>設備識別基礎</td></tr>
+              <tr><td>2</td><td>fetchChannelId()</td><td>query > localStorage > ENV > API</td><td><span class="cost-tag cost-code">程式層</span></td><td>channelId 全程跟著 URL</td></tr>
+              <tr><td>3</td><td>fetchConfig()</td><td>並行拉 baseConfig/v2 + blackList</td><td><span class="cost-tag cost-code">程式層</span></td><td>失敗則初始化失敗</td></tr>
+              <tr><td>4</td><td>errCode 檢查</td><td>errCode !== 1 → 跳維護頁</td><td><span class="cost-tag cost-config">���定層</span></td><td>後台可觸發維護模式</td></tr>
+              <tr><td>5</td><td>IP 黑名單檢查</td><td>命中 → 跳 /block</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定 IP 黑名單</td></tr>
+              <tr><td>6</td><td>Token 續期</td><td>hasToken → refreshToken + getUserInfo</td><td><span class="cost-tag cost-code">程式層</span></td><td>失敗不中斷</td></tr>
+              <tr><td>7</td><td>fetchIngService()</td><td>取得進行中客服連線</td><td><span class="cost-tag cost-code">程式��</span></td><td></td></tr>
+              <tr><td>8</td><td>setIsInitSuccess(true)</td><td>觸發 25+ 模組 watch 聯動</td><td><span class="cost-tag cost-code">程式層</span></td><td>首屏效能瓶頸</td></tr>
+              <tr><td>9</td><td>啟動 WebSocket</td><td>平台 WS + 用戶 WS</td><td><span class="cost-tag cost-code">程式���</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useInit.ts:initFlow()<br>composables/useSystemCheck.ts:checkSystemStatusAndRoute()</div></details>
+          </div>
+        </details>
+
+        <!-- ===== 0.2 登入 ===== -->
+        <div class="logic-merge-divider" id="sec-login">0.2 登入</div>
+
+        <details class="page-logic-card" id="sec-login-page">
+          <summary>登入頁面 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>accountLoginEnabled + phoneNumberLoginEnabled</td><td>兩者皆開 → 雙 Tab</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台 baseConfig 控制</td></tr>
+              <tr><td>2</td><td>只開一種</td><td>隱藏 Tab，直接顯示單一表單</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>已登入</td><td>自動跳轉 toPushTypePage()</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>errCode=9/14</td><td>彈出圖形驗證碼 NumberCaptchPopup</td><td><span class="cost-tag cost-code">��式層</span></td><td></td></tr>
+              <tr><td>5</td><td>errCode=110 新設備</td><td>彈出 NewDeviceAuth 驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td>需要手機號碼</td></tr>
+              <tr><td>6</td><td>errCode=114 新 IP</td><td>彈出 NewDeviceAuth（異地登入）</td><td><span class="cost-tag cost-code">程式層</span></td><td>簡訊驗證</td></tr>
+              <tr><td>7</td><td>isKeyCodeOpen</td><td>部分業主有圖形驗證碼前置</td><td><span class="cost-tag cost-config">��定層</span></td><td></td></tr>
+              <tr><td>8</td><td>密碼儲存</td><td>AES 加密存 localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td>key 32 位固��</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/login/index.vue<br>composables/useLogin/index.ts:loginByAccount()/loginByPhone()</div></details>
+          </div>
+        </details>
+
+        <!-- ===== 0.3 註冊 ===== -->
+        <div class="logic-merge-divider" id="sec-register">0.3 註冊</div>
+
+        <details class="page-logic-card" id="sec-register-page">
+          <summary>註冊頁面 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>���件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>accountValidRole=2</td><td>帳號首位必須是字母</td><td><span class="cost-tag cost-config">設定層</span></td><td>registerOption API 控制</td></tr>
+              <tr><td>2</td><td>accountRegisterBoundPhoneNumber</td><td>帳號註冊需填手機號</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>inviteCodeEnabled 且無 recommendId</td><td>顯示邀請碼欄位</td><td><span class="cost-tag cost-config">設定��</span></td><td></td></tr>
+              <tr><td>4</td><td>推薦人 ID</td><td>Base64 decode → 含 | 取後段</td><td><span class="cost-tag cost-code">程式層</span></td><td>外部帶���</td></tr>
+              <tr><td>5</td><td>測試渠道</td><td>自動清空邀請碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>註冊成功</td><td>自動登入（handleLoginSuccess）</td><td><span class="cost-tag cost-code">程式��</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/login/components/Register.vue<br>composables/useLogin/useRegister.ts</div></details>
+          </div>
+        </details>
+
+        <!-- ===== 0.4 路由守衛 ===== -->
+        <div class="logic-merge-divider" id="sec-guard">0.4 路由守衛 / Token / 維護</div>
+
+        <details class="page-logic-card" id="sec-route-guard">
+          <summary>路由守衛 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條��</th><th>行為</th><th>��動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>to.meta.needLogin && !token</td><td>顯示登入 Sheet，abort 導航</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>測試帳號 + 受限頁</td><td>攔截 deposit/withdraw/mine-transfer</td><td><span class="cost-tag cost-code">程式層</span></td><td>測試帳號功能受限</td></tr>
+              <tr><td>3</td><td>離開 /home/topic</td><td>清除 themeOverride</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>channelId 繼承</td><td>from.query.channelId → to.query</td><td><span class="cost-tag cost-code">程式層</span></td><td>全站必帶</td></tr>
+              <tr><td>5</td><td>路由切換</td><td>清空直播購物車</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>from query 記錄</td><td>渠道追蹤寫入 localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">middleware/router-guard.global.ts</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-token">
+          <summary>Token 管理 <span class="rule-count">5 條規��</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>���件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>Token 有效期</td><td>72 小時，設備不變不失���</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>全站通則規定</td></tr>
+              <tr><td>2</td><td>設備變動</td><td>Token 立即失效</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>HTTP 401</td><td>toast 過期 → logout → 跳首頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>errCode 163</td><td>暫封/踢下線 → ExpiredPopup</td><td><span class="cost-tag cost-code">程式���</span></td><td>需聯繫客服</td></tr>
+              <tr><td>5</td><td>API prefix</td><td>有 token → /ajax-migration；無 → /public</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">plugins/fetch.ts:platformStatusCodeHandler<br>stores/user.ts:setToken/logout</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-maintain">
+          <summary>維護頁 / IP 封鎖 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行���</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>isInMaintain</td><td>全屏維護頁 + Lottie 動畫</td><td><span class="cost-tag cost-config">設定��</span></td><td>後台控制開關</td></tr>
+              <tr><td>2</td><td>維護結束</td><td>watch 偵測 → logout + reload</td><td><span class="cost-tag cost-code">程式層</span></td><td>使用者無感</td></tr>
+              <tr><td>3</td><td>IP 在黑名單</td><td>全屏封鎖頁 + 顯示 IP 地區</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定</td></tr>
+              <tr><td>4</td><td>封鎖出口</td><td>僅能聯繫客服</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>無法自行解鎖</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/(system)/maintain.vue<br>pages/(system)/block.vue</div></details>
+          </div>
+        </details>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: User Flow                          -->
+    <!-- ========================================== -->
+    <div class="tab-panel" id="userflow">
+      <div class="tool-section">
+        <div class="stats-pill"><span>4 User Flow</span></div>
+
+        <div class="mermaid-card" id="uf-init">
+          <div class="mermaid-card-title">App 初始化流程</div>
+          <div class="pm-notice">
+            <ul>
+              <li>初始化失敗 → toast + 清 localStorage，通常是 channelId 取不到</li>
+              <li>開發模式 F2/F3/F4 快捷鍵可跳過部分流程</li>
+            </ul>
+          </div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart TD
+    A[App 啟動] --> B[useDeviceUuid 取得裝置指紋]
+    B --> C{channelId 來源}
+    C -->|URL query| D[用 query.channelId]
+    C -->|localStorage| E[用 settingStore.channelId]
+    C -->|localhost| F[用 ENV VITE_CHANNEL_ID]
+    C -->|線上環境| G["POST /config/getH5Domain"]
+    D & E & F & G --> H[fetchConfig 並行拉取]
+    H --> I["baseConfig/v2"]
+    H --> J["channelIpBlackList/v3"]
+    I & J --> K{errCode === 1?}
+    K -->|否| L[跳轉 /maintain]
+    K -->|是| M{IP 黑名單?}
+    M -->|是| N[跳轉 /block]
+    M -->|否| O{hasToken?}
+    O -->|是| P[refreshToken + getUserInfo]
+    O -->|否| Q{需要登��?}
+    Q -->|是| R[跳轉 /login]
+    Q -->|否| S[toPushTypePage]
+    P --> S
+    S --> T[setIsInitSuccess true]
+    T --> U[��動 WebSocket]
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="uf-login">
+          <div class="mermaid-card-title">登入流程（帳號/手機 + 驗證碼 + 新設備）</div>
+          <div class="pm-notice">
+            <ul>
+              <li>帳號密碼 AES 加密傳輸，key 是寫死的 32 位字串</li>
+              <li>新設備驗證需要手機號，未綁手機的帳號無法在新設備登入</li>
+            </ul>
+          </div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart TD
+    A[進入登入頁] --> B{登入模式設定}
+    B -->|accountLoginEnabled| C[帳號登入 Tab]
+    B -->|phoneNumberLoginEnabled| D[手機登入 Tab]
+    B -->|兩者皆開| E[顯示雙 Tab]
+    C --> F[輸入帳號/密碼]
+    F --> G[AES 加密密碼]
+    G --> H["POST /login/login"]
+    D --> I[輸入手機號]
+    I --> J["發送驗證碼 opType=8"]
+    J --> K["POST /login/phoneLoginV2"]
+    H & K --> L{errCode?}
+    L -->|1 成功| M[handleLoginSuccess]
+    L -->|9/14 需驗證碼| N[NumberCaptchPopup]
+    L -->|110 新設備| O[NewDeviceAuth 彈窗]
+    L -->|114 新 IP| O
+    M --> P[setToken]
+    P --> Q[getUserInfo]
+    Q --> R[toPushTypePage]
+    O --> S[輸入手機驗證碼]
+    S --> T["POST /login/newDevice"]
+    T --> M
+    N --> U[完成圖形驗證]
+    U --> V[retryWithNumber 重送]
+    V --> L
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="uf-register">
+          <div class="mermaid-card-title">註冊流程（帳號/手機 + 邀請碼）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart TD
+    A[進入註冊] --> B{註冊模式}
+    B -->|accountRegisterEnabled| C[帳號註冊]
+    B -->|phoneNumberRegisterEnabled| D[手機註冊]
+    C --> E[填寫帳號/密碼/確認密碼]
+    E --> F{需要手機號?}
+    F -->|accountRegisterBoundPhoneNumber| G[填手機號+驗證碼]
+    F -->|否| H{有邀請碼欄位?}
+    G --> H
+    H -->|inviteCodeEnabled| I[填邀請碼]
+    H -->|否| J["POST /login/register"]
+    I --> J
+    D --> K[填手機號]
+    K --> L["發送驗��碼 opType=7"]
+    L --> M["POST /login/phoneRegisterV2"]
+    J & M --> N{成功?}
+    N -->|是| O[handleLoginSuccess 自動登入]
+    N -->|否| P[handleError]
+    O --> Q[setToken + getUserInfo]
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="uf-token">
+          <div class="mermaid-card-title">Token 生命週��</div>
+          <div class="pm-notice">
+            <ul>
+              <li>Token 72 小時有效，設備不變 + IP 變動 → 不失效</li>
+              <li>設備變動 → 立即失效，跟 IP 無關</li>
+            </ul>
+          </div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart TD
+    A[Token 生命週期] --> B{Token 來��}
+    B -->|登入成功| C[setToken 存入 Pinia + localStorage]
+    B -->|App 初始化| D[refreshToken 續期]
+    C --> E[72 小時有效期]
+    D --> F{續期成功?}
+    F -->|是| G[getUserInfo 更新用戶資料]
+    F -->|否| H["console.warn 不中斷"]
+    E --> I{設備變��?}
+    I -->|是| J[Token 失效]
+    I -->|否| K{IP 變動?}
+    K -->|是或否| L[Token 不失效]
+    L --> M{HTTP 401?}
+    M -->|是| N[toast 登入過期]
+    N --> O[logout + 清 localStorage]
+    O --> P[跳轉首頁]
+    J --> P
+    M -->|errCode 163| Q[暫封/踢下線]
+    Q --> R[ExpiredPopup 聯繫客服]
+    R --> S[跳轉 /login]
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: 泳道圖                              -->
+    <!-- ========================================== -->
+    <div class="tab-panel" id="swimlane">
+      <div class="tool-section">
+        <div class="stats-pill"><span>4 泳道圖</span></div>
+
+        <div class="mermaid-card" id="sw-init">
+          <div class="mermaid-card-title">初始化 API 序列</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant App as App (useInit)
+    participant Store as Pinia Store
+    participant API as 後端 API
+    participant WS as WebSocket
+
+    U->>App: 開啟 App
+    App->>App: useDeviceUuid()
+    App->>App: fetchChannelId()
+    Note over App: query > localStorage > ENV > API
+
+    par 並行拉取
+        App->>API: GET baseConfig/v2
+        API-->>Store: baseConfig + noticeList
+    and
+        App->>API: POST channelIpBlackList/v3
+        API-->>Store: blackList
+    end
+
+    alt errCode !== 1
+        App->>U: 跳轉 /maintain
+    else IP 在黑名單
+        App->>U: 跳��� /block
+    else hasToken
+        App->>API: POST /login/refreshToken
+        API-->>Store: 續期成功
+        App->>API: POST /user/getUserInfo
+        API-->>Store: playerId + userInfo
+    end
+
+    App->>Store: setIsInitSuccess(true)
+    Store->>WS: 啟動平台 WS + 用戶 WS
+    App->>App: 觸發 watch 聯動初始化
+    Note over App: 活動/VIP/直播/任務...
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="sw-login">
+          <div class="mermaid-card-title">登入前後端互動</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant Page as 登入頁
+    participant Valid as 前端驗證
+    participant API as 後端 API
+    participant Store as userStore
+
+    U->>Page: 輸入帳號/密碼
+    Page->>Valid: vee-validate + zod 驗證
+    Valid-->>Page: 通過
+
+    Page->>Page: AES 加密密碼
+    Page->>API: POST /login/login
+
+    alt errCode === 1
+        API-->>Store: setToken(token)
+        Store->>API: POST /user/getUserInfo
+        API-->>Store: playerId + userInfo
+        Store->>Page: toPushTypePage()
+    else errCode === 9/14
+        API-->>Page: 需要圖形驗證碼
+        Page->>U: 顯示 NumberCaptchPopup
+        U->>Page: 完成驗證
+        Page->>API: retryWithNumber 重送請求
+    else errCode === 110
+        API-->>Page: 新設備驗證
+        Page->>U: 顯示 NewDeviceAuth
+        U->>Page: 輸入手機驗證碼
+        Page->>API: POST /login/newDevice
+        API-->>Store: setToken
+    else errCode === 163
+        API-->>Page: 暫封
+        Page->>U: ExpiredPopup 聯繫客服
+    end
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="sw-register">
+          <div class="mermaid-card-title">註冊前後端互動</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant Page as 註冊頁
+    participant API as 後��� API
+    participant Store as userStore
+
+    Page->>API: POST /login/registerOption
+    API-->>Page: accountValidRole + 開關設定
+
+    U->>Page: 填寫帳號/密碼
+
+    opt 需要手機綁定
+        U->>Page: 輸入手機號
+        Page->>API: POST /login/phoneCode (opType=7)
+        API-->>U: 發送簡訊驗證碼
+        U->>Page: 輸入驗證碼
+    end
+
+    opt 有邀請碼
+        U->>Page: 輸入邀請碼
+    end
+
+    Page->>Page: AES 加密密碼
+    Page->>API: POST /login/register
+
+    alt 成功
+        API-->>Store: setToken(token)
+        Store->>API: POST /user/getUserInfo
+        API-->>Store: userInfo
+        Store->>Page: toPushTypePage()
+    else 失敗
+        API-->>Page: errCode handleError
+    end
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="sw-route-guard">
+          <div class="mermaid-card-title">路由守衛判斷</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant Router as router-guard.global
+    participant Store as Pinia Stores
+    participant Page as 目標頁面
+
+    U->>Router: 路由跳轉 to
+
+    Router->>Router: channelId 繼承 from to query
+    Router->>Router: from query 記錄到 localStorage
+
+    alt to.meta.needLogin 且 無 token
+        Router->>Store: setIsLoginSheetOpen(true)
+        Router-->>U: 顯示登入 Sheet 不跳轉
+    else 測試帳號訪問受限頁面
+        Note over Router: deposit/withdraw/mine-transfer
+        Router-->>U: 攔截跳轉
+    else 離開杯賽主題頁
+        Router->>Store: 清除 themeOverride
+    end
+
+    Router->>Store: useLiveCartsStore.$reset()
+    Note over Router: 每次路由切換清空直播購物車
+
+    Router->>Page: 放行跳轉
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: 跨服務限制                          -->
+    <!-- ========================================== -->
+    <div class="tab-panel" id="constraints">
+      <div class="tool-section">
+        <div class="stats-pill"><span>14 跨服務限制</span></div>
+
+        <!-- 技術限制 -->
+        <div class="constraint-category" id="cst-tech">
+          <div class="constraint-header"><h3>技術限制</h3></div>
+          <div class="constraint-pm-guide">系統層的技術約束，影響所有模組</div>
+
+          <details class="constraint-card cat-tech">
+            <summary>Token 72 小時有效期不可調</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              Token 維持 72 小時，延長機制持續遊玩不踢下線。設備號變動 → Token 失效（跟 IP 無關）。
+              <div class="label">影響</div>
+              玩家換手機必定需要重新登入，新設備還需簡訊驗證。
+              <div class="label">PM 對策</div>
+              客服需要有「新設備無法登入」的 FAQ。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>AES 密碼加密 key 寫死在前���</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              密碼加密用固定 32 位 key + 全零 IV，localStorage 和 API 傳輸共用。
+              <div class="label">影響</div>
+              安全性依賴 HTTPS 傳輸層，key 洩漏可解密本地密碼。
+              <div class="label">PM 對策</div>
+              暫無替代方案，已知風險��
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>初始化 watch 觸發 25+ 非同步請求</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              isLogin + isInitSuccess 變化時觸發大量模組初始化 API（活動/VIP/直播/任務/場館/錢包等）。
+              <div class="label">���響</div>
+              首屏載入效能瓶頸，低速網路體感明顯。
+              <div class="label">PM 對策</div>
+              新增模組初始化需評估效能影響。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>全站 Timeout 統一 20 秒</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              全站通則規定 Timeout 20 秒（原 10 秒）。沙巴體育超 20 秒顯示彈窗。
+              <div class="label">影響</div>
+              低速環境可能大量 timeout，影響體驗。
+              <div class="label">PM 對策</div>
+              不可單獨調整，是全站規則。
+            </div>
+          </details>
+        </div>
+
+        <!-- 模組耦合 -->
+        <div class="constraint-category" id="cst-coupling">
+          <div class="constraint-header"><h3>模組耦合</h3></div>
+          <div class="constraint-pm-guide">系統模組與其他模組的依賴關係</div>
+
+          <details class="constraint-card cat-coupling">
+            <summary>channelId 全程跟著 URL query</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              channelId 必須在每次路由跳轉中從 from 帶到 to，router-guard 統一處理。
+              <div class="label">影響</div>
+              任何新路由如果 bypass router-guard（如 window.open），channelId 會遺失。
+              <div class="label">PM 對策</div>
+              外開連結需手動帶 channelId query。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>登入成功後觸發全模組初始化</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              登入 → setToken → watch 觸發 → 25+ 模組初始化。包括活動、VIP、直播、場館、錢包等。
+              <div class="label">影響</div>
+              登入後有短暫空白期，各模組資料陸續載入。
+              <div class="label">PM 對策</div>
+              登入後的跳轉頁面需容忍資料尚未就緒。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>維護模式從 baseConfig 取得，非即時推送</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              維護狀態寫在 baseConfig/v2 的 noticeList 裡，初始化時取得。非 WebSocket 即時推送。
+              <div class="label">影響</div>
+              已開啟的玩家需等下次 config 拉取才跳維護頁。
+              <div class="label">PM 對策</div>
+              維護公告需提前發布。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>路由守衛清空直播購物車</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              每次路由切換都會 useLiveCartsStore.$reset()。
+              <div class="label">影響</div>
+              從直播間跳到其他頁再回來，購物車會被清空。
+              <div class="label">PM 對策</div>
+              已知行為，直播購物車不跨頁保存。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>客服 iframe 全局持久不卸載</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              客服 iframe 掛在 app layout 層，不隨頁面切換卸載。排隊視窗固定在右側。
+              <div class="label">影響</div>
+              全螢幕橫屏或三方遊戲內隱藏整個客服 UI。
+              <div class="label">PM 對策</div>
+              橫屏遊戲中無法使用客服。
+            </div>
+          </details>
+        </div>
+
+        <!-- 設定層限制 -->
+        <div class="constraint-category" id="cst-config">
+          <div class="constraint-header"><h3>設定層限制</h3></div>
+          <div class="constraint-pm-guide">需要後台設定配合的系統約束</div>
+
+          <details class="constraint-card cat-biz">
+            <summary>登入/註冊模式由 baseConfig 控制</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              accountLoginEnabled / phoneNumberLoginEnabled / accountRegisterEnabled / phoneNumberRegisterEnabled 四個開關。
+              <div class="label">影響</div>
+              開關組合錯誤（如全關）有防呆但體驗差。
+              <div class="label">PM ���策</div>
+              新業主上線前確認登入/註冊開關設定。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>IP 黑名單由雲平台 channelIpBlackList 控制</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              每次初始化並行拉取黑名單，命中即封鎖。
+              <div class="label">影響</div>
+              封鎖是即時的（下次載入生效），解封需後台操作。
+              <div class="label">PM 對策</div>
+              誤封需聯繫後台管理員。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>推廣類型（pushType）決定登入後跳轉目標</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              baseConfig.gameTabSelected 決定 toPushTypePage() 的跳轉目標。
+              <div class="label">影響</div>
+              不同渠道的玩家登入後看到的首頁不同。
+              <div class="label">PM 對策</div>
+              新渠道上線需確認 pushType 設定。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>網頁重整需停留原頁面（GOR-5608）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              全站通則：重新整理後需停留在原有頁面。Token 失效時刷新回到 pushType 頁。
+              <div class="label">影響</div>
+              重整場景的跳轉由 useSystemCheck 處理，不走 router-guard 的 needLogin 攔截。
+              <div class="label">PM ��策</div>
+              這是刻意的雙軌設計，避免雙重觸發。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>跳轉類型「開啟 APP」的 scheme 判斷</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              H5/APP：判斷 iOS scheme 或 Android Package name → 有符合開啟 APP；未符合開啟「跳轉參數」。
+              <div class="label">影響</div>
+              PC 無 APP，統一用跳轉參數。
+              <div class="label">PM 對策</div>
+              跳轉連結需確認三端（PC/H5/APP）行為。
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- main-content -->
+</div><!-- layout -->
+
+<script>
+  const sideNavData = {
+    overview: {
+      title: '功能總覽',
+      items: [
+        { id: 'sec-init', label: '0.1 App 初始化' },
+        { id: 'sec-init-flow', label: '初始化流程' },
+        { id: 'sec-login', label: '0.2 登入' },
+        { id: 'sec-login-page', label: '登入頁面' },
+        { id: 'sec-register', label: '0.3 註��' },
+        { id: 'sec-register-page', label: '註冊頁面' },
+        { id: 'sec-guard', label: '0.4 路由守衛/Token' },
+        { id: 'sec-route-guard', label: '路由守衛' },
+        { id: 'sec-token', label: 'Token 管理' },
+        { id: 'sec-maintain', label: '維護頁/IP 封鎖' },
+      ]
+    },
+    userflow: {
+      title: 'User Flow',
+      items: [
+        { id: 'uf-init', label: 'App 初始化流程' },
+        { id: 'uf-login', label: '登入流��' },
+        { id: 'uf-register', label: '註冊流程' },
+        { id: 'uf-token', label: 'Token 生命週期' },
+      ]
+    },
+    swimlane: {
+      title: '泳道圖',
+      items: [
+        { type: 'group', label: '使用者動作' },
+        { id: 'sw-init', label: '初始化 API 序列' },
+        { id: 'sw-login', label: '登入前後端互動' },
+        { id: 'sw-register', label: '註冊前後端互動' },
+        { type: 'group', label: '系統自動' },
+        { id: 'sw-route-guard', label: '路由守衛判斷' },
+      ]
+    },
+    constraints: {
+      title: '跨服務限��',
+      items: [
+        { id: 'cst-tech', label: '技術限制 (4)' },
+        { id: 'cst-coupling', label: '���組耦合 (5)' },
+        { id: 'cst-config', label: '設定層限制 (5)' },
+      ]
+    }
+  };
+
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+  const sideNavInner = document.getElementById('sideNavInner');
+
+  function renderSideNav(tabId) {
+    const data = sideNavData[tabId];
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+    let html = `<div class="sn-title">${data.title}</div>`;
+    data.items.forEach(item => {
+      if (item.type === 'group') {
+        html += `<div class="sn-group">${item.label}</div>`;
+      } else {
+        html += `<a class="sn-item" data-target="${item.id}" href="#${item.id}">${item.label}</a>`;
+      }
+    });
+    sideNavInner.innerHTML = html;
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setTimeout(() => highlightNavItem(el.getAttribute('data-target')), 300);
+        }
+      });
+    });
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
+    const data = sideNavData[tabId];
+    if (!data) return;
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+    const visibleSections = new Map();
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top);
+        else visibleSections.delete(entry.target.id);
+      });
+      let topId = null, topY = Infinity;
+      visibleSections.forEach((y, id) => {
+        const el = document.getElementById(id);
+        if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } }
+      });
+      if (!topId && targets.length > 0) {
+        let closestDist = -Infinity;
+        targets.forEach(t => { const rect = t.getBoundingClientRect(); if (rect.top < 0 && rect.top > closestDist) { closestDist = rect.top; topId = t.id; } });
+      }
+      if (topId) highlightNavItem(topId);
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-target') === id);
+    });
+    const activeEl = sideNavInner.querySelector('.sn-item.active');
+    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  const tabPills = document.querySelectorAll('.tab-pill');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    currentTabId = tabId;
+    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+    if (!mermaidRendered[tabId]) {
+      const panel = document.getElementById(tabId);
+      const diagrams = panel.querySelectorAll('.mermaid');
+      if (diagrams.length > 0) { mermaid.run({ nodes: diagrams }); mermaidRendered[tabId] = true; }
+    }
+    renderSideNav(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabPills.forEach(pill => {
+    pill.addEventListener('click', e => { e.preventDefault(); switchTab(pill.getAttribute('data-tab')); });
+  });
+
+  document.querySelector('.layout').classList.add('has-side-nav');
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) switchTab(hash);
+  else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
+</script>
+</body>
+</html>

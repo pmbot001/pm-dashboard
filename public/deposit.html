@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>存提款/金流 — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ===== Compact Sticky Header ===== */
+    .compact-header {
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      height: 60px;
+      box-sizing: border-box;
+    }
+    .compact-header-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb {
+      font-size: 12px;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
+    .compact-header-breadcrumb a:hover { color: #94a3b8; }
+    .compact-header-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .tab-nav { display: none !important; }
+    .tab-pill {
+      display: inline-block;
+      font-size: 13px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      color: #94a3b8;
+      background: #1e293b;
+      border: 1px solid #334155;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all .15s;
+      cursor: pointer;
+    }
+    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
+    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .v2-main { margin-left: 0; }
+
+    /* ===== Mermaid card ===== */
+    .mermaid-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f1f5f9;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mermaid-card-body {
+      padding: 20px;
+      overflow-x: auto;
+    }
+    .mermaid-card-body .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    .pm-notice {
+      background: #2a2210;
+      border-left: 3px solid #fbbf24;
+      padding: 12px 16px;
+      margin: 0 18px 4px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary {
+      font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; user-select: none;
+    }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px;
+      background: #0f172a; border-radius: 6px; margin-top: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace; line-height: 1.8;
+    }
+
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 18px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before {
+      content: "▸"; color: #64748b; font-size: 14px; transition: transform .2s;
+    }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body {
+      padding: 0 18px 16px; border-top: 1px solid #334155;
+    }
+
+    .logic-table {
+      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;
+    }
+    .logic-table th {
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px;
+    }
+    .logic-table td {
+      background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155;
+      color: #cbd5e1; vertical-align: top;
+    }
+    .logic-table tr:hover td { background: #263548; }
+
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .constraint-card.cat-venue { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "▸"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+
+    .tool-section {
+      max-width: 960px; margin: 0 auto; padding: 50px 16px 30px;
+    }
+    .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+    .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
+
+    .logic-merge-divider {
+      margin: 28px 0 16px;
+      padding: 10px 16px;
+      background: #1a2638;
+      border-left: 3px solid #f97316;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f97316;
+    }
+
+    /* ===== Side Nav ===== */
+    .side-nav {
+      position: fixed;
+      left: 0;
+      top: 60px;
+      width: 220px;
+      height: calc(100vh - 60px);
+      background: #111827;
+      border-right: 1px solid #1e293b;
+      border-top: 1px solid #334155;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      padding-top: 0;
+    }
+    .side-nav-inner {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0 24px;
+      scrollbar-width: thin;
+      scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .side-nav .sn-title {
+      padding: 12px 16px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block;
+      padding: 6px 16px 6px 18px;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all .12s;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .side-nav .sn-item:hover { color: #e2e8f0; background: #1e293b; }
+    .side-nav .sn-item.active { color: #fff; border-left-color: #f97316; background: rgba(249,115,22,.06); }
+
+    .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
+
+    @media(max-width: 900px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+      .compact-header { flex-direction: column; height: auto; padding: 12px; gap: 8px; }
+      .compact-header-pills { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });</script>
+
+<div class="layout">
+  <!-- ===== Side Nav ===== -->
+  <nav class="side-nav" id="sideNav">
+    <div class="side-nav-inner" id="sideNavInner"></div>
+  </nav>
+
+  <div class="main-content v2-main">
+    <!-- ===== Compact Header ===== -->
+    <header class="compact-header">
+      <span class="compact-header-breadcrumb"><a href="features.html">知識庫</a> / 存提款</span>
+      <span class="compact-header-title">存提款/金流</span>
+      <div class="compact-header-pills">
+        <span class="tab-pill active" data-tab="overview">功能總覽</span>
+        <span class="tab-pill" data-tab="userflow">User Flow</span>
+        <span class="tab-pill" data-tab="swimlane">泳道圖</span>
+        <span class="tab-pill" data-tab="constraints">跨服務限制</span>
+      </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: 功能總覽                            -->
+    <!-- ========================================== -->
+    <div class="tab-panel active" id="overview">
+      <div class="tool-section">
+        <div class="kb-notice">
+          <b>模組概覽：</b>金流模組含存款（充值）、提款、轉帳三大功能。存款頁 Tab 切換，提款/轉帳獨立路由。
+          涵蓋 <code>47</code> 種存款類型、<code>24</code> 種提款類型、<code>50</code> 支 API。
+        </div>
+
+        <div class="stats-pill" style="margin-top: 20px;">
+          <span>12 頁面邏輯卡</span>
+          <span>|</span>
+          <span>13 踩坑 Records</span>
+          <span>|</span>
+          <span>87 測項</span>
+        </div>
+
+        <!-- ===== 5.1 存款 ===== -->
+        <div class="logic-merge-divider" id="sec-deposit">5.1 存款（充值）</div>
+
+        <details class="page-logic-card" id="sec-deposit-main">
+          <summary>存款主頁面 <span class="rule-count">10 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>未綁定手機</td><td>顯示 BindPhone 元件，禁止充值</td><td><span class="cost-tag cost-code">程式層</span></td><td>綁手機是全平台前置條件</td></tr>
+              <tr><td>2</td><td>所有通道關閉或在黑名單</td><td>顯示 MaintainPay 維護頁</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台可切換通道開關</td></tr>
+              <tr><td>3</td><td>單一通道 switchStatus=3</td><td>該通道顯示維護中</td><td><span class="cost-tag cost-config">設定層</span></td><td>個別通道維護不影響其他</td></tr>
+              <tr><td>4</td><td>payType=代客充值(0)</td><td>跳轉客服充值頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>需要客服人力配合</td></tr>
+              <tr><td>5</td><td>channelType=Merge</td><td>顯示合併充值表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>多通道合一的 UI</td></tr>
+              <tr><td>6</td><td>channelType=Expand</td><td>顯示步驟式充值表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>有展開子通道選擇</td></tr>
+              <tr><td>7</td><td>有進行中訂單</td><td>隱藏通道列表，顯示訂單卡片</td><td><span class="cost-tag cost-code">程式層</span></td><td>不能同時有兩張存款單</td></tr>
+              <tr><td>8</td><td>depositAutoJumpPayType 有值</td><td>自動選到對應通道</td><td><span class="cost-tag cost-config">設定層</span></td><td>從活動頁跳來時帶入</td></tr>
+              <tr><td>9</td><td>首存未完成</td><td>顯示首存優惠 Banner</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定包賠 Banner</td></tr>
+              <tr><td>10</td><td>假資料跑馬燈</td><td>顯示 FakeDataScroll</td><td><span class="cost-tag cost-code">程式層</span></td><td>增加充值可信度</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/deposit/components/DepositList.vue:L143-L238（rechargePage computed）<br>pages/deposit/index.vue:L105（Tab 切換 router.push）</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-channel-select">
+          <summary>通道選擇邏輯 <span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>通道 suggestType=1</td><td>標「推薦」標籤</td><td><span class="cost-tag cost-config">設定層</span></td><td>業主後台設定推薦</td></tr>
+              <tr><td>2</td><td>通道 isHot=true</td><td>標「熱門」標籤</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>推薦不足 2 個且 switch=1</td><td>從 isHot 通道補到 2 個</td><td><span class="cost-tag cost-code">程式層</span></td><td>自動補推薦邏輯</td></tr>
+              <tr><td>4</td><td>通道有 discount.isOpen</td><td>顯示優惠百分比</td><td><span class="cost-tag cost-config">設定層</span></td><td>單次/每週上限由後台控</td></tr>
+              <tr><td>5</td><td>無幣商（agency 為空）</td><td>過濾掉代客充值(payType=0)</td><td><span class="cost-tag cost-code">程式層</span></td><td>無客服人員就不顯示</td></tr>
+              <tr><td>6</td><td>USDT 類通道</td><td>顯示匯率（通道級 > 全域）</td><td><span class="cost-tag cost-config">設定層</span></td><td>匯率即時浮動</td></tr>
+              <tr><td>7</td><td>userPreferredAmountRate</td><td>隨機 90~97% 推薦金額</td><td><span class="cost-tag cost-code">程式層</span></td><td>首次計算後快取</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useRecharge.ts:formatChannelList()（L45-L130）</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-deposit-form">
+          <summary>存款下單表單 <span class="rule-count">10 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>金額欄位</td><td>永遠必填</td><td><span class="cost-tag cost-locked">改不了</span></td><td></td></tr>
+              <tr><td>2</td><td>payType 在 getNormalName</td><td>需填存款人姓名</td><td><span class="cost-tag cost-code">程式層</span></td><td>覆蓋 43 種 payType</td></tr>
+              <tr><td>3</td><td>payType 在 getBankListPayType</td><td>需選擇銀行</td><td><span class="cost-tag cost-code">程式層</span></td><td>銀行卡類限定</td></tr>
+              <tr><td>4</td><td>姓名與 realName 不同</td><td>彈窗確認使用新姓名</td><td><span class="cost-tag cost-code">程式層</span></td><td>最多 maxCount 個</td></tr>
+              <tr><td>5</td><td>日次數用完</td><td>canRecharge=false</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設每日上限</td></tr>
+              <tr><td>6</td><td>共用次數用完</td><td>禁止下單</td><td><span class="cost-tag cost-config">設定層</span></td><td>多通道共享次數</td></tr>
+              <tr><td>7</td><td>快捷支付(payType=10)</td><td>先上傳憑證再下單</td><td><span class="cost-tag cost-code">程式層</span></td><td>流程反過來</td></tr>
+              <tr><td>8</td><td>USDT 快捷(payType=26)</td><td>隱藏通道列表+先上傳</td><td><span class="cost-tag cost-code">程式層</span></td><td>獨立頁面</td></tr>
+              <tr><td>9</td><td>下單失敗 10 秒內</td><td>自動重拉單</td><td><span class="cost-tag cost-locked">改不了</span></td><td>防斷線機制</td></tr>
+              <tr><td>10</td><td>DD 錢包 errCode=10308</td><td>取 thirdExt URL 跳轉</td><td><span class="cost-tag cost-code">程式層</span></td><td>DD 專屬錯誤碼</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useDeposit/usePayForm.ts<br>composables/useRecharge.ts:normalPayUrl()</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-deposit-order">
+          <summary>存款訂單追蹤 <span class="rule-count">9 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>expireTime - now > 0 且 status=0</td><td>isOrderProcess=true</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>無 expireTime</td><td>createTime + 30 分鐘</td><td><span class="cost-tag cost-code">程式層</span></td><td>預設 30 分鐘</td></tr>
+              <tr><td>3</td><td>每 15 秒</td><td>自動輪詢 getLatestOrder</td><td><span class="cost-tag cost-locked">改不了</span></td><td>固定間隔</td></tr>
+              <tr><td>4</td><td>倒計時歸零</td><td>觸發重新拉單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>訂單 type=4（card2card）</td><td>顯示收款銀行卡資訊</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>取消訂單</td><td>狀態改 Cancel(12)</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>7</td><td>拉單失敗多次</td><td>counter >= throttle 彈客服</td><td><span class="cost-tag cost-config">設定層</span></td><td>失敗引導客服</td></tr>
+              <tr><td>8</td><td>系統自動取消</td><td>彈客服對話框</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>9</td><td>會員手動取消</td><td>彈客服對話框</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useDeposit/useDepositLatestOrder.ts<br>composables/useDeposit/useDepositCancel.ts</div></details>
+          </div>
+        </details>
+
+        <!-- ===== 5.2 提款 ===== -->
+        <div class="logic-merge-divider" id="sec-withdraw">5.2 提款</div>
+
+        <details class="page-logic-card" id="sec-withdraw-main">
+          <summary>提款主頁面 <span class="rule-count">10 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>inviteInfo.enable=true</td><td>顯示邀請禮金 Tab</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動模式切換才出現</td></tr>
+              <tr><td>2</td><td>中心錢包 Tab</td><td>過濾掉預約提款(type=4)</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>邀請禮金 Tab</td><td>只留 supportInvitedGold</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>有進行中訂單</td><td>頂部顯示 WithdrawOrder</td><td><span class="cost-tag cost-code">程式層</span></td><td>每 15 秒輪詢</td></tr>
+              <tr><td>5</td><td>isOrderLimit=true</td><td>達同時提款單上限</td><td><span class="cost-tag cost-config">設定層</span></td><td>預設上限 1</td></tr>
+              <tr><td>6</td><td>流水未達標+可強制</td><td>彈窗：強制提現/繼續打流水</td><td><span class="cost-tag cost-config">設定層</span></td><td>PM 可控制</td></tr>
+              <tr><td>7</td><td>流水未達標+不可強制</td><td>彈窗：只能確定</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>8</td><td>switch_bankali=true</td><td>虛擬幣前需先做銀行卡/支付寶</td><td><span class="cost-tag cost-config">設定層</span></td><td>風控機制</td></tr>
+              <tr><td>9</td><td>switch_usdtebpay=true</td><td>首次虛擬幣需客服驗證</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>10</td><td>金額倍數限制</td><td>必須是 withdraw_gold_times 整倍</td><td><span class="cost-tag cost-config">設定層</span></td><td>如 100 元整倍數</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/withdraw/composables/useWithdrawList.ts<br>composables/useWithdraw/useWithdrawDialog.ts</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-withdraw-type">
+          <summary>提款通道策略分派 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>type=2（銀行卡）</td><td>Bank 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>type=8（轉卡）</td><td>BankTransfer 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>type=23（代理代提）</td><td>DaiTi 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5483 新增</td></tr>
+              <tr><td>4</td><td>type=17（DD 錢包）</td><td>DD 表單（地址唯讀）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>type=1,18（支付寶/微信）</td><td>Digital 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>含 QR Code</td></tr>
+              <tr><td>6</td><td>type=3,11,13,24（USDT 類）</td><td>USDT 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>共用地址池</td></tr>
+              <tr><td>7</td><td>其他虛擬幣</td><td>Virtual 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>12 種錢包</td></tr>
+              <tr><td>8</td><td>未知 type</td><td>基類 + console.warn</td><td><span class="cost-tag cost-code">程式層</span></td><td>fallback</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWithdraw/useWithdrawTypeGroup/index.ts:createChannel()</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-withdraw-order">
+          <summary>提款訂單追蹤 <span class="rule-count">9 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>有進行中訂單</td><td>每 15 秒輪詢</td><td><span class="cost-tag cost-locked">改不了</span></td><td>最多 3 筆</td></tr>
+              <tr><td>2</td><td>狀態 0-1</td><td>進度條：發起提款</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>狀態 2-4</td><td>進度條：出款審核</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>狀態 5-7</td><td>進度條：準備出款</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>狀態 8</td><td>進度條：平台轉帳中</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>狀態 9-10</td><td>進度條：完成</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>7</td><td>receivedStatus=1</td><td>手動到帳 + 獎勵彩金</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>8</td><td>receivedStatus=3</td><td>到帳異常</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5064</td></tr>
+              <tr><td>9</td><td>拆單訂單</td><td>顯示子訂單列表</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5062</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWithdraw/useWithdrawOrder.ts<br>composables/useWithdraw/constants.ts</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-bind-account">
+          <summary>綁定帳戶管理 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>新增銀行卡</td><td>需姓名+卡號+開戶行+驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>達 maxBindCardsCount</td><td>無法新增</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>刪除銀行卡</td><td>彈窗：刪後無法重綁</td><td><span class="cost-tag cost-locked">改不了</span></td><td>需聯繫客服</td></tr>
+              <tr><td>4</td><td>銀行排序</td><td>BC/ABC/ICBC/CBC/PSBC 前五</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>綁定支付寶/微信</td><td>含 QR Code 綁定</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>綁定虛擬幣地址</td><td>選協議+地址+別名+驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>7</td><td>EASY/4E</td><td>共用 USDT 地址池</td><td><span class="cost-tag cost-code">程式層</span></td><td>addressConvertType</td></tr>
+              <tr><td>8</td><td>DD 錢包地址</td><td>唯讀，需 refresh 刷新</td><td><span class="cost-tag cost-locked">改不了</span></td><td>第三方控制</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWithdraw/useWithdraw.ts:bindBankCard/deleteBankCard/bindVirtualAddress</div></details>
+          </div>
+        </details>
+
+        <!-- ===== 5.3 其他 ===== -->
+        <div class="logic-merge-divider" id="sec-others">5.3 轉帳 / 優惠 / 流水</div>
+
+        <details class="page-logic-card" id="sec-deposit-discount">
+          <summary>存款優惠與匯率 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>discount.isOpen=true</td><td>顯示優惠百分比</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>2</td><td>優惠計算</td><td>min(金額x%, maxDiscount, maxWeek)</td><td><span class="cost-tag cost-config">設定層</span></td><td>單次/每週雙上限</td></tr>
+              <tr><td>3</td><td>USDT 匯率</td><td>通道級 > 全域匯率</td><td><span class="cost-tag cost-config">設定層</span></td><td>即時浮動</td></tr>
+              <tr><td>4</td><td>cryptoAmount</td><td>/100 = USDT 數量</td><td><span class="cost-tag cost-code">程式層</span></td><td>分轉換</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-waterflow">
+          <summary>流水與場館存款 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>ac_per_cur+withdraw_warn+totalWater</td><td>顯示流水進度條</td><td><span class="cost-tag cost-code">程式層</span></td><td>只在中心錢包 Tab</td></tr>
+              <tr><td>2</td><td>rate = curWater/totalWater x 100</td><td>進度條百分比</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>點「去下注」</td><td>跳 /home/sport</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>點「流水查詢」</td><td>跳 /mine/help-center</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>場館存款活動</td><td>特定場館存款獲額外紅利</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動模組管理</td></tr>
+              <tr><td>6</td><td>場館存款流水</td><td>與一般存款不同</td><td><span class="cost-tag cost-locked">改不了</span></td><td>GOR-6217 優化中</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-daike">
+          <summary>代客充值 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>選擇代客充值</td><td>跳路由 /deposit/customer-pay</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>customer-pay 頁面</td><td>iframe 嵌入客服系統</td><td><span class="cost-tag cost-locked">改不了</span></td><td>客服系統獨立</td></tr>
+              <tr><td>3</td><td>有「官方認證」標籤</td><td>通道列表特殊顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>進入時</td><td>關閉 isRechargeSheetOpen</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>離開時</td><td>恢復 isRechargeSheetOpen</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-dd-wallet">
+          <summary>DD 錢包特殊流程 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>查詢 DD 餘額</td><td>GET /payment/ddbalance</td><td><span class="cost-tag cost-locked">改不了</span></td><td>DD 是第三方</td></tr>
+              <tr><td>2</td><td>確認充值</td><td>開新視窗跳 DD</td><td><span class="cost-tag cost-locked">改不了</span></td><td>URL 由第三方給</td></tr>
+              <tr><td>3</td><td>跳轉失敗</td><td>Toast: 获取连结失败</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>errCode=10308</td><td>取 thirdExt URL 跳轉</td><td><span class="cost-tag cost-code">程式層</span></td><td>DD 專屬</td></tr>
+            </table>
+          </div>
+        </details>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: User Flow                           -->
+    <!-- ========================================== -->
+    <div class="tab-panel" id="userflow">
+      <div class="tool-section">
+        <div class="tool-section-header"><h2>User Flow</h2></div>
+        <p class="tool-section-desc">存提款模組的主要使用者動線，共 6 張。節點用 PM 語言描述。</p>
+
+        <div class="mermaid-card" id="uf-deposit-main">
+          <div class="mermaid-card-title">1.1 存款主線（一般支付）</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+flowchart LR
+    A["進入存款頁"] --> B{"已綁定手機?"}
+    B -- 否 --> C["顯示綁手機提示"]
+    B -- 是 --> D{"通道全關/黑名單?"}
+    D -- 是 --> E["顯示維護中頁面"]
+    D -- 否 --> F["載入通道列表"]
+    F --> G{"有進行中訂單?"}
+    G -- 是 --> H["顯示訂單卡片"]
+    G -- 否 --> I["選擇存款通道"]
+    I --> J{"通道類型?"}
+    J -- 代客充值 --> K["跳轉客服頁"]
+    J -- 合併通道 --> L["合併充值表單"]
+    J -- 展開通道 --> M["步驟式表單"]
+    J -- 一般 --> N["填金額+姓名"]
+    L --> O["提交下單"]
+    M --> O
+    N --> O
+    O --> P{"成功?"}
+    P -- 是 --> Q["建立訂單"]
+    P -- 否,10s內 --> R["自動重試"]
+    R --> P
+    P -- 超時 --> S["錯誤提示"]
+          </pre></div>
+          <div class="pm-notice"><ul><li>不能同時有兩張存款單，進行中時通道列表會被隱藏</li><li>重拉單機制最多重試 10 秒</li></ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/deposit/index.vue<br>composables/useRecharge.ts:normalPayUrl()</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-withdraw-main">
+          <div class="mermaid-card-title">1.2 提款主線</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+flowchart LR
+    A["進入提款頁"] --> B["載入通道+餘額"]
+    B --> C{"有進行中單?"}
+    C -- 是 --> D["頂部訂單卡"]
+    C -- 否 --> E["選 Tab"]
+    D --> E
+    E --> F{"中心錢包/禮金?"}
+    F -- 中心錢包 --> G["過濾通道"]
+    F -- 邀請禮金 --> H["禮金通道"]
+    G --> I["選擇通道"]
+    H --> I
+    I --> J{"已綁手機?"}
+    J -- 否 --> K["綁手機提示"]
+    J -- 是 --> L{"通道維護?"}
+    L -- 是 --> M["維護頁"]
+    L -- 否 --> N["提款表單"]
+    N --> O["填金額+帳戶"]
+    O --> P{"流水達標?"}
+    P -- 否,可強制 --> Q["彈窗選擇"]
+    P -- 否,不可 --> R["必須完成"]
+    P -- 是 --> S["提交"]
+    Q -- 強制 --> S
+    S --> T["跳訂單詳情"]
+          </pre></div>
+          <div class="pm-notice"><ul><li>流水未達標是否可強制提現由 drawWaterLimitSwitch 控制（設定層）</li><li>邀請禮金 Tab 只在活動開啟時顯示</li></ul></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-usdt-fast">
+          <div class="mermaid-card-title">1.3 USDT 快捷充值</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+flowchart LR
+    A["選 USDT 快捷"] --> B["隱藏通道列表"]
+    B --> C["選擇幣商"]
+    C --> D["輸入金額"]
+    D --> E["上傳轉帳憑證"]
+    E --> F["填交易單號"]
+    F --> G["提交下單"]
+    G --> H{"成功?"}
+    H -- 是 --> I["建立訂單"]
+    H -- 否 --> J["錯誤提示"]
+          </pre></div>
+          <div class="pm-notice"><ul><li>USDT 快捷是先上傳憑證再下單，流程與一般相反</li></ul></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-bank-manage">
+          <div class="mermaid-card-title">1.4 銀行卡管理</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+flowchart LR
+    A["選銀行卡通道"] --> B{"已有綁定卡?"}
+    B -- 否 --> C["新增銀行卡頁"]
+    B -- 是 --> D["選擇已綁卡"]
+    C --> E["填卡號+行+驗證"]
+    E --> F["提交綁卡"]
+    F --> G{"成功?"}
+    G -- 是 --> H["更新列表"]
+    G -- 否 --> I["錯誤"]
+    D --> J{"要刪卡?"}
+    J -- 是 --> K["警告：不可重綁"]
+    K --> L["確認刪除"]
+    J -- 否 --> M["繼續提款"]
+          </pre></div>
+          <div class="pm-notice"><ul><li>刪除銀行卡後無法重新綁定，只能聯繫客服</li><li>銀行排序：中國銀行/農業/工商/建設/郵政優先</li></ul></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-transfer">
+          <div class="mermaid-card-title">1.5 轉帳（場館錢包）</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+flowchart LR
+    A["進入轉帳頁"] --> B["載入錢包餘額"]
+    B --> C["場館列表"]
+    C --> D{"歸集/單筆?"}
+    D -- 一鍵歸集 --> E{"冷卻中?"}
+    E -- 是 --> F["等待提示"]
+    E -- 否 --> G["歸集"]
+    D -- 單筆 --> H["選場館"]
+    H --> I{"場館鎖定?"}
+    I -- 鎖定 --> J["禁止"]
+    I -- 正常 --> K["輸入金額"]
+    K --> L["轉帳完成"]
+          </pre></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-tx-record">
+          <div class="mermaid-card-title">1.6 交易記錄查詢</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+flowchart LR
+    A["存款頁右上角/我的頁面"] --> B["交易記錄頁"]
+    B --> C["選 Tab"]
+    C --> D["類型篩選"]
+    D --> E["日期範圍"]
+    E --> F["載入列表"]
+    F --> G["查看詳情"]
+          </pre></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: 泳道圖                              -->
+    <!-- ========================================== -->
+    <div class="tab-panel" id="swimlane">
+      <div class="tool-section">
+        <div class="tool-section-header"><h2>泳道圖</h2></div>
+        <p class="tool-section-desc">前後端互動序列圖，含使用者動作流程和系統自動流程。</p>
+
+        <div class="logic-merge-divider">使用者動作流程</div>
+
+        <div class="mermaid-card" id="sw-deposit-order">
+          <div class="mermaid-card-title">3.1 存款下單流程</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant TP as 三方支付
+
+    U->>FE: 選擇通道+輸入金額
+    FE->>FE: 驗證表單
+    FE->>BE: POST /quickpay/payment/rechargepayurl
+    Note over FE,BE: payGold 單位為分
+    BE->>TP: 轉發至支付通道
+    TP-->>BE: 回傳結果
+    alt code=1 成功
+        BE-->>FE: 訂單(orderId+payUrl)
+        alt payUrl.type=1
+            FE->>U: 開啟支付頁面
+        else payUrl.type=4
+            FE->>U: 顯示收款卡資訊
+        end
+    else code!=1 且10秒內
+        BE-->>FE: 失敗
+        FE->>FE: counter++ 自動重試
+        FE->>BE: 再次 POST
+    else 超過10秒
+        BE-->>FE: 失敗
+        FE->>U: Toast 錯誤
+    end
+          </pre></div>
+          <div class="pm-notice"><ul><li>重拉單機制 10 秒內自動重試，PM 動不了這個邏輯</li><li>payUrl.type=4 是 card2card，收款方資訊由後端動態派發</li></ul></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-withdraw-order">
+          <div class="mermaid-card-title">3.2 提款下單+風控審核</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant RC as 風控系統
+    participant BK as 銀行
+
+    U->>FE: 選通道+輸入金額
+    FE->>FE: 驗證(倍數/限額/流水)
+    FE->>BE: POST /withdraworder/transfer
+    BE-->>FE: orderId+timeline
+    FE->>U: 跳訂單詳情頁
+
+    loop 每15秒
+        FE->>BE: POST listunfinishedorders
+        BE-->>FE: 狀態更新
+    end
+
+    BE->>RC: 風控審核
+    RC-->>BE: 審核通過
+    BE->>BK: 通知出款
+    BK-->>BE: 轉帳完成
+
+    BE-->>FE: 狀態=CHECK_ACCOUNT
+    FE->>U: 確認到帳?
+    alt 手動到帳
+        U->>FE: receivedStatus=1
+        FE->>BE: POST updatereceivedstatus
+        FE->>U: Toast 獎勵彩金
+    else 到帳異常
+        U->>FE: receivedStatus=3
+        FE->>BE: POST updatereceivedstatus
+    end
+          </pre></div>
+          <div class="pm-notice"><ul><li>風控審核時間不可控，PM 無法承諾到帳時間</li><li>到帳確認獎勵彩金由 bonusAmount 控制</li></ul></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-usdt-fast">
+          <div class="mermaid-card-title">3.5 USDT 快捷充值</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+
+    U->>FE: 選 USDT 快捷(payType=26)
+    FE->>FE: 隱藏通道列表
+    U->>FE: 選幣商+金額
+    U->>FE: 上傳轉帳憑證
+    FE->>BE: POST /resource/uploadimage/v2
+    BE-->>FE: imageArrayUrl
+    U->>FE: 填交易單號
+    FE->>BE: POST /payment/cryptofast
+    BE-->>FE: 訂單(含cryptoAmount)
+    FE->>U: 顯示進行中
+          </pre></div>
+        </div>
+
+        <div class="logic-merge-divider">系統自動流程</div>
+
+        <div class="mermaid-card" id="sw-deposit-polling">
+          <div class="mermaid-card-title">3.3 存款訂單輪詢</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+sequenceDiagram
+    participant FE as 前端
+    participant BE as 後端
+
+    Note over FE: 進入存款頁
+    FE->>BE: GET /payment/payinfo
+    BE-->>FE: latestOrder
+
+    alt 有進行中訂單
+        FE->>FE: isOrderProcess=true
+        loop 每15秒
+            FE->>BE: GET /payment/payinfo
+            BE-->>FE: 最新狀態
+        end
+        alt countdown 歸零
+            FE->>BE: 強制刷新
+        end
+        alt 訂單完成
+            FE->>FE: watchPaySuccess()
+            FE->>BE: POST channellist/new
+            Note over FE: 重拉通道+選回上次通道
+        end
+    end
+          </pre></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-wallet-refresh">
+          <div class="mermaid-card-title">3.4 場館錢包餘額刷新</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+sequenceDiagram
+    participant FE as 前端
+    participant BE as 後端
+    participant V as 場館系統
+
+    Note over FE: 進入提款/轉帳頁
+    FE->>BE: POST /wallet/gameListBalance
+    BE->>V: 逐場館查餘額
+    V-->>BE: 各場館餘額
+    BE-->>FE: gameBalanceList[]
+    FE->>FE: 組裝 WalletInfoState
+    Note over FE: activityLock/maintainLock 不可操作
+          </pre></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: 跨服務限制                          -->
+    <!-- ========================================== -->
+    <div class="tab-panel" id="constraints">
+      <div class="tool-section">
+        <div class="tool-section-header"><h2>跨服務限制</h2></div>
+        <p class="tool-section-desc">四色分類：場館限制(紅) / 模組耦合(黃) / 技術限制(藍) / 業務限制(灰)。共 30 條。</p>
+
+        <div class="stats-pill">
+          <span>6 場館</span><span>|</span>
+          <span>10 耦合</span><span>|</span>
+          <span>7 技術</span><span>|</span>
+          <span>7 業務</span>
+        </div>
+
+        <!-- 場館限制 -->
+        <div class="constraint-category" id="cst-venue">
+          <div class="constraint-header"><span style="color:#f87171;font-size:18px">&#x1F534;</span><h3>場館限制</h3></div>
+          <p class="constraint-pm-guide">PM 策略：直接回絕業主，我們動不了。</p>
+
+          <details class="constraint-card cat-venue"><summary>R1. 三方支付通道可用性</summary><div class="constraint-detail"><p class="label">描述</p><p>支付通道的開關、維護由第三方決定</p><p class="label">影響</p><p>存款通道隨時可能維護，前端只能顯示維護頁</p></div></details>
+          <details class="constraint-card cat-venue"><summary>R2. DD 錢包地址唯讀</summary><div class="constraint-detail"><p class="label">描述</p><p>DD 錢包地址由第三方產生，用戶不能手動編輯</p><p class="label">影響</p><p>只能 refreshDigitalAddress 刷新</p></div></details>
+          <details class="constraint-card cat-venue"><summary>R3. card2card 收款資訊動態派發</summary><div class="constraint-detail"><p class="label">描述</p><p>銀行卡轉帳的收款方資訊由後端動態派發</p><p class="label">影響</p><p>PM 無法固定收款卡號</p></div></details>
+          <details class="constraint-card cat-venue"><summary>R4. USDT 匯率浮動</summary><div class="constraint-detail"><p class="label">描述</p><p>匯率由後端/第三方即時更新</p><p class="label">影響</p><p>前端只能顯示，不能鎖定匯率</p></div></details>
+          <details class="constraint-card cat-venue"><summary>R5. 風控審核流程不可控</summary><div class="constraint-detail"><p class="label">描述</p><p>提款訂單必經安全審核+金額審核</p><p class="label">影響</p><p>審核時間不可控，PM 無法加速</p></div></details>
+          <details class="constraint-card cat-venue"><summary>R6. 銀行出款時間不可控</summary><div class="constraint-detail"><p class="label">描述</p><p>通知銀行後的轉帳時間由銀行決定</p><p class="label">影響</p><p>大額出款可能延遲</p></div></details>
+        </div>
+
+        <!-- 模組耦合 -->
+        <div class="constraint-category" id="cst-coupling">
+          <div class="constraint-header"><span style="color:#fbbf24;font-size:18px">&#x1F7E1;</span><h3>模組耦合</h3></div>
+          <p class="constraint-pm-guide">PM 策略：改動時列出測試範圍，要求跨模組回測。</p>
+
+          <details class="constraint-card cat-coupling"><summary>Y1. 存款 ↔ 活動模組</summary><div class="constraint-detail"><p class="label">描述</p><p>首存包賠、場館存款活動依賴活動模組設定</p><p class="label">影響</p><p>改活動模板要測存款頁 Banner</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y2. 提款 ↔ 邀請好友</summary><div class="constraint-detail"><p class="label">描述</p><p>邀請禮金 Tab 依賴 shareStore.inviteInfo</p><p class="label">影響</p><p>改邀請活動要測提款頁 Tab</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y3. 存提款 ↔ 客服系統</summary><div class="constraint-detail"><p class="label">描述</p><p>代客充值 iframe 嵌客服、失敗引導客服</p><p class="label">影響</p><p>客服系統改版影響存款流程</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y4. 提款 ↔ 錢包模組</summary><div class="constraint-detail"><p class="label">描述</p><p>提款成功後更新 walletStore</p><p class="label">影響</p><p>錢包計算改動影響提款顯示</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y5. 存款 ↔ 交易記錄</summary><div class="constraint-detail"><p class="label">描述</p><p>存款頁右上角跳交易記錄</p><p class="label">影響</p><p>交易記錄篩選改動需回測跳轉</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y6. 提款 ↔ 體育（流水）</summary><div class="constraint-detail"><p class="label">描述</p><p>流水不足跳 /home/sport 下注</p><p class="label">影響</p><p>體育路由改動影響流水引導</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y7. 存提款 ↔ 綁手機</summary><div class="constraint-detail"><p class="label">描述</p><p>未綁手機禁止存提款</p><p class="label">影響</p><p>綁手機流程改動需測攔截</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y8. ChannelListSelect 共用元件</summary><div class="constraint-detail"><p class="label">描述</p><p>存款和提款共用通道選擇元件</p><p class="label">影響</p><p>改 UI 兩邊都受影響</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y9. 提款 ↔ 幫助中心</summary><div class="constraint-detail"><p class="label">描述</p><p>流水查詢跳 /mine/help-center</p><p class="label">影響</p><p>幫助中心改動影響流水引導</p></div></details>
+          <details class="constraint-card cat-coupling"><summary>Y10. 轉帳 ↔ 場館系統</summary><div class="constraint-detail"><p class="label">描述</p><p>場館鎖定狀態影響轉帳</p><p class="label">影響</p><p>場館維護排程影響轉帳可用性</p></div></details>
+        </div>
+
+        <!-- 技術限制 -->
+        <div class="constraint-category" id="cst-tech">
+          <div class="constraint-header"><span style="color:#60a5fa;font-size:18px">&#x1F535;</span><h3>技術限制</h3></div>
+          <p class="constraint-pm-guide">PM 策略：問 RD 可行性再回覆業主。</p>
+
+          <details class="constraint-card cat-tech"><summary>B1. 47 種 EPayType 膨脹</summary><div class="constraint-detail"><p class="label">描述</p><p>存款類型枚舉已膨脹到 47 種</p><p class="label">影響</p><p>新增通道需全面回測多處分類函式</p><p class="label">來源</p><p><a href="https://mgbilibili.atlassian.net/browse/GOR-6100">GOR-6100</a>、<a href="https://mgbilibili.atlassian.net/browse/GOR-6492">GOR-6492</a></p></div></details>
+          <details class="constraint-card cat-tech"><summary>B2. 24 種提款策略子類</summary><div class="constraint-detail"><p class="label">描述</p><p>每種 withdrawType 對應不同 UI 策略類</p><p class="label">影響</p><p>新增需寫子類</p></div></details>
+          <details class="constraint-card cat-tech"><summary>B3. 金額單位不一致</summary><div class="constraint-detail"><p class="label">描述</p><p>存款元/分混用，提款統一分</p><p class="label">影響</p><p>容易出轉換 Bug</p><p class="label">來源</p><p><a href="https://mgbilibili.atlassian.net/browse/TSD-4639">TSD-4639</a></p></div></details>
+          <details class="constraint-card cat-tech"><summary>B4. 重拉單機制</summary><div class="constraint-detail"><p class="label">描述</p><p>normalPayUrl 10 秒內自動重試</p><p class="label">影響</p><p>重試邏輯難以修改</p></div></details>
+          <details class="constraint-card cat-tech"><summary>B5. 輪詢間隔固定 15 秒</summary><div class="constraint-detail"><p class="label">描述</p><p>訂單狀態輪詢不可調整</p><p class="label">影響</p><p>即時性受限</p></div></details>
+          <details class="constraint-card cat-tech"><summary>B6. 虛擬幣地址共用</summary><div class="constraint-detail"><p class="label">描述</p><p>EASY/4E 共用 USDT 地址池</p><p class="label">影響</p><p>地址管理邏輯耦合</p><p class="label">來源</p><p><a href="https://mgbilibili.atlassian.net/browse/GOR-5640">GOR-5640</a></p></div></details>
+          <details class="constraint-card cat-tech"><summary>B7. 提款風控 job 效能</summary><div class="constraint-detail"><p class="label">描述</p><p>WithdrawProcessV3 高峰期執行時間過長</p><p class="label">影響</p><p>大量提款時風控處理變慢</p><p class="label">來源</p><p><a href="https://mgbilibili.atlassian.net/browse/GOR-5988">GOR-5988</a>、<a href="https://mgbilibili.atlassian.net/browse/GOR-6136">GOR-6136</a></p></div></details>
+        </div>
+
+        <!-- 業務限制 -->
+        <div class="constraint-category" id="cst-biz">
+          <div class="constraint-header"><span style="color:#64748b;font-size:18px">&#x26AB;</span><h3>業務限制</h3></div>
+          <p class="constraint-pm-guide">PM 策略：不用開會，直接說不行。</p>
+
+          <details class="constraint-card cat-biz"><summary>K1. 先銀行卡後虛擬幣</summary><div class="constraint-detail"><p class="label">描述</p><p>switch_bankali 要求先做銀行卡/支付寶提款</p><p class="label">影響</p><p>新用戶不能直接用虛擬幣提款</p></div></details>
+          <details class="constraint-card cat-biz"><summary>K2. 虛擬幣首次客服驗證</summary><div class="constraint-detail"><p class="label">描述</p><p>switch_usdtebpay 首次虛擬幣需客服驗證</p><p class="label">影響</p><p>增加客服負擔</p></div></details>
+          <details class="constraint-card cat-biz"><summary>K3. 銀行卡刪除不可重綁</summary><div class="constraint-detail"><p class="label">描述</p><p>刪除後只能聯繫客服重新綁定</p><p class="label">影響</p><p>防洗錢政策</p></div></details>
+          <details class="constraint-card cat-biz"><summary>K4. 提款最低保留金</summary><div class="constraint-detail"><p class="label">描述</p><p>withdraw_reserve_gold 保證帳戶留有餘額</p><p class="label">影響</p><p>玩家無法全額提款</p></div></details>
+          <details class="constraint-card cat-biz"><summary>K5. 每日提款次數/額度上限</summary><div class="constraint-detail"><p class="label">描述</p><p>withdraw_limit / withdraw_gold_limit</p><p class="label">影響</p><p>高頻提款受限</p></div></details>
+          <details class="constraint-card cat-biz"><summary>K6. 流水要求</summary><div class="constraint-detail"><p class="label">描述</p><p>存款紅利必須打完流水才能提款</p><p class="label">影響</p><p>影響玩家體驗</p></div></details>
+          <details class="constraint-card cat-biz"><summary>K7. 存款姓名限制</summary><div class="constraint-detail"><p class="label">描述</p><p>maxCount 限制綁定姓名數量</p><p class="label">影響</p><p>防多帳號</p></div></details>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer">
+      產品處知識庫 — 自動產出 by Windelf + Porter
+      <div class="footer-links">
+        <a href="features.html">功能總覽</a>
+        <a href="sports.html">體育</a>
+        <a href="activities.html">活動</a>
+        <a href="live.html">直播</a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+  // ===== Side Nav Data =====
+  const sideNavData = {
+    overview: {
+      title: '功能總覽',
+      items: [
+        { type: 'group', label: '存款' },
+        { id: 'sec-deposit-main', label: '存款主頁面' },
+        { id: 'sec-channel-select', label: '通道選擇邏輯' },
+        { id: 'sec-deposit-form', label: '存款下單表單' },
+        { id: 'sec-deposit-order', label: '存款訂單追蹤' },
+        { type: 'group', label: '提款' },
+        { id: 'sec-withdraw-main', label: '提款主頁面' },
+        { id: 'sec-withdraw-type', label: '提款通道策略' },
+        { id: 'sec-withdraw-order', label: '提款訂單追蹤' },
+        { id: 'sec-bind-account', label: '綁定帳戶管理' },
+        { type: 'group', label: '其他' },
+        { id: 'sec-deposit-discount', label: '優惠與匯率' },
+        { id: 'sec-waterflow', label: '流水與場館存款' },
+        { id: 'sec-daike', label: '代客充值' },
+        { id: 'sec-dd-wallet', label: 'DD 錢包' },
+      ]
+    },
+    userflow: {
+      title: 'User Flow',
+      items: [
+        { id: 'uf-deposit-main', label: '1.1 存款主線' },
+        { id: 'uf-withdraw-main', label: '1.2 提款主線' },
+        { id: 'uf-usdt-fast', label: '1.3 USDT 快捷' },
+        { id: 'uf-bank-manage', label: '1.4 銀行卡管理' },
+        { id: 'uf-transfer', label: '1.5 轉帳' },
+        { id: 'uf-tx-record', label: '1.6 交易記錄' },
+      ]
+    },
+    swimlane: {
+      title: '泳道圖',
+      items: [
+        { type: 'group', label: '使用者動作' },
+        { id: 'sw-deposit-order', label: '3.1 存款下單' },
+        { id: 'sw-withdraw-order', label: '3.2 提款+風控' },
+        { id: 'sw-usdt-fast', label: '3.5 USDT 快捷' },
+        { type: 'group', label: '系統自動' },
+        { id: 'sw-deposit-polling', label: '3.3 存款訂單輪詢' },
+        { id: 'sw-wallet-refresh', label: '3.4 錢包餘額刷新' },
+      ]
+    },
+    constraints: {
+      title: '跨服務限制',
+      items: [
+        { id: 'cst-venue', label: '場館限制 (6)' },
+        { id: 'cst-coupling', label: '模組耦合 (10)' },
+        { id: 'cst-tech', label: '技術限制 (7)' },
+        { id: 'cst-biz', label: '業務限制 (7)' },
+      ]
+    }
+  };
+
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+  const sideNavInner = document.getElementById('sideNavInner');
+
+  function renderSideNav(tabId) {
+    const data = sideNavData[tabId];
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+
+    let html = `<div class="sn-title">${data.title}</div>`;
+    data.items.forEach(item => {
+      if (item.type === 'group') {
+        html += `<div class="sn-group">${item.label}</div>`;
+      } else {
+        html += `<a class="sn-item" data-target="${item.id}" href="#${item.id}">${item.label}</a>`;
+      }
+    });
+    sideNavInner.innerHTML = html;
+
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setTimeout(() => highlightNavItem(el.getAttribute('data-target')), 300);
+        }
+      });
+    });
+
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
+    const data = sideNavData[tabId];
+    if (!data) return;
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+
+    const visibleSections = new Map();
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top);
+        else visibleSections.delete(entry.target.id);
+      });
+      let topId = null, topY = Infinity;
+      visibleSections.forEach((y, id) => {
+        const el = document.getElementById(id);
+        if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } }
+      });
+      if (!topId && targets.length > 0) {
+        let closestDist = -Infinity;
+        targets.forEach(t => { const rect = t.getBoundingClientRect(); if (rect.top < 0 && rect.top > closestDist) { closestDist = rect.top; topId = t.id; } });
+      }
+      if (topId) highlightNavItem(topId);
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-target') === id);
+    });
+    const activeEl = sideNavInner.querySelector('.sn-item.active');
+    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  // Tab switching
+  const tabPills = document.querySelectorAll('.tab-pill');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    currentTabId = tabId;
+    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+    if (!mermaidRendered[tabId]) {
+      const panel = document.getElementById(tabId);
+      const diagrams = panel.querySelectorAll('.mermaid');
+      if (diagrams.length > 0) { mermaid.run({ nodes: diagrams }); mermaidRendered[tabId] = true; }
+    }
+    renderSideNav(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabPills.forEach(pill => {
+    pill.addEventListener('click', e => { e.preventDefault(); switchTab(pill.getAttribute('data-tab')); });
+  });
+
+  document.querySelector('.layout').classList.add('has-side-nav');
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) switchTab(hash);
+  else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
+</script>
+</body>
+</html>

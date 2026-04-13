@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的 — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ===== Compact Sticky Header ===== */
+    .compact-header {
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      height: 60px;
+      box-sizing: border-box;
+    }
+    .compact-header-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb {
+      font-size: 12px;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
+    .compact-header-breadcrumb a:hover { color: #94a3b8; }
+    .compact-header-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .tab-pill {
+      display: inline-block;
+      font-size: 13px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      color: #94a3b8;
+      background: #1e293b;
+      border: 1px solid #334155;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all .15s;
+      cursor: pointer;
+    }
+    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
+    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .v2-main { margin-left: 0; }
+
+    /* Mermaid card */
+    .mermaid-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f1f5f9;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mermaid-card-body {
+      padding: 20px;
+      overflow-x: auto;
+    }
+    .mermaid-card-body .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* PM notice */
+    .pm-notice {
+      background: #2a2210;
+      border-left: 3px solid #fbbf24;
+      padding: 12px 16px;
+      margin: 0 18px 4px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+
+    /* RD ref */
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary {
+      font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; user-select: none;
+    }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px;
+      background: #0f172a; border-radius: 6px; margin-top: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace; line-height: 1.8;
+    }
+
+    /* Page logic card */
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 18px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before {
+      content: "\25B8"; color: #64748b; font-size: 14px; transition: transform .2s;
+    }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body {
+      padding: 0 18px 16px; border-top: 1px solid #334155;
+    }
+
+    .logic-table {
+      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;
+    }
+    .logic-table th {
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px;
+    }
+    .logic-table td {
+      background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155;
+      color: #cbd5e1; vertical-align: top;
+    }
+    .logic-table tr:hover td { background: #263548; }
+
+    .logic-merge-divider {
+      margin: 28px 0 16px;
+      padding: 10px 16px;
+      background: #1a2638;
+      border-left: 3px solid #f97316;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f97316;
+    }
+
+    /* Constraint */
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .constraint-card.cat-venue { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "\25B8"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+
+    .tool-section {
+      max-width: 960px; margin: 0 auto; padding: 50px 16px 30px;
+    }
+    .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+    .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
+
+    /* Side Nav */
+    .side-nav {
+      position: fixed;
+      left: 0;
+      top: 60px;
+      width: 220px;
+      height: calc(100vh - 60px);
+      background: #111827;
+      border-right: 1px solid #1e293b;
+      border-top: 1px solid #334155;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      padding-top: 0;
+    }
+    .side-nav-inner {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0 24px;
+      scrollbar-width: thin;
+      scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+
+    .side-nav .sn-title {
+      padding: 12px 16px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block;
+      padding: 6px 16px 6px 18px;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all .12s;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .side-nav .sn-item:hover {
+      color: #e2e8f0;
+      background: #1e293b;
+    }
+    .side-nav .sn-item.active {
+      color: #fff;
+      border-left-color: #f97316;
+      background: rgba(249,115,22,.06);
+    }
+
+    .has-side-nav .main-content.v2-main {
+      margin-left: 220px !important;
+    }
+
+    @media (max-width: 768px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="side-nav" id="sideNav">
+    <div class="side-nav-inner" id="sideNavInner"></div>
+  </aside>
+
+  <div class="main-content v2-main">
+
+    <nav class="compact-header" id="tabnav">
+      <span class="compact-header-title">&#x1F464; 我的</span>
+      <span class="compact-header-breadcrumb"><a href="features.html">功能知識庫</a> / 我的</span>
+      <div class="compact-header-pills">
+        <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
+        <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
+        <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
+        <a class="tab-pill" href="#constraints" data-tab="constraints">跨服務限制</a>
+      </div>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- TAB 1: 功能總覽                                                   -->
+    <!-- ================================================================ -->
+    <div class="tab-panel active" id="overview">
+
+      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
+        改動成本：<span class="cost-tag cost-locked">改不了</span> 業務/場館決定
+        <span class="cost-tag cost-config">設定層</span> 後台可配
+        <span class="cost-tag cost-code">程式層</span> 要發版
+      </div>
+
+      <!-- 2.1 我的主頁面 -->
+      <div class="section" id="nav-mine-home">
+        <div class="section-title"><span class="num">1</span> 我的主頁面</div>
+        <div class="section-desc">個人中心首頁，底部導航 Tab 入口。含使用者資訊卡、快捷 Menu、每日任務、12 項功能清單。</div>
+
+        <details class="page-logic-card" open>
+          <summary>我的主頁面 <span class="rule-count">12 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>未登入</td><td>頭像區顯示「您还未登录」，點擊跳登入</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>已登入</td><td>顯示帳號、餘額(分轉元)、VIP圖示、稱號 badge</td><td><span class="cost-tag cost-code">程式層</span></td><td>餘額 = totalBalance / 100</td></tr>
+              <tr><td>3</td><td>刷新餘額 + 冷卻中</td><td>toast「请等待 X 秒后重试」</td><td><span class="cost-tag cost-code">程式層</span></td><td>10 秒冷卻</td></tr>
+              <tr><td>4</td><td>刷新餘額 + 冷卻完成</td><td>撈最新餘額 + 重啟 10 秒冷卻</td><td><span class="cost-tag cost-code">程式層</span></td><td>轉圈動畫 2 秒</td></tr>
+              <tr><td>5</td><td>測試帳號操作金流</td><td>toast「此为测试账号，无法操作！」</td><td><span class="cost-tag cost-code">程式層</span></td><td>disallowTest 欄位控制</td></tr>
+              <tr><td>6</td><td>純體育模式 (isNoLive)</td><td>隱藏「贈禮記錄」「關注列表」</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台推播類型控制</td></tr>
+              <tr><td>7</td><td>有未領取福利</td><td>福利中心 badge 數字 (>99 顯示 99+)</td><td><span class="cost-tag cost-code">程式層</span></td><td>unclaimedWelfareCount</td></tr>
+              <tr><td>8</td><td>有未讀消息</td><td>消息圖示顯示紅點</td><td><span class="cost-tag cost-code">程式層</span></td><td>三個計數加總 > 0</td></tr>
+              <tr><td>9</td><td>開房已開啟 + 首次進入</td><td>1 秒後自動滾動到開房入口</td><td><span class="cost-tag cost-code">程式層</span></td><td>localStorage 記錄</td></tr>
+              <tr><td>10</td><td>開房已開啟 + 非首次</td><td>顯示入口但不滾動</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>11</td><td>背包入口</td><td>Lottie 動畫按鈕跳背包中心</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>12</td><td>福利專員</td><td>左上角浮動入口，條件顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/index.vue<br>menuList: L133-L182<br>functionList: L184-L269<br>isUnreadMsg: L276</div></details>
+      </div>
+
+      <!-- 2.2 個人資料 -->
+      <div class="section" id="nav-profile">
+        <div class="section-title"><span class="num">2</span> 個人資料</div>
+        <div class="section-desc">查看/修改暱稱、頭像、性別、生日、聯繫方式、登出。</div>
+
+        <details class="page-logic-card">
+          <summary>個人資料 <span class="rule-count">9 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>暱稱未設定</td><td>顯示「点击修改昵称」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>暱稱審核中</td><td>顯示「系统审核中」不可點擊</td><td><span class="cost-tag cost-locked">改不了</span></td><td>後台審核</td></tr>
+              <tr><td>3</td><td>暱稱已設定 + 可修改</td><td>間隔天數到才可改</td><td><span class="cost-tag cost-config">設定層</span></td><td>changeAliasInterval</td></tr>
+              <tr><td>4</td><td>暱稱已設定 + 冷卻中</td><td>「X天后可修改」</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>5</td><td>暱稱提交</td><td>禁特殊字元、中文算2字元、≤14字元、數字≤3</td><td><span class="cost-tag cost-code">程式層</span></td><td>zod 驗證</td></tr>
+              <tr><td>6</td><td>暱稱重複/敏感詞</td><td>toast 對應錯誤</td><td><span class="cost-tag cost-locked">改不了</span></td><td>後端檢查</td></tr>
+              <tr><td>7</td><td>性別/生日</td><td>只能設定一次</td><td><span class="cost-tag cost-locked">改不了</span></td><td>不可逆</td></tr>
+              <tr><td>8</td><td>登出</td><td>清 token → 跳登入頁</td><td><span class="cost-tag cost-code">程式層</span></td><td>1000ms throttle</td></tr>
+              <tr><td>9</td><td>純直播模式</td><td>隱藏暱稱/稱號，新增即將開放項</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/mine-center/index.vue: L9-L316<br>pages/mine/mine-center/aliasInfo-name/index.vue</div></details>
+      </div>
+
+      <!-- 2.3 VIP -->
+      <div class="section" id="nav-vip">
+        <div class="section-title"><span class="num">3</span> VIP 特權</div>
+        <div class="section-desc">VIP 等級卡片輪播、升降級進度、豪禮領取、返水比例、生日禮金。</div>
+
+        <details class="page-logic-card">
+          <summary>VIP 特權頁 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>isPayAmount=1</td><td>升級取 min(存款進度, 流水進度)</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可開關存款條件</td></tr>
+              <tr><td>2</td><td>isPayAmount!=1</td><td>只看流水進度</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>豪禮可領取</td><td>「领取豪礼」→ applyVipOrder</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>生日禮金-未滿90天</td><td>提示文案，不可領</td><td><span class="cost-tag cost-locked">改不了</span></td><td>防薅規則</td></tr>
+              <tr><td>5</td><td>測試帳號</td><td>隱藏豪禮申請 + 地址設定</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>保級彈窗</td><td>保級資訊從 checkVipPlayer 取</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5230</td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/vip/index/index.vue: vipProgress L124-L137, checkBirthday L178-L200<br>stores/vip.ts</div></details>
+      </div>
+
+      <!-- 2.4 福利中心 -->
+      <div class="section" id="nav-welfare">
+        <div class="section-title"><span class="num">4</span> 福利中心</div>
+        <div class="section-desc">領取活動福利（紅利、獎品），支援篩選、單筆/一鍵領取。</div>
+
+        <details class="page-logic-card">
+          <summary>福利中心 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>預設載入</td><td>待領取 + 近7日 + 全部</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>單筆領取</td><td>debounce 800ms → 1s 延遲刷新</td><td><span class="cost-tag cost-code">程式層</span></td><td>防重複點擊</td></tr>
+              <tr><td>3</td><td>領取需綁定</td><td>彈窗引導綁定手機/銀行卡</td><td><span class="cost-tag cost-locked">改不了</span></td><td>errCode 103/104/105</td></tr>
+              <tr><td>4</td><td>一鍵領取部分失敗</td><td>彈窗計數 +「继续」遞迴再領</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>已失效判斷</td><td>claimExpireTime < now → 已失效</td><td><span class="cost-tag cost-code">程式層</span></td><td>前端判斷</td></tr>
+              <tr><td>6</td><td>日期篩選</td><td>今日/近3日/近7日/近15日/自訂</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>7</td><td>獎品分類動態擴充</td><td>固定3項 + API動態分類</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>8</td><td>倒數計時</td><td>天時/時分/分秒/秒 四級格式</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/welfare-center/<br>composables/useWelfareActions.ts: L32-L182<br>composables/useWelfareFilters.ts<br>stores/welfare-center.ts</div></details>
+      </div>
+
+      <!-- 2.5 背包中心 -->
+      <div class="section" id="nav-backpack">
+        <div class="section-title"><span class="num">5</span> 背包中心</div>
+        <div class="section-desc">背包管理（道具/背包）+ 兌換中心，獎品申請與兌換。</div>
+
+        <details class="page-logic-card">
+          <summary>背包中心 <span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>背包管理模式</td><td>道具/背包兩子分類</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>兌換中心模式</td><td>上架分類 Tab + 商品列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>彩金獎品</td><td>直接兌現到餘額</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5683</td></tr>
+              <tr><td>4</td><td>實體獎品</td><td>開啟收件表單填地址</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>兌換多元化方案</td><td>一件商品多種兌換方案</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-6017</td></tr>
+              <tr><td>6</td><td>效期改自然日</td><td>到期日延長至 23:59:59</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-6017</td></tr>
+              <tr><td>7</td><td>下拉刷新冷卻</td><td>3 秒內不可再次下拉</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/my-backpack/index.vue: sideTagList L303, summaryCardApply L396, redeemHandler L434</div></details>
+      </div>
+
+      <!-- 2.6 投注記錄 -->
+      <div class="section" id="nav-bet-record">
+        <div class="section-title"><span class="num">6</span> 投注記錄</div>
+        <div class="section-desc">體育/直播/遊戲三 Tab，日期篩選，結算狀態查看。</div>
+
+        <details class="page-logic-card">
+          <summary>投注記錄 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>三 Tab 分類</td><td>體育/直播/遊戲各自的記錄列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>遊戲記錄首次載入</td><td>同時撈未結算+已結算，未結算優先</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>結算狀態</td><td>贏/輸/已取消</td><td><span class="cost-tag cost-locked">改不了</span></td><td>場館回傳</td></tr>
+              <tr><td>4</td><td>遊戲 8928</td><td>解析 betDetails JSON</td><td><span class="cost-tag cost-code">程式層</span></td><td>特定遊戲特殊格式</td></tr>
+              <tr><td>5</td><td>分頁</td><td>每頁 20 筆，<20 = 最後一頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/bet-record/index.vue<br>utils/useBetRecord.ts: L7-L251</div></details>
+      </div>
+
+      <!-- 2.7 場館轉帳 -->
+      <div class="section" id="nav-transfer">
+        <div class="section-title"><span class="num">7</span> 場館轉帳</div>
+        <div class="section-desc">場館錢包間轉帳，必須經過中心錢包。含自動轉帳、一鍵回收。</div>
+
+        <details class="page-logic-card">
+          <summary>場館轉帳 <span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>場館選擇</td><td>必須經過中心錢包，不支援互轉</td><td><span class="cost-tag cost-locked">改不了</span></td><td>核心架構</td></tr>
+              <tr><td>2</td><td>轉出=中心</td><td>轉入自動選第二個場館</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>轉出=場館</td><td>轉入鎖定中心錢包</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>金額超過餘額</td><td>toast + 修正為最大可轉金額</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>活動鎖定場館</td><td>二次確認彈窗（顯示流水）</td><td><span class="cost-tag cost-code">程式層</span></td><td>activityLock</td></tr>
+              <tr><td>6</td><td>流水三模式</td><td>不提高/倍數/金額</td><td><span class="cost-tag cost-config">設定層</span></td><td>isRaisingWater</td></tr>
+              <tr><td>7</td><td>自動轉帳</td><td>開啟後回收所有場館到中心</td><td><span class="cost-tag cost-config">設定層</span></td><td>持久化設定</td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/transfer/index.vue: confirmTransferVenue L240, transfer L279, getGameWater L311</div></details>
+      </div>
+
+      <!-- 2.8 任務系統 -->
+      <div class="section" id="nav-tasks">
+        <div class="section-title"><span class="num">8</span> 任務系統</div>
+        <div class="section-desc">每日簽到、每日任務、新手任務、轉盤任務，各有開關。</div>
+
+        <details class="page-logic-card">
+          <summary>任務系統 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>四種任務類型</td><td>簽到/每日/新手/轉盤各有開關</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>2</td><td>頁面標題</td><td>動態組合標題</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>新手任務輪詢</td><td>60 秒自動刷新</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>純直播模式</td><td>新手任務不顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>5</td><td>任務領取</td><td>POST → 刷新列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/RewardsTasks/index.vue<br>stores/dailyMissions.ts: L207-L213</div></details>
+      </div>
+
+      <!-- 2.9 稱號系統 -->
+      <div class="section" id="nav-badge">
+        <div class="section-title"><span class="num">9</span> 稱號系統</div>
+        <div class="section-desc">稱號領取、配戴、時效管理、進度刷新。</div>
+
+        <details class="page-logic-card">
+          <summary>稱號系統 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>五狀態</td><td>未解鎖/已配戴/已擁有/可領取/已失效</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>配戴切換</td><td>bindBadge / unbindBadge</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>刷新進度</td><td>180 秒冷卻</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>限時已擁有</td><td>剩餘天數 ≤3 天紅色警示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>限量未解鎖</td><td>剩餘數 / 總量 < 10% 紅色警示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>6</td><td>規則格式化</td><td>6 種類型各有格式</td><td><span class="cost-tag cost-code">程式層</span></td><td>存款/投注/直播/登入/邀請/VIP</td></tr>
+            </table>
+          </div>
+        </details>
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/mine-center/badgeInfo/useBadge.ts: L34-L602</div></details>
+      </div>
+
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 2: User Flow                                                  -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="userflow">
+      <div class="tool-section">
+        <div class="tool-section-header"><h2>User Flow</h2></div>
+        <div class="tool-section-desc">跟業主對齊需求時拿出來用。節點用 PM 語言，分支條件標明。</div>
+
+        <div class="mermaid-card" id="uf-1">
+          <div class="mermaid-card-title">1. 個人中心主線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["底部導航 '我的'"] --> B{"已登入?"}
+    B -- 否 --> C["顯示未登入"]
+    C --> D["點頭像跳登入"]
+    B -- 是 --> E["資訊卡+餘額+VIP"]
+    E --> F{"選擇動作"}
+    F --> G["快捷 Menu\n存/提/轉/邀/VIP"]
+    F --> H["功能清單\n12 項"]
+    F --> I["每日任務"]
+    F --> J["消息中心"]
+    F --> K["背包入口"]
+    G --> G1["存款 → 金流模組"]
+    G --> G2["提款 → 金流模組"]
+    G --> G3["轉帳 → 場館轉帳"]
+    G --> G4["邀請好友"]
+    G --> G5["VIP 特權"]
+    H --> H1["投注記錄"]
+    H --> H2["福利中心"]
+    H --> H3["背包中心"]
+    H --> H4["其他 7 項"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>測試帳號(isTestAccount)點存款/提款/轉帳/邀請會被擋</li>
+            <li>純體育模式(isNoLive)隱藏贈禮記錄和關注列表</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/index.vue: menuList L133, functionList L184</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-2">
+          <div class="mermaid-card-title">2. VIP 等級計算</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入 VIP 頁"] --> B["載入 VIP 資料"]
+    B --> C["自動定位當前等級"]
+    C --> D["查看等級詳情"]
+    D --> E{"isPayAmount=1?"}
+    E -- 是 --> F["取 min(存款, 流水)"]
+    E -- 否 --> G["只看流水"]
+    D --> H{"豪禮狀態"}
+    H -- 可領取 --> I["申請豪禮"]
+    H -- 等級不符 --> J["disabled"]
+    D --> K{"生日禮金"}
+    K -- 未滿90天 --> L["不可領"]
+    K -- 可領取 --> M["前往領取"]
+    K -- 未設生日 --> N["立刻設置"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>升級進度雙條件取較低者，客訴「差一點升級」可能是存款條件沒達標</li>
+            <li>生日禮金 90 天門檻不可調整</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/vip/index/index.vue: vipProgress L124, checkBirthday L178</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-3">
+          <div class="mermaid-card-title">3. 背包兌換</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入背包中心"] --> B{"選模式"}
+    B -- 背包管理 --> C["道具/背包分類"]
+    B -- 兌換中心 --> D["上架分類"]
+    C --> E["瀏覽獎品"]
+    E --> F{"獎品類型"}
+    F -- 彩金 --> G["直接兌現"]
+    F -- 實體 --> H["填收件表單"]
+    D --> I["瀏覽商品"]
+    I --> J["選兌換方案"]
+    J --> K{"前置檢查"}
+    K -- 需綁定 --> L["引導綁定"]
+    K -- 通過 --> M["兌換成功"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>背包和福利中心都有獎品，差別：福利=活動獎勵領取，背包=已領獎品管理和兌換</li>
+            <li>兌換多元化(GOR-6017)：一件商品可有多種碎片組合方案</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/my-backpack/index.vue: L379-L513</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-4">
+          <div class="mermaid-card-title">4. 福利領取</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入福利中心"] --> B["預設篩選\n待領取+近7日"]
+    B --> C["瀏覽福利列表"]
+    C --> D{"操作"}
+    D -- 單筆領取 --> E{"需綁定?"}
+    E -- 是 --> F["彈窗→綁定"]
+    E -- 否 --> G["領取成功"]
+    D -- 一鍵領取 --> H["顯示成功/失敗"]
+    H --> I{"還有?"}
+    I -- 是 --> H
+    I -- 否 --> J["完成"]
+    D -- 切篩選 --> B
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>errCode 103=綁手機、104=綁銀行卡、105=兩者都要</li>
+            <li>一鍵領取會遞迴直到全部處理完</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWelfareActions.ts: L32-L182</div></details>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 3: 泳道圖                                                     -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="swimlane">
+      <div class="tool-section">
+        <div class="tool-section-header"><h2>泳道圖</h2></div>
+        <div class="tool-section-desc">跟 RD 估工時拿出來用。分「使用者動作流程」和「系統自動流程」兩類。</div>
+
+        <div class="logic-merge-divider">使用者動作流程</div>
+
+        <div class="mermaid-card" id="sl-1">
+          <div class="mermaid-card-title">1. 福利中心單筆領取</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+
+    U->>FE: 點擊「领取」
+    FE->>FE: debounce 800ms
+    FE->>BE: POST /welfarecenter/applyV2
+    BE-->>FE: { errCode, success, total }
+    alt errCode=103 需綁手機
+        FE-->>U: 彈窗「请先绑定手机」
+        U->>FE: 前往綁定
+    else errCode=1 成功
+        FE-->>U: toast「领取中」
+        FE->>FE: 1s後刷新列表
+        FE-->>U: toast「领取成功」
+    else 失敗
+        FE-->>U: toast「领取失败」
+    end
+            </div>
+          </div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWelfareActions.ts: applySingleOrder L32-L96</div></details>
+        </div>
+
+        <div class="mermaid-card" id="sl-2">
+          <div class="mermaid-card-title">2. 場館轉帳</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+
+    U->>FE: 選場館+輸入金額
+    FE->>FE: 鎖定對應場館(必經中心錢包)
+    FE->>FE: 檢查金額<=餘額
+    alt 活動鎖定場館
+        FE-->>U: 二次確認彈窗(含流水計算)
+        U->>FE: 確認
+    end
+    FE->>BE: POST /wallet/gameAmountTransfer
+    Note over FE,BE: gold = floor(amount x 100)
+    alt 成功
+        BE-->>FE: errCode=1
+        FE->>FE: 刷新場館餘額
+        FE-->>U: toast「转帐成功」
+    end
+            </div>
+          </div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/transfer/index.vue: transfer L279-L308</div></details>
+        </div>
+
+        <div class="mermaid-card" id="sl-3">
+          <div class="mermaid-card-title">3. 背包兌換</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+
+    U->>FE: 選「兌換中心」Tab
+    FE->>BE: GET /user/publishCategoryList
+    BE-->>FE: 上架分類
+    FE->>BE: POST /user/redeemListV2
+    BE-->>FE: 商品列表
+    U->>FE: 選商品+方案+數量
+    FE->>BE: POST /user/redeem
+    alt errCode=103/104/105
+        BE-->>FE: 需綁定
+        FE-->>U: 彈窗引導綁定
+    else errCode=1
+        BE-->>FE: 兌換成功
+        FE-->>U: toast「兑换成功」
+    end
+            </div>
+          </div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/my-backpack/index.vue: redeemHandler L434-L472</div></details>
+        </div>
+
+        <div class="logic-merge-divider">系統自動流程</div>
+
+        <div class="mermaid-card" id="sl-4">
+          <div class="mermaid-card-title">4. VIP 資料初始化</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant FE as 前端
+    participant BE as 後端
+
+    Note over FE: 進入 VIP 頁
+    FE->>BE: GET /vip/icons
+    FE->>BE: POST /vip/vipInfo
+    FE->>BE: POST /vip/vipOrder
+    BE-->>FE: VIP 圖示 Map
+    BE-->>FE: 等級資訊(門檻+返水)
+    BE-->>FE: 豪禮訂單列表
+    FE->>FE: 算升級進度+保級進度+豪禮狀態+生日禮金
+    alt 非測試帳號
+        FE->>BE: GET /other/getMailingAddress
+        BE-->>FE: 收件地址
+    end
+    FE->>FE: Carousel 定位當前等級
+            </div>
+          </div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">stores/vip.ts: setVipIcons, setVipInfo, setVipOrder</div></details>
+        </div>
+
+        <div class="mermaid-card" id="sl-5">
+          <div class="mermaid-card-title">5. 每日任務初始化</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant FE as 前端
+    participant BE as 後端
+
+    Note over FE: 進入我的頁面 onMounted
+    FE->>FE: 檢查 isOnInit
+    FE->>BE: GET /mission/dailySign
+    FE->>BE: GET /mission/myPageProcessingItem
+    FE->>BE: GET /mission/moreList
+    BE-->>FE: 簽到資料
+    BE-->>FE: 進行中任務
+    BE-->>FE: 每日+新手+轉盤任務
+    FE->>FE: 判斷可見性
+    alt 有新手任務
+        loop 每 60 秒
+            FE->>BE: 刷新新手任務
+            BE-->>FE: 更新進度
+        end
+    end
+            </div>
+          </div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">stores/dailyMissions.ts: initDailySignAndMissions L207</div></details>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 4: 跨服務限制                                                 -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="constraints">
+      <div class="tool-section">
+        <div class="tool-section-header"><h2>跨服務限制</h2></div>
+        <div class="tool-section-desc">做影響範圍評估時拿出來用。四色分類，紅色=動不了，黑色=不用問。</div>
+
+        <div class="stats-pill">
+          <span>模組耦合 8</span>
+          <span>技術限制 4</span>
+          <span>業務限制 4</span>
+        </div>
+
+        <!-- 模組耦合 -->
+        <div class="constraint-category" id="cat-coupling">
+          <div class="constraint-header"><h3>&#x1F7E1; 模組耦合</h3></div>
+          <div class="constraint-pm-guide">改了 X 要測 Y，列出測試範圍</div>
+
+          <details class="constraint-card cat-coupling">
+            <summary>我的主頁 → 金流模組</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>快捷 Menu 的存款/提款/轉帳直接 navigateTo 到金流頁面</p>
+              <div class="label">影響</div>
+              <p>金流路由改動需同步更新我的快捷 Menu</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>我的主頁 → VIP Store</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>VIP 圖示從 vipStore 取得，快捷 Menu 直接跳 VIP 頁</p>
+              <div class="label">影響</div>
+              <p>VIP 等級計算邏輯改動影響我的頁面圖示</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>我的主頁 → 消息中心</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>未讀消息紅點從 messageStore 取三個計數加總</p>
+              <div class="label">影響</div>
+              <p>消息中心改動紅點邏輯需驗我的頁面</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>我的主頁 → 每日任務 Store</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>我的頁面嵌入 MineDailySign + MineMission 組件</p>
+              <div class="label">影響</div>
+              <p>任務 Store 結構改動直接影響我的頁面</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>福利中心 → 個人資料綁定</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>領取前檢查手機/銀行卡綁定，未綁定導向綁定頁</p>
+              <div class="label">影響</div>
+              <p>綁定流程改動需驗福利領取 + 背包兌換</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>背包中心 → 福利中心</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>福利「獎品領取」後獎品進背包，分類體系需一致</p>
+              <div class="label">影響</div>
+              <p>獎品分類改動需同步兩邊</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>轉帳 → 錢包 Store</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>轉帳頁依賴 walletStore 的場館列表和餘額</p>
+              <div class="label">影響</div>
+              <p>錢包初始化邏輯改動影響轉帳頁</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>稱號系統 → 使用者資訊</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>配戴/取消稱號後更新 userStore 的 badgeId 和 badgeInfo</p>
+              <div class="label">影響</div>
+              <p>使用者資訊結構改動需驗稱號系統</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- 技術限制 -->
+        <div class="constraint-category" id="cat-tech">
+          <div class="constraint-header"><h3>&#x1F535; 技術限制</h3></div>
+          <div class="constraint-pm-guide">問 RD 可行性再回覆</div>
+
+          <details class="constraint-card cat-tech">
+            <summary>場館轉帳必須經過中心錢包</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>場館包之間不支援直接互轉，所有轉帳必須以中心錢包為中繼</p>
+              <div class="label">影響</div>
+              <p>無法實現場館間直接轉帳需求</p>
+              <div class="label">來源</div>
+              <p>架構限制 confirmTransferVenue</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>背包刷新需重撈所有已載入頁面</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>下拉刷新時 fullUpdate: page=1, pageSize=maxPage x 30</p>
+              <div class="label">影響</div>
+              <p>獎品數量多時效能差</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>暱稱中文算 2 字元（最多 7 中文）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>限制 14 字元，中文算 2，實際最多 7 個中文字</p>
+              <div class="label">影響</div>
+              <p>中文使用者暱稱長度受限</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>VIP 升級雙條件取最低值</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>isPayAmount=1 時取 min(存款, 流水)，任一未達標都升不了</p>
+              <div class="label">影響</div>
+              <p>「差一點就升級」客訴可能來自存款條件</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- 業務限制 -->
+        <div class="constraint-category" id="cat-biz">
+          <div class="constraint-header"><h3>&#x26AB; 業務限制</h3></div>
+          <div class="constraint-pm-guide">不用開會直接說不行</div>
+
+          <details class="constraint-card cat-biz">
+            <summary>性別/生日一次性設定不可逆</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>設定後不可修改</p>
+              <div class="label">影響</div>
+              <p>設錯只能聯繫客服</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>福利領取需實名（手機+銀行卡）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>部分福利/兌換必須先綁定手機或銀行卡</p>
+              <div class="label">影響</div>
+              <p>降低轉化率但符合合規</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>生日禮金 90 天門檻</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>注冊未滿 90 天不可領取</p>
+              <div class="label">影響</div>
+              <p>新玩家無法享受，防薅規則</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>暱稱審核機制</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>暱稱設定需後台審核，審核中不可再改</p>
+              <div class="label">影響</div>
+              <p>用戶等待期體驗受限</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Jira 踩坑 -->
+        <div class="logic-merge-divider">歷史踩坑（Jira 萃取）</div>
+
+        <div class="pitfall-list">
+          <details class="pitfall-card sev-high">
+            <summary class="pitfall-summary">
+              <span class="pid">L2-mine-001</span>
+              <span class="sev-tag sev-high">HIGH</span>
+              <span class="pattern-tag pattern-tech-bottleneck">技術瓶頸</span>
+              <span class="ptitle">背包兌換上線後密集 TSD</span>
+              <span class="toggle">&#x25B8;</span>
+            </summary>
+            <div class="pitfall-body">
+              <h5>背景</h5><p>GOR-6017 上線後一週四張 TSD：不顯示新道具、兌換異常、效期錯誤。</p>
+              <h5>根因</h5><p>背包分類和兌換分類是兩套資料來源，變動時未同步。效期自然日時區計算不一致。</p>
+              <h5>教訓</h5><p>跨分類一致性 + 效期邊界是必測項。</p>
+            </div>
+          </details>
+
+          <details class="pitfall-card sev-high">
+            <summary class="pitfall-summary">
+              <span class="pid">L2-mine-002</span>
+              <span class="sev-tag sev-high">HIGH</span>
+              <span class="pattern-tag pattern-tech-bottleneck">技術瓶頸</span>
+              <span class="ptitle">福利中心兌換穩定性問題</span>
+              <span class="toggle">&#x25B8;</span>
+            </summary>
+            <div class="pitfall-body">
+              <h5>背景</h5><p>連續三張 TSD：無法兌換福利券、兌換異常、存款福利點擊無反應。</p>
+              <h5>根因</h5><p>errCode 處理不完整、debounce 場景遺漏、過期判斷精度問題。</p>
+              <h5>教訓</h5><p>errCode 103/104/105 完整覆蓋 + 前後端時間差異是必測。</p>
+            </div>
+          </details>
+
+          <details class="pitfall-card sev-medium">
+            <summary class="pitfall-summary">
+              <span class="pid">L2-mine-003</span>
+              <span class="sev-tag sev-medium">MED</span>
+              <span class="pattern-tag pattern-cross-module">跨模組耦合</span>
+              <span class="ptitle">返水資料不一致</span>
+              <span class="toggle">&#x25B8;</span>
+            </summary>
+            <div class="pitfall-body">
+              <h5>背景</h5><p>雲平台 vs 前端返水數據不一致、有效期操作異常。</p>
+              <h5>根因</h5><p>返水由 VIP 模組下發但後台獨立管理，兩端實作不一致。</p>
+              <h5>教訓</h5><p>返水改動需三端驗證（雲平台/APP/H5）。</p>
+            </div>
+          </details>
+
+          <details class="pitfall-card sev-medium">
+            <summary class="pitfall-summary">
+              <span class="pid">L2-mine-004</span>
+              <span class="sev-tag sev-medium">MED</span>
+              <span class="pattern-tag pattern-shared-engine">共用引擎</span>
+              <span class="ptitle">福利中心模組行為統整（大重構中）</span>
+              <span class="toggle">&#x25B8;</span>
+            </summary>
+            <div class="pitfall-body">
+              <h5>背景</h5><p>8 張 GOR 單統整福利中心行為到 7 個模組，全部開放中。</p>
+              <h5>影響</h5><p>統整完前新需求可能需配合；完後 API 可能有 breaking change。</p>
+            </div>
+          </details>
+
+          <details class="pitfall-card sev-medium">
+            <summary class="pitfall-summary">
+              <span class="pid">L2-mine-005</span>
+              <span class="sev-tag sev-medium">MED</span>
+              <span class="pattern-tag pattern-version-switch">版本切換</span>
+              <span class="ptitle">場館轉帳 v1 → v2 遷移中</span>
+              <span class="toggle">&#x25B8;</span>
+            </summary>
+            <div class="pitfall-body">
+              <h5>背景</h5><p>GOR-6555 正在逐步將場館轉帳 API 從 v1 遷移到 v2。</p>
+              <h5>影響</h5><p>轉帳需求需確認目標場館已遷 v2。過渡期兩版 API 共存。</p>
+            </div>
+          </details>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
+
+<!-- Footer -->
+<div class="footer">
+  <p>我的模組知識庫 — 2026-04-12 產出</p>
+  <div class="footer-links">
+    <a href="features.html">功能知識庫首頁</a>
+    <a href="sports.html">體育賽事</a>
+    <a href="deposit.html">存提款</a>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryBorderColor: '#475569',
+      primaryTextColor: '#e2e8f0',
+      lineColor: '#64748b',
+      secondaryColor: '#263548',
+      tertiaryColor: '#0f172a'
+    },
+    flowchart: { htmlLabels: true, curve: 'basis' },
+    sequence: { useMaxWidth: false }
+  });
+
+  // Pitfall toggle
+  document.querySelectorAll('.pitfall-card').forEach(card => {
+    card.querySelector('.pitfall-summary').addEventListener('click', () => {
+      card.classList.toggle('open');
+    });
+  });
+
+  // Side nav data
+  const sideNavData = {
+    overview: {
+      title: '功能總覽',
+      items: [
+        { id: 'nav-mine-home', label: '1. 我的主頁面' },
+        { id: 'nav-profile', label: '2. 個人資料' },
+        { id: 'nav-vip', label: '3. VIP 特權' },
+        { id: 'nav-welfare', label: '4. 福利中心' },
+        { id: 'nav-backpack', label: '5. 背包中心' },
+        { id: 'nav-bet-record', label: '6. 投注記錄' },
+        { id: 'nav-transfer', label: '7. 場館轉帳' },
+        { id: 'nav-tasks', label: '8. 任務系統' },
+        { id: 'nav-badge', label: '9. 稱號系統' }
+      ]
+    },
+    userflow: {
+      title: 'User Flow',
+      items: [
+        { id: 'uf-1', label: '1. 個人中心主線' },
+        { id: 'uf-2', label: '2. VIP 等級計算' },
+        { id: 'uf-3', label: '3. 背包兌換' },
+        { id: 'uf-4', label: '4. 福利領取' }
+      ]
+    },
+    swimlane: {
+      title: '泳道圖',
+      items: [
+        { group: '使用者動作' },
+        { id: 'sl-1', label: '1. 福利單筆領取' },
+        { id: 'sl-2', label: '2. 場館轉帳' },
+        { id: 'sl-3', label: '3. 背包兌換' },
+        { group: '系統自動' },
+        { id: 'sl-4', label: '4. VIP 資料初始化' },
+        { id: 'sl-5', label: '5. 每日任務初始化' }
+      ]
+    },
+    constraints: {
+      title: '跨服務限制',
+      items: [
+        { id: 'cat-coupling', label: '\uD83D\uDFE1 模組耦合' },
+        { id: 'cat-tech', label: '\uD83D\uDD35 技術限制' },
+        { id: 'cat-biz', label: '\u26AB 業務限制' }
+      ]
+    }
+  };
+
+  // Side Nav
+  const sideNavInner = document.getElementById('sideNavInner');
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+
+  function renderSideNav(tabId) {
+    const data = sideNavData[tabId];
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+    let html = '<div class="sn-title">' + data.title + '</div>';
+    data.items.forEach(item => {
+      if (item.group) {
+        html += '<div class="sn-group">' + item.group + '</div>';
+      } else {
+        html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
+      }
+    });
+    sideNavInner.innerHTML = html;
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
+    const data = sideNavData[tabId];
+    if (!data) return;
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+    const visibleSections = new Map();
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top);
+        else visibleSections.delete(entry.target.id);
+      });
+      let topId = null, topY = Infinity;
+      visibleSections.forEach((y, id) => {
+        const el = document.getElementById(id);
+        if (el) { const r = el.getBoundingClientRect(); if (r.top < topY) { topY = r.top; topId = id; } }
+      });
+      if (!topId) {
+        let cl = null, cd = -Infinity;
+        targets.forEach(t => { const r = t.getBoundingClientRect(); if (r.top < 0 && r.top > cd) { cd = r.top; cl = t.id; } });
+        if (cl) topId = cl;
+      }
+      if (topId) highlightNavItem(topId);
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-target') === id);
+    });
+    const a = sideNavInner.querySelector('.sn-item.active');
+    if (a) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  // Tab switching
+  const tabPills = document.querySelectorAll('.tab-pill');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    currentTabId = tabId;
+    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+    if (!mermaidRendered[tabId]) {
+      const panel = document.getElementById(tabId);
+      const diagrams = panel.querySelectorAll('.mermaid');
+      if (diagrams.length > 0) {
+        mermaid.run({ nodes: diagrams });
+        mermaidRendered[tabId] = true;
+      }
+    }
+    renderSideNav(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabPills.forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab(pill.getAttribute('data-tab'));
+    });
+  });
+
+  // Init
+  document.querySelector('.layout').classList.add('has-side-nav');
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) {
+    switchTab(hash);
+  } else {
+    mermaidRendered['overview'] = true;
+    renderSideNav('overview');
+  }
+</script>
+</body>
+</html>

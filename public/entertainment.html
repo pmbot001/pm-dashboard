@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>娛樂城 — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    .compact-header {
+      position: sticky; top: 0; z-index: 150; background: #0f172a;
+      border-bottom: 1px solid #334155; padding: 8px 16px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      height: 60px; box-sizing: border-box;
+    }
+    .compact-header-title { font-size: 24px; font-weight: 700; color: #f1f5f9; white-space: nowrap; }
+    .compact-header-breadcrumb { font-size: 12px; color: #64748b; white-space: nowrap; }
+    .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
+    .compact-header-breadcrumb a:hover { color: #94a3b8; }
+    .compact-header-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+    .tab-nav { display: none !important; }
+    .tab-pill {
+      display: inline-block; font-size: 13px; padding: 8px 20px; border-radius: 20px;
+      color: #94a3b8; background: #1e293b; border: 1px solid #334155;
+      text-decoration: none; font-weight: 600; transition: all .15s; cursor: pointer;
+    }
+    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
+    .tab-pill.active { background: #ec4899; color: #fff; border-color: #ec4899; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .v2-main { margin-left: 0; }
+    .mermaid-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      margin-bottom: 28px; overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 8px;
+    }
+    .mermaid-card-body { padding: 20px; overflow-x: auto; }
+    .mermaid-card-body .mermaid { display: flex; justify-content: center; }
+    .pm-notice {
+      background: #2a2210; border-left: 3px solid #fbbf24; padding: 12px 16px;
+      margin: 0 18px 4px; border-radius: 6px; font-size: 13px; color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary { font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; user-select: none; }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px; background: #0f172a;
+      border-radius: 6px; margin-top: 4px; font-family: 'SF Mono','Fira Code',monospace; line-height: 1.8;
+    }
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 18px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before { content: "▸"; color: #64748b; font-size: 14px; transition: transform .2s; }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #ec4899; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body { padding: 0 18px 16px; border-top: 1px solid #334155; }
+    .logic-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .logic-table th { background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px; }
+    .logic-table td { background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155; color: #cbd5e1; vertical-align: top; }
+    .logic-table tr:hover td { background: #263548; }
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .constraint-card.cat-venue { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "▸"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #ec4899; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+    .tool-section { max-width: 960px; margin: 0 auto; padding: 50px 16px 30px; }
+    .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+    .logic-merge-divider {
+      margin: 28px 0 16px; padding: 10px 16px; background: #1a2638;
+      border-left: 3px solid #ec4899; border-radius: 6px;
+      font-size: 14px; font-weight: 700; color: #ec4899;
+    }
+    .side-nav {
+      position: fixed; left: 0; top: 60px; width: 220px; height: calc(100vh - 60px);
+      background: #111827; border-right: 1px solid #1e293b; border-top: 1px solid #334155;
+      z-index: 140; display: flex; flex-direction: column; padding-top: 0;
+    }
+    .side-nav-inner {
+      flex: 1; overflow-y: auto; padding: 8px 0 24px;
+      scrollbar-width: thin; scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .side-nav .sn-title {
+      padding: 12px 16px 6px; font-size: 13px; font-weight: 700; color: #e2e8f0;
+      border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 2px; font-size: 11px; font-weight: 600; color: #475569; letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block; padding: 6px 16px 6px 18px; font-size: 13px; color: #94a3b8;
+      cursor: pointer; border-left: 3px solid transparent; transition: all .12s;
+      text-decoration: none; line-height: 1.4;
+    }
+    .side-nav .sn-item:hover { color: #e2e8f0; background: #1e293b; }
+    .side-nav .sn-item.active { color: #fff; border-left-color: #ec4899; background: rgba(236,72,153,.06); }
+    .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
+    @media(max-width: 900px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+      .compact-header { flex-direction: column; height: auto; padding: 12px; gap: 8px; }
+      .compact-header-pills { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });</script>
+
+<div class="layout">
+  <nav class="side-nav" id="sideNav"><div class="side-nav-inner" id="sideNavInner"></div></nav>
+
+  <div class="main-content v2-main">
+    <header class="compact-header">
+      <span class="compact-header-breadcrumb"><a href="features.html">知識庫</a> / 娛樂城</span>
+      <span class="compact-header-title">🎰 娛樂城</span>
+      <div class="compact-header-pills">
+        <span class="tab-pill active" data-tab="overview">功能總覽</span>
+        <span class="tab-pill" data-tab="userflow">User Flow</span>
+        <span class="tab-pill" data-tab="swimlane">泳道圖</span>
+        <span class="tab-pill" data-tab="constraints">跨服務限制</span>
+      </div>
+    </header>
+
+    <!-- TAB 1: 功能總覽 -->
+    <div class="tab-panel active" id="overview">
+      <div class="tool-section">
+        <div class="kb-notice">
+          <b>模組概覽：</b>娛樂城是底部導覽列第二個 Tab，讓玩家進入第三方場館。依業主 agentId 動態切換皮膚（水果2.0/YXB/YXR）。
+          含 <code>9</code> 種 LobbyType、<code>10</code> 種場館分類、<code>3</code> 套皮膚。
+        </div>
+        <div class="stats-pill" style="margin-top: 20px;">
+          <span>8 頁面邏輯卡</span><span>|</span><span>3 踩坑 Records</span><span>|</span><span>10 功能</span>
+        </div>
+
+        <div class="logic-merge-divider" id="sec-home">2.1 娛樂城首頁</div>
+
+        <details class="page-logic-card" id="sec-home-main">
+          <summary>首頁（主力/YXB）<span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>gameStore.classifySort</td><td>分類 Tab 排序由後台決定</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台 > 創建渠道</td></tr>
+              <tr><td>2</td><td>aiRecommend.length > 0</td><td>置頂 AI 推薦區 classify=999</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台開啟 AI 推薦</td></tr>
+              <tr><td>3</td><td>lobbyType=13 (No_Lobby)</td><td>過濾不顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>lobbyType=1 (Sport)</td><td>非 TB/YXRG 業主隱藏</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>體育大廳限定業主</td></tr>
+              <tr><td>5</td><td>serverAvailable=false</td><td>顯示維護遮罩</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>場館方控制</td></tr>
+              <tr><td>6</td><td>game.sort</td><td>卡片依 sort 升序排列</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>7</td><td>點擊分類 Tab</td><td>錨點滾動到對應分區</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/home/index/casino/index.vue<br>stores/game.ts:gameList/classifySort/aiRecommend</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-home-yxr">
+          <summary>首頁（YXR 皮膚）<span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>YXR 皮膚</td><td>獨立 Layout + Header + Banner</td><td><span class="cost-tag cost-code">程式層</span></td><td>跟主力皮膚完全不同</td></tr>
+              <tr><td>2</td><td>isCollapseHeader</td><td>往下捲 → Header 收合 + 回頂部按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>showCasinoMoreGameList</td><td>「更多」展開子遊戲列表</td><td><span class="cost-tag cost-code">程式層</span></td><td>場館 ≤ 3 不顯示更多</td></tr>
+              <tr><td>4</td><td>TopicEnterDraw</td><td>杯賽轉盤入口嵌在頁底</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動期間才出現</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/vendors/index/yxrg/home/index/casino/</div></details>
+          </div>
+        </details>
+
+        <div class="logic-merge-divider" id="sec-enter">2.2 遊戲進入</div>
+
+        <details class="page-logic-card" id="sec-lobby-type">
+          <summary>LobbyType 分流邏輯 <span class="rule-count">9 種類型</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>LobbyType</th><th>值</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>Default</td><td>-1</td><td>預設</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>Normal</td><td>0</td><td>外開 WebView</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>Sport</td><td>1</td><td>內嵌體育頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>限定業主</td></tr>
+              <tr><td>Self_Developed_Electronic</td><td>11</td><td>自研電子大廳</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>Self_Developed_Fishing</td><td>12</td><td>自研捕魚大廳</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>No_Lobby</td><td>13</td><td>過濾不顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>Custom_Normal</td><td>21</td><td>自定-外開 WebView</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定</td></tr>
+              <tr><td>Custom_Sports_Hall</td><td>22</td><td>自定-內嵌體育</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>Cystom_Y1</td><td>23</td><td>外開+內嵌</td><td><span class="cost-tag cost-code">程式層</span></td><td>Y1 專用</td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/home/index/casino/components/GameCard.vue<br>stores/game.ts:LobbyType enum</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-maintain">
+          <summary>場館維護狀態 <span class="rule-count">3 層檢查</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>層級</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>卡片層</td><td>serverAvailable=false → 維護遮罩</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>場館 API 回傳</td></tr>
+              <tr><td>2</td><td>轉帳層</td><td>轉帳前二次檢查場館狀態</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>進入層</td><td>gameToken 取得時再次確認</td><td><span class="cost-tag cost-code">程式層</span></td><td>三道防線</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-wallet">
+          <summary>錢包轉帳 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>轉帳錢包模式</td><td>進入遊戲前檢查中心錢包餘額</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>餘額不足</td><td>彈出轉帳確認框</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>有活動優惠</td><td>顯示活動提示彈窗</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>4</td><td>免轉錢包</td><td>直接進入遊戲</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">stores/wallet.ts<br>GOR-4837（暫停）、GOR-1911</div></details>
+          </div>
+        </details>
+
+        <div class="logic-merge-divider" id="sec-self">2.3 自研大廳 / AI / 體育</div>
+
+        <details class="page-logic-card" id="sec-self-hall">
+          <summary>自研電子/捕魚大廳 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>lobbyType=11/12</td><td>進入子遊戲列表頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>搜尋</td><td>最多20字，不可空白/標點</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>收藏</td><td>投注成功的電子遊戲自動收藏</td><td><span class="cost-tag cost-code">程式層</span></td><td>重進才排序</td></tr>
+              <tr><td>4</td><td>子遊戲來源</td><td>雲管理 > 遊戲工具 > 場館配置</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>5</td><td>POST /user/subGameList</td><td>取得子遊戲清單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-ai">
+          <summary>AI 精選推薦 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>classify=999</td><td>AI 推薦區置頂顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>2</td><td>近30日注單 > 5筆</td><td>判斷是否有場館偏好</td><td><span class="cost-tag cost-code">程式層</span></td><td>不含當日</td></tr>
+              <tr><td>3</td><td>有偏好</td><td>指定場館 + 隨機2方法 + 站台盈利</td><td><span class="cost-tag cost-code">程式層</span></td><td>去重取3個</td></tr>
+              <tr><td>4</td><td>無偏好</td><td>站台投注次數 + 站台盈利排名</td><td><span class="cost-tag cost-code">程式層</span></td><td>不足7個隨機補</td></tr>
+              <tr><td>5</td><td>未登入</td><td>仍顯示 AI Tab（但推薦內容不同）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">GOR-5299 新增AI精選區<br>stores/game.ts:aiRecommend</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-sport-vendor">
+          <summary>體育場館選擇 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>classify=1 + lobbyType=1</td><td>大廳體育（內嵌）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>2</td><td>classify=1 + lobbyType=0</td><td>外開體育（WebView）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <tr><td>3</td><td>當前場館維護中</td><td>setFirstAvailableVendor() 自動切換</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">stores/game.ts:sportVendorList/externalSportVendorList</div></details>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- TAB 2: User Flow -->
+    <div class="tab-panel" id="userflow">
+      <div class="tool-section">
+        <div class="stats-pill"><span>3 User Flow</span></div>
+
+        <div class="mermaid-card" id="uf-main">
+          <div class="mermaid-card-title">娛樂城首頁進入流程</div>
+          <div class="pm-notice"><ul>
+            <li>lobbyType=13 (No_Lobby) 完全不顯示，不是維護</li>
+            <li>AI 推薦區在未登入時也會顯示</li>
+          </ul></div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[進入娛樂城] --> B{皮膚判斷}
+    B -->|水果2.0/YXB| C["home/index/casino"]
+    B -->|YXR| D["vendors/index/yxrg/home/index/casino"]
+    C --> E["POST /user/gameList"]
+    D --> E
+    E --> F[取得 gameList + classifySort + aiRecommend]
+    F --> G{"aiRecommend.length > 0?"}
+    G -->|是| H["置頂 AI 推薦區 classify=999"]
+    G -->|否| I[依 classifySort 排列分類 Tab]
+    H --> I
+    I --> J[遊戲卡片格]
+    J --> K{lobbyType?}
+    K -->|13 No_Lobby| L[過濾不顯示]
+    K -->|1 Sport| M{業主判斷}
+    M -->|TB/YXRG| N[顯示體育場館]
+    M -->|其他| L
+    K -->|其他| O[正常顯示卡片]
+    J --> P{serverAvailable?}
+    P -->|false| Q[顯示維護遮罩]
+    P -->|true| R[正常可點擊]
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-game-enter">
+          <div class="mermaid-card-title">遊戲進入流程</div>
+          <div class="pm-notice"><ul>
+            <li>H5 跳轉外鏈場館需跳提示彈窗（QIP-13214）</li>
+            <li>錢包轉帳是非同步操作，失敗時需攔截</li>
+          </ul></div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[點擊場館卡片] --> B{serverAvailable?}
+    B -->|false| C[顯示維護中 toast]
+    B -->|true| D{lobbyType?}
+    D -->|0 Normal| E[外開 WebView]
+    D -->|1 Sport| F[內嵌體育頁面]
+    D -->|11 自研電子| G[跳轉電子大廳]
+    D -->|12 自研捕魚| H[跳轉捕魚大廳]
+    D -->|21 Custom_Normal| E
+    D -->|22 Custom_Sports| F
+    D -->|23 Cystom_Y1| I[外開+內嵌]
+    E --> J{錢包模式?}
+    J -->|轉帳錢包| K[檢查餘額]
+    K --> L{餘額足夠?}
+    L -->|否| M[彈出轉帳確認]
+    L -->|是| N[直接進入遊戲]
+    M --> O[POST 轉帳 API]
+    O --> N
+    J -->|免轉錢包| N
+    G --> P["POST /user/subGameList"]
+    P --> Q[子遊戲列表]
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-search">
+          <div class="mermaid-card-title">自研大廳搜尋/收藏</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[自研電子/捕魚大廳] --> B[搜尋框]
+    B --> C[輸入關鍵字]
+    C --> D{字數檢查}
+    D -->|超過20字| E[截斷]
+    D -->|含空白/標點| F[移除]
+    D -->|合法| G[前端篩選 subGameList]
+    E & F --> G
+    G --> H{有結果?}
+    H -->|是| I[顯示搜尋結果]
+    H -->|否| J[空狀態]
+    I --> K[點擊子遊戲]
+    K --> L{已收藏?}
+    L -->|是| M[收藏圖示亮起]
+    L -->|否| N[一般顯示]
+    K --> O[進入遊戲]
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: 泳道圖 -->
+    <div class="tab-panel" id="swimlane">
+      <div class="tool-section">
+        <div class="stats-pill"><span>3 泳道圖</span></div>
+
+        <div class="mermaid-card" id="sw-game-launch">
+          <div class="mermaid-card-title">遊戲啟動前後端互動</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant App as 娛樂城頁面
+    participant GStore as gameStore
+    participant API as 後端 API
+    participant Game as 遊戲視窗
+
+    U->>App: 點擊場館卡片
+    App->>GStore: 檢查 serverAvailable
+
+    alt 維護中
+        GStore-->>App: serverAvailable = false
+        App-->>U: toast 場館維護中
+    else 正常
+        App->>App: 判斷 lobbyType
+
+        alt lobbyType = 11/12（自研大廳）
+            App->>API: POST /user/subGameList
+            API-->>App: 子遊戲列表
+            App-->>U: 顯示大廳頁面
+        else lobbyType = 0/21（外開）
+            App->>API: POST /user/gameToken
+            API-->>App: gameUrl + token
+            App->>Game: window.open(gameUrl)
+        else lobbyType = 1/22（內嵌）
+            App->>API: POST /user/gameToken
+            API-->>App: gameUrl + token
+            App-->>U: iframe 內嵌顯示
+        end
+    end
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-wallet">
+          <div class="mermaid-card-title">錢包轉帳序列</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant App as 娛樂城
+    participant WStore as walletStore
+    participant API as 後端 API
+    participant Game as 遊戲
+
+    U->>App: 點擊場館進入遊戲
+    App->>WStore: 檢查錢包模式
+
+    alt 轉帳錢包
+        WStore->>API: 查詢中心錢包餘額
+        API-->>WStore: balance
+
+        alt 餘額不足
+            App-->>U: 彈出轉帳確認框
+            U->>App: 確認轉帳
+            App->>API: POST 轉帳至場館錢包
+            API-->>App: 轉帳成功
+        end
+
+        opt 有活動優惠
+            App-->>U: 顯示活動提示彈窗
+            U->>App: 確認/跳過
+        end
+
+        App->>Game: 進入遊戲
+    else 免轉錢包
+        App->>Game: 直接進入遊戲
+    end
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-venue-list">
+          <div class="mermaid-card-title">場館列表載入</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant App as 娛樂城首頁
+    participant GStore as gameStore
+    participant API as 後端 API
+
+    U->>App: 進入娛樂城 Tab
+    App->>API: POST /user/gameList
+    Note over API: channelId, isVirtual: 1
+    API-->>GStore: gameList + classifySort + aiRecommend
+
+    GStore->>App: 依 classifySort 排列分類
+
+    alt aiRecommend 有資料
+        App->>App: 置頂 AI 推薦區 classify=999
+    end
+
+    loop 每個 classify 分類
+        App->>App: 過濾 lobbyType=13
+        App->>App: 依 game.sort 排序
+        App->>App: serverAvailable=false 加維護遮罩
+    end
+
+    App-->>U: 渲染場館卡片格
+
+    U->>App: 點擊分類 Tab
+    App->>App: 錨點滾動到對應分區
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: 跨服務限制 -->
+    <div class="tab-panel" id="constraints">
+      <div class="tool-section">
+        <div class="stats-pill"><span>12 跨服務限制</span></div>
+
+        <div class="constraint-category" id="cst-venue">
+          <div class="constraint-header"><h3>場館限制</h3></div>
+          <div class="constraint-pm-guide">第三方場館控制，無法由我方調整</div>
+
+          <details class="constraint-card cat-venue">
+            <summary>場館維護狀態由場館方 API 控制</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>serverAvailable 由場館 API 回傳，我方無法覆蓋。
+              <div class="label">影響</div>場館臨時維護時，玩家立即看到維護遮罩。
+              <div class="label">PM 對策</div>無法提前預知場館維護。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-venue">
+            <summary>場館 API 回應格式不統一</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>各場館的 gameToken、遊戲進入 URL 格式不同，前端需逐一適配。
+              <div class="label">影響</div>新接場館需要開發適配層。
+              <div class="label">PM 對策</div>新場館接入排期需預留適配時間。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-venue">
+            <summary>體育場館只在特定業主顯示</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>lobbyType=1 (Sport) 只在 TB/YXRG 業主顯示。
+              <div class="label">影響</div>其他業主看不到體育分類。
+              <div class="label">PM 對策</div>確認業主是否需要體育場館。
+            </div>
+          </details>
+        </div>
+
+        <div class="constraint-category" id="cst-coupling">
+          <div class="constraint-header"><h3>模組耦合</h3></div>
+
+          <details class="constraint-card cat-coupling">
+            <summary>三套皮膚各自維護</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>水果2.0、YXB、YXR 各有獨立 Vue 檔案，功能改動需同步三處。
+              <div class="label">影響</div>開發工時 ×3，漏改風險高。
+              <div class="label">PM 對策</div>需求單需標注影響哪些皮膚。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>單錢包/多錢包模式切換邏輯散落</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>GOR-4837 整頓單多錢包共用邏輯已暫停，目前分散處理。
+              <div class="label">影響</div>轉帳失敗但遊戲已開啟的邊界狀況。
+              <div class="label">PM 對策</div>錢包相關改動需全面回歸測試。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>AI 推薦依賴後端演算法</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>AI 精選推薦由後端計算近7日行為，前端只負責展示。
+              <div class="label">影響</div>推薦結果不可由 PM 直接控制。
+              <div class="label">PM 對策</div>僅能透過後台開關決定是否顯示。
+            </div>
+          </details>
+        </div>
+
+        <div class="constraint-category" id="cst-tech">
+          <div class="constraint-header"><h3>技術限制</h3></div>
+
+          <details class="constraint-card cat-tech">
+            <summary>LobbyType 枚舉 9 種，持續膨脹</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>每次新場館類型需擴充枚舉，影響所有皮膚的分流邏輯。
+              <div class="label">影響</div>前端改動面大，回歸測試多。
+              <div class="label">PM 對策</div>新場館進入方式需先確認是否要新 lobbyType。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>外開遊戲 channelId 傳遞需手動帶</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>window.open 不走 router-guard，channelId 需手動加入 URL。
+              <div class="label">影響</div>遺漏 channelId 會導致場館 API 異常。
+              <div class="label">PM 對策</div>QA 需測試外開遊戲的 channelId 傳遞。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>H5 跳轉外鏈需提示彈窗</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>QIP-13214 規定 H5 跳轉外鏈場館需先跳提示彈窗。
+              <div class="label">影響</div>增加一步操作，影響轉化率。
+              <div class="label">PM 對策</div>QIP 規定，不可繞過。
+            </div>
+          </details>
+        </div>
+
+        <div class="constraint-category" id="cst-biz">
+          <div class="constraint-header"><h3>業務限制</h3></div>
+
+          <details class="constraint-card cat-biz">
+            <summary>場館排序由雲平台設定</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>classifySort 由雲平台 > 創建渠道設定，前端依此排列。
+              <div class="label">影響</div>不同渠道可有不同場館排序。
+              <div class="label">PM 對策</div>新渠道上線需確認場館排序設定。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>收藏功能僅限子遊戲</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>場館級別無收藏功能，只有自研大廳的子遊戲支援收藏。
+              <div class="label">影響</div>玩家無法收藏常用場館。
+              <div class="label">PM 對策</div>如需場館收藏需新開需求。
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>場館黑名單已整合至 gameList API</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>GOR-5579 將場館黑名單 API 整合至 /user/gameList。
+              <div class="label">影響</div>黑名單場館不會出現在列表中。
+              <div class="label">PM 對策</div>黑名單由後台統一管理。
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const sideNavData = {
+    overview: {
+      title: '功能總覽',
+      items: [
+        { id: 'sec-home', label: '2.1 娛樂城首頁' },
+        { id: 'sec-home-main', label: '首頁（主力/YXB）' },
+        { id: 'sec-home-yxr', label: '首頁（YXR）' },
+        { id: 'sec-enter', label: '2.2 遊戲進入' },
+        { id: 'sec-lobby-type', label: 'LobbyType 分流' },
+        { id: 'sec-maintain', label: '場館維護狀態' },
+        { id: 'sec-wallet', label: '錢包轉帳' },
+        { id: 'sec-self', label: '2.3 自研/AI/體育' },
+        { id: 'sec-self-hall', label: '自研大廳' },
+        { id: 'sec-ai', label: 'AI 精選推薦' },
+        { id: 'sec-sport-vendor', label: '體育場館選擇' },
+      ]
+    },
+    userflow: {
+      title: 'User Flow',
+      items: [
+        { id: 'uf-main', label: '娛樂城首頁流程' },
+        { id: 'uf-game-enter', label: '遊戲進入流程' },
+        { id: 'uf-search', label: '搜尋/收藏' },
+      ]
+    },
+    swimlane: {
+      title: '泳道圖',
+      items: [
+        { type: 'group', label: '使用者動作' },
+        { id: 'sw-game-launch', label: '遊戲啟動' },
+        { id: 'sw-wallet', label: '錢包轉帳' },
+        { type: 'group', label: '系統自動' },
+        { id: 'sw-venue-list', label: '場館列表載入' },
+      ]
+    },
+    constraints: {
+      title: '跨服務限制',
+      items: [
+        { id: 'cst-venue', label: '場館限制 (3)' },
+        { id: 'cst-coupling', label: '模組耦合 (3)' },
+        { id: 'cst-tech', label: '技術限制 (3)' },
+        { id: 'cst-biz', label: '業務限制 (3)' },
+      ]
+    }
+  };
+
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+  const sideNavInner = document.getElementById('sideNavInner');
+
+  function renderSideNav(tabId) {
+    const data = sideNavData[tabId];
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+    let html = `<div class="sn-title">${data.title}</div>`;
+    data.items.forEach(item => {
+      if (item.type === 'group') html += `<div class="sn-group">${item.label}</div>`;
+      else html += `<a class="sn-item" data-target="${item.id}" href="#${item.id}">${item.label}</a>`;
+    });
+    sideNavInner.innerHTML = html;
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(() => highlightNavItem(el.getAttribute('data-target')), 300); }
+      });
+    });
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
+    const data = sideNavData[tabId]; if (!data) return;
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+    const visibleSections = new Map();
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top); else visibleSections.delete(entry.target.id); });
+      let topId = null, topY = Infinity;
+      visibleSections.forEach((y, id) => { const el = document.getElementById(id); if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } } });
+      if (!topId && targets.length > 0) { let d = -Infinity; targets.forEach(t => { const r = t.getBoundingClientRect(); if (r.top < 0 && r.top > d) { d = r.top; topId = t.id; } }); }
+      if (topId) highlightNavItem(topId);
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => el.classList.toggle('active', el.getAttribute('data-target') === id));
+    const a = sideNavInner.querySelector('.sn-item.active'); if (a) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  const tabPills = document.querySelectorAll('.tab-pill');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    currentTabId = tabId;
+    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+    if (!mermaidRendered[tabId]) { const panel = document.getElementById(tabId); const d = panel.querySelectorAll('.mermaid'); if (d.length > 0) { mermaid.run({ nodes: d }); mermaidRendered[tabId] = true; } }
+    renderSideNav(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabPills.forEach(pill => pill.addEventListener('click', e => { e.preventDefault(); switchTab(pill.getAttribute('data-tab')); }));
+
+  document.querySelector('.layout').classList.add('has-side-nav');
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) switchTab(hash); else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
+</script>
+</body>
+</html>

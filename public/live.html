@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>廣場 / 直播間 — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ===== Compact Sticky Header ===== */
+    .compact-header {
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      height: 60px;
+      box-sizing: border-box;
+    }
+    .compact-header-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb {
+      font-size: 12px;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
+    .compact-header-breadcrumb a:hover { color: #94a3b8; }
+    .compact-header-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    /* ===== Tab Pills ===== */
+    .tab-pill {
+      display: inline-block;
+      font-size: 13px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      color: #94a3b8;
+      background: #1e293b;
+      border: 1px solid #334155;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all .15s;
+      cursor: pointer;
+    }
+    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
+    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+
+    /* Tab content panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Full-width layout — overridden by .has-side-nav */
+    .v2-main { margin-left: 0; }
+
+    /* ===== Mermaid card ===== */
+    .mermaid-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f1f5f9;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mermaid-card-body {
+      padding: 20px;
+      overflow-x: auto;
+    }
+    .mermaid-card-body .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* PM 注意 yellow box */
+    .pm-notice {
+      background: #2a2210;
+      border-left: 3px solid #fbbf24;
+      padding: 12px 16px;
+      margin: 0 18px 4px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+
+    /* RD 參考 collapsible */
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary {
+      font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; user-select: none;
+    }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px;
+      background: #0f172a; border-radius: 6px; margin-top: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace; line-height: 1.8;
+    }
+
+    /* Page logic collapsible card */
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 18px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before {
+      content: "\25B8"; color: #64748b; font-size: 14px; transition: transform .2s;
+    }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body {
+      padding: 0 18px 16px; border-top: 1px solid #334155;
+    }
+
+    /* Logic table */
+    .logic-table {
+      width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;
+    }
+    .logic-table th {
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 12px;
+    }
+    .logic-table td {
+      background: #1e293b; padding: 8px 10px; border-bottom: 1px solid #334155;
+      color: #cbd5e1; vertical-align: top;
+    }
+    .logic-table tr:hover td { background: #263548; }
+
+    /* Constraint section blocks */
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .constraint-card.cat-system { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "\25B8"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+
+    /* Stats pill */
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+
+    /* Tool section */
+    .tool-section {
+      max-width: 960px; margin: 0 auto; padding: 50px 16px 30px;
+    }
+    .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+    .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
+
+    /* Page logic merge divider */
+    .logic-merge-divider {
+      margin: 28px 0 16px;
+      padding: 10px 16px;
+      background: #1a2638;
+      border-left: 3px solid #f97316;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f97316;
+    }
+
+    /* ===== Side Nav (sticky left) ===== */
+    .side-nav {
+      position: fixed;
+      left: 0;
+      top: 60px;
+      width: 220px;
+      height: calc(100vh - 60px);
+      background: #111827;
+      border-right: 1px solid #1e293b;
+      border-top: 1px solid #334155;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      padding-top: 0;
+    }
+    .side-nav-inner {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0 24px;
+      scrollbar-width: thin;
+      scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .side-nav-inner::-webkit-scrollbar-track { background: transparent; }
+
+    .side-nav .sn-title {
+      padding: 12px 16px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block;
+      padding: 6px 16px 6px 18px;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all .12s;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .side-nav .sn-item:hover {
+      color: #e2e8f0;
+      background: #1e293b;
+    }
+    .side-nav .sn-item.active {
+      color: #fff;
+      border-left-color: #f97316;
+      background: rgba(249,115,22,.06);
+    }
+
+    /* Push main content right when side-nav exists */
+    .has-side-nav .main-content.v2-main {
+      margin-left: 220px !important;
+    }
+
+    /* Mobile: hide side nav */
+    @media (max-width: 768px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- ============ Side Nav ============ -->
+  <aside class="side-nav" id="sideNav">
+    <div class="side-nav-inner" id="sideNavInner"></div>
+  </aside>
+
+  <div class="main-content v2-main">
+
+    <!-- ============ Compact Sticky Header ============ -->
+    <nav class="compact-header" id="tabnav">
+      <span class="compact-header-title">&#x1F4FA; 廣場 / 直播間</span>
+      <span class="compact-header-breadcrumb"><a href="features.html">功能知識庫</a> / 廣場 &amp; 直播間</span>
+      <div class="compact-header-pills">
+        <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
+        <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
+        <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
+        <a class="tab-pill" href="#constraints" data-tab="constraints">跨服務限制</a>
+      </div>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- TAB 1: 功能總覽                                                   -->
+    <!-- ================================================================ -->
+    <div class="tab-panel active" id="overview">
+
+      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
+        改動成本：<span class="cost-tag cost-locked">場館限制</span> 改不了
+        <span class="cost-tag cost-config">設定層</span> 後台可配
+        <span class="cost-tag cost-code">程式層</span> 要發版
+      </div>
+
+      <!-- === 1. 廣場主頁 === -->
+      <div class="section" id="nav-plaza">
+        <div class="section-title"><span class="num">1</span> 廣場主頁（Tab 容器）</div>
+        <div class="section-desc">直播模組的一級入口（/live），依後台設定走標準模式或純直播模式</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>廣場有兩種模式：標準模式（最多 5 個 Tab）和純直播模式（pushType=2，只有直播+主播 2 個 Tab）。寫需求前先確認是哪種模式，因為 UI 殼不一樣。
+        </div>
+
+        <div class="annotated-row single">
+          <div class="screen-col">
+            <img src="/images/live/screen-live-all-nosearch.png" alt="廣場直播列表">
+            <div class="screen-label">廣場直播列表（全部 Tab）</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>Tab 結構 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>標準模式最多 5 個 Tab：直播（永遠）、排行榜（後台開關）、主播（永遠）、節目表（永遠）、影片專區（後台開關）。純直播模式只有直播 + 主播。</p>
+              <div class="pm-note">排行榜和影片專區 Tab 受後台開關控制，PM 測試前要先確認後台設定。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>登入攔截 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>主播、排行榜 Tab 需要登入。未登入點擊會觸發登入 Sheet，不切換 Tab。排行榜有額外的遊客模式例外。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>深連結 + Tab 記憶 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>URL 帶 ?active=ranking 可自動切到對應 Tab。如果目標 Tab 是 disabled，fallback 到直播 Tab。登出後也會自動切回直播 Tab。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 頁面邏輯：廣場列表頁 -->
+        <div class="logic-merge-divider" id="nav-livelist">頁面邏輯：廣場列表頁 — 10 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            廣場列表頁（LiveList）
+            <span class="rule-count">10 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入直播 Tab</td><td>並行載入 3 件事：關注列表、直播列表、類別標籤</td><td><span class="cost-tag cost-code">程式層</span></td><td>Promise.allSettled，任一失敗不影響其他</td></tr>
+                <tr><td>2</td><td>二級頁籤由後端配置</td><td>前端在第一個位置插入「關注」（固定 ID: 999）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>分類順序 = 後端決定</td></tr>
+                <tr><td>3</td><td>三級標籤依選中 category 動態顯示</td><td>第一個固定「全部」（labelId: 0）</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可配哪些標籤出現</td></tr>
+                <tr><td>4</td><td>點擊關注頁籤 + 未登入</td><td>觸發登入 Sheet</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>搜尋文字有值</td><td>比對 6 個欄位（主播暱稱/聯賽/標題/賽事名/分類名/標籤名），不區分大小寫</td><td><span class="cost-tag cost-code">程式層</span></td><td>是前端篩選，不是後端搜尋</td></tr>
+                <tr><td>6</td><td>全部 Tab + 無搜尋</td><td>第 4、5 張卡片之間插入廣告列（AdRow）</td><td><span class="cost-tag cost-code">程式層</span></td><td>非全部 Tab 或有搜尋時不插廣告</td></tr>
+                <tr><td>7</td><td>關注頁 + 有待播節目</td><td>列表下方顯示 ReserveCard 待播節目表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>每 3 秒</td><td>WebSocket 發送聊天計數請求，更新各卡片的聊天訊息數</td><td><span class="cost-tag cost-locked">改不了</span></td><td>WS 輪詢頻率寫死 3 秒</td></tr>
+                <tr><td>9</td><td>新手用戶 + 有任務 + 有直播間</td><td>顯示 FocusSlotGuide 新手引導遮罩</td><td><span class="cost-tag cost-code">程式層</span></td><td>依賴任務系統</td></tr>
+                <tr><td>10</td><td>頁面切換回來（onActivated）</td><td>恢復 WS 輪詢 + 重新 fetchLiveList</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/live/components/LiveList/index.vue（452 行）<br>
+                廣告組件：pages/live/components/LiveList/components/AdRow.vue<br>
+                卡片組件：pages/live/components/LiveList/components/LiveCard.vue<br>
+                搜尋組件：pages/live/components/LiveList/components/SearchBar.vue
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 2. 直式娛樂直播間 === -->
+      <div class="section" id="nav-vertical">
+        <div class="section-title"><span class="num">2</span> 直式娛樂直播間</div>
+        <div class="section-desc">全屏直式直播間，支援送禮、聊天、競猜投注</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/live/screen-liveroom-main.png" alt="直式娛樂主畫面">
+            <div class="screen-label">直式娛樂直播間</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/live/screen-liveroom-offline.png" alt="主播下播">
+            <div class="screen-label">主播下播狀態</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>自動播放 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>進入時 video.js 初始化 HLS 串流（autoplay + muted）。瀏覽器政策：必須先靜音才能自動播放。偵測到互動後自動解除靜音。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>串流重試 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>串流播放失敗：首次立即重試，之後每 3 秒重試。canplaythrough 觸發後停止重試。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>主播下播 / 轉移 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>主播下播（WS 推送）顯示 AnchorOfflineDialog + 推薦其他直播間。玩家被轉移顯示 PlayerTransferSheet。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>暗色主題 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>進入時強制切換暗色主題，離開時還原。改主題系統要注意這個強制覆蓋。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 頁面邏輯：直式娛樂 -->
+        <div class="logic-merge-divider" id="nav-vertical-logic">頁面邏輯：直式娛樂直播間 — 10 條規則</div>
+        <details class="page-logic-card">
+          <summary>
+            直式娛樂直播間（Vertical Entertainment）
+            <span class="rule-count">10 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入頁面</td><td>強制切換暗色主題</td><td><span class="cost-tag cost-code">程式層</span></td><td>離開時還原。改主題系統要注意強制覆蓋</td></tr>
+                <tr><td>2</td><td>進入頁面</td><td>video.js 初始化 HLS 串流（autoplay + muted）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>瀏覽器政策：必須先靜音才能自動播放</td></tr>
+                <tr><td>3</td><td>偵測到使用者互動</td><td>自動解除靜音</td><td><span class="cost-tag cost-code">程式層</span></td><td>checkAndUnmute 遞歸檢查</td></tr>
+                <tr><td>4</td><td>串流播放失敗</td><td>首次立即重試，之後每 3 秒重試</td><td><span class="cost-tag cost-code">程式層</span></td><td>canplaythrough 觸發後停止</td></tr>
+                <tr><td>5</td><td>主播切換直播間</td><td>更新 HLS 來源</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>聊天室觸發競猜</td><td>從聊天室推單卡片跳到 LiveBettingSheet</td><td><span class="cost-tag cost-code">程式層</span></td><td>triggerSource 區分觸發來源</td></tr>
+                <tr><td>7</td><td>主播下播（WS 推送）</td><td>AnchorOfflineDialog + 推薦其他直播間</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>玩家被轉移（WS 推送）</td><td>PlayerTransferSheet</td><td><span class="cost-tag cost-code">程式層</span></td><td>場控操作，我方改不了觸發條件</td></tr>
+                <tr><td>9</td><td>廣告倒計時 > 0</td><td>顯示廣告插播，播放中視頻靜音</td><td><span class="cost-tag cost-code">程式層</span></td><td>廣告結束自動恢復音量</td></tr>
+                <tr><td>10</td><td>使用者離開頁面</td><td>還原主題 + 銷毀播放器 + 清除重試計時器</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/live/vertical-entertainment/index.vue（503 行）<br>
+                競猜投注：pages/live/vertical-entertainment/components/LiveBettingSheet.vue<br>
+                進房初始化：pages/match-detail/composables/useEnterRoomInit.ts（共用）
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 3. 聊天室 === -->
+      <div class="section" id="nav-chatroom">
+        <div class="section-title"><span class="num">3</span> 聊天室</div>
+        <div class="section-desc">所有直播間共用的即時聊天功能</div>
+
+        <div class="annotated-row single">
+          <div class="screen-col">
+            <img src="/images/live/screen-chatroom.png" alt="聊天室">
+            <div class="screen-label">直播間聊天室</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>屏蔽字 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>聊天室有屏蔽字規則：4 碼以上數字一律屏蔽，防止帳號洩露。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>場館分派 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>聊天室依場館分派不同 handler（fb/ob/im/im-esport）。各直播間類型雖然都有聊天室，但初始化方式不同。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>智能置底 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>使用者在底部 → 自動捲動到最新訊息。不在底部 → 不自動捲動，顯示「新訊息」提示。</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="page-logic-card">
+          <summary>
+            聊天室邏輯
+            <span class="rule-count">6 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入直播間</td><td>WebSocket 連線建立，加入聊天室頻道</td><td><span class="cost-tag cost-locked">改不了</span></td><td>WS 連線由 useEnterRoomInit 統一管理</td></tr>
+                <tr><td>2</td><td>收到訊息</td><td>依類型分類：一般/系統公告/晒單/跟單推送/禁言通知</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>新訊息 + 使用者在底部</td><td>自動滾動到最新訊息</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-4722 優化的智能置底邏輯</td></tr>
+                <tr><td>4</td><td>新訊息 + 使用者不在底部</td><td>不自動捲動，顯示提示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>場館判斷</td><td>依場館分派不同 handler（fb/ob/im/im-esport）</td><td><span class="cost-tag cost-code">程式層</span></td><td>useChatRoom/index.ts 的 getUseSport</td></tr>
+                <tr><td>6</td><td>openstate === 0 或連線異常</td><td>聊天區不可用（Funky 房切到投注版面）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>後台或場館控制的聊天室開關</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                分派入口：composables/useChatRoom/index.ts<br>
+                場館實作：useFb.ts / useOb.ts / useIm.ts / useImEsport.ts<br>
+                事件常數：composables/useChatRoom/constants.ts
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 4. 開房對賭 === -->
+      <div class="section" id="nav-openroom">
+        <div class="section-title"><span class="num">4</span> 開房對賭</div>
+        <div class="section-desc">獨立於廣場的入口（/open-room），從底部導覽列進入</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>開房對賭不是從廣場進入的，是從底部導覽列。4 步驟建房精靈（選賽事 → 盤口設定 → 房間設定 → 分享）。房間 ID 做了編碼，URL 上看到的不是真實 ID。
+        </div>
+
+        <details class="page-logic-card">
+          <summary>
+            開房對賭邏輯
+            <span class="rule-count">10 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入開房列表</td><td>載入全部房間列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>切換「全部/我的」Tab</td><td>全部 → 全部房間；我的 → 房主建立 + 參與投注</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>搜尋房間</td><td>前端篩選：比對房間 ID 和房主名稱</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>點擊進入 + 未登入</td><td>觸發登入 Sheet，登入後自動繼續</td><td><span class="cost-tag cost-code">程式層</span></td><td>pendingEnterRoomAction 記住待執行動作</td></tr>
+                <tr><td>5</td><td>進入加密房間</td><td>呼叫 requiredPassword API 判斷是否需要密碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>非早盤期間的加密房間</td><td>直接拒絕進入</td><td><span class="cost-tag cost-code">程式層</span></td><td>時間判斷：matchDate &lt; now</td></tr>
+                <tr><td>7</td><td>進入房間後</td><td>WS 進房（ChatroomType=4, srctp 固定 fb=8）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>場館來源寫死 fb</td></tr>
+                <tr><td>8</td><td>建立房間</td><td>4 步驟精靈：選賽事 → 盤口 → 房設 → 分享</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>9</td><td>賽事結束</td><td>標記已結束狀態</td><td><span class="cost-tag cost-locked">改不了</span></td><td>來自後端 WS 推送</td></tr>
+                <tr><td>10</td><td>開房費用</td><td>GET /community/fee 取得配置</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可調整</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                列表頁：pages/open-room/index.vue<br>
+                房間頁：pages/open-room/[roomId].vue<br>
+                建房精靈：pages/open-room/composables/useOpenRoomFlow.ts<br>
+                API：apis/community/index.ts（10 個 endpoint）
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 5. 送禮 === -->
+      <div class="section" id="nav-gift">
+        <div class="section-title"><span class="num">5</span> 送禮</div>
+        <div class="section-desc">直式娛樂和 Funky 火箭有完整實作，Cocos 房型不支援送禮</div>
+        <div class="annotated-row single">
+          <div class="screen-col">
+            <img src="/images/live/screen-gift.png" alt="送禮">
+            <div class="screen-label">送禮 Sheet</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>送禮範圍 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>只在直式娛樂直播間和 Funky 火箭有完整實作。Cocos 遊戲直播間 isShowGift = false，不支援送禮。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>餘額不足 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>送禮成功播放特效動畫。餘額不足引導充值（開啟 RechargeSheet，與全站充值入口共用）。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 6. 主播個人頁 === -->
+      <div class="section" id="nav-anchor">
+        <div class="section-title"><span class="num">6</span> 主播個人頁</div>
+        <div class="section-desc">/streamer/detail — 資訊頁，不是直播間</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/live/screen-anchor-schedule.png" alt="主播時間表">
+            <div class="screen-label">主播主頁 — 時間表</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/live/screen-anchor-recommend.png" alt="主播推單">
+            <div class="screen-label">主播主頁 — 推單</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>角色判斷 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>主播（roleId=7）：顯示 3 個 Tab — 直播時間表、推單、爆料。專家（roleId=3）：只顯示爆料 Tab。</p>
+              <div class="pm-note">主播頁和直播間是兩回事。主播頁是資訊頁，直播間是互動頁。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>爆料開關 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>爆料 Tab 受後台 gamePredictEnabled 開關控制，關掉就看不到。</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="page-logic-card">
+          <summary>
+            主播個人頁邏輯
+            <span class="rule-count">6 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入主播主頁</td><td>呼叫 anchor.getAnchorInfoV2</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>roleId === 7（主播）</td><td>顯示 3 Tab：時間表/推單/爆料</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>roleId === 3（專家）</td><td>只顯示爆料 Tab</td><td><span class="cost-tag cost-code">程式層</span></td><td>專家沒有直播能力</td></tr>
+                <tr><td>4</td><td>gamePredictEnabled=false</td><td>爆料 Tab 不顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>點擊主播卡片</td><td>navigateTo('/streamer/detail?uId=xxx')</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>點擊進入直播間</td><td>走 handleGoStreaming 路由分派</td><td><span class="cost-tag cost-code">程式層</span></td><td>依 roomType 跳不同直播間</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主播主頁：pages/streamer/detail.vue<br>
+                推單列表：pages/streamer/components/RecommendBetList.vue<br>
+                爆料列表：pages/streamer/components/PredictList.vue
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 7. Funky 火箭 === -->
+      <div class="section" id="nav-funky">
+        <div class="section-title"><span class="num">7</span> Funky 火箭</div>
+        <div class="section-desc">直播帶牌遊戲，roomType=7 + srctp=Funky</div>
+
+        <details class="page-logic-card">
+          <summary>
+            Funky 火箭邏輯
+            <span class="rule-count">11 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>未登入進入</td><td>toast + 登入 Sheet + 導回 /live</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>場館 8946 不可用</td><td>toast + 導回 /live</td><td><span class="cost-tag cost-locked">改不了</span></td><td>場館維護狀態由後端控制</td></tr>
+                <tr><td>3</td><td>正常進入</td><td>enterGame API → 取得 token → sendMessage('init')</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>遊戲中點擊下注</td><td>sendMessage('placeOrder', { stake, event })</td><td><span class="cost-tag cost-code">程式層</span></td><td>buttonEnabled 控制可否下注</td></tr>
+                <tr><td>5</td><td>自動下注確認</td><td>sendMessage('autoPlace', { stake, loop })</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>主播下播</td><td>停止遊戲 → AnchorOfflineDialog</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>玩家被轉移</td><td>停止遊戲 → PlayerTransferSheet</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>聊天室不可用</td><td>layout 強制切到 'bet'，隱藏聊天按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>9</td><td>手動轉帳模式</td><td>進入時自動彈出轉帳彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>10</td><td>火箭房互轉</td><td>重新取得 game token</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>11</td><td>Funky 元件 = defineAsyncComponent</td><td>載入失敗 → toast</td><td><span class="cost-tag cost-code">程式層</span></td><td>遠端元件，載入延遲是正常的</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/live/live-funky/index.vue（797 行）<br>
+                事件處理：pages/live/live-funky/composables/useFunkyEvent.ts<br>
+                遊戲訊息：FunkyMessage（action + data），透過 iframe postMessage
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 8. Cocos 遊戲 === -->
+      <div class="section" id="nav-cocos">
+        <div class="section-title"><span class="num">8</span> 真人娛樂（Cocos 遊戲）</div>
+        <div class="section-desc">roomType=7（非 Funky）走 Cocos iframe，支援百家樂/牛牛/龍虎/紅黑大戰</div>
+
+        <details class="page-logic-card">
+          <summary>
+            Cocos 遊戲邏輯
+            <span class="rule-count">9 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入 Cocos 遊戲直播間</td><td>enterGame API（gameId=8930）→ WS URL + token</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>手動轉帳模式</td><td>彈出轉帳彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>Cocos iframe 就緒（Init）</td><td>停止 loading → initGame</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>遊戲結束通知</td><td>依 type 分派：下播/切遊戲/轉移/斷線</td><td><span class="cost-tag cost-code">程式層</span></td><td>10 種 EndGameNoticeType</td></tr>
+                <tr><td>5</td><td>主播切換遊戲（WS）</td><td>送 ChangeGame → 重新 initGame</td><td><span class="cost-tag cost-locked">改不了</span></td><td>主播端操作</td></tr>
+                <tr><td>6</td><td>遊戲面板切換</td><td>5 種面板：遊戲/投注記錄/資訊/開路/聊天</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>遊戲狀態推送</td><td>顯示文字：讀取中/開盤中/開獎中</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>玩家獲勝 + 聊天面板</td><td>前端顯示勝利動畫 3 秒</td><td><span class="cost-tag cost-code">程式層</span></td><td>遊戲面板時 Cocos 自行顯示</td></tr>
+                <tr><td>9</td><td>Socket 中斷</td><td>重新載入 iframe</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主邏輯：pages/live/live-casino/composable/useCocosGame.ts（415 行）<br>
+                遊戲列表：Baccarat=5, BullBull=4, DragonTiger=32, RedBlackWar=40<br>
+                iframe 通訊：handleCocosMessage（postMessage）
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 9. 節目表 === -->
+      <div class="section" id="nav-schedule">
+        <div class="section-title"><span class="num">9</span> 節目表</div>
+        <div class="section-desc">體育賽事直播預告 + 美女房型獨立節目表</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/live/screen-schedule-sports.png" alt="體育節目表">
+            <div class="screen-label">體育節目表</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/live/screen-schedule-beauty.png" alt="美女節目表">
+            <div class="screen-label">美女節目表</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>場館分流 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>OB 場館並行呼叫一般 + 電競賽事，合併結果。非 OB 場館支援自動分頁載入。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>預約/進入 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>未上播 → 「預約」按鈕。已上播 → 「進入直播間」按鈕。</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="page-logic-card">
+          <summary>
+            節目表邏輯
+            <span class="rule-count">7 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>選中體育分類</td><td>載入體育賽事資料</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>場館是 OB</td><td>並行呼叫一般 + 電競賽事，合併結果</td><td><span class="cost-tag cost-code">程式層</span></td><td>OB 電競是獨立 sportIds</td></tr>
+                <tr><td>3</td><td>場館非 OB</td><td>呼叫 1 次，支援自動分頁載入（遞歸 fetchAll）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>切換場館 dropdown</td><td>重新載入該場館資料</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>選中非體育分類</td><td>使用 NormalContent 元件（不同版型）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>點擊關注/取消關注</td><td>matchFollowEdit API → toast → 刷新</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>搜尋</td><td>SearchSheet + 熱搜關鍵字</td><td><span class="cost-tag cost-code">程式層</span></td><td>storageKey: ScheduleTypeRow</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                Tab 容器：pages/live/components/Schedule/index.vue<br>
+                體育資料：pages/live/components/Schedule/composables/useSchedule.ts（283 行）<br>
+                場館下拉：pages/live/components/Schedule/components/SportDropdown.vue
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 10. 排行榜 === -->
+      <div class="section" id="nav-ranking">
+        <div class="section-title"><span class="num">10</span> 晒單排行榜</div>
+        <div class="section-desc">玩家投注晒單排行（日/週/月榜）</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/live/screen-ranking-player.png" alt="排行榜玩家">
+            <div class="screen-label">排行榜 — 玩家資訊</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/live/screen-ranking-expand.png" alt="排行榜展開">
+            <div class="screen-label">排行榜 — 展開明細</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>後台開關 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>後台 isEnabled=false 時整個分頁不出現。遊客模式可設定未登入用戶能否看到。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>空榜 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>排行榜空時顯示 RankEmpty + 「去晒單」按鈕（找第一間體育房進入）。</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="page-logic-card">
+          <summary>
+            排行榜邏輯
+            <span class="rule-count">7 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>切換日/週/月榜</td><td>重新 fetchRank</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>切換當期/上期</td><td>重新 fetchRank</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>排行榜有資料</td><td>前 3 名 RankTop 特殊卡片；第 4 名起列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>已登入</td><td>Teleport 到 body 底部固定顯示當前用戶排名</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>排行榜空</td><td>RankEmpty + 「去晒單」</td><td><span class="cost-tag cost-code">程式層</span></td><td>去晒單 = 找第一間體育房</td></tr>
+                <tr><td>6</td><td>點擊玩家卡片</td><td>跳轉 /live/ranking-detail/{playerId}</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>遊客模式=0 + 未登入</td><td>Tab 禁用</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/live/components/Ranking/index.vue（150 行）<br>
+                玩家詳情：pages/live/ranking-detail/[playerId]/index.vue（637 行）
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 11. 影片專區 === -->
+      <div class="section" id="nav-videohub">
+        <div class="section-title"><span class="num">11</span> 影片專區</div>
+        <div class="section-desc">後台開關控制是否顯示此 Tab</div>
+
+        <details class="page-logic-card">
+          <summary>
+            影片專區邏輯
+            <span class="rule-count">3 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>後台開啟影片專區</td><td>Tab 顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td>videohubStore.videoConfig.isOpen</td></tr>
+                <tr><td>2</td><td>選擇頻道標籤</td><td>前端篩選影片列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>點擊影片卡片</td><td>開啟 VideoPlayer 播放</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 12. 跨頁面通用規則 === -->
+      <div class="section" id="nav-common">
+        <div class="section-title"><span class="num">12</span> 跨頁面通用規則</div>
+        <div class="section-desc">所有直播間共用的基礎設施</div>
+
+        <details class="page-logic-card" open>
+          <summary>
+            跨頁面通用邏輯
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>所有直播間進入</td><td>透過 useEnterRoomInit 統一管理 WS 進/離房</td><td><span class="cost-tag cost-code">程式層</span></td><td>共用組件位於 match-detail 模組，直播間也依賴它</td></tr>
+                <tr><td>2</td><td>所有直播間</td><td>roomConfig + roomData 由 WS 即時推送</td><td><span class="cost-tag cost-locked">改不了</span></td><td></td></tr>
+                <tr><td>3</td><td>直播流 URL</td><td>來自 LiveItem.mediaStream（HLS）或 mediaFlvStream（FLV）</td><td><span class="cost-tag cost-locked">改不了</span></td><td>串流來源由場館下發</td></tr>
+                <tr><td>4</td><td>圖片 URL</td><td>需拼接 remoteStaticPath + 相對路徑</td><td><span class="cost-tag cost-code">程式層</span></td><td>全站通用規則</td></tr>
+                <tr><td>5</td><td>登入攔截</td><td>多處使用 userStore.requireLogin() 統一處理</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+    </div><!-- /tab-panel overview -->
+
+    <!-- ================================================================ -->
+    <!-- TAB 2: User Flow                                                  -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="userflow">
+
+      <div class="tool-section" id="uf-1-1">
+        <div class="tool-section-header"><h2>1.1 廣場瀏覽 → 進入直播間（主線）</h2></div>
+        <div class="tool-section-desc">所有直播間依 roomType 走不同路由進入不同型態的直播間</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">廣場 → 直播間路由</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入廣場 /live"] --> B{"推廣模式?"}
+    B -- "純直播 pushType=2" --> C["只顯示：直播、主播"]
+    B -- "標準模式" --> D["顯示：直播、排行榜、主播、節目表、影片專區"]
+    C --> E["瀏覽直播列表"]
+    D --> E
+    E --> F["選擇房型分類"]
+    F --> G["瀏覽直播間卡片"]
+    G --> H["點擊直播間卡片"]
+    H --> I{"房間類型?"}
+    I -- "體育 roomType=3" --> J["跳轉賽事詳情頁"]
+    I -- "直式娛樂 roomType=8" --> K["進入直式全屏直播間"]
+    I -- "Cocos 遊戲 roomType=7" --> L["進入 Cocos 遊戲直播間"]
+    I -- "Funky 火箭" --> M["進入 Funky 火箭房"]
+    I -- "鬥雞 roomType=9" --> N["進入鬥雞房"]
+    I -- "其他 roomType=4/5/6" --> O["進入 OtherRoom"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>9 種 roomType 各走不同路由和不同 UI，「改所有直播間的 XX」不存在——至少要改 5 條路由分支</li>
+              <li>體育房跳到賽事詳情頁（屬體育模組），其他房型留在直播模組內</li>
+              <li>排行榜和影片專區 Tab 受後台開關控制</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              廣場主頁：pages/live/index.vue、pages/live/onlyLive/index.vue<br>
+              路由分派：composables/useGoStreaming.ts（RoomTypeEnum 判斷）<br>
+              直播列表：pages/live/components/LiveList/index.vue
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-2">
+        <div class="tool-section-header"><h2>1.2 聊天互動動線</h2></div>
+        <div class="tool-section-desc">進入直播間後的即時聊天與互動</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">聊天室互動流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入直播間"] --> B["WebSocket 連線建立"]
+    B --> C["即時聊天訊息流"]
+    C --> D{"互動類型?"}
+    D -- "發送訊息" --> E["輸入文字 → 送出"]
+    D -- "跟單" --> F["點擊推單卡片 → 複製到購物車"]
+    D -- "晒單" --> G["點擊晒單 → 查看注單"]
+    D -- "系統公告" --> H["自動顯示（不可互動）"]
+    E --> I{"屏蔽字檢查?"}
+    I -- "含 4 碼以上數字" --> J["訊息被攔截"]
+    I -- "通過" --> K["訊息發送到聊天室"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>屏蔽字規則：4 碼以上數字一律屏蔽，防止帳號洩露</li>
+              <li>聊天計數每 3 秒透過 WS 廣播，非 API 輪詢</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-3">
+        <div class="tool-section-header"><h2>1.3 送禮動線</h2></div>
+        <div class="tool-section-desc">直播間內送禮 → 餘額判斷 → 充值導流</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">送禮流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["直播間內"] --> B["點擊禮物按鈕"]
+    B --> C["開啟 GiftGivingSheet"]
+    C --> D["選擇禮物"]
+    D --> E["確認送禮"]
+    E --> F{"餘額足夠?"}
+    F -- "是" --> G["送禮成功 → 播放特效動畫"]
+    F -- "否" --> H["引導充值"]
+    H --> I["開啟充值 Sheet"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>送禮只在直式娛樂和 Funky 火箭有完整實作</li>
+              <li>Cocos 遊戲直播間 isShowGift = false，不支援送禮</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-4">
+        <div class="tool-section-header"><h2>1.4 開房對賭動線</h2></div>
+        <div class="tool-section-desc">從底部導覽列進入 → 建房 or 進房</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">開房對賭流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["底部導覽列 → 開房入口"] --> B["進入開房列表"]
+    B --> C{"已登入?"}
+    C -- "否" --> D["觸發登入 Sheet"]
+    C -- "是" --> E["瀏覽房間列表"]
+    E --> F{"操作?"}
+    F -- "進入房間" --> G{"需要密碼?"}
+    G -- "是" --> H["輸入密碼驗證"]
+    G -- "否" --> I["直接進入房間"]
+    H --> I
+    I --> J["進入開房對賭房"]
+    J --> K["查看賽事比分 + 聊天 + 投注"]
+    F -- "建立房間" --> L["4 步驟精靈"]
+    L --> M["選賽事 → 盤口 → 房設 → 分享"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>開房是獨立入口（/open-room），不是從廣場進入</li>
+              <li>房間 ID 做了編碼，URL 上看到的不是真實 ID</li>
+              <li>非早盤期間的加密房間直接拒絕進入</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-5">
+        <div class="tool-section-header"><h2>1.5 主播頁瀏覽動線</h2></div>
+        <div class="tool-section-desc">廣場主播 Tab → 主播主頁 → 進入直播間</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">主播頁動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["廣場「主播」Tab"] --> B{"已登入?"}
+    B -- "否" --> C["觸發登入 Sheet"]
+    B -- "是" --> D["瀏覽主播卡片列表"]
+    D --> E["點擊主播卡片"]
+    E --> F["進入主播主頁"]
+    F --> G{"主播 or 專家?"}
+    G -- "主播 roleId=7" --> H["顯示：時間表、推單、爆料"]
+    G -- "專家 roleId=3" --> I["只顯示：爆料"]
+    H --> J["點擊推單 → 查看詳情"]
+    H --> K["進入直播間"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>主播頁和直播間是兩回事。主播頁是資訊頁，直播間是互動頁</li>
+              <li>專家只看得到爆料 Tab</li>
+              <li>爆料 Tab 受後台 gamePredictEnabled 開關控制</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-panel userflow -->
+
+    <!-- ================================================================ -->
+    <!-- TAB 3: 泳道圖                                                    -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="swimlane">
+
+      <div class="tool-section" id="sl-3-1">
+        <div class="tool-section-header"><h2>3.1 進入直播間初始化流程</h2></div>
+        <div class="tool-section-desc">使用者只做了「點一下」，後面全部自動跑</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">直播間初始化（系統自動）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant WS as WebSocket
+    participant BE as 後端
+    participant V as 串流伺服器
+
+    U->>FE: 點擊直播間卡片
+    FE->>FE: useGoStreaming 判斷 roomType
+    FE->>FE: useEnterRoomInit 初始化
+    FE->>WS: UserPlat_EnterChatroom_C
+    WS-->>FE: Chatroom_Config_S（房間設定）
+    WS-->>FE: Chatroom_RoomData_S（房間資料）
+    FE->>FE: 解析房間設定
+    FE->>V: 載入 HLS 串流
+    V-->>FE: 串流資料
+    FE->>FE: video.js 播放
+    Note over FE: 平行：啟動 WS 聊天計數
+    FE->>WS: UserPlat_ChatCountList_CS
+    WS-->>FE: 各直播間聊天人數
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>useEnterRoomInit 是所有直播間共用的基礎設施</li>
+              <li>WS 斷線會自動重連 + 重新進房</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="sl-3-2">
+        <div class="tool-section-header"><h2>3.2 WebSocket 聊天訊息流</h2></div>
+        <div class="tool-section-desc">進入直播間後自動建立的即時通訊</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">聊天訊息流（系統自動）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant WS as WebSocket Server
+    participant BE as 後端（場控）
+
+    Note over FE,WS: 進入直播間後自動建立
+    FE->>WS: 加入聊天頻道
+    loop 每 3 秒
+        FE->>WS: UserPlat_ChatCountList_CS
+        WS-->>FE: 各房間聊天人數
+    end
+
+    U->>FE: 輸入訊息
+    FE->>FE: 屏蔽字檢查
+    FE->>WS: 發送聊天訊息
+    WS-->>FE: 廣播訊息到所有人
+
+    BE->>WS: 系統公告
+    WS-->>FE: 顯示系統訊息
+
+    BE->>WS: 禁言/踢人通知
+    WS-->>FE: 更新使用者狀態
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="sl-3-3">
+        <div class="tool-section-header"><h2>3.3 送禮流程</h2></div>
+        <div class="tool-section-desc">使用者發起 → 餘額判斷 → 特效或充值</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">送禮流程（使用者動作）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+
+    U->>FE: 點擊禮物按鈕
+    FE->>FE: 開啟 GiftGivingSheet
+    U->>FE: 選擇禮物 + 確認送出
+    FE->>BE: 送禮 API
+    alt 餘額足夠
+        BE-->>FE: 送禮成功
+        FE->>FE: 播放禮物特效動畫
+        FE->>FE: 更新使用者餘額
+    else 餘額不足
+        BE-->>FE: 餘額不足
+        FE->>FE: 開啟充值 Sheet
+    end
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="sl-3-4">
+        <div class="tool-section-header"><h2>3.4 開房對賭建房 + 進房流程</h2></div>
+        <div class="tool-section-desc">建房 4 步驟精靈 + 進房密碼驗證</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">開房對賭流程（使用者動作）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant WS as WebSocket
+
+    Note over U,BE: === 建房流程 ===
+    U->>FE: 點擊開房按鈕
+    FE->>FE: Step 1：選擇賽事
+    U->>FE: 選賽事
+    FE->>FE: Step 2：盤口設定
+    U->>FE: 設定完成
+    FE->>FE: Step 3：房間設定
+    U->>FE: 設定完成
+    FE->>BE: POST /community/room
+    BE-->>FE: 房間 ID + 分享資訊
+    FE->>FE: Step 4：完成分享
+
+    Note over U,WS: === 進房流程 ===
+    U->>FE: 點擊房間卡片
+    FE->>BE: GET /community/requiredPassword
+    alt 需密碼 + 早盤
+        FE->>U: 密碼輸入彈窗
+        U->>FE: 輸入密碼
+        FE->>BE: POST /community/verifyPassword
+        BE-->>FE: 驗證通過
+    else 需密碼 + 非早盤
+        FE->>U: 拒絕進入
+    else 不需密碼
+        FE->>FE: 直接進房
+    end
+    FE->>WS: UserPlat_EnterChatroom_C
+    WS-->>FE: Config + RoomData
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="sl-3-5">
+        <div class="tool-section-header"><h2>3.5 Funky 火箭遊戲流程</h2></div>
+        <div class="tool-section-desc">遠端 iframe 遊戲引擎 + postMessage 通訊</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">Funky 火箭（系統自動 + 使用者動作）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant GE as Funky 遊戲引擎
+
+    U->>FE: 進入 Funky 火箭房
+    FE->>FE: defineAsyncComponent 載入
+    FE->>BE: enterGame API
+    BE-->>FE: game token
+    FE->>GE: sendMessage init
+    GE-->>FE: gameInfo
+
+    loop 遊戲回合
+        GE-->>FE: buttonUpdate
+        U->>FE: 點擊下注
+        FE->>GE: sendMessage placeOrder
+        GE-->>FE: updateBalance
+        GE-->>FE: historyUpdate
+    end
+
+    alt 主播下播
+        GE-->>FE: joinGame Offline
+        FE->>FE: AnchorOfflineDialog
+    else Token 過期
+        GE-->>FE: unAuthorized
+        FE->>BE: 重新 enterGame
+    end
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="sl-3-6">
+        <div class="tool-section-header"><h2>3.6 Cocos 遊戲直播間初始化</h2></div>
+        <div class="tool-section-desc">iframe postMessage 雙向通訊</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">Cocos 遊戲初始化（系統自動）</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant COCOS as Cocos iframe
+
+    U->>FE: 進入 Cocos 遊戲直播間
+    FE->>BE: enterGame API
+    BE-->>FE: WS URL + token
+
+    alt 手動轉帳模式
+        FE->>FE: 彈出轉帳彈窗
+    end
+
+    FE->>FE: 載入 Cocos iframe
+    COCOS-->>FE: postMessage Init
+    FE->>FE: cocosLoading = false
+    FE->>COCOS: sendMessage init
+
+    Note over COCOS,FE: === 遊戲中事件 ===
+    COCOS-->>FE: GameState
+    COCOS-->>FE: PlayerWin
+
+    Note over BE,FE: === WS 事件 ===
+    BE->>FE: SwitchCasino
+    FE->>COCOS: EndGameNotice ChangeGame
+    FE->>COCOS: 重新 initGame
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-panel swimlane -->
+
+    <!-- ================================================================ -->
+    <!-- TAB 4: 跨服務限制                                                 -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="constraints">
+
+      <div class="tool-section">
+        <div class="tool-section-header"><h2>跨服務限制</h2></div>
+        <div class="tool-section-desc">Code 線 18 條 + Jira 線 22 條，合併去重後分類整理</div>
+
+        <div class="stats-pill">
+          <span>模組耦合 8</span>
+          <span>系統限制 6</span>
+          <span>技術限制 14</span>
+          <span>業務限制 7</span>
+        </div>
+
+        <!-- ===== 模組耦合 ===== -->
+        <div class="constraint-category" id="cat-coupling">
+          <div class="constraint-header"><h3>&#x1F7E1; 模組耦合</h3></div>
+          <p class="constraint-pm-guide">改 A 模組要同時回測 B 模組的交叉依賴</p>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-1 直播間進房依賴賽事詳情模組</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>所有直播間的 WS 進房邏輯（useEnterRoomInit）定義在 pages/match-detail/composables/ 下，不在 live 模組內。</p>
+              <div class="label">影響</div>
+              <p>改 useEnterRoomInit 的任何邏輯 → 影響所有直播間類型 + 賽事詳情頁 + 開房對賭 + 存款直播。</p>
+              <div class="label">來源</div>
+              <p>pages/match-detail/composables/useEnterRoomInit.ts（7 處引用）</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-2 liveStore 被 12+ 個外部模組引用</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>stores/live/index.ts 被首頁彈窗、登入流程、充值、系統通知、購物車、goto 工具等模組引用。</p>
+              <div class="label">影響</div>
+              <p>改 liveStore 的 getter/action 簽名 → 可能影響 12 個以上外部引用。</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-3 開房對賭跨模組依賴</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>open-room 引用 match-detail 的型別（SportId）、使用 useEnterRoomInit、引用 useChatRoom 的常數。</p>
+              <div class="label">影響</div>
+              <p>改體育賽事的型別定義或進房初始化 → 要回測開房對賭。</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-4 聊天室場館分派邏輯全局共用</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>composables/useChatRoom/ 依場館分派 useFb/useOb/useIm/useImEsport，被直播間和開房對賭共用。</p>
+              <div class="label">影響</div>
+              <p>改某場館的聊天室實作 → 要測所有使用該場館的直播間類型 + 開房對賭。</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-5 主播頁爆料依賴八卦模組</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>主播主頁的爆料 Tab 使用 PredictList 元件，底層引用 gossiping 模組。</p>
+              <div class="label">影響</div>
+              <p>改爆料模組 → 要回測主播主頁的爆料 Tab。</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-6 開房入口嵌在全站底部導覽列</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>OpenRoomEntrance 元件嵌在 MainTabbar（4 個皮膚版本）+ TabBarTipOpenRoom。</p>
+              <div class="label">影響</div>
+              <p>改開房入口的 UI 或路由 → 要測 4 個皮膚版本的底部導覽列。</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-7 任務系統耦合</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直播列表和開房列表都引用 useFindPageMission + @luxon/missions，用於新手引導和任務進度。</p>
+              <div class="label">影響</div>
+              <p>改任務系統的條件類型 → 要回測直播列表和開房的任務引導。</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-coupling">
+            <summary>Y-8 充值導流帶直播間資訊</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>useRecharge 在直播間內充值時會帶 activeLiveId、matchId、roomId 做打點。</p>
+              <div class="label">影響</div>
+              <p>改充值流程或 liveStore 的 activeLiveData 結構 → 要測直播間內的充值路徑。</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- ===== 系統限制 ===== -->
+        <div class="constraint-category" id="cat-system">
+          <div class="constraint-header"><h3>&#x1F534; 系統限制</h3></div>
+          <p class="constraint-pm-guide">基礎設施層面的硬限制</p>
+
+          <details class="constraint-card cat-system">
+            <summary>S-01 直播 WS 連線數有 Auto Scaling 天花板</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>在線人數瞬間拉高時 Auto Scaling 反應不及（擴容需要時間），大賽日必須預擴容。</p>
+              <div class="label">來源</div>
+              <p>TSD-5145</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-system">
+            <summary>S-02 PK 對賭排程 SQL 會鎖表</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>UPDATE cloud_data_sport_pk_theme 跨三表 JOIN 更新，row lock wait 會拖垮整個直播 DB。</p>
+              <div class="label">來源</div>
+              <p>TSD-5145 comment</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-system">
+            <summary>S-03 直播後台 DB schema 可自行變更</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>水機團隊可獨立變更 schema，不走主版本上版流程，正式/測試環境容易 drift。</p>
+              <div class="label">來源</div>
+              <p>TSD-5305</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-system">
+            <summary>S-04 直播服務匯出賽程列表會觸發 OOM</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>導出賽程列表的 API 未做分頁/限流，大資料量直接打爆服務記憶體。</p>
+              <div class="label">來源</div>
+              <p>GOR-5955</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-system">
+            <summary>S-05 live_transaction 依賴 game_transaction Kafka</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直播注單狀態更新掛在 game_transaction 的 Kafka consumer 上，Kafka lag 會導致注單延遲。</p>
+              <div class="label">來源</div>
+              <p>GOR-6015</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-system">
+            <summary>S-06 cloud_data_sport_bet_theme 時間格式問題</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>時間格式不統一（timestamp vs datetime string），跨表 JOIN 時會導致類型轉換效能問題。</p>
+              <div class="label">來源</div>
+              <p>GOR-6042</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- ===== 技術限制 ===== -->
+        <div class="constraint-category" id="cat-tech">
+          <div class="constraint-header"><h3>&#x1F535; 技術限制</h3></div>
+          <p class="constraint-pm-guide">技術架構帶來的限制，改需要較大工程投入</p>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-01 聊天室 WS 與 API 雙軌制有同步時序問題</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>歷史訊息改 API 拉取後，WS 推送與 API 拉取之間的時序差異導致訊息丟失或重複。</p>
+              <div class="label">來源</div>
+              <p>TSD-5147, GOR-5615</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-02 觀看時長前後端計算口徑不一致</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>前端 heartbeat、WS session、後端校驗三方口徑不同，切後台/鎖屏/重連場景容易中斷。</p>
+              <div class="label">來源</div>
+              <p>TSD-5245, TSD-5308, GOR-6139</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-03 直播間投注依賴 Unify 中間層轉接三方</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>熊貓/沙巴體育異常時，Unify 兜底為「未定義錯誤」，無法區分是三方還是自身問題。</p>
+              <div class="label">來源</div>
+              <p>TSD-5090, TSD-4938</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-04 直播推流僅支援 RTMP，FLV 為 2026-03 新增</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直到 2026-03 才新增騰訊 FLV 推流支援，之前只能 RTMP，CDN 選擇受限。</p>
+              <div class="label">來源</div>
+              <p>GOR-6546</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-05 直播播放器三端各自實作</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>Vue-H5、Uni-APP、PC 各自封裝播放器，全屏/音量控制行為不統一，回歸率高。</p>
+              <div class="label">來源</div>
+              <p>TSD-5312, TSD-5270</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-06 紅包雨條件校驗未綁定當場 session</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>投注門檻可能讀取了更大範圍的投注記錄，未嚴格限定「當場直播」。</p>
+              <div class="label">來源</div>
+              <p>TSD-4935</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-07 競猜開盤/封盤/結算是單點流程</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>水機競猜 API 若請求失敗，整個「開盤→封盤→設賽果→結算」鏈路中斷，無重試/補償機制。</p>
+              <div class="label">來源</div>
+              <p>TSD-5305, TSD-5180</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-08 直播間 WS 歷史訊息拉取無增量機制</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>改用 API 拉取歷史訊息後，斷線重連仍需全量拉取，大量訊息時造成延遲。</p>
+              <div class="label">來源</div>
+              <p>GOR-5615</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-09 AI 公開房依賴外部 AI 服務</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>AI 開房的出題/審核/產生答案依賴外部 AI 服務，延遲和可用性受第三方影響。</p>
+              <div class="label">來源</div>
+              <p>GOR-6510, GOR-6475</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-10 Funky 火箭是遠端非同步元件（Code 線）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>defineAsyncComponent 載入遠端元件，載入失敗只能 toast 提示，無法降級。</p>
+              <div class="label">來源</div>
+              <p>pages/live/live-funky/index.vue:L296</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-11 Cocos 遊戲透過 iframe postMessage 通訊（Code 線）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>遊戲引擎跑在 iframe 內，前端透過 postMessage 收發訊息，遊戲 bug 前端無法 hotfix。</p>
+              <div class="label">來源</div>
+              <p>pages/live/live-casino/composable/useCocosGame.ts</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-12 WebSocket Protobuf 序列化（Code 線）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>聊天室訊息使用 Protobuf 序列化，新增訊息類型需前後端同步更新 proto 定義。</p>
+              <div class="label">來源</div>
+              <p>utils/webSocket/protos/plat_pb、chatroom_pb</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-13 HLS 串流自動重試無上限（Code 線）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直式娛樂直播間的串流重試是每 3 秒無限重試，沒有最大重試次數。串流永久不可用時會一直消耗資源。</p>
+              <div class="label">來源</div>
+              <p>pages/live/vertical-entertainment/index.vue</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-tech">
+            <summary>T-14 開房對賭 roomId 編碼（Code 線）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>URL 中的 roomId 經過編碼，debug 時不能直接從 URL 看到真實房間 ID。</p>
+              <div class="label">來源</div>
+              <p>pages/open-room/utils/index.ts</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- ===== 業務限制 ===== -->
+        <div class="constraint-category" id="cat-biz">
+          <div class="constraint-header"><h3>&#x26AB; 業務限制</h3></div>
+          <p class="constraint-pm-guide">業務規則或營運層面的限制</p>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-01 業主可設定紅包雨條件但後端不一定能支援</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>業主設定「投注門檻」「時間限制」等條件組合，部分組合的後端校驗邏輯未完整實作。</p>
+              <div class="label">來源</div>
+              <p>TSD-4935, TSD-4668</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-02 主播質檢的口播達標判定依賴人工</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>質檢報告的口播達標/未達標標記是人工操作，延遲且容易漏標。AI 質檢只做聊天記錄不做口播。</p>
+              <div class="label">來源</div>
+              <p>GOR-5979, GOR-6026</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-03 直播間每日任務與活動系統共用條件引擎</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直播相關每日任務展示到直播間，共用任務系統的 conditionTypeLv1 引擎，任何條件邏輯變更都要回歸直播場景。</p>
+              <div class="label">來源</div>
+              <p>GOR-6486, GOR-6553</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-04 DNS 被封會導致全業主直播後台不可用</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>域名因前台內容違規被封，直播後台域名一起受影響，恢復需逐條域名操作。</p>
+              <div class="label">來源</div>
+              <p>TSD-4884</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-05 直播推單/爆料時效性要求高但延遲常見</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>推單延遲顯示、無法正常推單是業主高頻反饋，因為推單走 WS 推送 + API 持久化雙鏈路。</p>
+              <div class="label">來源</div>
+              <p>TSD-4655, TSD-4692</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-06 直播統計報表數據易丟失或不準確</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直播數據丟失、統計異常是反覆出現的問題，根因是數據管道（Kafka → 統計表）的可靠性不足。</p>
+              <div class="label">來源</div>
+              <p>TSD-4865, TSD-5258, TSD-5339</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-07 PredictList API 效能問題導致列表卡頓</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直播預測列表 API 效能不佳，大量預測單時前端列表卡頓，需求暫停中。</p>
+              <div class="label">來源</div>
+              <p>GOR-5667</p>
+            </div>
+          </details>
+
+          <details class="constraint-card cat-biz">
+            <summary>B-08 串流來源完全由場館控制（Code 線）</summary>
+            <div class="constraint-detail">
+              <div class="label">描述</div>
+              <p>直播流 URL 從 getLiveList API 取得，前端只負責播放。串流品質、格式、延遲都不是我方能控制的。</p>
+              <div class="label">來源</div>
+              <p>LiveItem.mediaStream 欄位</p>
+            </div>
+          </details>
+        </div>
+
+      </div>
+
+    </div><!-- /tab-panel constraints -->
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
+
+<div class="footer">
+  廣場 / 直播間知識庫 &mdash; 資料來源：mango2-h5 原始碼 + Jira GOR/TSD + Figma
+  <div class="footer-links">
+    <a href="features.html">功能知識庫首頁</a>
+    <a href="live-annotated.html">舊版標註頁面</a>
+  </div>
+</div>
+
+<script>
+  // Mermaid init
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      lineColor: '#475569',
+      secondaryColor: '#334155'
+    }
+  });
+
+  // ===== Side Nav Data =====
+  const sideNavData = {
+    overview: {
+      title: '功能總覽',
+      items: [
+        { group: '廣場' },
+        { id: 'nav-plaza', label: '廣場主頁' },
+        { id: 'nav-livelist', label: '直播列表' },
+        { group: '直播間' },
+        { id: 'nav-vertical', label: '直式娛樂直播間' },
+        { id: 'nav-chatroom', label: '聊天室' },
+        { id: 'nav-gift', label: '送禮' },
+        { id: 'nav-funky', label: 'Funky 火箭' },
+        { id: 'nav-cocos', label: 'Cocos 遊戲' },
+        { group: '周邊' },
+        { id: 'nav-openroom', label: '開房對賭' },
+        { id: 'nav-anchor', label: '主播個人頁' },
+        { id: 'nav-schedule', label: '節目表' },
+        { id: 'nav-ranking', label: '晒單排行榜' },
+        { id: 'nav-videohub', label: '影片專區' },
+        { id: 'nav-common', label: '跨頁面通用規則' }
+      ]
+    },
+    userflow: {
+      title: 'User Flow',
+      items: [
+        { id: 'uf-1-1', label: '廣場 → 直播間' },
+        { id: 'uf-1-2', label: '聊天互動' },
+        { id: 'uf-1-3', label: '送禮' },
+        { id: 'uf-1-4', label: '開房對賭' },
+        { id: 'uf-1-5', label: '主播頁瀏覽' }
+      ]
+    },
+    swimlane: {
+      title: '泳道圖',
+      items: [
+        { id: 'sl-3-1', label: '直播間初始化' },
+        { id: 'sl-3-2', label: 'WS 聊天訊息流' },
+        { id: 'sl-3-3', label: '送禮流程' },
+        { id: 'sl-3-4', label: '開房建房+進房' },
+        { id: 'sl-3-5', label: 'Funky 火箭' },
+        { id: 'sl-3-6', label: 'Cocos 遊戲初始化' }
+      ]
+    },
+    constraints: {
+      title: '跨服務限制',
+      items: [
+        { id: 'cat-coupling', label: '\uD83D\uDFE1 模組耦合' },
+        { id: 'cat-system', label: '\uD83D\uDD34 系統限制' },
+        { id: 'cat-tech', label: '\uD83D\uDD35 技術限制' },
+        { id: 'cat-biz', label: '\u26AB 業務限制' }
+      ]
+    }
+  };
+
+  // ===== Side Nav Rendering =====
+  const sideNavInner = document.getElementById('sideNavInner');
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+
+  function renderSideNav(tabId) {
+    const data = sideNavData[tabId];
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+
+    let html = '<div class="sn-title">' + data.title + '</div>';
+    data.items.forEach(item => {
+      if (item.group) {
+        html += '<div class="sn-group">' + item.group + '</div>';
+      } else {
+        html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
+      }
+    });
+    sideNavInner.innerHTML = html;
+
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    if (scrollSpyObserver) {
+      scrollSpyObserver.disconnect();
+      scrollSpyObserver = null;
+    }
+
+    const data = sideNavData[tabId];
+    if (!data) return;
+
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+
+    const visibleSections = new Map();
+
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          visibleSections.set(entry.target.id, entry.boundingClientRect.top);
+        } else {
+          visibleSections.delete(entry.target.id);
+        }
+      });
+
+      let topId = null;
+      let topY = Infinity;
+      visibleSections.forEach((y, id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < topY) { topY = rect.top; topId = id; }
+        }
+      });
+
+      if (!topId && targets.length > 0) {
+        let closestAbove = null;
+        let closestDist = -Infinity;
+        targets.forEach(t => {
+          const rect = t.getBoundingClientRect();
+          if (rect.top < 0 && rect.top > closestDist) {
+            closestDist = rect.top;
+            closestAbove = t.id;
+          }
+        });
+        if (closestAbove) topId = closestAbove;
+      }
+
+      if (topId) highlightNavItem(topId);
+    }, {
+      rootMargin: '-80px 0px -60% 0px',
+      threshold: 0
+    });
+
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-target') === id);
+    });
+    const activeEl = sideNavInner.querySelector('.sn-item.active');
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  // ===== Tab switching =====
+  const tabPills = document.querySelectorAll('.tab-pill');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    currentTabId = tabId;
+    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+
+    if (!mermaidRendered[tabId]) {
+      const panel = document.getElementById(tabId);
+      const diagrams = panel.querySelectorAll('.mermaid');
+      if (diagrams.length > 0) {
+        mermaid.run({ nodes: diagrams });
+        mermaidRendered[tabId] = true;
+      }
+    }
+
+    renderSideNav(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabPills.forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab(pill.getAttribute('data-tab'));
+    });
+  });
+
+  // ===== Init =====
+  document.querySelector('.layout').classList.add('has-side-nav');
+
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) {
+    switchTab(hash);
+  } else {
+    mermaidRendered['overview'] = true;
+    renderSideNav('overview');
+  }
+</script>
+</body>
+</html>
