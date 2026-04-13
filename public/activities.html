@@ -271,75 +271,6 @@
           <b>PM 提醒：</b>活動中心有 21 種活動類型（aId），對應 15 個前端頁面。新增活動類型需加 aId 映射 + 新路由。任務系統的條件引擎（conditionTypeLv1/2/3）跟轉盤、賽事分頁共用，改條件 = 全部共用活動都要測。
         </div>
 
-        <div class="annotated-row">
-          <div class="screen-col">
-            <img src="/images/activities/screen-activity-list-overview.png" alt="活動列表總覽">
-            <div class="screen-label">活動列表總覽</div>
-          </div>
-          <div class="screen-col">
-            <img src="/images/activities/screen-newbie-task.png" alt="新手任務">
-            <div class="screen-label">新手任務</div>
-          </div>
-          <div class="rules-col">
-            <div class="rule-card">
-              <h4><span class="type-tag type-rule">規則</span> 活動分類</h4>
-              <p>21 種 aId 對應 15 個前端頁面。新增活動類型需加 aId 映射 + 新路由。</p>
-              <span class="cost-tag cost-code">程式層</span>
-            </div>
-            <div class="rule-card">
-              <h4><span class="type-tag type-ui">介面</span> 紅點策略</h4>
-              <p>redDotNotification 四種策略：永遠/每天/每週一/一次性。跨時區有邊界問題。</p>
-              <span class="cost-tag cost-code">程式層</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="annotated-row">
-          <div class="screen-col">
-            <img src="/images/activities/screen-lottery-wheel.png" alt="轉盤">
-            <div class="screen-label">裂變邀請轉盤</div>
-          </div>
-          <div class="screen-col">
-            <img src="/images/activities/screen-lottery-theme.png" alt="主題抽獎">
-            <div class="screen-label">主題抽獎</div>
-          </div>
-          <div class="rules-col">
-            <div class="rule-card">
-              <h4><span class="type-tag type-rule">規則</span> 任務系統</h4>
-              <p>新版 Mission 整合簽到 / 每日任務 / 新手任務。任務獎勵存背包、需手動領取。</p>
-              <span class="cost-tag cost-code">程式層</span>
-            </div>
-            <div class="rule-card">
-              <h4><span class="type-tag type-rule">規則</span> 轉盤系統</h4>
-              <p>裂變邀請驅動，每邀請一人得一次抽獎機會。獎品由後台 prizeList 控制。</p>
-              <span class="cost-tag cost-config">設定層</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="annotated-row">
-          <div class="screen-col">
-            <img src="/images/activities/screen-first-deposit-unclaimed.png" alt="首存包賠">
-            <div class="screen-label">首存包賠</div>
-          </div>
-          <div class="screen-col">
-            <img src="/images/activities/screen-daily-task-reward.png" alt="每日任務">
-            <div class="screen-label">每日任務獎勵</div>
-          </div>
-          <div class="rules-col">
-            <div class="rule-card">
-              <h4><span class="type-tag type-rule">規則</span> 首存包賠</h4>
-              <p>48 小時內首次存款投注虧損可申請包賠。金額 = min(首存額, 虧損額)。</p>
-              <span class="cost-tag cost-config">設定層</span>
-              <div class="pm-note">跨體育和活動模組，改購物車邏輯影響大</div>
-            </div>
-            <div class="rule-card">
-              <h4><span class="type-tag type-ui">介面</span> 純展示活動</h4>
-              <p>aId=10005 只顯示活動圖文，無互動邏輯，最簡單的活動類型。</p>
-              <span class="cost-tag cost-config">設定層</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- === 1. 主要動線 === -->
@@ -402,6 +333,29 @@
 
         <div class="pm-focus">
           <b>PM 提醒：</b>任務條件引擎 conditionTypeLv1/2/3 跟轉盤、賽事分頁共用同一套，改條件 = 全部共用活動都要測。任務的「前往」按鈕依 conditionTypeLv1 跳轉到目的頁，改目的頁路由 → 按鈕壞，必須連帶回測。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-activity-list-overview.png" alt="活動列表總覽">
+            <div class="screen-label">活動列表總覽</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/activities/screen-newbie-task.png" alt="新手任務">
+            <div class="screen-label">新手任務</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 活動分類</h4>
+              <p>21 種 aId 對應 15 個前端頁面。新增活動類型需加 aId 映射 + 新路由。</p>
+              <span class="cost-tag cost-code">程式層</span>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">介面</span> 紅點策略</h4>
+              <p>redDotNotification 四種策略：永遠/每天/每週一/一次性。跨時區有邊界問題。</p>
+              <span class="cost-tag cost-code">程式層</span>
+            </div>
+          </div>
         </div>
 
         <details class="page-logic-card" id="sec-activity-list" open>
@@ -477,6 +431,53 @@
 
         <div class="pm-focus">
           <b>PM 提醒：</b>首存包賠跨體育和活動模組 — useFirstPay 注入到體育模組各頁面，改購物車邏輯 = 大需求。邀請好友有三層開關（產品 x 活動 x 渠道），關掉任一個只剩分享圖。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-lottery-wheel.png" alt="轉盤">
+            <div class="screen-label">裂變邀請轉盤</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/activities/screen-lottery-theme.png" alt="主題抽獎">
+            <div class="screen-label">主題抽獎</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 轉盤系統</h4>
+              <p>裂變邀請驅動，每邀請一人得一次抽獎機會。獎品由後台 prizeList 控制。</p>
+              <span class="cost-tag cost-config">設定層</span>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 主題抽獎</h4>
+              <p>杯賽活動期間限定。9 宮格抽獎 + 排行榜，獎品分即時到帳與背包兩種。</p>
+              <span class="cost-tag cost-code">程式層</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-first-deposit-unclaimed.png" alt="首存包賠">
+            <div class="screen-label">首存包賠</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/activities/screen-daily-task-reward.png" alt="每日任務">
+            <div class="screen-label">每日任務獎勵</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 首存包賠</h4>
+              <p>48 小時內首次存款投注虧損可申請包賠。金額 = min(首存額, 虧損額)。</p>
+              <span class="cost-tag cost-config">設定層</span>
+              <div class="pm-note">跨體育和活動模組，改購物車邏輯影響大</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">介面</span> 純展示活動</h4>
+              <p>aId=10005 只顯示活動圖文，無互動邏輯，最簡單的活動類型。</p>
+              <span class="cost-tag cost-config">設定層</span>
+            </div>
+          </div>
         </div>
 
         <div class="annotated-row">
