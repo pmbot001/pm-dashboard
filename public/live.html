@@ -57,7 +57,7 @@
       cursor: pointer;
     }
     .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .tab-pill.active { background: #06b6d4; color: #fff; border-color: #06b6d4; }
 
     /* Tab content panels */
     .tab-panel { display: none; }
@@ -133,7 +133,7 @@
     .page-logic-card summary::before {
       content: "\25B8"; color: #64748b; font-size: 14px; transition: transform .2s;
     }
-    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #06b6d4; }
     .page-logic-card summary:hover { background: #263548; }
     .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
     .page-logic-card .card-body {
@@ -175,7 +175,7 @@
     .constraint-card summary::after {
       content: "\25B8"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
     }
-    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #06b6d4; }
     .constraint-card summary:hover { background: #263548; }
     .constraint-detail {
       padding: 10px 14px 14px; border-top: 1px solid #334155;
@@ -208,11 +208,11 @@
       margin: 28px 0 16px;
       padding: 10px 16px;
       background: #1a2638;
-      border-left: 3px solid #f97316;
+      border-left: 3px solid #06b6d4;
       border-radius: 6px;
       font-size: 14px;
       font-weight: 700;
-      color: #f97316;
+      color: #06b6d4;
     }
 
     /* ===== Side Nav (sticky left) ===== */
@@ -273,9 +273,13 @@
     }
     .side-nav .sn-item.active {
       color: #fff;
-      border-left-color: #f97316;
-      background: rgba(249,115,22,.06);
+      border-left-color: #06b6d4;
+      background: rgba(6,182,212,.06);
     }
+
+    /* ===== Live accent color overrides (cyan #06b6d4) ===== */
+    .num { background: #06b6d4 !important; }
+    .flow-step.highlight { background: #06b6d4 !important; border-color: #06b6d4 !important; }
 
     /* Push main content right when side-nav exists */
     .has-side-nav .main-content.v2-main {
@@ -316,15 +320,82 @@
     <!-- ================================================================ -->
     <div class="tab-panel active" id="overview">
 
-      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
-        改動成本：<span class="cost-tag cost-locked">場館限制</span> 改不了
-        <span class="cost-tag cost-config">設定層</span> 後台可配
-        <span class="cost-tag cost-code">程式層</span> 要發版
+      <div class="tool-section">
+
+      <!-- tag legend -->
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+        改動成本：
+        <span><span class="cost-tag cost-locked">場館限制</span> 改不了</span>
+        <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
+        <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
       </div>
 
-      <!-- === 1. 廣場主頁 === -->
+      <!-- === 0. 模組概覽 === -->
+      <div class="section" id="sec-overview">
+        <div class="section-title"><span class="num">0</span> 模組概覽</div>
+        <div class="section-desc">底部導覽列第四個 Tab，包含直播廣場、多種直播間、聊天室、開房對賭、送禮、節目表等</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>直播模組有多種房型（直式娛樂/Funky 火箭/Cocos 真人/賽事直播），各自有不同的技術架構和功能限制。廣場有標準模式和純直播模式兩種，寫需求前先確認模式。
+        </div>
+      </div>
+
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">從進入直播廣場到觀看直播、互動的主要路徑</div>
+
+        <div class="flow-box">
+          <div class="flow-label">廣場 → 直播間</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入直播廣場</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選擇分類<br><small>二級/三級標籤</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">瀏覽直播列表</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">點擊直播卡片</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">roomType 分流<br><small>直式/Funky/Cocos</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">進入直播間</div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">直播間互動</div>
+          <div class="flow-row">
+            <div class="flow-step">進入直播間</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">WS 連線<br><small>進房初始化</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">HLS 串流播放<br><small>自動靜音</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">聊天/送禮/競猜</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">離開<br><small>還原主題/銷毀</small></div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">開房對賭</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入開房列表</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選賽事</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">盤口設定</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">房間設定</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">分享房間</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 2. 廣場主頁 === -->
       <div class="section" id="nav-plaza">
-        <div class="section-title"><span class="num">1</span> 廣場主頁（Tab 容器）</div>
+        <div class="section-title"><span class="num">2</span> 廣場主頁（Tab 容器）</div>
         <div class="section-desc">直播模組的一級入口（/live），依後台設定走標準模式或純直播模式</div>
 
         <div class="pm-focus">
@@ -353,8 +424,6 @@
           </div>
         </div>
 
-        <!-- 頁面邏輯：廣場列表頁 -->
-        <div class="logic-merge-divider" id="nav-livelist">頁面邏輯：廣場列表頁 — 10 條規則</div>
         <details class="page-logic-card">
           <summary>
             廣場列表頁（LiveList）
@@ -389,9 +458,9 @@
         </details>
       </div>
 
-      <!-- === 2. 直式娛樂直播間 === -->
+      <!-- === 3. 直式娛樂直播間 === -->
       <div class="section" id="nav-vertical">
-        <div class="section-title"><span class="num">2</span> 直式娛樂直播間</div>
+        <div class="section-title"><span class="num">3</span> 直式娛樂直播間</div>
         <div class="section-desc">全屏直式直播間，支援送禮、聊天、競猜投注</div>
 
         <div class="annotated-row">
@@ -423,8 +492,6 @@
           </div>
         </div>
 
-        <!-- 頁面邏輯：直式娛樂 -->
-        <div class="logic-merge-divider" id="nav-vertical-logic">頁面邏輯：直式娛樂直播間 — 10 條規則</div>
         <details class="page-logic-card">
           <summary>
             直式娛樂直播間（Vertical Entertainment）
@@ -458,9 +525,9 @@
         </details>
       </div>
 
-      <!-- === 3. 聊天室 === -->
+      <!-- === 4. 聊天室 === -->
       <div class="section" id="nav-chatroom">
-        <div class="section-title"><span class="num">3</span> 聊天室</div>
+        <div class="section-title"><span class="num">4</span> 聊天室</div>
         <div class="section-desc">所有直播間共用的即時聊天功能</div>
 
         <div class="annotated-row single">
@@ -513,9 +580,9 @@
         </details>
       </div>
 
-      <!-- === 4. 開房對賭 === -->
+      <!-- === 5. 開房對賭 === -->
       <div class="section" id="nav-openroom">
-        <div class="section-title"><span class="num">4</span> 開房對賭</div>
+        <div class="section-title"><span class="num">5</span> 開房對賭</div>
         <div class="section-desc">獨立於廣場的入口（/open-room），從底部導覽列進入</div>
 
         <div class="pm-focus">
@@ -556,9 +623,9 @@
         </details>
       </div>
 
-      <!-- === 5. 送禮 === -->
+      <!-- === 6. 送禮 === -->
       <div class="section" id="nav-gift">
-        <div class="section-title"><span class="num">5</span> 送禮</div>
+        <div class="section-title"><span class="num">6</span> 送禮</div>
         <div class="section-desc">直式娛樂和 Funky 火箭有完整實作，Cocos 房型不支援送禮</div>
         <div class="annotated-row single">
           <div class="screen-col">
@@ -578,9 +645,9 @@
         </div>
       </div>
 
-      <!-- === 6. 主播個人頁 === -->
+      <!-- === 7. 主播個人頁 === -->
       <div class="section" id="nav-anchor">
-        <div class="section-title"><span class="num">6</span> 主播個人頁</div>
+        <div class="section-title"><span class="num">7</span> 主播個人頁</div>
         <div class="section-desc">/streamer/detail — 資訊頁，不是直播間</div>
 
         <div class="annotated-row">
@@ -634,9 +701,9 @@
         </details>
       </div>
 
-      <!-- === 7. Funky 火箭 === -->
+      <!-- === 8. Funky 火箭 === -->
       <div class="section" id="nav-funky">
-        <div class="section-title"><span class="num">7</span> Funky 火箭</div>
+        <div class="section-title"><span class="num">8</span> Funky 火箭</div>
         <div class="section-desc">直播帶牌遊戲，roomType=7 + srctp=Funky</div>
 
         <details class="page-logic-card">
@@ -673,9 +740,9 @@
         </details>
       </div>
 
-      <!-- === 8. Cocos 遊戲 === -->
+      <!-- === 9. Cocos 遊戲 === -->
       <div class="section" id="nav-cocos">
-        <div class="section-title"><span class="num">8</span> 真人娛樂（Cocos 遊戲）</div>
+        <div class="section-title"><span class="num">9</span> 真人娛樂（Cocos 遊戲）</div>
         <div class="section-desc">roomType=7（非 Funky）走 Cocos iframe，支援百家樂/牛牛/龍虎/紅黑大戰</div>
 
         <details class="page-logic-card">
@@ -710,9 +777,9 @@
         </details>
       </div>
 
-      <!-- === 9. 節目表 === -->
+      <!-- === 10. 節目表 === -->
       <div class="section" id="nav-schedule">
-        <div class="section-title"><span class="num">9</span> 節目表</div>
+        <div class="section-title"><span class="num">10</span> 節目表</div>
         <div class="section-desc">體育賽事直播預告 + 美女房型獨立節目表</div>
 
         <div class="annotated-row">
@@ -766,9 +833,9 @@
         </details>
       </div>
 
-      <!-- === 10. 排行榜 === -->
+      <!-- === 11. 排行榜 === -->
       <div class="section" id="nav-ranking">
-        <div class="section-title"><span class="num">10</span> 晒單排行榜</div>
+        <div class="section-title"><span class="num">11</span> 晒單排行榜</div>
         <div class="section-desc">玩家投注晒單排行（日/週/月榜）</div>
 
         <div class="annotated-row">
@@ -821,9 +888,9 @@
         </details>
       </div>
 
-      <!-- === 11. 影片專區 === -->
+      <!-- === 12. 影片專區 === -->
       <div class="section" id="nav-videohub">
-        <div class="section-title"><span class="num">11</span> 影片專區</div>
+        <div class="section-title"><span class="num">12</span> 影片專區</div>
         <div class="section-desc">後台開關控制是否顯示此 Tab</div>
 
         <details class="page-logic-card">
@@ -844,9 +911,9 @@
         </details>
       </div>
 
-      <!-- === 12. 跨頁面通用規則 === -->
+      <!-- === 13. 跨頁面通用規則 === -->
       <div class="section" id="nav-common">
-        <div class="section-title"><span class="num">12</span> 跨頁面通用規則</div>
+        <div class="section-title"><span class="num">13</span> 跨頁面通用規則</div>
         <div class="section-desc">所有直播間共用的基礎設施</div>
 
         <details class="page-logic-card" open>
@@ -869,6 +936,7 @@
         </details>
       </div>
 
+      </div>
     </div><!-- /tab-panel overview -->
 
     <!-- ================================================================ -->
@@ -1737,22 +1805,23 @@ sequenceDiagram
     overview: {
       title: '功能總覽',
       items: [
-        { group: '廣場' },
-        { id: 'nav-plaza', label: '廣場主頁' },
-        { id: 'nav-livelist', label: '直播列表' },
-        { group: '直播間' },
-        { id: 'nav-vertical', label: '直式娛樂直播間' },
-        { id: 'nav-chatroom', label: '聊天室' },
-        { id: 'nav-gift', label: '送禮' },
-        { id: 'nav-funky', label: 'Funky 火箭' },
-        { id: 'nav-cocos', label: 'Cocos 遊戲' },
-        { group: '周邊' },
-        { id: 'nav-openroom', label: '開房對賭' },
-        { id: 'nav-anchor', label: '主播個人頁' },
-        { id: 'nav-schedule', label: '節目表' },
-        { id: 'nav-ranking', label: '晒單排行榜' },
-        { id: 'nav-videohub', label: '影片專區' },
-        { id: 'nav-common', label: '跨頁面通用規則' }
+        { id: 'sec-overview', label: '0 模組概覽' },
+        { id: 'sec-flow', label: '1 主要動線' },
+        { type: 'group', label: '廣場' },
+        { id: 'nav-plaza', label: '2 廣場主頁' },
+        { type: 'group', label: '直播間' },
+        { id: 'nav-vertical', label: '3 直式娛樂' },
+        { id: 'nav-chatroom', label: '4 聊天室' },
+        { id: 'nav-openroom', label: '5 開房對賭' },
+        { id: 'nav-gift', label: '6 送禮' },
+        { id: 'nav-anchor', label: '7 主播個人頁' },
+        { id: 'nav-funky', label: '8 Funky 火箭' },
+        { id: 'nav-cocos', label: '9 Cocos 遊戲' },
+        { type: 'group', label: '周邊' },
+        { id: 'nav-schedule', label: '10 節目表' },
+        { id: 'nav-ranking', label: '11 排行榜' },
+        { id: 'nav-videohub', label: '12 影片專區' },
+        { id: 'nav-common', label: '13 通用規則' },
       ]
     },
     userflow: {

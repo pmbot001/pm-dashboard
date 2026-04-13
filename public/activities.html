@@ -57,7 +57,7 @@
       cursor: pointer;
     }
     .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .tab-pill.active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
 
     /* Tab content panels */
     .tab-panel { display: none; }
@@ -111,7 +111,7 @@
     .page-logic-card summary::before {
       content: "\25B8"; color: #64748b; font-size: 14px; transition: transform .2s;
     }
-    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #8b5cf6; }
     .page-logic-card summary:hover { background: #263548; }
     .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
     .page-logic-card .card-body { padding: 0 18px 16px; border-top: 1px solid #334155; }
@@ -151,7 +151,7 @@
     .constraint-card summary::after {
       content: "\25B8"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
     }
-    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #8b5cf6; }
     .constraint-card summary:hover { background: #263548; }
     .constraint-detail {
       padding: 10px 14px 14px; border-top: 1px solid #334155;
@@ -180,8 +180,8 @@
     /* Logic merge divider in overview tab */
     .logic-merge-divider {
       margin: 28px 0 16px; padding: 10px 16px;
-      background: #1a2638; border-left: 3px solid #f97316; border-radius: 6px;
-      font-size: 14px; font-weight: 700; color: #f97316;
+      background: #1a2638; border-left: 3px solid #8b5cf6; border-radius: 6px;
+      font-size: 14px; font-weight: 700; color: #8b5cf6;
     }
 
     /* ===== Side Nav (sticky left) ===== */
@@ -213,9 +213,13 @@
     }
     .side-nav .sn-item:hover { color: #e2e8f0; background: #1e293b; }
     .side-nav .sn-item.active {
-      color: #fff; border-left-color: #f97316; background: rgba(249,115,22,.06);
+      color: #fff; border-left-color: #8b5cf6; background: rgba(139,92,246,.06);
     }
     .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
+
+    /* ===== Activities accent color overrides (purple #8b5cf6) ===== */
+    .num { background: #8b5cf6 !important; }
+    .flow-step.highlight { background: #8b5cf6 !important; border-color: #8b5cf6 !important; }
 
     @media (max-width: 768px) {
       .side-nav { display: none; }
@@ -249,419 +253,469 @@
     <!-- TAB 1: 功能總覽                                                   -->
     <!-- ================================================================ -->
     <div class="tab-panel active" id="overview">
+      <div class="tool-section">
 
-      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
-        改動成本：<span class="cost-tag cost-config">設定層</span> 後台可配
-        <span class="cost-tag cost-code">程式層</span> 要發版
+      <!-- tag legend -->
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+        改動成本：
+        <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
+        <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
       </div>
 
-      <!-- 截圖：活動列表總覽 -->
-      <div class="section" id="nav-overview-img">
-        <div class="section-title"><span class="num">0</span> 活動列表總覽</div>
+      <!-- === 0. 模組概覽 === -->
+      <div class="section" id="sec-overview">
+        <div class="section-title"><span class="num">0</span> 模組概覽</div>
         <div class="section-desc">底部導覽列第三個 Tab，統一管理所有行銷活動入口與詳情頁（21 種 aId 對應 15 個前端頁面）</div>
-        <img class="overview-img" src="/images/activities/screen-activity-list-overview.png" alt="活動列表總覽截圖">
-      </div>
 
-      <!-- === Figma 截圖速覽 === -->
-      <div class="logic-merge-divider">Figma 截圖速覽</div>
+        <div class="pm-focus">
+          <b>PM 提醒：</b>活動中心有 21 種活動類型（aId），對應 15 個前端頁面。新增活動類型需加 aId 映射 + 新路由。任務系統的條件引擎（conditionTypeLv1/2/3）跟轉盤、賽事分頁共用，改條件 = 全部共用活動都要測。
+        </div>
 
-      <div class="section">
         <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-activity-list-overview.png" alt="活動列表總覽">
+            <div class="screen-label">活動列表總覽</div>
+          </div>
           <div class="screen-col">
             <img src="/images/activities/screen-newbie-task.png" alt="新手任務">
             <div class="screen-label">新手任務</div>
           </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 活動分類</h4>
+              <p>21 種 aId 對應 15 個前端頁面。新增活動類型需加 aId 映射 + 新路由。</p>
+              <span class="cost-tag cost-code">程式層</span>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">介面</span> 紅點策略</h4>
+              <p>redDotNotification 四種策略：永遠/每天/每週一/一次性。跨時區有邊界問題。</p>
+              <span class="cost-tag cost-code">程式層</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotated-row">
           <div class="screen-col">
             <img src="/images/activities/screen-lottery-wheel.png" alt="轉盤">
             <div class="screen-label">裂變邀請轉盤</div>
           </div>
-          <div class="rules-col">
-            <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> 任務系統（Mission）</h4>
-              <p>新版 Mission 整合簽到 / 每日任務 / 新手任務。任務獎勵存背包、需手動領取。</p>
-            </div>
-            <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 轉盤系統</h4>
-              <p>裂變邀請驅動，每邀請一人得一次抽獎機會。獎品由後台 prizeList 控制。</p>
-            </div>
-          </div>
-        </div>
-        <div class="annotated-row">
           <div class="screen-col">
             <img src="/images/activities/screen-lottery-theme.png" alt="主題抽獎">
             <div class="screen-label">主題抽獎</div>
           </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 任務系統</h4>
+              <p>新版 Mission 整合簽到 / 每日任務 / 新手任務。任務獎勵存背包、需手動領取。</p>
+              <span class="cost-tag cost-code">程式層</span>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 轉盤系統</h4>
+              <p>裂變邀請驅動，每邀請一人得一次抽獎機會。獎品由後台 prizeList 控制。</p>
+              <span class="cost-tag cost-config">設定層</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotated-row">
           <div class="screen-col">
             <img src="/images/activities/screen-first-deposit-unclaimed.png" alt="首存包賠">
             <div class="screen-label">首存包賠</div>
           </div>
-          <div class="rules-col">
-            <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 主題抽獎</h4>
-              <p>杯賽活動期間限定。9 宮格抽獎 + 排行榜，獎品分即時到帳與背包兩種。</p>
-            </div>
-            <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> 首存包賠</h4>
-              <p>48 小時內首次存款投注虧損可申請包賠。金額 = min(首存額, 虧損額)。</p>
-            </div>
-          </div>
-        </div>
-        <div class="annotated-row">
           <div class="screen-col">
             <img src="/images/activities/screen-daily-task-reward.png" alt="每日任務">
             <div class="screen-label">每日任務獎勵</div>
           </div>
-          <div class="screen-col">
-            <img src="/images/activities/screen-display-page.png" alt="純展示頁">
-            <div class="screen-label">純展示活動頁</div>
-          </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 活動分類</h4>
-              <p>21 種 aId 對應 15 個前端頁面。新增活動類型需加 aId 映射 + 新路由。</p>
+              <h4><span class="type-tag type-rule">規則</span> 首存包賠</h4>
+              <p>48 小時內首次存款投注虧損可申請包賠。金額 = min(首存額, 虧損額)。</p>
+              <span class="cost-tag cost-config">設定層</span>
+              <div class="pm-note">跨體育和活動模組，改購物車邏輯影響大</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-ui">UI</span> 紅點策略</h4>
-              <p>redDotNotification 四種策略：永遠/每天/每週一/一次性。跨時區有邊界問題。</p>
+              <h4><span class="type-tag type-ui">介面</span> 純展示活動</h4>
+              <p>aId=10005 只顯示活動圖文，無互動邏輯，最簡單的活動類型。</p>
+              <span class="cost-tag cost-config">設定層</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- === 頁面邏輯：活動列表頁 === -->
-      <div class="logic-merge-divider">頁面邏輯卡片（16 張）</div>
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">玩家從進入活動列表到參與活動、領取獎勵的路徑</div>
 
-      <div class="section" id="nav-activity-list">
-        <details class="page-logic-card">
-          <summary>2.1 活動列表頁 <span class="rule-count">9 條規則</span></summary>
+        <div class="flow-box">
+          <div class="flow-label">活動列表 → 參與活動</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入活動頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">載入活動列表<br><small>canClaim 排序</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選分類 Tab<br><small>全部/限時/新人…</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">點擊活動卡片</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">aId 路由分流<br><small>21 種 → 15 頁面</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">活動詳情頁</div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">任務系統 → 領獎</div>
+          <div class="flow-row">
+            <div class="flow-step">進入任務頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">查看任務條件</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">前往完成<br><small>handleJump 跳轉</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">任務完成</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">領取獎勵<br><small>背包 / 即時到帳</small></div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">轉盤/抽獎 → 獎勵</div>
+          <div class="flow-row">
+            <div class="flow-step">進入轉盤/抽獎</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">檢查資格<br><small>VIP/綁定/邀請</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">抽獎</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">中獎結果<br><small>碎片/金粉/獎品</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">申請領獎</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 2. 活動列表與任務 === -->
+      <div class="section" id="sec-list">
+        <div class="section-title"><span class="num">2</span> 活動列表與任務</div>
+        <div class="section-desc">活動列表頁排序/紅點、新版任務系統（簽到/每日/新手）、轉盤系統</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>任務條件引擎 conditionTypeLv1/2/3 跟轉盤、賽事分頁共用同一套，改條件 = 全部共用活動都要測。任務的「前往」按鈕依 conditionTypeLv1 跳轉到目的頁，改目的頁路由 → 按鈕壞，必須連帶回測。
+        </div>
+
+        <details class="page-logic-card" id="sec-activity-list" open>
+          <summary>活動列表頁 <span class="rule-count">9 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>進入活動頁</td><td>載入活動列表（<code>POST /activity/activityList</code>）+ 已登入則載入可領獎列表</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動列表由後台動態管理，前端不控制上下架</td></tr>
+                <tr><td>1</td><td>進入活動頁</td><td>載入活動列表 + 已登入則載入可領獎列表</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動列表由後台動態管理，前端不控制上下架</td></tr>
                 <tr><td>2</td><td>選擇分類 Tab</td><td>篩選活動列表（全部/限時/新人/日常/體育/VIP）</td><td><span class="cost-tag cost-config">設定層</span></td><td>Tab 順序前端寫死，改順序要發版</td></tr>
-                <tr><td>3</td><td>活動有紅點</td><td>依 <code>redDotNotification</code> 四種策略顯示紅點</td><td><span class="cost-tag cost-code">程式層</span></td><td>「每天提示」和「每週一提示」用 <code>isSameDay()</code> 判斷，跨時區可能有邊界問題</td></tr>
-                <tr><td>4</td><td>可領獎活動排序</td><td><code>canClaim=1</code> 的活動排在前面，同類再依 sort 降序</td><td><span class="cost-tag cost-code">程式層</span></td><td>排序邏輯在前端實作，後端只回傳原始列表</td></tr>
-                <tr><td>5</td><td>未登入用戶</td><td>不顯示可領獎狀態、不記錄訪問時間、不載入領獎通知</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>6</td><td>點擊活動卡片</td><td>依 aId 跳轉到對應詳情頁（21 種 aId → 15 個頁面）</td><td><span class="cost-tag cost-code">程式層</span></td><td>新增活動類型需要前端加 aId 映射 + 新路由</td></tr>
-                <tr><td>7</td><td>點擊鈴鐺圖示</td><td>跳到獎品通知列表頁 <code>/activity/rewardNotifyList</code></td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>8</td><td>下拉刷新</td><td>重新呼叫 <code>initActivityData()</code> 刷新列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>9</td><td>可領獎彈窗通知</td><td>多個可領獎 → 摺疊通知；單個 → 直接顯示活動名</td><td><span class="cost-tag cost-code">程式層</span></td><td>通知系統用 <code>notificationStore</code>，跟其他全域通知共用佇列</td></tr>
+                <tr><td>3</td><td>活動有紅點</td><td>依 redDotNotification 四種策略顯示紅點</td><td><span class="cost-tag cost-code">程式層</span></td><td>「每天/每週一提示」用 isSameDay() 判斷，跨時區可能有邊界問題</td></tr>
+                <tr><td>4</td><td>可領獎活動排序</td><td>canClaim=1 的活動排在前面，同類再依 sort 降序</td><td><span class="cost-tag cost-code">程式層</span></td><td>排序邏輯在前端實作</td></tr>
+                <tr><td>5</td><td>未登入用戶</td><td>不顯示可領獎狀態、不記錄訪問時間</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>點擊活動卡片</td><td>依 aId 跳轉到對應詳情頁（21 種 aId → 15 個頁面）</td><td><span class="cost-tag cost-code">程式層</span></td><td>新增活動類型需加 aId 映射 + 新路由</td></tr>
+                <tr><td>7</td><td>點擊鈴鐺圖示</td><td>跳到獎品通知列表頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>下拉刷新</td><td>重新呼叫 initActivityData() 刷新列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>9</td><td>可領獎彈窗通知</td><td>多個可領獎 → 摺疊通知；單個 → 直接顯示活動名</td><td><span class="cost-tag cost-code">程式層</span></td><td>通知系統跟其他全域通知共用佇列</td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">主檔案：pages/activity/index/index.vue<br>排序/紅點/跳轉：pages/activity/composables/useActivity.ts<br>常量定義：pages/activity/constants.ts（ACTIVITY_TYPE_NAMES、ACTIVITY_TYPES）<br>活動 store：stores/activity.ts<br>API：apis/activity/index.ts + apis/matchactivity/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">主檔案：pages/activity/index/index.vue<br>排序/紅點/跳轉：pages/activity/composables/useActivity.ts<br>常量定義：pages/activity/constants.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-mission">
-        <details class="page-logic-card">
-          <summary>2.2 任務系統（簽到 / 每日任務 / 新手任務 — 新版 Mission）<span class="rule-count">12 條規則</span></summary>
+        <details class="page-logic-card" id="sec-mission">
+          <summary>任務系統（簽到 / 每日任務 / 新手任務 — 新版 Mission）<span class="rule-count">12 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>進入任務系統</td><td>載入 <code>moreList/v2</code>（合併 dailyActivity + inviteWheel + newbie 三個子系統）</td><td><span class="cost-tag cost-code">程式層</span></td><td>一個 API 合三個子系統，失敗全部沒資料</td></tr>
+                <tr><td>1</td><td>進入任務系統</td><td>載入 moreList/v2（合併三個子系統）</td><td><span class="cost-tag cost-code">程式層</span></td><td>一個 API 合三個子系統，失敗全部沒資料</td></tr>
                 <tr><td>2</td><td>每日簽到</td><td>依 signRule 判斷累積/連續模式，顯示簽到日曆</td><td><span class="cost-tag cost-config">設定層</span></td><td>累積 vs 連續是後台設定，前端 UI 差異大</td></tr>
-                <tr><td>3</td><td>簽到神秘獎品</td><td><code>MysteryImage</code> 有值時隱藏獎品圖直到該天到達</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>簽到神秘獎品</td><td>MysteryImage 有值時隱藏獎品圖直到該天到達</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
                 <tr><td>4</td><td>簽到限制條件</td><td>驗 VIP/綁定/風控/訪客/裝置/註冊天數 六類限制</td><td><span class="cost-tag cost-config">設定層</span></td><td>改任一限制條件要回測所有任務子系統</td></tr>
-                <tr><td>5</td><td>任務前往按鈕</td><td><code>handleJump</code> 依 conditionTypeLv1 跳轉（7 種特殊 + 通用）</td><td><span class="cost-tag cost-code">程式層</span></td><td>改目的頁路由 → 任務前往按鈕壞。<b>必須連帶回測</b></td></tr>
-                <tr><td>6</td><td>綁銀行卡任務</td><td>先驗手機是否已綁 → 未綁彈窗提示 → 已綁才跳綁卡頁</td><td><span class="cost-tag cost-code">程式層</span></td><td>兩步驟驗證，提現模組改動要回測</td></tr>
+                <tr><td>5</td><td>任務前往按鈕</td><td>handleJump 依 conditionTypeLv1 跳轉（7 種特殊 + 通用）</td><td><span class="cost-tag cost-code">程式層</span></td><td>改目的頁路由 → 任務前往按鈕壞。必須連帶回測</td></tr>
+                <tr><td>6</td><td>綁銀行卡任務</td><td>先驗手機是否已綁 → 未綁彈窗 → 已綁才跳綁卡頁</td><td><span class="cost-tag cost-code">程式層</span></td><td>兩步驟驗證，提現模組改動要回測</td></tr>
                 <tr><td>7</td><td>領獎 rewardStatus</td><td>0=不可領 / 1=可領 / 2=已領 / 3=已領待申請 / 4=已失效</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>8</td><td>獎品類型</td><td>1=虛擬道具 / 2=虛擬獎品 / 3=實體獎品 / 4=優惠券 / 5=彩金 / 6=彩金獎品</td><td><span class="cost-tag cost-config">設定層</span></td><td>彩金有流水倍數（waterMultiple），背包類有領獎申請流程</td></tr>
-                <tr><td>9</td><td>「我的」頁面進行中任務</td><td><code>myPageProcessing</code> API 回傳當前進行中的任務摘要</td><td><span class="cost-tag cost-code">程式層</span></td><td>跨頁面顯示，改任務資料結構 → 我的頁面也要測</td></tr>
-                <tr><td>10</td><td>直播間任務引導</td><td><code>useFindPageMission</code> 在直播間內偵測可進行任務，顯示提示</td><td><span class="cost-tag cost-code">程式層</span></td><td>直播間 UI 改版要回測任務提示（GOR-6178 踩過）</td></tr>
-                <tr><td>11</td><td>任務完成提醒彈窗</td><td><code>remindMissionDialog</code> 防重複彈窗機制</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>12</td><td>新手任務大禮包</td><td><code>groupId</code> 分組任務（註冊+綁手機+綁卡），全部完成才能領</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>8</td><td>獎品類型</td><td>1=虛擬道具 / 2=虛擬獎品 / 3=實體 / 4=優惠券 / 5=彩金 / 6=彩金獎品</td><td><span class="cost-tag cost-config">設定層</span></td><td>彩金有流水倍數，背包類有領獎申請流程</td></tr>
+                <tr><td>9</td><td>「我的」頁面進行中任務</td><td>myPageProcessing API 回傳當前進行中的任務摘要</td><td><span class="cost-tag cost-code">程式層</span></td><td>跨頁面顯示，改任務資料結構 → 我的頁面也要測</td></tr>
+                <tr><td>10</td><td>直播間任務引導</td><td>useFindPageMission 在直播間內偵測可進行任務</td><td><span class="cost-tag cost-code">程式層</span></td><td>直播間 UI 改版要回測任務提示</td></tr>
+                <tr><td>11</td><td>任務完成提醒彈窗</td><td>remindMissionDialog 防重複彈窗機制</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>12</td><td>新手任務大禮包</td><td>groupId 分組任務（註冊+綁手機+綁卡），全部完成才能領</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">handleJump：composables/useMission.ts<br>頁面任務偵測：composables/useFindPageMission.ts<br>任務 store：stores/dailyMissions.ts<br>任務通知：composables/useMissionNotify.ts + useMissionStorage.ts<br>新版 Mission API：apis/mission/index.ts<br>舊版 API：apis/newbietask/index.ts + apis/dailytask/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">handleJump：composables/useMission.ts<br>任務 store：stores/dailyMissions.ts<br>新版 Mission API：apis/mission/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-wheel">
-        <details class="page-logic-card">
-          <summary>2.3 轉盤系統（裂變邀請轉盤）<span class="rule-count">8 條規則</span></summary>
+        <details class="page-logic-card" id="sec-wheel">
+          <summary>轉盤系統（裂變邀請轉盤）<span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>進入轉盤頁</td><td>載入轉盤資格（<code>getActivityStatus</code>）+ 活動詳情</td><td><span class="cost-tag cost-code">程式層</span></td><td>訪客也能看，但不能抽</td></tr>
+                <tr><td>1</td><td>進入轉盤頁</td><td>載入轉盤資格 + 活動詳情</td><td><span class="cost-tag cost-code">程式層</span></td><td>訪客也能看，但不能抽</td></tr>
                 <tr><td>2</td><td>轉盤資格 wheelState</td><td>5 種狀態（NotValid/Valid/InProgress/MissionComplete/Bonus）</td><td><span class="cost-tag cost-config">設定層</span></td><td>狀態由後端計算，前端只讀</td></tr>
-                <tr><td>3</td><td>轉盤樣式 wheelType</td><td>SpinWheel(0) = 標準轉盤 / FruitMachine(1) = 水果拉霸 + 刮刮樂 + 翻牌</td><td><span class="cost-tag cost-config">設定層</span></td><td>GOR-6481 新增刮刮樂和翻牌樣式</td></tr>
-                <tr><td>4</td><td>抽獎條件三層結構</td><td>conditionTypeLv1/2/3 — <b>跟任務系統、賽事分頁共用同一套引擎</b></td><td><span class="cost-tag cost-code">程式層</span></td><td>改條件 = 全部共用活動要測。最大地雷</td></tr>
-                <tr><td>5</td><td>被邀請人註冊彈窗</td><td><code>getRemindByRegister</code> → 新用戶登入後彈窗提示有轉盤獎勵</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>6</td><td>領獎需綁定</td><td><code>isClaimLimitBindPhone</code> / <code>isClaimLimitBindBank</code></td><td><span class="cost-tag cost-config">設定層</span></td><td>綁定流程改版要回測</td></tr>
-                <tr><td>7</td><td>分享功能</td><td>安全分享 URL（<code>/inviteWheel/shareUrl</code>）</td><td><span class="cost-tag cost-code">程式層</span></td><td>分享元件跟邀請好友共用</td></tr>
-                <tr><td>8</td><td>加碼任務</td><td><code>bonusMissions</code> 額外任務清單，完成後可再抽</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>轉盤樣式 wheelType</td><td>SpinWheel(0) = 標準轉盤 / FruitMachine(1) = 水果拉霸 + 刮刮樂 + 翻牌</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>抽獎條件三層結構</td><td>conditionTypeLv1/2/3 — 跟任務系統、賽事分頁共用同一套引擎</td><td><span class="cost-tag cost-code">程式層</span></td><td>改條件 = 全部共用活動要測。最大地雷</td></tr>
+                <tr><td>5</td><td>被邀請人註冊彈窗</td><td>新用戶登入後彈窗提示有轉盤獎勵</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>領獎需綁定</td><td>isClaimLimitBindPhone / isClaimLimitBindBank</td><td><span class="cost-tag cost-config">設定層</span></td><td>綁定流程改版要回測</td></tr>
+                <tr><td>7</td><td>分享功能</td><td>安全分享 URL</td><td><span class="cost-tag cost-code">程式層</span></td><td>分享元件跟邀請好友共用</td></tr>
+                <tr><td>8</td><td>加碼任務</td><td>bonusMissions 額外任務清單，完成後可再抽</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">轉盤 store：stores/inviteWheel.ts<br>轉盤 API：apis/inviteWheel/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">轉盤 store：stores/inviteWheel.ts<br>轉盤 API：apis/inviteWheel/index.ts</div></details>
           </div>
         </details>
       </div>
 
-      <div class="section" id="nav-lottery">
-        <details class="page-logic-card">
-          <summary>2.4 主題抽獎 <span class="rule-count">9 條規則</span></summary>
+      <!-- === 3. 抽獎與邀請 === -->
+      <div class="section" id="sec-lottery-invite">
+        <div class="section-title"><span class="num">3</span> 抽獎與邀請</div>
+        <div class="section-desc">主題抽獎、邀請好友、返水、首存包賠</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>首存包賠跨體育和活動模組 — useFirstPay 注入到體育模組各頁面，改購物車邏輯 = 大需求。邀請好友有三層開關（產品 x 活動 x 渠道），關掉任一個只剩分享圖。
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-rally-detail.png" alt="砍單活動">
+            <div class="screen-label">砍單活動詳情</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/activities/screen-rebate-detail.png" alt="返水">
+            <div class="screen-label">返水詳情</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 主題抽獎</h4>
+              <p>杯賽活動期間限定。9 宮格抽獎 + 排行榜，獎品分即時到帳與背包兩種。碎片和金粉是兩種不同計量單位。</p>
+              <span class="cost-tag cost-code">程式層</span>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span> 邀請好友</h4>
+              <p>三層開關（產品 x 活動 x 渠道）。邀請連結由 recommendUrl + jumpType + jumpValue 組合。</p>
+              <span class="cost-tag cost-config">設定層</span>
+              <div class="pm-note">關掉任一開關只剩分享圖</div>
+            </div>
+          </div>
+        </div>
+
+        <details class="page-logic-card" id="sec-lottery">
+          <summary>主題抽獎 <span class="rule-count">9 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>進入抽獎頁</td><td>載入活動資訊（<code>/luckydraw/getInfo</code>）</td><td><span class="cost-tag cost-code">程式層</span></td><td>一個活動最多 6 個子活動 tab</td></tr>
+                <tr><td>1</td><td>進入抽獎頁</td><td>載入活動資訊</td><td><span class="cost-tag cost-code">程式層</span></td><td>一個活動最多 6 個子活動 tab</td></tr>
                 <tr><td>2</td><td>抽獎次數不足</td><td>依 pageType（投注/存款）引導不同頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>投注 → 跳體育；存款 → 跳存款頁</td></tr>
-                <tr><td>3</td><td>VIP 等級不符</td><td>toast 提示「VIP 等級不符合」</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>4</td><td>十連抽</td><td>僅主題抽獎支援，轉盤抽獎不支援</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>5</td><td>碎片兌換</td><td>抽獎獲得碎片/金粉，集滿可兌換獎品</td><td><span class="cost-tag cost-code">程式層</span></td><td>碎片（個）和金粉（克，需 /100 換算）是兩種單位</td></tr>
-                <tr><td>6</td><td>中獎記錄申請</td><td>status = -3/-2 可申請；1 待發貨；2/5 已失效；3/4 成功</td><td><span class="cost-tag cost-config">設定層</span></td><td>有過期時效，過期就不能申請</td></tr>
+                <tr><td>3</td><td>VIP 等級不符</td><td>toast 提示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>十連抽</td><td>僅主題抽獎支援，轉盤不支援</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>碎片兌換</td><td>碎片（個）和金粉（克，需 /100 換算）是兩種單位</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>中獎記錄申請</td><td>status = -3/-2 可申請；2/5 已失效；3/4 成功</td><td><span class="cost-tag cost-config">設定層</span></td><td>有過期時效</td></tr>
                 <tr><td>7</td><td>防連點</td><td>error 15033 → 防連點提示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>8</td><td>前置綁定檢查</td><td>手動錯誤碼：需登入 / 需綁手機 / 需綁銀行卡</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>9</td><td>分享圖</td><td>優先 <code>customSharePic</code> → 否則用 banner 圖</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>8</td><td>前置綁定檢查</td><td>需登入 / 需綁手機 / 需綁銀行卡</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>9</td><td>分享圖</td><td>優先 customSharePic → 否則用 banner 圖</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">主檔案：pages/activity/index/lottery/composables/useLottery.ts<br>碎片系統：pages/activity/index/lottery/composables/useCollect.ts<br>錯誤碼常量：pages/activity/index/lottery/constants.ts<br>API：apis/luckydraw/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">主檔案：pages/activity/index/lottery/composables/useLottery.ts<br>碎片系統：useCollect.ts<br>API：apis/luckydraw/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-invite">
-        <details class="page-logic-card">
-          <summary>2.5 邀請好友 <span class="rule-count">6 條規則</span></summary>
+        <details class="page-logic-card" id="sec-invite">
+          <summary>邀請好友 <span class="rule-count">6 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>測試帳號進入</td><td>Toast 禁用，無法操作</td><td><span class="cost-tag cost-code">程式層</span></td><td><code>userStore.isTestAccount</code> 判斷</td></tr>
+                <tr><td>1</td><td>測試帳號進入</td><td>Toast 禁用，無法操作</td><td><span class="cost-tag cost-code">程式層</span></td><td>userStore.isTestAccount 判斷</td></tr>
                 <tr><td>2</td><td>三層開關</td><td>產品開關 x 活動開關 x 渠道屏蔽，全開才顯示活動</td><td><span class="cost-tag cost-config">設定層</span></td><td>關掉任一個只剩分享圖</td></tr>
-                <tr><td>3</td><td>邀請連結</td><td><code>recommendUrl</code> + <code>jumpType</code> + <code>jumpValue</code> 組合</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>邀請連結</td><td>recommendUrl + jumpType + jumpValue 組合</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
                 <tr><td>4</td><td>邀請狀態</td><td>6 種（未首存/審核中/失效/已發放/已領取/已過期）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>5</td><td>邀請好友轉盤</td><td>部分版本有轉盤功能（<code>postInviteDrawItem</code>）</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5349 移除首存條件</td></tr>
-                <tr><td>6</td><td>玩家姓名脫敏</td><td><code>maskName()</code> 前2後2 + 4個 *</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>邀請好友轉盤</td><td>部分版本有轉盤功能</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>玩家姓名脫敏</td><td>maskName() 前2後2 + 4個 *</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">主檔案：pages/activity/index/inviteFriends/composables/useInviteFriends.ts<br>邀請 store：stores/inviteFriend.ts<br>API：apis/invite/index.ts + apis/inviteBonus/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">主檔案：pages/activity/index/inviteFriends/composables/useInviteFriends.ts<br>API：apis/invite/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-rebate">
-        <details class="page-logic-card">
-          <summary>2.6 返水 <span class="rule-count">4 條規則</span></summary>
+        <details class="page-logic-card" id="sec-rebate">
+          <summary>返水 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>未登入進入</td><td>強制登入（<code>userStore.requireLogin</code>）</td><td><span class="cost-tag cost-code">程式層</span></td><td>唯一需要強制登入的活動頁</td></tr>
-                <tr><td>2</td><td>場館顯示</td><td>僅顯示包體「場館設置」已選場館，優先顯示別名</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台控制，前端不能自己加場館</td></tr>
-                <tr><td>3</td><td>返水比例表</td><td>彈窗最多 5 欄，超過支援拖移，第一欄凍結</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-6140 改自訂名稱 + 隱藏未開場館</td></tr>
+                <tr><td>1</td><td>未登入進入</td><td>強制登入</td><td><span class="cost-tag cost-code">程式層</span></td><td>唯一需要強制登入的活動頁</td></tr>
+                <tr><td>2</td><td>場館顯示</td><td>僅顯示包體「場館設置」已選場館，優先顯示別名</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台控制</td></tr>
+                <tr><td>3</td><td>返水比例表</td><td>彈窗最多 5 欄，超過支援拖移，第一欄凍結</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>4</td><td>返水訂單記錄</td><td>按日期查詢，點擊查看詳情</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">composables：pages/activity/index/rebate/composables/useRebateInfo.ts + useRebateGameInfo.ts<br>API：apis/rebate/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables：useRebateInfo.ts + useRebateGameInfo.ts<br>API：apis/rebate/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-first-deposit">
-        <details class="page-logic-card">
-          <summary>2.7 首存包賠 <span class="rule-count">5 條規則</span></summary>
+        <details class="page-logic-card" id="sec-first-deposit">
+          <summary>首存包賠 <span class="rule-count">5 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>多入口觸發</td><td>賽事詳情頁、購物車、首頁浮層都有入口</td><td><span class="cost-tag cost-code">程式層</span></td><td><code>useFirstPay</code> 注入到體育模組各頁面</td></tr>
-                <tr><td>2</td><td>適用盤口</td><td>後台 <code>handicap</code> 陣列指定，只有這些盤口顯示包賠標</td><td><span class="cost-tag cost-config">設定層</span></td><td>球種也要在 <code>firstPaySports</code> 內</td></tr>
-                <tr><td>3</td><td>包賠階梯</td><td><code>award[].firstPay → compensation</code> 映射</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>4</td><td>預設帶入購物車</td><td><code>firstPayDefaultCartData</code> 灌入購物車 store</td><td><span class="cost-tag cost-code">程式層</span></td><td>改購物車邏輯 = 大需求</td></tr>
-                <tr><td>5</td><td>包賠活動開關</td><td><code>firstPayConfig.isActive</code> 後台控制</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>1</td><td>多入口觸發</td><td>賽事詳情頁、購物車、首頁浮層都有入口</td><td><span class="cost-tag cost-code">程式層</span></td><td>useFirstPay 注入到體育模組各頁面</td></tr>
+                <tr><td>2</td><td>適用盤口</td><td>後台 handicap 陣列指定，只有這些盤口顯示包賠標</td><td><span class="cost-tag cost-config">設定層</span></td><td>球種也要在 firstPaySports 內</td></tr>
+                <tr><td>3</td><td>包賠階梯</td><td>award[].firstPay → compensation 映射</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>預設帶入購物車</td><td>firstPayDefaultCartData 灌入購物車 store</td><td><span class="cost-tag cost-code">程式層</span></td><td>改購物車邏輯 = 大需求</td></tr>
+                <tr><td>5</td><td>包賠活動開關</td><td>firstPayConfig.isActive 後台控制</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">共用 composable：composables/useFirstPay.ts（跨體育和活動模組）<br>首存包賠頁：pages/activity/index/firstDeposit/<br>體育耦合：pages/home/index/sport/components/BaseSportLayout.vue<br>API：apis/firstpay/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">共用 composable：composables/useFirstPay.ts（跨體育和活動模組）<br>API：apis/firstpay/index.ts</div></details>
           </div>
         </details>
       </div>
 
-      <div class="section" id="nav-rally">
-        <details class="page-logic-card">
-          <summary>2.8 砍單（Rally）<span class="rule-count">9 條規則</span></summary>
+      <!-- === 4. 其他活動類型 === -->
+      <div class="section" id="sec-others">
+        <div class="section-title"><span class="num">4</span> 其他活動類型</div>
+        <div class="section-desc">砍單、新手轉盤、舊版任務、賽事分頁、紅包雨、場館存款、獎品申請、純展示頁</div>
+
+        <details class="page-logic-card" id="sec-rally">
+          <summary>砍單（Rally）<span class="rule-count">9 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>活動已關閉</td><td>errCode 26001 → toast「該活動已關閉！」→ 導回活動列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>2</td><td>資格審查</td><td><code>eligibilityCheck</code> 驗是否符合參與條件</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>1</td><td>活動已關閉</td><td>errCode 26001 → toast → 導回活動列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>資格審查</td><td>eligibilityCheck 驗是否符合參與條件</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>3</td><td>發起砍單</td><td>選注單 → 交易激活檢查 → 加入砍單</td><td><span class="cost-tag cost-code">程式層</span></td><td>要先有體育注單，跨體育模組</td></tr>
-                <tr><td>4</td><td>邀請幫砍</td><td>分享連結，被邀請人從外部進入</td><td><span class="cost-tag cost-code">程式層</span></td><td>未登入狀態處理、分享文案自定義（GOR-5991）</td></tr>
-                <tr><td>5</td><td>幫砍操作</td><td><code>putHelperCut</code> 執行幫砍</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>6</td><td>砍單成功彈窗</td><td>WebSocket 推送成功通知，活動 store 彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td><code>activityStore.openRallySuccessPopup(wsData)</code></td></tr>
-                <tr><td>7</td><td>導向體育頁</td><td>砍單完成後引導去體育下注</td><td><span class="cost-tag cost-code">程式層</span></td><td>跳 <code>/home/sport</code></td></tr>
+                <tr><td>4</td><td>邀請幫砍</td><td>分享連結，被邀請人從外部進入</td><td><span class="cost-tag cost-code">程式層</span></td><td>未登入狀態處理</td></tr>
+                <tr><td>5</td><td>幫砍操作</td><td>putHelperCut 執行幫砍</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>砍單成功彈窗</td><td>WebSocket 推送成功通知</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>導向體育頁</td><td>砍單完成後引導去體育下注</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>8</td><td>防連點</td><td>3 秒內不可重複點擊</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>9</td><td>綁手機檢查</td><td>部分操作需先綁手機</td><td><span class="cost-tag cost-code">程式層</span></td><td>跳 <code>/mine/mine-center/bind-phone</code></td></tr>
+                <tr><td>9</td><td>綁手機檢查</td><td>部分操作需先綁手機</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">核心 composable：pages/activity/index/rally/composables/useRallyActivity.ts<br>WebSocket 通知：composables/useWSNotification.ts → 觸發 openRallySuccessPopup<br>API：apis/campaign/index.ts（/campaign/rally/* 系列 13 支 API）</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">核心 composable：useRallyActivity.ts<br>WebSocket 通知：useWSNotification.ts<br>API：apis/campaign/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-newbie-wheel">
-        <details class="page-logic-card">
-          <summary>2.9 新手轉盤 <span class="rule-count">4 條規則</span></summary>
+        <details class="page-logic-card" id="sec-newbie-wheel">
+          <summary>新手轉盤 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>懸浮窗入口</td><td>直播間/賽事詳情/體育首頁/娛樂首頁等多處顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td>預設位置在紅包雨懸浮窗上方</td></tr>
                 <tr><td>2</td><td>賽事詳情自動彈出</td><td>未充值用戶進入 2 分鐘後彈出</td><td><span class="cost-tag cost-code">程式層</span></td><td>每次登入各彈 1 次、每日限 2 次、橫屏不彈</td></tr>
-                <tr><td>3</td><td>必中機制</td><td><code>isSureWin</code> 設定，顯示「距必中剩 N 次」</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>4</td><td>抽獎次數兌換</td><td>存款/投注達標後兌換抽獎次數</td><td><span class="cost-tag cost-config">設定層</span></td><td><code>amountReqPerDraw</code> 控制兌換比例</td></tr>
+                <tr><td>3</td><td>必中機制</td><td>isSureWin 設定，顯示「距必中剩 N 次」</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>抽獎次數兌換</td><td>存款/投注達標後兌換抽獎次數</td><td><span class="cost-tag cost-config">設定層</span></td><td>amountReqPerDraw 控制兌換比例</td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">API composable：apis/newplayerdraw/useNewPlayerDraw.ts<br>API：apis/newplayerdraw/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">API：apis/newplayerdraw/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-daily-task">
-        <details class="page-logic-card">
-          <summary>2.10 每日任務（舊版）<span class="rule-count">5 條規則</span></summary>
+        <details class="page-logic-card" id="sec-daily-task">
+          <summary>每日任務（舊版）<span class="rule-count">5 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>任務狀態</td><td>InProgress(1) → 前往任務 / Completed(2) → 領獎 / Claimed(3) → 已領取</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>2</td><td>任務類型</td><td>10 種（有效投注/存款/投注金額/充值/觀看/打賞/曬單/跟單/分享/APP登錄）</td><td><span class="cost-tag cost-config">設定層</span></td><td>APP 登錄跳 APP 落地頁，其他依 jumpType 跳轉</td></tr>
+                <tr><td>1</td><td>任務狀態</td><td>InProgress(1) → 前往 / Completed(2) → 領獎 / Claimed(3) → 已領取</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>任務類型</td><td>10 種（有效投注/存款/投注金額/充值/觀看/打賞/曬單/跟單/分享/APP登錄）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
                 <tr><td>3</td><td>排序優先級</td><td>可領獎 &gt; 未完成 &gt; 已完成</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>4</td><td>倒計時</td><td>依剩餘時間顯示不同格式（天時 / 時分 / 分秒 / 秒 / 已結束）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>5</td><td>VIP / 帳號限制</td><td><code>vipRule</code> + <code>accountRestrictions</code> 後台配置</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>倒計時</td><td>依剩餘時間顯示不同格式</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>VIP / 帳號限制</td><td>vipRule + accountRestrictions 後台配置</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">主檔案：pages/activity/index/dailyTask/composables/useDailyTask.ts<br>API：apis/dailytask/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">主檔案：useDailyTask.ts<br>API：apis/dailytask/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-newbie-task">
-        <details class="page-logic-card">
-          <summary>2.11 舊新手任務 <span class="rule-count">6 條規則</span></summary>
+        <details class="page-logic-card" id="sec-newbie-task">
+          <summary>舊新手任務 <span class="rule-count">6 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>子活動類型</td><td>New(1)/Deposit(2)/SignIn(3)/Revive(4) 四種子頁面</td><td><span class="cost-tag cost-config">設定層</span></td><td>每種有獨立元件</td></tr>
-                <tr><td>2</td><td>身份判斷</td><td>新會員 vs 老會員 vs 只有簽到/復活 — 不同文案和可見性</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>3</td><td>綁定檢查</td><td>登入 → 綁手機 → 綁銀行卡 三步驟（可配置跳過綁卡檢查）</td><td><span class="cost-tag cost-code">程式層</span></td><td><code>useBindDialogInfo.ts</code></td></tr>
+                <tr><td>2</td><td>身份判斷</td><td>新會員 vs 老會員 vs 只有簽到/復活</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>綁定檢查</td><td>登入 → 綁手機 → 綁銀行卡 三步驟</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>4</td><td>領獎流程</td><td>進行中 → 領取 → 審核中 → 已領取/已失效</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
                 <tr><td>5</td><td>錯誤碼映射</td><td>7 種 errCode 對應不同按鈕狀態和文字</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>6</td><td>舊新版並存</td><td>aId 10009(舊) vs aId 30004(新 /mission/newbie)</td><td><span class="cost-tag cost-code">程式層</span></td><td><b>不要假設只有新版</b>，GOR-6437 想砍還沒砍</td></tr>
+                <tr><td>6</td><td>舊新版並存</td><td>aId 10009(舊) vs aId 30004(新 /mission/newbie)</td><td><span class="cost-tag cost-code">程式層</span></td><td>不要假設只有新版</td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">主檔案：pages/activity/index/newbieTask/composables/useNewbieTask.ts<br>綁定檢查：pages/activity/index/newbieTask/composables/useBindDialogInfo.ts<br>API：apis/newbietask/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">主檔案：useNewbieTask.ts<br>API：apis/newbietask/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-match-page">
-        <details class="page-logic-card">
-          <summary>2.12 賽事分頁活動 <span class="rule-count">5 條規則</span></summary>
+        <details class="page-logic-card" id="sec-match-page">
+          <summary>賽事分頁活動 <span class="rule-count">5 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>新舊版差異</td><td>舊版(10007) 無任務條件；新版(10020) 有 MissionBlock + claim</td><td><span class="cost-tag cost-code">程式層</span></td><td>新版才在 ACTIVITY_REWARD_IDS 裡</td></tr>
+                <tr><td>1</td><td>新舊版差異</td><td>舊版(10007) 無任務條件；新版(10020) 有 MissionBlock + claim</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>2</td><td>任務條件</td><td>新版使用 MissionBlock 元件，共用任務條件引擎</td><td><span class="cost-tag cost-code">程式層</span></td><td>同轉盤/任務的條件引擎</td></tr>
-                <tr><td>3</td><td>申請活動</td><td>輸入訂單號 → 驗證 → 申請</td><td><span class="cost-tag cost-code">程式層</span></td><td>空輸入/錯誤訂單號/次數上限三種提示</td></tr>
-                <tr><td>4</td><td>防連點</td><td>3 秒內不可重複（error 15033）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>5</td><td>推薦下注</td><td>RecommendBet 元件，跳到體育賽事詳情頁下注</td><td><span class="cost-tag cost-code">程式層</span></td><td>跨活動和體育模組</td></tr>
+                <tr><td>3</td><td>申請活動</td><td>輸入訂單號 → 驗證 → 申請</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>防連點</td><td>3 秒內不可重複</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>推薦下注</td><td>RecommendBet 元件，跳到體育賽事詳情頁</td><td><span class="cost-tag cost-code">程式層</span></td><td>跨活動和體育模組</td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">舊版：pages/activity/index/matchPage/<br>新版：pages/activity/index/newMatchPage/（多了 MissionBlock）<br>API：apis/matchactivity/index.ts + apis/newmatchactivity/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">舊版：pages/activity/index/matchPage/<br>新版：pages/activity/index/newMatchPage/</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-red-rain">
-        <details class="page-logic-card">
-          <summary>2.13 紅包雨 / 直播搶紅包 <span class="rule-count">3 條規則</span></summary>
+        <details class="page-logic-card" id="sec-red-rain">
+          <summary>紅包雨 / 直播搶紅包 <span class="rule-count">3 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>紅包雨時間</td><td><code>recordMap</code> 以 startTime 為 key，前端輪詢判斷「現在事件」</td><td><span class="cost-tag cost-code">程式層</span></td><td>開始時間 - 5 秒準備、結束時間 + 15 秒關閉</td></tr>
-                <tr><td>2</td><td>下一場倒數</td><td><code>nextTimestamp</code> 計算最近的紅包雨開始時間</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>3</td><td>紅包雨 vs 直播搶紅包</td><td>不同 aId（10004 vs 20001）但共用 <code>redPacketRain</code> store</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>1</td><td>紅包雨時間</td><td>recordMap 以 startTime 為 key，前端輪詢判斷「現在事件」</td><td><span class="cost-tag cost-code">程式層</span></td><td>開始時間 - 5 秒準備、結束時間 + 15 秒關閉</td></tr>
+                <tr><td>2</td><td>下一場倒數</td><td>nextTimestamp 計算最近的紅包雨開始時間</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>紅包雨 vs 直播搶紅包</td><td>不同 aId（10004 vs 20001）但共用 redPacketRain store</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">紅包雨 store：stores/redPacketRain.ts<br>API：apis/redpacket/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">紅包雨 store：stores/redPacketRain.ts<br>API：apis/redpacket/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-venue-bonus">
-        <details class="page-logic-card">
-          <summary>2.14 場館存款活動 <span class="rule-count">4 條規則</span></summary>
+        <details class="page-logic-card" id="sec-venue-bonus">
+          <summary>場館存款活動 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>活動資訊</td><td>依 <code>uId</code> 載入場館存款活動（支援分頁 tab）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-                <tr><td>2</td><td>已參與記錄</td><td>需登入才載入 <code>joinedVenueDeposit</code></td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>3</td><td>申請獎勵</td><td>需登入，<code>applyVenueDeposit</code></td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-                <tr><td>4</td><td>場館轉帳</td><td>GOR-6555 改 v2 轉帳流程（開放中）</td><td><span class="cost-tag cost-code">程式層</span></td><td>跟存款模組有交集</td></tr>
+                <tr><td>1</td><td>活動資訊</td><td>依 uId 載入場館存款活動（支援分頁 tab）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>已參與記錄</td><td>需登入才載入</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>申請獎勵</td><td>需登入</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>場館轉帳</td><td>v2 轉帳流程（開放中）</td><td><span class="cost-tag cost-code">程式層</span></td><td>跟存款模組有交集</td></tr>
               </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考（展開）</summary>
-              <div class="rd-content">composable：pages/activity/index/venueBonus/composables/useVenueBonus.ts<br>API：apis/venuebonus/index.ts</div>
-            </details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composable：useVenueBonus.ts<br>API：apis/venuebonus/index.ts</div></details>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-apply-prize">
-        <details class="page-logic-card">
-          <summary>2.15 獎品申請頁 <span class="rule-count">2 條規則</span></summary>
+        <details class="page-logic-card" id="sec-apply-prize">
+          <summary>獎品申請頁 <span class="rule-count">2 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>獎品申請表</td><td>輸入姓名/手機/地址等（實體獎品）</td><td><span class="cost-tag cost-code">程式層</span></td><td>跳到 VIP 收件地址（<code>/vip/shipping-address</code>）</td></tr>
-                <tr><td>2</td><td>來源頁判斷</td><td>依 <code>from</code> query 參數回到不同頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>1</td><td>獎品申請表</td><td>輸入姓名/手機/地址等（實體獎品）</td><td><span class="cost-tag cost-code">程式層</span></td><td>跳到 VIP 收件地址</td></tr>
+                <tr><td>2</td><td>來源頁判斷</td><td>依 from query 參數回到不同頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
             </table>
           </div>
         </details>
-      </div>
 
-      <div class="section" id="nav-display">
-        <details class="page-logic-card">
-          <summary>2.16 純展示 / 會員無限代理 / 簽到大禮包 <span class="rule-count">4 條規則</span></summary>
+        <details class="page-logic-card" id="sec-display">
+          <summary>純展示 / 會員無限代理 / 簽到大禮包 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
@@ -676,6 +730,7 @@
         </details>
       </div>
 
+      </div>
     </div><!-- /overview -->
 
     <!-- ================================================================ -->
@@ -1334,24 +1389,30 @@ sequenceDiagram
     overview: {
       title: '功能總覽',
       items: [
-        { id: 'nav-overview-img', label: '活動列表總覽' },
-        { group: '頁面邏輯' },
-        { id: 'nav-activity-list', label: '2.1 活動列表頁' },
-        { id: 'nav-mission', label: '2.2 任務系統' },
-        { id: 'nav-wheel', label: '2.3 轉盤系統' },
-        { id: 'nav-lottery', label: '2.4 主題抽獎' },
-        { id: 'nav-invite', label: '2.5 邀請好友' },
-        { id: 'nav-rebate', label: '2.6 返水' },
-        { id: 'nav-first-deposit', label: '2.7 首存包賠' },
-        { id: 'nav-rally', label: '2.8 砍單' },
-        { id: 'nav-newbie-wheel', label: '2.9 新手轉盤' },
-        { id: 'nav-daily-task', label: '2.10 每日任務' },
-        { id: 'nav-newbie-task', label: '2.11 舊新手任務' },
-        { id: 'nav-match-page', label: '2.12 賽事分頁' },
-        { id: 'nav-red-rain', label: '2.13 紅包雨' },
-        { id: 'nav-venue-bonus', label: '2.14 場館存款' },
-        { id: 'nav-apply-prize', label: '2.15 獎品申請' },
-        { id: 'nav-display', label: '2.16 純展示' }
+        { id: 'sec-overview', label: '0 模組概覽' },
+        { id: 'sec-flow', label: '1 主要動線' },
+        { type: 'group', label: '列表與任務' },
+        { id: 'sec-list', label: '2 活動列表與任務' },
+        { id: 'sec-activity-list', label: '├ 活動列表頁' },
+        { id: 'sec-mission', label: '├ 任務系統' },
+        { id: 'sec-wheel', label: '└ 轉盤系統' },
+        { type: 'group', label: '抽獎與邀請' },
+        { id: 'sec-lottery-invite', label: '3 抽獎與邀請' },
+        { id: 'sec-lottery', label: '├ 主題抽獎' },
+        { id: 'sec-invite', label: '├ 邀請好友' },
+        { id: 'sec-rebate', label: '├ 返水' },
+        { id: 'sec-first-deposit', label: '└ 首存包賠' },
+        { type: 'group', label: '其他活動' },
+        { id: 'sec-others', label: '4 其他活動類型' },
+        { id: 'sec-rally', label: '├ 砍單' },
+        { id: 'sec-newbie-wheel', label: '├ 新手轉盤' },
+        { id: 'sec-daily-task', label: '├ 每日任務(舊)' },
+        { id: 'sec-newbie-task', label: '├ 舊新手任務' },
+        { id: 'sec-match-page', label: '├ 賽事分頁' },
+        { id: 'sec-red-rain', label: '├ 紅包雨' },
+        { id: 'sec-venue-bonus', label: '├ 場館存款' },
+        { id: 'sec-apply-prize', label: '├ 獎品申請' },
+        { id: 'sec-display', label: '└ 純展示' },
       ]
     },
     userflow: {

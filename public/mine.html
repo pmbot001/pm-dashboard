@@ -56,7 +56,7 @@
       cursor: pointer;
     }
     .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .tab-pill.active { background: #eab308; color: #fff; border-color: #eab308; }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -130,7 +130,7 @@
     .page-logic-card summary::before {
       content: "\25B8"; color: #64748b; font-size: 14px; transition: transform .2s;
     }
-    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #eab308; }
     .page-logic-card summary:hover { background: #263548; }
     .page-logic-card .rule-count { font-size: 12px; color: #64748b; font-weight: 400; }
     .page-logic-card .card-body {
@@ -153,11 +153,11 @@
       margin: 28px 0 16px;
       padding: 10px 16px;
       background: #1a2638;
-      border-left: 3px solid #f97316;
+      border-left: 3px solid #eab308;
       border-radius: 6px;
       font-size: 14px;
       font-weight: 700;
-      color: #f97316;
+      color: #eab308;
     }
 
     /* Constraint */
@@ -182,7 +182,7 @@
     .constraint-card summary::after {
       content: "\25B8"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
     }
-    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #eab308; }
     .constraint-card summary:hover { background: #263548; }
     .constraint-detail {
       padding: 10px 14px 14px; border-top: 1px solid #334155;
@@ -265,8 +265,8 @@
     }
     .side-nav .sn-item.active {
       color: #fff;
-      border-left-color: #f97316;
-      background: rgba(249,115,22,.06);
+      border-left-color: #eab308;
+      background: rgba(234,179,8,.06);
     }
 
     .has-side-nav .main-content.v2-main {
@@ -305,15 +305,74 @@
     <!-- ================================================================ -->
     <div class="tab-panel active" id="overview">
 
-      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
-        改動成本：<span class="cost-tag cost-locked">改不了</span> 業務/場館決定
-        <span class="cost-tag cost-config">設定層</span> 後台可配
-        <span class="cost-tag cost-code">程式層</span> 要發版
+      <div class="tool-section">
+
+      <!-- tag legend -->
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+        改動成本：
+        <span><span class="cost-tag cost-locked">改不了</span> 業務/場館決定</span>
+        <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
+        <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
       </div>
 
-      <!-- 2.1 我的主頁面 -->
+      <!-- === 0. 模組概覽 === -->
+      <div class="section" id="sec-overview">
+        <div class="section-title"><span class="num">0</span> 模組概覽</div>
+        <div class="section-desc">底部導覽列第五個 Tab「我的」，含個人資料、VIP、福利中心、背包、投注記錄、場館轉帳、任務系統等</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>「我的」頁面是個人中心入口，大量功能收在這裡。餘額刷新有 10 秒冷卻期。測試帳號有多項功能限制（disallowTest）。性別和生日只能設定一次，設定後無法修改。
+        </div>
+      </div>
+
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">玩家在「我的」頁面的主要操作路徑</div>
+
+        <div class="flow-box">
+          <div class="flow-label">個人中心 → 常用功能</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入我的頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">查看餘額<br><small>10秒冷卻刷新</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">快捷 Menu<br><small>存款/提款/轉帳</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">功能列表<br><small>12 項功能入口</small></div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">福利領取</div>
+          <div class="flow-row">
+            <div class="flow-step">進入福利中心</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">篩選福利<br><small>日期/分類</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">單筆/一鍵領取</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">背包管理<br><small>兌換/申請</small></div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">VIP → 特權領取</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入 VIP 頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">查看等級進度<br><small>存款/流水</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">領取豪禮</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">生日禮金<br><small>註冊≥90天</small></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 我的主頁面 -->
       <div class="section" id="nav-mine-home">
-        <div class="section-title"><span class="num">1</span> 我的主頁面</div>
+        <div class="section-title"><span class="num">2</span> 我的主頁面</div>
         <div class="section-desc">個人中心首頁，底部導航 Tab 入口。含使用者資訊卡、快捷 Menu、每日任務、12 項功能清單。</div>
 
         <div class="annotated-row">
@@ -327,11 +386,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-ui">UI</span> 使用者資訊卡</h4>
+              <h4><span class="type-tag type-ui">UI</span> 使用者資訊卡</h4>
               <p>已登入顯示帳號、餘額（分轉元）、VIP 圖示、稱號 badge。未登入顯示「您还未登录」。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 餘額刷新冷卻</h4>
+              <h4><span class="type-tag type-rule">邏輯</span> 餘額刷新冷卻</h4>
               <p>10 秒冷卻期，冷卻中點擊 toast 提示。轉圈動畫 2 秒。</p>
             </div>
           </div>
@@ -362,7 +421,7 @@
 
       <!-- 2.2 個人資料 -->
       <div class="section" id="nav-profile">
-        <div class="section-title"><span class="num">2</span> 個人資料</div>
+        <div class="section-title"><span class="num">3</span> 個人資料</div>
         <div class="section-desc">查看/修改暱稱、頭像、性別、生日、聯繫方式、登出。</div>
 
         <div class="annotated-row single">
@@ -372,11 +431,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-validation">驗證</span> 暱稱規則</h4>
+              <h4><span class="type-tag type-rule">驗證</span> 暱稱規則</h4>
               <p>禁特殊字元、中文算 2 字元、≤14 字元、數字 ≤3。冷卻期內不可改。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> 不可逆操作</h4>
+              <h4><span class="type-tag type-ui">注意</span> 不可逆操作</h4>
               <p>性別、生日只能設定一次，設定後無法修改。</p>
             </div>
           </div>
@@ -404,7 +463,7 @@
 
       <!-- 2.3 VIP -->
       <div class="section" id="nav-vip">
-        <div class="section-title"><span class="num">3</span> VIP 特權</div>
+        <div class="section-title"><span class="num">4</span> VIP 特權</div>
         <div class="section-desc">VIP 等級卡片輪播、升降級進度、豪禮領取、返水比例、生日禮金。</div>
 
         <div class="annotated-row">
@@ -418,11 +477,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 升級條件</h4>
+              <h4><span class="type-tag type-rule">邏輯</span> 升級條件</h4>
               <p>isPayAmount=1 → 取 min(存款進度, 流水進度)。否則只看流水。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> 生日禮金</h4>
+              <h4><span class="type-tag type-ui">注意</span> 生日禮金</h4>
               <p>註冊未滿 90 天不可領取（防薅規則）。</p>
             </div>
           </div>
@@ -447,7 +506,7 @@
 
       <!-- 2.4 福利中心 -->
       <div class="section" id="nav-welfare">
-        <div class="section-title"><span class="num">4</span> 福利中心</div>
+        <div class="section-title"><span class="num">5</span> 福利中心</div>
         <div class="section-desc">領取活動福利（紅利、獎品），支援篩選、單筆/一鍵領取。</div>
 
         <div class="annotated-row">
@@ -461,11 +520,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> 領取流程</h4>
+              <h4><span class="type-tag type-rule">流程</span> 領取流程</h4>
               <p>單筆 debounce 800ms；一鍵領取部分失敗 → 彈窗計數 +「继续」遞迴再領。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-validation">驗證</span> 前置條件</h4>
+              <h4><span class="type-tag type-rule">驗證</span> 前置條件</h4>
               <p>領取需綁定手機/銀行卡（errCode 103/104/105）。已失效 = claimExpireTime < now。</p>
             </div>
           </div>
@@ -492,7 +551,7 @@
 
       <!-- 2.5 背包中心 -->
       <div class="section" id="nav-backpack">
-        <div class="section-title"><span class="num">5</span> 背包中心</div>
+        <div class="section-title"><span class="num">6</span> 背包中心</div>
         <div class="section-desc">背包管理（道具/背包）+ 兌換中心，獎品申請與兌換。</div>
 
         <div class="annotated-row">
@@ -506,11 +565,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 獎品類型</h4>
+              <h4><span class="type-tag type-rule">邏輯</span> 獎品類型</h4>
               <p>彩金 → 直接兌現到餘額。實體 → 開啟收件表單填地址。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> 兌換多元化</h4>
+              <h4><span class="type-tag type-rule">流程</span> 兌換多元化</h4>
               <p>一件商品可有多種兌換方案。效期延長至到期日 23:59:59（自然日）。</p>
             </div>
           </div>
@@ -536,7 +595,7 @@
 
       <!-- 2.6 投注記錄 -->
       <div class="section" id="nav-bet-record">
-        <div class="section-title"><span class="num">6</span> 投注記錄</div>
+        <div class="section-title"><span class="num">7</span> 投注記錄</div>
         <div class="section-desc">體育/直播/遊戲三 Tab，日期篩選，結算狀態查看。</div>
 
         <details class="page-logic-card">
@@ -557,7 +616,7 @@
 
       <!-- 2.7 場館轉帳 -->
       <div class="section" id="nav-transfer">
-        <div class="section-title"><span class="num">7</span> 場館轉帳</div>
+        <div class="section-title"><span class="num">8</span> 場館轉帳</div>
         <div class="section-desc">場館錢包間轉帳，必須經過中心錢包。含自動轉帳、一鍵回收。</div>
 
         <details class="page-logic-card">
@@ -580,7 +639,7 @@
 
       <!-- 2.8 任務系統 -->
       <div class="section" id="nav-tasks">
-        <div class="section-title"><span class="num">8</span> 任務系統</div>
+        <div class="section-title"><span class="num">9</span> 任務系統</div>
         <div class="annotated-row">
           <div class="screen-col">
             <img src="/images/mine/screen-task-expanded.png" alt="任務展開">
@@ -592,7 +651,7 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> Mission 系統</h4>
+              <h4><span class="type-tag type-rule">流程</span> Mission 系統</h4>
               <p>簽到 / 每日任務 / 新手任務整合。獎勵存背包，需手動領取。</p>
             </div>
           </div>
@@ -617,7 +676,7 @@
 
       <!-- 2.9 稱號系統 -->
       <div class="section" id="nav-badge">
-        <div class="section-title"><span class="num">9</span> 稱號系統</div>
+        <div class="section-title"><span class="num">10</span> 稱號系統</div>
         <div class="section-desc">稱號領取、配戴、時效管理、進度刷新。</div>
 
         <details class="page-logic-card">
@@ -637,6 +696,7 @@
         <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/mine-center/badgeInfo/useBadge.ts: L34-L602</div></details>
       </div>
 
+      </div>
     </div>
 
     <!-- ================================================================ -->
@@ -1230,15 +1290,20 @@ sequenceDiagram
     overview: {
       title: '功能總覽',
       items: [
-        { id: 'nav-mine-home', label: '1. 我的主頁面' },
-        { id: 'nav-profile', label: '2. 個人資料' },
-        { id: 'nav-vip', label: '3. VIP 特權' },
-        { id: 'nav-welfare', label: '4. 福利中心' },
-        { id: 'nav-backpack', label: '5. 背包中心' },
-        { id: 'nav-bet-record', label: '6. 投注記錄' },
-        { id: 'nav-transfer', label: '7. 場館轉帳' },
-        { id: 'nav-tasks', label: '8. 任務系統' },
-        { id: 'nav-badge', label: '9. 稱號系統' }
+        { id: 'sec-overview', label: '0 模組概覽' },
+        { id: 'sec-flow', label: '1 主要動線' },
+        { type: 'group', label: '核心功能' },
+        { id: 'nav-mine-home', label: '2 我的主頁面' },
+        { id: 'nav-profile', label: '3 個人資料' },
+        { id: 'nav-vip', label: '4 VIP 特權' },
+        { type: 'group', label: '資產管理' },
+        { id: 'nav-welfare', label: '5 福利中心' },
+        { id: 'nav-backpack', label: '6 背包中心' },
+        { id: 'nav-bet-record', label: '7 投注記錄' },
+        { id: 'nav-transfer', label: '8 場館轉帳' },
+        { type: 'group', label: '其他' },
+        { id: 'nav-tasks', label: '9 任務系統' },
+        { id: 'nav-badge', label: '10 稱號系統' },
       ]
     },
     userflow: {

@@ -141,6 +141,11 @@
     .side-nav .sn-item:hover { color: #e2e8f0; background: #1e293b; }
     .side-nav .sn-item.active { color: #fff; border-left-color: #f43f5e; background: rgba(244,63,94,.06); }
     .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
+
+    /* ===== Others accent color overrides (rose #f43f5e) ===== */
+    .num { background: #f43f5e !important; }
+    .flow-step.highlight { background: #f43f5e !important; border-color: #f43f5e !important; }
+
     @media(max-width: 900px) {
       .side-nav { display: none; }
       .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
@@ -170,15 +175,60 @@
     <!-- TAB 1: 功能總覽 -->
     <div class="tab-panel active" id="overview">
       <div class="tool-section">
-        <div class="kb-notice">
-          <b>模組概覽：</b>客服系統（全局 iframe、VIP 線道分流）、爆料頻道（主播預測 + 跟單）、特色頁（落地頁/下載引導）、消息中心。
+
+      <!-- tag legend -->
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+        改動成本：
+        <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
+        <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
+      </div>
+
+      <!-- === 0. 模組概覽 === -->
+      <div class="section" id="sec-overview">
+        <div class="section-title"><span class="num">0</span> 模組概覽</div>
+        <div class="section-desc">客服系統（全局 iframe、VIP 線道分流）、爆料頻道（主播預測 + 跟單）、特色頁（落地頁/下載引導）、消息中心</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>客服是全局 iframe，有 4 種顯示狀態（close/large/small/hidden）。VIP 分流決定玩家看到哪些線道。爆料功能受 gamePredictEnabled 開關控制，關掉整個功能消失。
         </div>
-        <div class="stats-pill" style="margin-top: 20px;">
-          <span>10 頁面邏輯卡</span><span>|</span><span>4 踩坑 Records</span><span>|</span><span>17 API</span>
+      </div>
+
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">玩家使用客服、瀏覽爆料、進入落地頁的主要路徑</div>
+
+        <div class="flow-box">
+          <div class="flow-label">客服進入流程</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">點擊客服圖示</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">拉線道設定<br><small>VIP 篩選</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選擇線道<br><small>單條直開/多條選</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">開啟 iframe<br><small>官方/三方</small></div>
+          </div>
         </div>
 
-        <!-- 客服 -->
-        <div class="logic-merge-divider" id="sec-cs">7.1 線上客服</div>
+        <div class="flow-box">
+          <div class="flow-label">爆料瀏覽 → 跟單</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入爆料首頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選 Tab<br><small>關注/聯賽/時間/熱度</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">查看文章詳情</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">跟單投注<br><small>選盤口→購物車</small></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 2. 線上客服 === -->
+      <div class="section" id="sec-cs">
+        <div class="section-title"><span class="num">2</span> 線上客服</div>
+        <div class="section-desc">全局 iframe 客服系統，VIP 線道分流</div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -191,11 +241,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> VIP 分流</h4>
+              <h4><span class="type-tag type-rule">邏輯</span> VIP 分流</h4>
               <p>線道依 vipBegin~vipEnd 篩選。多條線道 → BottomSheet 選擇；單條 → 直接開啟。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> iframe 跨域</h4>
+              <h4><span class="type-tag type-ui">注意</span> iframe 跨域</h4>
               <p>官方客服 csType=1 用 MD5 簽名 + iframe；三方 csType=2 用 IframeCommon。postMessage 溝通。</p>
             </div>
           </div>
@@ -234,8 +284,16 @@
           </div>
         </details>
 
-        <!-- 爆料 -->
-        <div class="logic-merge-divider" id="sec-gossip">13. 爆料</div>
+      </div>
+
+      <!-- === 3. 爆料 === -->
+      <div class="section" id="sec-gossip">
+        <div class="section-title"><span class="num">3</span> 爆料頻道</div>
+        <div class="section-desc">主播預測 + 跟單，4 種排行榜，搜尋功能</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>爆料受 gamePredictEnabled 開關控制，關掉整個功能消失。訪客模式由 gamePredictVisitorDisplayMode 控制。從直播間進入爆料可能沒統一檢查訪客限制。
+        </div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -248,11 +306,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 4 個 Tab</h4>
+              <h4><span class="type-tag type-rule">邏輯</span> 4 個 Tab</h4>
               <p>已關注 / 依聯賽 / 依時間 / 熱度榜。預設 byLeague。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> 訪客攔截</h4>
+              <h4><span class="type-tag type-ui">注意</span> 訪客攔截</h4>
               <p>gamePredictVisitorDisplayMode 控制訪客是否可瀏覽。部分入口（直播間）未統一檢查。</p>
             </div>
           </div>
@@ -321,8 +379,12 @@
           </div>
         </details>
 
-        <!-- 特色頁 / 消息 -->
-        <div class="logic-merge-divider" id="sec-others">8. 特色頁 / 消息中心</div>
+      </div>
+
+      <!-- === 4. 特色頁 / 消息中心 === -->
+      <div class="section" id="sec-others-misc">
+        <div class="section-title"><span class="num">4</span> 特色頁 / 消息中心</div>
+        <div class="section-desc">落地頁（白產/轉盤/下載）、消息中心</div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -335,11 +397,11 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> 落地頁路由</h4>
+              <h4><span class="type-tag type-rule">流程</span> 落地頁路由</h4>
               <p>jumpType × jumpValue 矩陣決定跳轉目標。白產/轉盤/下載包 3 種。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 排行榜 4 榜</h4>
+              <h4><span class="type-tag type-rule">邏輯</span> 排行榜 4 榜</h4>
               <p>命中榜 / 連紅榜 / 跟單榜 / 熱度榜，各自獨立 API。</p>
             </div>
           </div>
@@ -783,17 +845,20 @@ sequenceDiagram
     overview: {
       title: '功能總覽',
       items: [
-        { id: 'sec-cs', label: '7.1 線上客服' },
-        { id: 'sec-cs-entry', label: '客服進入邏輯' },
-        { id: 'sec-cs-state', label: 'iframe 狀態管理' },
-        { id: 'sec-gossip', label: '13. 爆料' },
-        { id: 'sec-gossip-home', label: '爆料首頁' },
-        { id: 'sec-gossip-detail', label: '文章詳情' },
-        { id: 'sec-gossip-search', label: '搜索' },
-        { id: 'sec-gossip-rank', label: '榜單' },
-        { id: 'sec-others', label: '8. 特色頁/消息' },
-        { id: 'sec-landing', label: '落地頁' },
-        { id: 'sec-message', label: '消息中心' },
+        { id: 'sec-overview', label: '⓪ 模組概覽' },
+        { id: 'sec-flow', label: '① 主要動線' },
+        { type: 'group', label: '功能區塊' },
+        { id: 'sec-cs', label: '├ ② 線上客服' },
+        { id: 'sec-cs-entry', label: '│  ├ 客服進入邏輯' },
+        { id: 'sec-cs-state', label: '│  └ iframe 狀態管理' },
+        { id: 'sec-gossip', label: '├ ③ 爆料頻道' },
+        { id: 'sec-gossip-home', label: '│  ├ 爆料首頁' },
+        { id: 'sec-gossip-detail', label: '│  ├ 文章詳情' },
+        { id: 'sec-gossip-search', label: '│  ├ 搜索' },
+        { id: 'sec-gossip-rank', label: '│  └ 榜單' },
+        { id: 'sec-others-misc', label: '└ ④ 特色頁/消息' },
+        { id: 'sec-landing', label: '   ├ 落地頁' },
+        { id: 'sec-message', label: '   └ 消息中心' },
       ]
     },
     userflow: {

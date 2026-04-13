@@ -171,17 +171,91 @@
     </header>
 
     <!-- TAB 1: 功能總覽 -->
+    <!-- TAB 1: 功能總覽 -->
     <div class="tab-panel active" id="overview">
       <div class="tool-section">
-        <div class="kb-notice">
-          <b>模組概覽：</b>娛樂城是底部導覽列第二個 Tab，讓玩家進入第三方場館。依業主 agentId 動態切換皮膚（水果2.0/YXB/YXR）。
-          含 <code>9</code> 種 LobbyType、<code>10</code> 種場館分類、<code>3</code> 套皮膚。
+
+      <!-- tag legend -->
+      <div class="tag-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:#94a3b8;">
+        改動成本：
+        <span><span class="cost-tag cost-venue">場館限制</span> 場館下發</span>
+        <span><span class="cost-tag cost-config">設定層</span> 後台可配</span>
+        <span><span class="cost-tag cost-code">程式層</span> 要發版</span>
+      </div>
+
+      <!-- === 0. 模組概覽 === -->
+      <div class="section" id="sec-overview">
+        <div class="section-title"><span class="num">0</span> 模組概覽</div>
+        <div class="section-desc">娛樂城是底部導覽列第二個 Tab，讓玩家進入第三方場館遊戲。依業主 agentId 動態切換皮膚（水果2.0/YXB/YXR）</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>娛樂城有 9 種 LobbyType 決定遊戲開啟方式、10 種場館分類、3 套皮膚。新增場館或切換皮膚時要確認 LobbyType 分流和轉帳錢包邏輯都走得通。
         </div>
-        <div class="stats-pill" style="margin-top: 20px;">
-          <span>8 頁面邏輯卡</span><span>|</span><span>3 踩坑 Records</span><span>|</span><span>10 功能</span>
+      </div>
+
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">玩家從進入娛樂城到實際開始遊戲的路徑</div>
+
+        <div class="flow-box">
+          <div class="flow-label">首頁瀏覽 → 進入遊戲</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入娛樂城</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">皮膚判斷<br><small>水果/YXB/YXR</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">載入場館列表<br><small>gameList + 分類</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">瀏覽分類 Tab<br><small>AI 推薦 / 體育 / 電子…</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">點擊場館卡片</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">LobbyType 分流</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">進入遊戲</div>
+          </div>
         </div>
 
-        <div class="logic-merge-divider" id="sec-home">2.1 娛樂城首頁</div>
+        <div class="flow-box">
+          <div class="flow-label">轉帳錢包 → 遊戲進入</div>
+          <div class="flow-row">
+            <div class="flow-step">點擊場館</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">檢查錢包模式</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">檢查餘額<br><small>不足彈轉帳確認</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">活動優惠提示</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">進入遊戲</div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">自研大廳 → 子遊戲</div>
+          <div class="flow-row">
+            <div class="flow-step">lobbyType=11/12</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">進入子遊戲大廳</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">搜尋/瀏覽<br><small>最多 20 字</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選擇子遊戲</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">進入遊戲</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 2. 娛樂城首頁 === -->
+      <div class="section" id="sec-home">
+        <div class="section-title"><span class="num">2</span> 娛樂城首頁</div>
+        <div class="section-desc">場館列表、分類 Tab、AI 推薦區、皮膚差異</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>YXR 皮膚跟主力皮膚（水果2.0/YXB）完全不同 Layout。改首頁需確認三套皮膚是否都要跟著改。lobbyType=13 是直接不顯示，不是維護。
+        </div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -194,30 +268,36 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 分類排序</h4>
+              <h4><span class="type-tag type-rule">規則</span> 分類排序</h4>
               <p>gameStore.classifySort 由後台決定 Tab 順序。AI 推薦 classify=999 固定置頂。</p>
+              <span class="cost-tag cost-config">設定層</span>
+              <div class="pm-note">雲平台 &gt; 創建渠道可設定</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-venue">場館</span> 維護遮罩</h4>
+              <h4><span class="type-tag type-rule">規則</span> 維護遮罩</h4>
               <p>serverAvailable=false → 卡片上蓋維護遮罩，場館方 API 控制。</p>
+              <span class="cost-tag cost-venue">場館限制</span>
+              <div class="pm-note">場館方控制，我們無法調整</div>
             </div>
           </div>
         </div>
 
-        <details class="page-logic-card" id="sec-home-main">
+        <details class="page-logic-card" id="sec-home-main" open>
           <summary>首頁（主力/YXB）<span class="rule-count">7 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>gameStore.classifySort</td><td>分類 Tab 排序由後台決定</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台 > 創建渠道</td></tr>
-              <tr><td>2</td><td>aiRecommend.length > 0</td><td>置頂 AI 推薦區 classify=999</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台開啟 AI 推薦</td></tr>
-              <tr><td>3</td><td>lobbyType=13 (No_Lobby)</td><td>過濾不顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>lobbyType=1 (Sport)</td><td>非 TB/YXRG 業主隱藏</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>體育大廳限定業主</td></tr>
-              <tr><td>5</td><td>serverAvailable=false</td><td>顯示維護遮罩</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>場館方控制</td></tr>
-              <tr><td>6</td><td>game.sort</td><td>卡片依 sort 升序排列</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>7</td><td>點擊分類 Tab</td><td>錨點滾動到對應分區</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>gameStore.classifySort</td><td>分類 Tab 排序由後台決定</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台 &gt; 創建渠道</td></tr>
+                <tr><td>2</td><td>aiRecommend.length &gt; 0</td><td>置頂 AI 推薦區 classify=999</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台開啟 AI 推薦</td></tr>
+                <tr><td>3</td><td>lobbyType=13 (No_Lobby)</td><td>過濾不顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>lobbyType=1 (Sport)</td><td>非 TB/YXRG 業主隱藏</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>體育大廳限定業主</td></tr>
+                <tr><td>5</td><td>serverAvailable=false</td><td>顯示維護遮罩</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>場館方控制</td></tr>
+                <tr><td>6</td><td>game.sort</td><td>卡片依 sort 升序排列</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>7</td><td>點擊分類 Tab</td><td>錨點滾動到對應分區</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/home/index/casino/index.vue<br>stores/game.ts:gameList/classifySort/aiRecommend</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/index/casino/index.vue<br>stores/game.ts:gameList/classifySort/aiRecommend</div></details>
           </div>
         </details>
 
@@ -225,17 +305,27 @@
           <summary>首頁（YXR 皮膚）<span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>YXR 皮膚</td><td>獨立 Layout + Header + Banner</td><td><span class="cost-tag cost-code">程式層</span></td><td>跟主力皮膚完全不同</td></tr>
-              <tr><td>2</td><td>isCollapseHeader</td><td>往下捲 → Header 收合 + 回頂部按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>showCasinoMoreGameList</td><td>「更多」展開子遊戲列表</td><td><span class="cost-tag cost-code">程式層</span></td><td>場館 ≤ 3 不顯示更多</td></tr>
-              <tr><td>4</td><td>TopicEnterDraw</td><td>杯賽轉盤入口嵌在頁底</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動期間才出現</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>YXR 皮膚</td><td>獨立 Layout + Header + Banner</td><td><span class="cost-tag cost-code">程式層</span></td><td>跟主力皮膚完全不同</td></tr>
+                <tr><td>2</td><td>isCollapseHeader</td><td>往下捲 → Header 收合 + 回頂部按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>showCasinoMoreGameList</td><td>「更多」展開子遊戲列表</td><td><span class="cost-tag cost-code">程式層</span></td><td>場館 ≤ 3 不顯示更多</td></tr>
+                <tr><td>4</td><td>TopicEnterDraw</td><td>杯賽轉盤入口嵌在頁底</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動期間才出現</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/vendors/index/yxrg/home/index/casino/</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/vendors/index/yxrg/home/index/casino/</div></details>
           </div>
         </details>
+      </div>
 
-        <div class="logic-merge-divider" id="sec-enter">2.2 遊戲進入</div>
+      <!-- === 3. 遊戲進入 === -->
+      <div class="section" id="sec-enter">
+        <div class="section-title"><span class="num">3</span> 遊戲進入</div>
+        <div class="section-desc">LobbyType 分流、三道維護防線、錢包轉帳</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>遊戲進入有三道維護防線（卡片層 → 轉帳層 → 進入層），任一層攔截都會阻止進入。H5 跳轉外鏈場館需跳提示彈窗（QIP-13214）。
+        </div>
 
         <div class="annotated-row single">
           <div class="screen-col">
@@ -244,32 +334,37 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> LobbyType 分流</h4>
+              <h4><span class="type-tag type-rule">規則</span> LobbyType 分流</h4>
               <p>9 種 LobbyType 決定遊戲開啟方式：外開 WebView / 內嵌體育 / 自研大廳 / 不顯示。</p>
+              <span class="cost-tag cost-code">程式層</span>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> 三道維護防線</h4>
+              <h4><span class="type-tag type-ui">介面</span> 三道維護防線</h4>
               <p>卡片層 → 轉帳層 → 進入層，三層各自檢查場館狀態。</p>
+              <span class="cost-tag cost-venue">場館限制</span>
+              <div class="pm-note">任一層攔截都會阻止進入遊戲</div>
             </div>
           </div>
         </div>
 
-        <details class="page-logic-card" id="sec-lobby-type">
+        <details class="page-logic-card" id="sec-lobby-type" open>
           <summary>LobbyType 分流邏輯 <span class="rule-count">9 種類型</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>LobbyType</th><th>值</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>Default</td><td>-1</td><td>預設</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>Normal</td><td>0</td><td>外開 WebView</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>Sport</td><td>1</td><td>內嵌體育頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>限定業主</td></tr>
-              <tr><td>Self_Developed_Electronic</td><td>11</td><td>自研電子大廳</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>Self_Developed_Fishing</td><td>12</td><td>自研捕魚大廳</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>No_Lobby</td><td>13</td><td>過濾不顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>Custom_Normal</td><td>21</td><td>自定-外開 WebView</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定</td></tr>
-              <tr><td>Custom_Sports_Hall</td><td>22</td><td>自定-內嵌體育</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>Cystom_Y1</td><td>23</td><td>外開+內嵌</td><td><span class="cost-tag cost-code">程式層</span></td><td>Y1 專用</td></tr>
+              <thead><tr><th>LobbyType</th><th>值</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>Default</td><td>-1</td><td>預設</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>Normal</td><td>0</td><td>外開 WebView</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>Sport</td><td>1</td><td>內嵌體育頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>限定業主</td></tr>
+                <tr><td>Self_Developed_Electronic</td><td>11</td><td>自研電子大廳</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>Self_Developed_Fishing</td><td>12</td><td>自研捕魚大廳</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>No_Lobby</td><td>13</td><td>過濾不顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>Custom_Normal</td><td>21</td><td>自定-外開 WebView</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定</td></tr>
+                <tr><td>Custom_Sports_Hall</td><td>22</td><td>自定-內嵌體育</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>Cystom_Y1</td><td>23</td><td>外開+內嵌</td><td><span class="cost-tag cost-code">程式層</span></td><td>Y1 專用</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/home/index/casino/components/GameCard.vue<br>stores/game.ts:LobbyType enum</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/index/casino/components/GameCard.vue<br>stores/game.ts:LobbyType enum</div></details>
           </div>
         </details>
 
@@ -277,10 +372,12 @@
           <summary>場館維護狀態 <span class="rule-count">3 層檢查</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>層級</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>卡片層</td><td>serverAvailable=false → 維護遮罩</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>場館 API 回傳</td></tr>
-              <tr><td>2</td><td>轉帳層</td><td>轉帳前二次檢查場館狀態</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>進入層</td><td>gameToken 取得時再次確認</td><td><span class="cost-tag cost-code">程式層</span></td><td>三道防線</td></tr>
+              <thead><tr><th>#</th><th>層級</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>卡片層</td><td>serverAvailable=false → 維護遮罩</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>場館 API 回傳</td></tr>
+                <tr><td>2</td><td>轉帳層</td><td>轉帳前二次檢查場館狀態</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>進入層</td><td>gameToken 取得時再次確認</td><td><span class="cost-tag cost-code">程式層</span></td><td>三道防線</td></tr>
+              </tbody>
             </table>
           </div>
         </details>
@@ -289,17 +386,27 @@
           <summary>錢包轉帳 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>轉帳錢包模式</td><td>進入遊戲前檢查中心錢包餘額</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>餘額不足</td><td>彈出轉帳確認框</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>有活動優惠</td><td>顯示活動提示彈窗</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>4</td><td>免轉錢包</td><td>直接進入遊戲</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>轉帳錢包模式</td><td>進入遊戲前檢查中心錢包餘額</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>餘額不足</td><td>彈出轉帳確認框</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>有活動優惠</td><td>顯示活動提示彈窗</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>免轉錢包</td><td>直接進入遊戲</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">stores/wallet.ts<br>GOR-4837（暫停）、GOR-1911</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">stores/wallet.ts<br>GOR-4837（暫停）、GOR-1911</div></details>
           </div>
         </details>
+      </div>
 
-        <div class="logic-merge-divider" id="sec-self">2.3 自研大廳 / AI / 體育</div>
+      <!-- === 4. 自研大廳 / AI / 體育 === -->
+      <div class="section" id="sec-self">
+        <div class="section-title"><span class="num">4</span> 自研大廳 / AI 精選 / 體育</div>
+        <div class="section-desc">自研電子/捕魚大廳、AI 推薦演算法、體育場館選擇邏輯</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>AI 精選推薦區即使未登入也會顯示，但推薦邏輯不同。近 30 日注單 &gt; 5 筆才有場館偏好推薦，不足時用站台排名 + 隨機補齊。
+        </div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -312,12 +419,15 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 自研大廳</h4>
+              <h4><span class="type-tag type-rule">規則</span> 自研大廳</h4>
               <p>lobbyType=11/12 進入子遊戲列表。搜尋限 20 字，投注成功的遊戲自動收藏。</p>
+              <span class="cost-tag cost-code">程式層</span>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-api">API</span> AI 精選</h4>
-              <p>近 30 日注單 > 5 筆 → 依場館偏好推薦；不足 → 站台排名 + 隨機補齊 7 個。</p>
+              <h4><span class="type-tag type-rule">規則</span> AI 精選</h4>
+              <p>近 30 日注單 &gt; 5 筆 → 依場館偏好推薦；不足 → 站台排名 + 隨機補齊 7 個。</p>
+              <span class="cost-tag cost-config">設定層</span>
+              <div class="pm-note">後台開啟 AI 推薦功能</div>
             </div>
           </div>
         </div>
@@ -326,12 +436,14 @@
           <summary>自研電子/捕魚大廳 <span class="rule-count">5 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>lobbyType=11/12</td><td>進入子遊戲列表頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>搜尋</td><td>最多20字，不可空白/標點</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>收藏</td><td>投注成功的電子遊戲自動收藏</td><td><span class="cost-tag cost-code">程式層</span></td><td>重進才排序</td></tr>
-              <tr><td>4</td><td>子遊戲來源</td><td>雲管理 > 遊戲工具 > 場館配置</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>5</td><td>POST /user/subGameList</td><td>取得子遊戲清單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>lobbyType=11/12</td><td>進入子遊戲列表頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>搜尋</td><td>最多20字，不可空白/標點</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>收藏</td><td>投注成功的電子遊戲自動收藏</td><td><span class="cost-tag cost-code">程式層</span></td><td>重進才排序</td></tr>
+                <tr><td>4</td><td>子遊戲來源</td><td>雲管理 &gt; 遊戲工具 &gt; 場館配置</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>取得子遊戲清單</td><td>載入場館底下的子遊戲列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
           </div>
         </details>
@@ -340,14 +452,16 @@
           <summary>AI 精選推薦 <span class="rule-count">5 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>classify=999</td><td>AI 推薦區置頂顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>2</td><td>近30日注單 > 5筆</td><td>判斷是否有場館偏好</td><td><span class="cost-tag cost-code">程式層</span></td><td>不含當日</td></tr>
-              <tr><td>3</td><td>有偏好</td><td>指定場館 + 隨機2方法 + 站台盈利</td><td><span class="cost-tag cost-code">程式層</span></td><td>去重取3個</td></tr>
-              <tr><td>4</td><td>無偏好</td><td>站台投注次數 + 站台盈利排名</td><td><span class="cost-tag cost-code">程式層</span></td><td>不足7個隨機補</td></tr>
-              <tr><td>5</td><td>未登入</td><td>仍顯示 AI Tab（但推薦內容不同）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>classify=999</td><td>AI 推薦區置頂顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>近30日注單 &gt; 5筆</td><td>判斷是否有場館偏好</td><td><span class="cost-tag cost-code">程式層</span></td><td>不含當日</td></tr>
+                <tr><td>3</td><td>有偏好</td><td>指定場館 + 隨機2方法 + 站台盈利</td><td><span class="cost-tag cost-code">程式層</span></td><td>去重取3個</td></tr>
+                <tr><td>4</td><td>無偏好</td><td>站台投注次數 + 站台盈利排名</td><td><span class="cost-tag cost-code">程式層</span></td><td>不足7個隨機補</td></tr>
+                <tr><td>5</td><td>未登入</td><td>仍顯示 AI Tab（但推薦內容不同）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">GOR-5299 新增AI精選區<br>stores/game.ts:aiRecommend</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">GOR-5299 新增AI精選區<br>stores/game.ts:aiRecommend</div></details>
           </div>
         </details>
 
@@ -355,14 +469,18 @@
           <summary>體育場館選擇 <span class="rule-count">3 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>classify=1 + lobbyType=1</td><td>大廳體育（內嵌）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>2</td><td>classify=1 + lobbyType=0</td><td>外開體育（WebView）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>3</td><td>當前場館維護中</td><td>setFirstAvailableVendor() 自動切換</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>classify=1 + lobbyType=1</td><td>大廳體育（內嵌）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>classify=1 + lobbyType=0</td><td>外開體育（WebView）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>當前場館維護中</td><td>自動切換到第一個可用場館</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">stores/game.ts:sportVendorList/externalSportVendorList</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">stores/game.ts:sportVendorList/externalSportVendorList</div></details>
           </div>
         </details>
+      </div>
+
       </div>
     </div>
 
@@ -709,17 +827,22 @@ sequenceDiagram
     overview: {
       title: '功能總覽',
       items: [
-        { id: 'sec-home', label: '2.1 娛樂城首頁' },
-        { id: 'sec-home-main', label: '首頁（主力/YXB）' },
-        { id: 'sec-home-yxr', label: '首頁（YXR）' },
-        { id: 'sec-enter', label: '2.2 遊戲進入' },
-        { id: 'sec-lobby-type', label: 'LobbyType 分流' },
-        { id: 'sec-maintain', label: '場館維護狀態' },
-        { id: 'sec-wallet', label: '錢包轉帳' },
-        { id: 'sec-self', label: '2.3 自研/AI/體育' },
-        { id: 'sec-self-hall', label: '自研大廳' },
-        { id: 'sec-ai', label: 'AI 精選推薦' },
-        { id: 'sec-sport-vendor', label: '體育場館選擇' },
+        { id: 'sec-overview', label: '0 模組概覽' },
+        { id: 'sec-flow', label: '1 主要動線' },
+        { type: 'group', label: '首頁' },
+        { id: 'sec-home', label: '2 娛樂城首頁' },
+        { id: 'sec-home-main', label: '├ 首頁（主力/YXB）' },
+        { id: 'sec-home-yxr', label: '└ 首頁（YXR）' },
+        { type: 'group', label: '遊戲進入' },
+        { id: 'sec-enter', label: '3 遊戲進入' },
+        { id: 'sec-lobby-type', label: '├ LobbyType 分流' },
+        { id: 'sec-maintain', label: '├ 場館維護狀態' },
+        { id: 'sec-wallet', label: '└ 錢包轉帳' },
+        { type: 'group', label: '大廳/推薦' },
+        { id: 'sec-self', label: '4 自研/AI/體育' },
+        { id: 'sec-self-hall', label: '├ 自研大廳' },
+        { id: 'sec-ai', label: '├ AI 精選推薦' },
+        { id: 'sec-sport-vendor', label: '└ 體育場館選擇' },
       ]
     },
     userflow: {

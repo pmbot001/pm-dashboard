@@ -260,6 +260,15 @@
 
     .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
 
+    /* ===== Deposit accent color overrides (blue #3b82f6) ===== */
+    .num { background: #3b82f6 !important; }
+    .flow-step.highlight { background: #3b82f6 !important; border-color: #3b82f6 !important; }
+    .tab-pill.active { background: #3b82f6 !important; border-color: #3b82f6 !important; }
+    .page-logic-card[open] summary::before { color: #3b82f6 !important; }
+    .constraint-card[open] summary::after { color: #3b82f6 !important; }
+    .sn-item.active { border-left-color: #3b82f6 !important; background: rgba(59,130,246,.06) !important; }
+    .logic-merge-divider { border-left-color: #3b82f6; color: #3b82f6; }
+
     @media(max-width: 900px) {
       .side-nav { display: none; }
       .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
@@ -294,22 +303,118 @@
     <!-- TAB 1: 功能總覽                            -->
     <!-- ========================================== -->
     <div class="tab-panel active" id="overview">
-      <div class="tool-section">
-        <div class="kb-notice">
-          <b>模組概覽：</b>金流模組含存款（充值）、提款、轉帳三大功能。存款頁 Tab 切換，提款/轉帳獨立路由。
-          涵蓋 <code>47</code> 種存款類型、<code>24</code> 種提款類型、<code>50</code> 支 API。
+
+      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
+        改動成本：<span class="cost-tag cost-locked">場館限制</span> 第三方控制
+        <span class="cost-tag cost-config">設定層</span> 後台可配
+        <span class="cost-tag cost-code">程式層</span> 要發版
+      </div>
+
+      <!-- === 0. 跨功能通用：存提款共用規則 === -->
+      <div class="section" id="sec-common">
+        <div class="section-title"><span class="num">0</span> 跨功能通用：存提款共用規則</div>
+        <div class="section-desc">存款、提款、轉帳都會碰到的前置條件與共用邏輯</div>
+
+        <details class="page-logic-card" open>
+          <summary>
+            共用前置條件
+            <span class="rule-count">5 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>未綁定手機</td><td>顯示 BindPhone 元件，禁止存/提款</td><td><span class="cost-tag cost-code">程式層</span></td><td>全平台前置條件，改綁手機流程要同步測存提款攔截</td></tr>
+                <tr><td>2</td><td>所有通道關閉 / 黑名單</td><td>顯示維護中頁面</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台可切換通道開關</td></tr>
+                <tr><td>3</td><td>有進行中訂單</td><td>隱藏通道列表，顯示訂單卡片</td><td><span class="cost-tag cost-code">程式層</span></td><td>存款不能同時兩張單、提款有上限</td></tr>
+                <tr><td>4</td><td>訂單輪詢</td><td>每 15 秒自動拉最新狀態</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>固定間隔，動不了</td></tr>
+                <tr><td>5</td><td>金額單位</td><td>存款元/分混用，提款統一分</td><td><span class="cost-tag cost-code">程式層</span></td><td>容易出轉換 Bug（TSD-4639 踩坑）</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                BindPhone：composables/useDeposit/useBindPhone.ts<br>
+                MaintainPay：pages/deposit/components/MaintainPay.vue<br>
+                輪詢間隔：useDepositLatestOrder.ts / useWithdrawOrder.ts<br>
+                金額轉換：payGold 單位為分，顯示時 /100
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">玩家從進入金流頁面到完成存款 / 提款的路徑</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>存款有「一般支付」和「USDT 快捷」兩條線，流程完全不同 — 一般是選通道填金額送單，USDT 快捷是先上傳憑證再下單。寫需求時先確認是哪條線，因為觸及的元件、表單欄位、錯誤處理邏輯都不一樣。
         </div>
 
-        <div class="stats-pill" style="margin-top: 20px;">
-          <span>12 頁面邏輯卡</span>
-          <span>|</span>
-          <span>13 踩坑 Records</span>
-          <span>|</span>
-          <span>87 測項</span>
+        <div class="flow-box">
+          <div class="flow-label">存款主線：選通道 → 填資訊 → 下單</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入存款頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">檢查前置<br><small>手機 / 黑名單 / 維護</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">通道列表<br><small>推薦 / 熱門 / 優惠</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選擇通道<br><small>銀行卡 / USDT / 微信…</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">填金額+姓名</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">提交下單</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">訂單追蹤</div>
+          </div>
         </div>
 
-        <!-- ===== 5.1 存款 ===== -->
-        <div class="logic-merge-divider" id="sec-deposit">5.1 存款（充值）</div>
+        <div class="flow-box">
+          <div class="flow-label">提款主線：選通道 → 驗流水 → 提交</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">進入提款頁</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選 Tab<br><small>中心錢包 / 邀請禮金</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選擇通道<br><small>銀行卡 / USDT / 支付寶</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">填金額+帳戶</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">流水檢查</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">提交</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">風控審核</div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">USDT 快捷充值（流程反轉）</div>
+          <div class="flow-row">
+            <div class="flow-step">選 USDT 快捷</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">選幣商</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">上傳憑證</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">填交易單號</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">提交下單</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 2. 存款（充值）=== -->
+      <div class="section" id="sec-deposit">
+        <div class="section-title"><span class="num">2</span> 存款（充值）</div>
+        <div class="section-desc">通道選擇、表單填寫、訂單追蹤 — 涵蓋 47 種存款類型</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>通道的開關、維護、匯率都是<b>第三方或後台控制的</b>。業主問「為什麼某個通道不見了？」第一步查雲平台通道開關，不是報 Bug。另外通道列表的推薦/熱門標籤也是後台設的，不用發版。
+        </div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -318,20 +423,54 @@
           </div>
           <div class="screen-col">
             <img src="/images/deposit/screen-fill-info.png" alt="填寫資訊">
-            <div class="screen-label">存款表單</div>
+            <div class="screen-label">存款表單（填寫資訊）</div>
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> 通道選擇</h4>
-              <p>suggestType=1 標推薦、isHot 標熱門。推薦不足 2 個自動從 isHot 補。</p>
+              <h4><span class="type-tag type-ui">UI</span>通道列表 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>推薦標籤（suggestType=1）和熱門標籤（isHot）由業主後台設定。推薦不足 2 個時自動從熱門通道補。</p>
+              <div class="pm-note">通道排序、推薦/熱門標籤都是後台配的，不用發版。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> 進行中訂單</h4>
-              <p>有進行中訂單 → 隱藏通道列表，顯示訂單卡片。不能同時有兩張存款單。</p>
+              <h4><span class="type-tag type-rule">規則</span>進行中訂單 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>有進行中訂單時，通道列表被隱藏，改顯示訂單卡片。不能同時有兩張存款單。</p>
+              <div class="pm-note">訂單每 15 秒輪詢一次，間隔不可調。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-validation">驗證</span> 前置條件</h4>
-              <p>未綁手機 → 禁止充值。所有通道關閉 → 顯示 MaintainPay 維護頁。</p>
+              <h4><span class="type-tag type-rule">規則</span>充值優惠 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>通道有 discount 時顯示優惠百分比。實際優惠 = min(金額×%、單次上限、每週上限) 三重上限。</p>
+              <div class="pm-note">單次/每週上限由後台控。USDT 匯率通道級優先全域。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>首存引導 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>首存未完成的玩家顯示首存優惠 Banner，引導至包賠活動。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/deposit/screen-usdt-full.png" alt="USDT 充值">
+            <div class="screen-label">USDT 充值（完整展開）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/deposit/screen-order-wechat.png" alt="訂單進行中">
+            <div class="screen-label">訂單進行中（微信）</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>通道類型分支 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>不同 channelType 走不同 UI：Merge 合併充值、Expand 步驟式、代客充值跳客服頁。</p>
+              <ul>
+                <li>代客充值：iframe 嵌入客服系統，有「官方認證」標籤</li>
+                <li>USDT 快捷：先上傳憑證再下單，流程反轉</li>
+              </ul>
+              <div class="pm-note">新增通道類型要全面回測 UI 分支，47 種 payType 已膨脹。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>重拉單機制 <span class="cost-tag cost-locked">場館限制</span></h4>
+              <p>下單失敗 10 秒內自動重試。超過 10 秒才顯示錯誤。</p>
+              <div class="pm-note">重試邏輯寫死，PM 動不了。</div>
             </div>
           </div>
         </div>
@@ -340,19 +479,21 @@
           <summary>存款主頁面 <span class="rule-count">10 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>未綁定手機</td><td>顯示 BindPhone 元件，禁止充值</td><td><span class="cost-tag cost-code">程式層</span></td><td>綁手機是全平台前置條件</td></tr>
-              <tr><td>2</td><td>所有通道關閉或在黑名單</td><td>顯示 MaintainPay 維護頁</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台可切換通道開關</td></tr>
-              <tr><td>3</td><td>單一通道 switchStatus=3</td><td>該通道顯示維護中</td><td><span class="cost-tag cost-config">設定層</span></td><td>個別通道維護不影響其他</td></tr>
-              <tr><td>4</td><td>payType=代客充值(0)</td><td>跳轉客服充值頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>需要客服人力配合</td></tr>
-              <tr><td>5</td><td>channelType=Merge</td><td>顯示合併充值表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>多通道合一的 UI</td></tr>
-              <tr><td>6</td><td>channelType=Expand</td><td>顯示步驟式充值表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>有展開子通道選擇</td></tr>
-              <tr><td>7</td><td>有進行中訂單</td><td>隱藏通道列表，顯示訂單卡片</td><td><span class="cost-tag cost-code">程式層</span></td><td>不能同時有兩張存款單</td></tr>
-              <tr><td>8</td><td>depositAutoJumpPayType 有值</td><td>自動選到對應通道</td><td><span class="cost-tag cost-config">設定層</span></td><td>從活動頁跳來時帶入</td></tr>
-              <tr><td>9</td><td>首存未完成</td><td>顯示首存優惠 Banner</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定包賠 Banner</td></tr>
-              <tr><td>10</td><td>假資料跑馬燈</td><td>顯示 FakeDataScroll</td><td><span class="cost-tag cost-code">程式層</span></td><td>增加充值可信度</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>未綁定手機</td><td>顯示 BindPhone 元件，禁止充值</td><td><span class="cost-tag cost-code">程式層</span></td><td>綁手機是全平台前置條件</td></tr>
+                <tr><td>2</td><td>所有通道關閉或在黑名單</td><td>顯示 MaintainPay 維護頁</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台可切換通道開關</td></tr>
+                <tr><td>3</td><td>單一通道 switchStatus=3</td><td>該通道顯示維護中</td><td><span class="cost-tag cost-config">設定層</span></td><td>個別通道維護不影響其他</td></tr>
+                <tr><td>4</td><td>payType=代客充值(0)</td><td>跳轉客服充值頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td>需要客服人力配合</td></tr>
+                <tr><td>5</td><td>channelType=Merge</td><td>顯示合併充值表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>多通道合一的 UI</td></tr>
+                <tr><td>6</td><td>channelType=Expand</td><td>顯示步驟式充值表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>有展開子通道選擇</td></tr>
+                <tr><td>7</td><td>有進行中訂單</td><td>隱藏通道列表，顯示訂單卡片</td><td><span class="cost-tag cost-code">程式層</span></td><td>不能同時有兩張存款單</td></tr>
+                <tr><td>8</td><td>depositAutoJumpPayType 有值</td><td>自動選到對應通道</td><td><span class="cost-tag cost-config">設定層</span></td><td>從活動頁跳來時帶入</td></tr>
+                <tr><td>9</td><td>首存未完成</td><td>顯示首存優惠 Banner</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定包賠 Banner</td></tr>
+                <tr><td>10</td><td>假資料跑馬燈</td><td>顯示 FakeDataScroll</td><td><span class="cost-tag cost-code">程式層</span></td><td>增加充值可信度</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/deposit/components/DepositList.vue:L143-L238（rechargePage computed）<br>pages/deposit/index.vue:L105（Tab 切換 router.push）</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/deposit/components/DepositList.vue:L143-L238（rechargePage computed）<br>pages/deposit/index.vue:L105（Tab 切換 router.push）</div></details>
           </div>
         </details>
 
@@ -360,16 +501,18 @@
           <summary>通道選擇邏輯 <span class="rule-count">7 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>通道 suggestType=1</td><td>標「推薦」標籤</td><td><span class="cost-tag cost-config">設定層</span></td><td>業主後台設定推薦</td></tr>
-              <tr><td>2</td><td>通道 isHot=true</td><td>標「熱門」標籤</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>3</td><td>推薦不足 2 個且 switch=1</td><td>從 isHot 通道補到 2 個</td><td><span class="cost-tag cost-code">程式層</span></td><td>自動補推薦邏輯</td></tr>
-              <tr><td>4</td><td>通道有 discount.isOpen</td><td>顯示優惠百分比</td><td><span class="cost-tag cost-config">設定層</span></td><td>單次/每週上限由後台控</td></tr>
-              <tr><td>5</td><td>無幣商（agency 為空）</td><td>過濾掉代客充值(payType=0)</td><td><span class="cost-tag cost-code">程式層</span></td><td>無客服人員就不顯示</td></tr>
-              <tr><td>6</td><td>USDT 類通道</td><td>顯示匯率（通道級 > 全域）</td><td><span class="cost-tag cost-config">設定層</span></td><td>匯率即時浮動</td></tr>
-              <tr><td>7</td><td>userPreferredAmountRate</td><td>隨機 90~97% 推薦金額</td><td><span class="cost-tag cost-code">程式層</span></td><td>首次計算後快取</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>通道 suggestType=1</td><td>標「推薦」標籤</td><td><span class="cost-tag cost-config">設定層</span></td><td>業主後台設定推薦</td></tr>
+                <tr><td>2</td><td>通道 isHot=true</td><td>標「熱門」標籤</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>推薦不足 2 個且 switch=1</td><td>從 isHot 通道補到 2 個</td><td><span class="cost-tag cost-code">程式層</span></td><td>自動補推薦邏輯</td></tr>
+                <tr><td>4</td><td>通道有 discount.isOpen</td><td>顯示優惠百分比</td><td><span class="cost-tag cost-config">設定層</span></td><td>單次/每週上限由後台控</td></tr>
+                <tr><td>5</td><td>無幣商（agency 為空）</td><td>過濾掉代客充值(payType=0)</td><td><span class="cost-tag cost-code">程式層</span></td><td>無客服人員就不顯示</td></tr>
+                <tr><td>6</td><td>USDT 類通道</td><td>顯示匯率（通道級 > 全域）</td><td><span class="cost-tag cost-config">設定層</span></td><td>匯率即時浮動</td></tr>
+                <tr><td>7</td><td>userPreferredAmountRate</td><td>隨機 90~97% 推薦金額</td><td><span class="cost-tag cost-code">程式層</span></td><td>首次計算後快取</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useRecharge.ts:formatChannelList()（L45-L130）</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useRecharge.ts:formatChannelList()（L45-L130）</div></details>
           </div>
         </details>
 
@@ -377,19 +520,21 @@
           <summary>存款下單表單 <span class="rule-count">10 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>金額欄位</td><td>永遠必填</td><td><span class="cost-tag cost-locked">改不了</span></td><td></td></tr>
-              <tr><td>2</td><td>payType 在 getNormalName</td><td>需填存款人姓名</td><td><span class="cost-tag cost-code">程式層</span></td><td>覆蓋 43 種 payType</td></tr>
-              <tr><td>3</td><td>payType 在 getBankListPayType</td><td>需選擇銀行</td><td><span class="cost-tag cost-code">程式層</span></td><td>銀行卡類限定</td></tr>
-              <tr><td>4</td><td>姓名與 realName 不同</td><td>彈窗確認使用新姓名</td><td><span class="cost-tag cost-code">程式層</span></td><td>最多 maxCount 個</td></tr>
-              <tr><td>5</td><td>日次數用完</td><td>canRecharge=false</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設每日上限</td></tr>
-              <tr><td>6</td><td>共用次數用完</td><td>禁止下單</td><td><span class="cost-tag cost-config">設定層</span></td><td>多通道共享次數</td></tr>
-              <tr><td>7</td><td>快捷支付(payType=10)</td><td>先上傳憑證再下單</td><td><span class="cost-tag cost-code">程式層</span></td><td>流程反過來</td></tr>
-              <tr><td>8</td><td>USDT 快捷(payType=26)</td><td>隱藏通道列表+先上傳</td><td><span class="cost-tag cost-code">程式層</span></td><td>獨立頁面</td></tr>
-              <tr><td>9</td><td>下單失敗 10 秒內</td><td>自動重拉單</td><td><span class="cost-tag cost-locked">改不了</span></td><td>防斷線機制</td></tr>
-              <tr><td>10</td><td>DD 錢包 errCode=10308</td><td>取 thirdExt URL 跳轉</td><td><span class="cost-tag cost-code">程式層</span></td><td>DD 專屬錯誤碼</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>金額欄位</td><td>永遠必填</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>2</td><td>payType 在 getNormalName</td><td>需填存款人姓名</td><td><span class="cost-tag cost-code">程式層</span></td><td>覆蓋 43 種 payType</td></tr>
+                <tr><td>3</td><td>payType 在 getBankListPayType</td><td>需選擇銀行</td><td><span class="cost-tag cost-code">程式層</span></td><td>銀行卡類限定</td></tr>
+                <tr><td>4</td><td>姓名與 realName 不同</td><td>彈窗確認使用新姓名</td><td><span class="cost-tag cost-code">程式層</span></td><td>最多 maxCount 個</td></tr>
+                <tr><td>5</td><td>日次數用完</td><td>canRecharge=false</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設每日上限</td></tr>
+                <tr><td>6</td><td>共用次數用完</td><td>禁止下單</td><td><span class="cost-tag cost-config">設定層</span></td><td>多通道共享次數</td></tr>
+                <tr><td>7</td><td>快捷支付(payType=10)</td><td>先上傳憑證再下單</td><td><span class="cost-tag cost-code">程式層</span></td><td>流程反過來</td></tr>
+                <tr><td>8</td><td>USDT 快捷(payType=26)</td><td>隱藏通道列表+先上傳</td><td><span class="cost-tag cost-code">程式層</span></td><td>獨立頁面</td></tr>
+                <tr><td>9</td><td>下單失敗 10 秒內</td><td>自動重拉單</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>防斷線機制</td></tr>
+                <tr><td>10</td><td>DD 錢包 errCode=10308</td><td>取 thirdExt URL 跳轉</td><td><span class="cost-tag cost-code">程式層</span></td><td>DD 專屬錯誤碼</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useDeposit/usePayForm.ts<br>composables/useRecharge.ts:normalPayUrl()</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useDeposit/usePayForm.ts<br>composables/useRecharge.ts:normalPayUrl()</div></details>
           </div>
         </details>
 
@@ -397,23 +542,32 @@
           <summary>存款訂單追蹤 <span class="rule-count">9 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>expireTime - now > 0 且 status=0</td><td>isOrderProcess=true</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>無 expireTime</td><td>createTime + 30 分鐘</td><td><span class="cost-tag cost-code">程式層</span></td><td>預設 30 分鐘</td></tr>
-              <tr><td>3</td><td>每 15 秒</td><td>自動輪詢 getLatestOrder</td><td><span class="cost-tag cost-locked">改不了</span></td><td>固定間隔</td></tr>
-              <tr><td>4</td><td>倒計時歸零</td><td>觸發重新拉單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>5</td><td>訂單 type=4（card2card）</td><td>顯示收款銀行卡資訊</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>6</td><td>取消訂單</td><td>狀態改 Cancel(12)</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>7</td><td>拉單失敗多次</td><td>counter >= throttle 彈客服</td><td><span class="cost-tag cost-config">設定層</span></td><td>失敗引導客服</td></tr>
-              <tr><td>8</td><td>系統自動取消</td><td>彈客服對話框</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>9</td><td>會員手動取消</td><td>彈客服對話框</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>expireTime - now > 0 且 status=0</td><td>isOrderProcess=true</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>無 expireTime</td><td>createTime + 30 分鐘</td><td><span class="cost-tag cost-code">程式層</span></td><td>預設 30 分鐘</td></tr>
+                <tr><td>3</td><td>每 15 秒</td><td>自動輪詢 getLatestOrder</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>固定間隔</td></tr>
+                <tr><td>4</td><td>倒計時歸零</td><td>觸發重新拉單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>訂單 type=4（card2card）</td><td>顯示收款銀行卡資訊</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>取消訂單</td><td>狀態改 Cancel(12)</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>拉單失敗多次</td><td>counter >= throttle 彈客服</td><td><span class="cost-tag cost-config">設定層</span></td><td>失敗引導客服</td></tr>
+                <tr><td>8</td><td>系統自動取消</td><td>彈客服對話框</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>9</td><td>會員手動取消</td><td>彈客服對話框</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useDeposit/useDepositLatestOrder.ts<br>composables/useDeposit/useDepositCancel.ts</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useDeposit/useDepositLatestOrder.ts<br>composables/useDeposit/useDepositCancel.ts</div></details>
           </div>
         </details>
+      </div>
 
-        <!-- ===== 5.2 提款 ===== -->
-        <div class="logic-merge-divider" id="sec-withdraw">5.2 提款</div>
+      <!-- === 3. 提款 === -->
+      <div class="section" id="sec-withdraw">
+        <div class="section-title"><span class="num">3</span> 提款</div>
+        <div class="section-desc">通道選擇、流水檢查、風控審核 — 涵蓋 24 種提款類型</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>提款的「到帳時間」PM 無法承諾 — 風控審核時間不可控，銀行出款時間也不可控。業主問「多久到帳？」只能說「視審核和銀行而定」。另外流水未達標時是否允許強制提現，是後台開關，不用發版。
+        </div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -422,16 +576,27 @@
           </div>
           <div class="screen-col">
             <img src="/images/deposit/withdraw-form.png" alt="提款表單">
-            <div class="screen-label">提款表單</div>
+            <div class="screen-label">提款表單（填金額+帳戶）</div>
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 雙 Tab</h4>
-              <p>中心錢包 + 邀請禮金（inviteInfo.enable 開啟時顯示）。各 Tab 過濾不同提款類型。</p>
+              <h4><span class="type-tag type-ui">UI</span>雙 Tab 結構 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>中心錢包 + 邀請禮金（inviteInfo.enable 開啟時才顯示第二個 Tab）。</p>
+              <ul>
+                <li>中心錢包：過濾掉預約提款(type=4)</li>
+                <li>邀請禮金：只留 supportInvitedGold 通道</li>
+              </ul>
+              <div class="pm-note">邀請禮金 Tab 只在活動開啟時顯示，關掉活動 Tab 就消失。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-risk">風控</span> 流水攔截</h4>
-              <p>流水未達標 → 彈窗選擇強制提現或繼續打流水（PM 可控是否允許強制）。</p>
+              <h4><span class="type-tag type-rule">規則</span>流水攔截 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>流水未達標時彈窗：可強制提現（drawWaterLimitSwitch 開）或只能繼續打流水。</p>
+              <div class="pm-note">是否允許強制提現是後台開關，不用發版。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">規則</span>風控前置 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>虛擬幣提款需先做過銀行卡/支付寶（switch_bankali）。首次虛擬幣需客服驗證（switch_usdtebpay）。</p>
+              <div class="pm-note">風控開關由後台控制。金額必須是 withdraw_gold_times 整倍數。</div>
             </div>
           </div>
         </div>
@@ -440,19 +605,21 @@
           <summary>提款主頁面 <span class="rule-count">10 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>inviteInfo.enable=true</td><td>顯示邀請禮金 Tab</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動模式切換才出現</td></tr>
-              <tr><td>2</td><td>中心錢包 Tab</td><td>過濾掉預約提款(type=4)</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>邀請禮金 Tab</td><td>只留 supportInvitedGold</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>有進行中訂單</td><td>頂部顯示 WithdrawOrder</td><td><span class="cost-tag cost-code">程式層</span></td><td>每 15 秒輪詢</td></tr>
-              <tr><td>5</td><td>isOrderLimit=true</td><td>達同時提款單上限</td><td><span class="cost-tag cost-config">設定層</span></td><td>預設上限 1</td></tr>
-              <tr><td>6</td><td>流水未達標+可強制</td><td>彈窗：強制提現/繼續打流水</td><td><span class="cost-tag cost-config">設定層</span></td><td>PM 可控制</td></tr>
-              <tr><td>7</td><td>流水未達標+不可強制</td><td>彈窗：只能確定</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>8</td><td>switch_bankali=true</td><td>虛擬幣前需先做銀行卡/支付寶</td><td><span class="cost-tag cost-config">設定層</span></td><td>風控機制</td></tr>
-              <tr><td>9</td><td>switch_usdtebpay=true</td><td>首次虛擬幣需客服驗證</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>10</td><td>金額倍數限制</td><td>必須是 withdraw_gold_times 整倍</td><td><span class="cost-tag cost-config">設定層</span></td><td>如 100 元整倍數</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>inviteInfo.enable=true</td><td>顯示邀請禮金 Tab</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動模式切換才出現</td></tr>
+                <tr><td>2</td><td>中心錢包 Tab</td><td>過濾掉預約提款(type=4)</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>邀請禮金 Tab</td><td>只留 supportInvitedGold</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>有進行中訂單</td><td>頂部顯示 WithdrawOrder</td><td><span class="cost-tag cost-code">程式層</span></td><td>每 15 秒輪詢</td></tr>
+                <tr><td>5</td><td>isOrderLimit=true</td><td>達同時提款單上限</td><td><span class="cost-tag cost-config">設定層</span></td><td>預設上限 1</td></tr>
+                <tr><td>6</td><td>流水未達標+可強制</td><td>彈窗：強制提現/繼續打流水</td><td><span class="cost-tag cost-config">設定層</span></td><td>PM 可控制</td></tr>
+                <tr><td>7</td><td>流水未達標+不可強制</td><td>彈窗：只能確定</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>8</td><td>switch_bankali=true</td><td>虛擬幣前需先做銀行卡/支付寶</td><td><span class="cost-tag cost-config">設定層</span></td><td>風控機制</td></tr>
+                <tr><td>9</td><td>switch_usdtebpay=true</td><td>首次虛擬幣需客服驗證</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>10</td><td>金額倍數限制</td><td>必須是 withdraw_gold_times 整倍</td><td><span class="cost-tag cost-config">設定層</span></td><td>如 100 元整倍數</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/withdraw/composables/useWithdrawList.ts<br>composables/useWithdraw/useWithdrawDialog.ts</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/withdraw/composables/useWithdrawList.ts<br>composables/useWithdraw/useWithdrawDialog.ts</div></details>
           </div>
         </details>
 
@@ -460,17 +627,19 @@
           <summary>提款通道策略分派 <span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>type=2（銀行卡）</td><td>Bank 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>type=8（轉卡）</td><td>BankTransfer 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>type=23（代理代提）</td><td>DaiTi 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5483 新增</td></tr>
-              <tr><td>4</td><td>type=17（DD 錢包）</td><td>DD 表單（地址唯讀）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>5</td><td>type=1,18（支付寶/微信）</td><td>Digital 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>含 QR Code</td></tr>
-              <tr><td>6</td><td>type=3,11,13,24（USDT 類）</td><td>USDT 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>共用地址池</td></tr>
-              <tr><td>7</td><td>其他虛擬幣</td><td>Virtual 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>12 種錢包</td></tr>
-              <tr><td>8</td><td>未知 type</td><td>基類 + console.warn</td><td><span class="cost-tag cost-code">程式層</span></td><td>fallback</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>type=2（銀行卡）</td><td>Bank 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>type=8（轉卡）</td><td>BankTransfer 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>type=23（代理代提）</td><td>DaiTi 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5483 新增</td></tr>
+                <tr><td>4</td><td>type=17（DD 錢包）</td><td>DD 表單（地址唯讀）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>type=1,18（支付寶/微信）</td><td>Digital 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>含 QR Code</td></tr>
+                <tr><td>6</td><td>type=3,11,13,24（USDT 類）</td><td>USDT 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>共用地址池</td></tr>
+                <tr><td>7</td><td>其他虛擬幣</td><td>Virtual 表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>12 種錢包</td></tr>
+                <tr><td>8</td><td>未知 type</td><td>基類 + console.warn</td><td><span class="cost-tag cost-code">程式層</span></td><td>fallback</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWithdraw/useWithdrawTypeGroup/index.ts:createChannel()</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useWithdraw/useWithdrawTypeGroup/index.ts:createChannel()</div></details>
           </div>
         </details>
 
@@ -478,18 +647,20 @@
           <summary>提款訂單追蹤 <span class="rule-count">9 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>有進行中訂單</td><td>每 15 秒輪詢</td><td><span class="cost-tag cost-locked">改不了</span></td><td>最多 3 筆</td></tr>
-              <tr><td>2</td><td>狀態 0-1</td><td>進度條：發起提款</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>狀態 2-4</td><td>進度條：出款審核</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>狀態 5-7</td><td>進度條：準備出款</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>5</td><td>狀態 8</td><td>進度條：平台轉帳中</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>6</td><td>狀態 9-10</td><td>進度條：完成</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>7</td><td>receivedStatus=1</td><td>手動到帳 + 獎勵彩金</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>8</td><td>receivedStatus=3</td><td>到帳異常</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5064</td></tr>
-              <tr><td>9</td><td>拆單訂單</td><td>顯示子訂單列表</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5062</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>有進行中訂單</td><td>每 15 秒輪詢</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>最多 3 筆</td></tr>
+                <tr><td>2</td><td>狀態 0-1</td><td>進度條：發起提款</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>狀態 2-4</td><td>進度條：出款審核</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>狀態 5-7</td><td>進度條：準備出款</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>狀態 8</td><td>進度條：平台轉帳中</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>狀態 9-10</td><td>進度條：完成</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>receivedStatus=1</td><td>手動到帳 + 獎勵彩金</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>receivedStatus=3</td><td>到帳異常</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5064</td></tr>
+                <tr><td>9</td><td>拆單訂單</td><td>顯示子訂單列表</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5062</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWithdraw/useWithdrawOrder.ts<br>composables/useWithdraw/constants.ts</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useWithdraw/useWithdrawOrder.ts<br>composables/useWithdraw/constants.ts</div></details>
           </div>
         </details>
 
@@ -497,36 +668,55 @@
           <summary>綁定帳戶管理 <span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>新增銀行卡</td><td>需姓名+卡號+開戶行+驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>達 maxBindCardsCount</td><td>無法新增</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>3</td><td>刪除銀行卡</td><td>彈窗：刪後無法重綁</td><td><span class="cost-tag cost-locked">改不了</span></td><td>需聯繫客服</td></tr>
-              <tr><td>4</td><td>銀行排序</td><td>BC/ABC/ICBC/CBC/PSBC 前五</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>5</td><td>綁定支付寶/微信</td><td>含 QR Code 綁定</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>6</td><td>綁定虛擬幣地址</td><td>選協議+地址+別名+驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>7</td><td>EASY/4E</td><td>共用 USDT 地址池</td><td><span class="cost-tag cost-code">程式層</span></td><td>addressConvertType</td></tr>
-              <tr><td>8</td><td>DD 錢包地址</td><td>唯讀，需 refresh 刷新</td><td><span class="cost-tag cost-locked">改不了</span></td><td>第三方控制</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>新增銀行卡</td><td>需姓名+卡號+開戶行+驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>達 maxBindCardsCount</td><td>無法新增</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>刪除銀行卡</td><td>彈窗：刪後無法重綁</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>需聯繫客服</td></tr>
+                <tr><td>4</td><td>銀行排序</td><td>BC/ABC/ICBC/CBC/PSBC 前五</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>綁定支付寶/微信</td><td>含 QR Code 綁定</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>綁定虛擬幣地址</td><td>選協議+地址+別名+驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>EASY/4E</td><td>共用 USDT 地址池</td><td><span class="cost-tag cost-code">程式層</span></td><td>addressConvertType</td></tr>
+                <tr><td>8</td><td>DD 錢包地址</td><td>唯讀，需 refresh 刷新</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>第三方控制</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWithdraw/useWithdraw.ts:bindBankCard/deleteBankCard/bindVirtualAddress</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useWithdraw/useWithdraw.ts:bindBankCard/deleteBankCard/bindVirtualAddress</div></details>
           </div>
         </details>
+      </div>
 
-        <!-- ===== 5.3 其他 ===== -->
-        <div class="logic-merge-divider" id="sec-others">5.3 轉帳 / 優惠 / 流水</div>
+      <!-- === 4. 轉帳 / 優惠 / 流水 === -->
+      <div class="section" id="sec-others">
+        <div class="section-title"><span class="num">4</span> 轉帳 / 優惠 / 流水</div>
+        <div class="section-desc">場館錢包轉帳、充值優惠計算、流水進度條、代客充值、DD 錢包</div>
 
-        <div class="annotated-row single">
+        <div class="annotated-row">
           <div class="screen-col">
             <img src="/images/deposit/transfer.png" alt="場館轉帳">
-            <div class="screen-label">場館轉帳</div>
+            <div class="screen-label">場館轉帳頁面</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/deposit/deposit-history.png" alt="交易記錄">
+            <div class="screen-label">存款歷程</div>
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 轉帳模式</h4>
+              <h4><span class="type-tag type-rule">規則</span>轉帳模式 <span class="cost-tag cost-config">設定層</span></h4>
               <p>轉帳錢包模式下，進入遊戲前需手動轉帳。免轉模式由後台 walletMode 控制。</p>
+              <div class="pm-note">場館鎖定（activityLock / maintainLock）時不可轉帳。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-discount">優惠</span> 充值優惠</h4>
-              <p>min(金額×%, maxDiscount, maxWeek) 三重上限。USDT 匯率通道級 > 全域。</p>
+              <h4><span class="type-tag type-rule">規則</span>充值優惠 <span class="cost-tag cost-config">設定層</span></h4>
+              <p>優惠 = min(金額×%、單次上限 maxDiscount、每週上限 maxWeek) 三重上限。</p>
+              <div class="pm-note">USDT 匯率：通道級優先全域。cryptoAmount/100 = USDT 數量。</div>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-ui">UI</span>流水進度條 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>只在中心錢包 Tab 顯示。rate = curWater/totalWater × 100。</p>
+              <ul>
+                <li>「去下注」跳 /home/sport</li>
+                <li>「流水查詢」跳 /mine/help-center</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -535,11 +725,13 @@
           <summary>存款優惠與匯率 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>discount.isOpen=true</td><td>顯示優惠百分比</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>2</td><td>優惠計算</td><td>min(金額x%, maxDiscount, maxWeek)</td><td><span class="cost-tag cost-config">設定層</span></td><td>單次/每週雙上限</td></tr>
-              <tr><td>3</td><td>USDT 匯率</td><td>通道級 > 全域匯率</td><td><span class="cost-tag cost-config">設定層</span></td><td>即時浮動</td></tr>
-              <tr><td>4</td><td>cryptoAmount</td><td>/100 = USDT 數量</td><td><span class="cost-tag cost-code">程式層</span></td><td>分轉換</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>discount.isOpen=true</td><td>顯示優惠百分比</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>優惠計算</td><td>min(金額x%, maxDiscount, maxWeek)</td><td><span class="cost-tag cost-config">設定層</span></td><td>單次/每週雙上限</td></tr>
+                <tr><td>3</td><td>USDT 匯率</td><td>通道級 > 全域匯率</td><td><span class="cost-tag cost-config">設定層</span></td><td>即時浮動</td></tr>
+                <tr><td>4</td><td>cryptoAmount</td><td>/100 = USDT 數量</td><td><span class="cost-tag cost-code">程式層</span></td><td>分轉換</td></tr>
+              </tbody>
             </table>
           </div>
         </details>
@@ -548,13 +740,15 @@
           <summary>流水與場館存款 <span class="rule-count">6 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>ac_per_cur+withdraw_warn+totalWater</td><td>顯示流水進度條</td><td><span class="cost-tag cost-code">程式層</span></td><td>只在中心錢包 Tab</td></tr>
-              <tr><td>2</td><td>rate = curWater/totalWater x 100</td><td>進度條百分比</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>點「去下注」</td><td>跳 /home/sport</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>點「流水查詢」</td><td>跳 /mine/help-center</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>5</td><td>場館存款活動</td><td>特定場館存款獲額外紅利</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動模組管理</td></tr>
-              <tr><td>6</td><td>場館存款流水</td><td>與一般存款不同</td><td><span class="cost-tag cost-locked">改不了</span></td><td>GOR-6217 優化中</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>ac_per_cur+withdraw_warn+totalWater</td><td>顯示流水進度條</td><td><span class="cost-tag cost-code">程式層</span></td><td>只在中心錢包 Tab</td></tr>
+                <tr><td>2</td><td>rate = curWater/totalWater x 100</td><td>進度條百分比</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>點「去下注」</td><td>跳 /home/sport</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>點「流水查詢」</td><td>跳 /mine/help-center</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>場館存款活動</td><td>特定場館存款獲額外紅利</td><td><span class="cost-tag cost-config">設定層</span></td><td>活動模組管理</td></tr>
+                <tr><td>6</td><td>場館存款流水</td><td>與一般存款不同</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>GOR-6217 優化中</td></tr>
+              </tbody>
             </table>
           </div>
         </details>
@@ -563,12 +757,14 @@
           <summary>代客充值 <span class="rule-count">5 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>選擇代客充值</td><td>跳路由 /deposit/customer-pay</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>customer-pay 頁面</td><td>iframe 嵌入客服系統</td><td><span class="cost-tag cost-locked">改不了</span></td><td>客服系統獨立</td></tr>
-              <tr><td>3</td><td>有「官方認證」標籤</td><td>通道列表特殊顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>進入時</td><td>關閉 isRechargeSheetOpen</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>5</td><td>離開時</td><td>恢復 isRechargeSheetOpen</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>選擇代客充值</td><td>跳路由 /deposit/customer-pay</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>customer-pay 頁面</td><td>iframe 嵌入客服系統</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>客服系統獨立</td></tr>
+                <tr><td>3</td><td>有「官方認證」標籤</td><td>通道列表特殊顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>進入時</td><td>關閉 isRechargeSheetOpen</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>離開時</td><td>恢復 isRechargeSheetOpen</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
           </div>
         </details>
@@ -577,16 +773,18 @@
           <summary>DD 錢包特殊流程 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>查詢 DD 餘額</td><td>GET /payment/ddbalance</td><td><span class="cost-tag cost-locked">改不了</span></td><td>DD 是第三方</td></tr>
-              <tr><td>2</td><td>確認充值</td><td>開新視窗跳 DD</td><td><span class="cost-tag cost-locked">改不了</span></td><td>URL 由第三方給</td></tr>
-              <tr><td>3</td><td>跳轉失敗</td><td>Toast: 获取连结失败</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>errCode=10308</td><td>取 thirdExt URL 跳轉</td><td><span class="cost-tag cost-code">程式層</span></td><td>DD 專屬</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>查詢 DD 餘額</td><td>GET /payment/ddbalance</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>DD 是第三方</td></tr>
+                <tr><td>2</td><td>確認充值</td><td>開新視窗跳 DD</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>URL 由第三方給</td></tr>
+                <tr><td>3</td><td>跳轉失敗</td><td>Toast: 获取连结失败</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>errCode=10308</td><td>取 thirdExt URL 跳轉</td><td><span class="cost-tag cost-code">程式層</span></td><td>DD 專屬</td></tr>
+              </tbody>
             </table>
           </div>
         </details>
-
       </div>
+
     </div>
 
     <!-- ========================================== -->
@@ -980,21 +1178,26 @@ sequenceDiagram
     overview: {
       title: '功能總覽',
       items: [
+        { id: 'sec-common', label: '0 共用規則' },
+        { id: 'sec-flow', label: '1 主要動線' },
         { type: 'group', label: '存款' },
-        { id: 'sec-deposit-main', label: '存款主頁面' },
-        { id: 'sec-channel-select', label: '通道選擇邏輯' },
-        { id: 'sec-deposit-form', label: '存款下單表單' },
-        { id: 'sec-deposit-order', label: '存款訂單追蹤' },
+        { id: 'sec-deposit', label: '2 存款（充值）' },
+        { id: 'sec-deposit-main', label: '├ 存款主頁面' },
+        { id: 'sec-channel-select', label: '├ 通道選擇邏輯' },
+        { id: 'sec-deposit-form', label: '├ 存款下單表單' },
+        { id: 'sec-deposit-order', label: '└ 存款訂單追蹤' },
         { type: 'group', label: '提款' },
-        { id: 'sec-withdraw-main', label: '提款主頁面' },
-        { id: 'sec-withdraw-type', label: '提款通道策略' },
-        { id: 'sec-withdraw-order', label: '提款訂單追蹤' },
-        { id: 'sec-bind-account', label: '綁定帳戶管理' },
+        { id: 'sec-withdraw', label: '3 提款' },
+        { id: 'sec-withdraw-main', label: '├ 提款主頁面' },
+        { id: 'sec-withdraw-type', label: '├ 提款通道策略' },
+        { id: 'sec-withdraw-order', label: '├ 提款訂單追蹤' },
+        { id: 'sec-bind-account', label: '└ 綁定帳戶管理' },
         { type: 'group', label: '其他' },
-        { id: 'sec-deposit-discount', label: '優惠與匯率' },
-        { id: 'sec-waterflow', label: '流水與場館存款' },
-        { id: 'sec-daike', label: '代客充值' },
-        { id: 'sec-dd-wallet', label: 'DD 錢包' },
+        { id: 'sec-others', label: '4 轉帳/優惠/流水' },
+        { id: 'sec-deposit-discount', label: '├ 優惠與匯率' },
+        { id: 'sec-waterflow', label: '├ 流水與場館存款' },
+        { id: 'sec-daike', label: '├ 代客充值' },
+        { id: 'sec-dd-wallet', label: '└ DD 錢包' },
       ]
     },
     userflow: {

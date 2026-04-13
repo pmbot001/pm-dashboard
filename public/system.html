@@ -162,6 +162,10 @@
 
     .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
 
+    /* ===== System accent color overrides (green #10b981) ===== */
+    .num { background: #10b981 !important; }
+    .flow-step.highlight { background: #10b981 !important; border-color: #10b981 !important; }
+
     @media(max-width: 900px) {
       .side-nav { display: none; }
       .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
@@ -194,43 +198,103 @@
     <!-- TAB 1: 功能總覽                            -->
     <!-- ========================================== -->
     <div class="tab-panel active" id="overview">
-      <div class="tool-section">
-        <div class="kb-notice">
-          <b>模組概覽：</b>系統模組是所有玩家進入 App 前必經的基礎架構層。包含初始化流程、登入/註冊、路由守衛、維護/封鎖頁面。
+
+      <div class="tag-legend" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#94a3b8; margin:12px 16px; flex-wrap:wrap;">
+        改動成本：<span class="cost-tag cost-locked">場館限制</span> 平台規定
+        <span class="cost-tag cost-config">設定層</span> 後台可配
+        <span class="cost-tag cost-code">程式層</span> 要發版
+      </div>
+
+      <!-- === 0. App 初始化 === -->
+      <div class="section" id="sec-init">
+        <div class="section-title"><span class="num">0</span> App 初始化</div>
+        <div class="section-desc">所有玩家進入 App 前必經的基礎流程 — 裝置指紋、配置拉取、Token 續期、WebSocket 啟動</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>初始化成功後會觸發 25+ 模組的 watch 聯動（活動/VIP/直播/任務/場館/錢包），這是首屏效能瓶頸。新增模組初始化需評估效能影響。初始化失敗通常是 channelId 取不到。
         </div>
 
-        <div class="stats-pill" style="margin-top: 20px;">
-          <span>6 頁面邏輯卡</span>
-          <span>|</span>
-          <span>4 踩坑 Records</span>
-          <span>|</span>
-          <span>13 API</span>
-        </div>
-
-        <!-- ===== 0.1 初始化 ===== -->
-        <div class="logic-merge-divider" id="sec-init">0.1 App ��始化</div>
-
-        <details class="page-logic-card" id="sec-init-flow">
+        <details class="page-logic-card" id="sec-init-flow" open>
           <summary>初始化流程 <span class="rule-count">9 步驟</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>步驟</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>useDeviceUuid()</td><td>取得/產生裝置指紋</td><td><span class="cost-tag cost-code">程式層</span></td><td>設備識別基礎</td></tr>
-              <tr><td>2</td><td>fetchChannelId()</td><td>query > localStorage > ENV > API</td><td><span class="cost-tag cost-code">程式層</span></td><td>channelId 全程跟著 URL</td></tr>
-              <tr><td>3</td><td>fetchConfig()</td><td>並行拉 baseConfig/v2 + blackList</td><td><span class="cost-tag cost-code">程式層</span></td><td>失敗則初始化失敗</td></tr>
-              <tr><td>4</td><td>errCode 檢查</td><td>errCode !== 1 → 跳維護頁</td><td><span class="cost-tag cost-config">���定層</span></td><td>後台可觸發維護模式</td></tr>
-              <tr><td>5</td><td>IP 黑名單檢查</td><td>命中 → 跳 /block</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定 IP 黑名單</td></tr>
-              <tr><td>6</td><td>Token 續期</td><td>hasToken → refreshToken + getUserInfo</td><td><span class="cost-tag cost-code">程式層</span></td><td>失敗不中斷</td></tr>
-              <tr><td>7</td><td>fetchIngService()</td><td>取得進行中客服連線</td><td><span class="cost-tag cost-code">程式��</span></td><td></td></tr>
-              <tr><td>8</td><td>setIsInitSuccess(true)</td><td>觸發 25+ 模組 watch 聯動</td><td><span class="cost-tag cost-code">程式層</span></td><td>首屏效能瓶頸</td></tr>
-              <tr><td>9</td><td>啟動 WebSocket</td><td>平台 WS + 用戶 WS</td><td><span class="cost-tag cost-code">程式���</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>步驟</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>useDeviceUuid()</td><td>取得/產生裝置指紋</td><td><span class="cost-tag cost-code">程式層</span></td><td>設備識別基礎</td></tr>
+                <tr><td>2</td><td>fetchChannelId()</td><td>query > localStorage > ENV > API</td><td><span class="cost-tag cost-code">程式層</span></td><td>channelId 全程跟著 URL</td></tr>
+                <tr><td>3</td><td>fetchConfig()</td><td>並行拉 baseConfig/v2 + blackList</td><td><span class="cost-tag cost-code">程式層</span></td><td>失敗則初始化失敗</td></tr>
+                <tr><td>4</td><td>errCode 檢查</td><td>errCode !== 1 → 跳維護頁</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可觸發維護模式</td></tr>
+                <tr><td>5</td><td>IP 黑名單檢查</td><td>命中 → 跳 /block</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定 IP 黑名單</td></tr>
+                <tr><td>6</td><td>Token 續期</td><td>hasToken → refreshToken + getUserInfo</td><td><span class="cost-tag cost-code">程式層</span></td><td>失敗不中斷</td></tr>
+                <tr><td>7</td><td>fetchIngService()</td><td>取得進行中客服連線</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>setIsInitSuccess(true)</td><td>觸發 25+ 模組 watch 聯動</td><td><span class="cost-tag cost-code">程式層</span></td><td>首屏效能瓶頸</td></tr>
+                <tr><td>9</td><td>啟動 WebSocket</td><td>平台 WS + 用戶 WS</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useInit.ts:initFlow()<br>composables/useSystemCheck.ts:checkSystemStatusAndRoute()</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useInit.ts:initFlow()<br>composables/useSystemCheck.ts:checkSystemStatusAndRoute()</div></details>
           </div>
         </details>
+      </div>
 
-        <!-- ===== 0.2 登入 ===== -->
-        <div class="logic-merge-divider" id="sec-login">0.2 登入</div>
+      <!-- === 1. 主要動線 === -->
+      <div class="section" id="sec-flow">
+        <div class="section-title"><span class="num">1</span> 主要動線</div>
+        <div class="section-desc">玩家從打開 App 到正式使用的路徑：初始化 → 登入/註冊 → 進入首頁</div>
+
+        <div class="flow-box">
+          <div class="flow-label">初始化 → 登入 → 進入首頁</div>
+          <div class="flow-row">
+            <div class="flow-step highlight">App 啟動</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">裝置指紋<br><small>deviceUuid</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">拉配置<br><small>baseConfig + 黑名單</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">檢查攔截<br><small>維護 / IP 封鎖</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">Token 續期</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">進入首頁</div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">登入流程（帳號 / 手機）</div>
+          <div class="flow-row">
+            <div class="flow-step">選登入方式<br><small>帳號 / 手機</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">輸入帳密<br><small>AES 加密</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">驗證攔截<br><small>圖形 / 新設備 / 新IP</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">setToken</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">跳轉首頁</div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <div class="flow-label">註冊流程（帳號 / 手機）</div>
+          <div class="flow-row">
+            <div class="flow-step">選註冊方式</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">填帳號/密碼</div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step">填手機/邀請碼<br><small>依設定顯示</small></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step highlight">自動登入</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 2. 登入 === -->
+      <div class="section" id="sec-login">
+        <div class="section-title"><span class="num">2</span> 登入</div>
+        <div class="section-desc">帳號登入、手機登入、圖形驗證碼、新設備/異地驗證</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>登入/註冊模式的開關組合由 baseConfig 控制（帳號/手機各有獨立開關）。全關會觸發防呆但體驗很差 — 新業主上線前務必確認設定。另外新設備驗證需要手機號，<b>未綁手機的帳號無法在新設備登入</b>。
+        </div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -243,15 +307,17 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 雙登入模式</h4>
+              <h4><span class="type-tag type-rule">規則</span>雙登入模式 <span class="cost-tag cost-config">設定層</span></h4>
               <p>accountLoginEnabled + phoneNumberLoginEnabled 控制顯示哪些 Tab。兩者皆開→雙 Tab；只開一種→隱藏 Tab。</p>
+              <div class="pm-note">開關組合由 baseConfig 控制，不用發版。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-validation">驗證</span> 新設備 / 異地登入</h4>
-              <p>errCode=110 新設備、errCode=114 新 IP → 彈出 NewDeviceAuth 驗證（需手機號碼）。</p>
+              <h4><span class="type-tag type-rule">規則</span>新設備 / 異地登入 <span class="cost-tag cost-code">程式層</span></h4>
+              <p>errCode=110 新設備、errCode=114 新 IP → 彈出 NewDeviceAuth 驗證。</p>
+              <div class="pm-note">需要手機號碼。未綁手機的帳號無法在新設備登入。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-ui">UI</span> 圖形驗證碼</h4>
+              <h4><span class="type-tag type-ui">UI</span>圖形驗證碼 <span class="cost-tag cost-config">設定層</span></h4>
               <p>isKeyCodeOpen 開啟時前置圖形驗證；errCode=9/14 時後置彈出 NumberCaptchPopup。</p>
             </div>
           </div>
@@ -261,22 +327,27 @@
           <summary>登入頁面 <span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>accountLoginEnabled + phoneNumberLoginEnabled</td><td>兩者皆開 → 雙 Tab</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台 baseConfig 控制</td></tr>
-              <tr><td>2</td><td>只開一種</td><td>隱藏 Tab，直接顯示單一表單</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>3</td><td>已登入</td><td>自動跳轉 toPushTypePage()</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>errCode=9/14</td><td>彈出圖形驗證碼 NumberCaptchPopup</td><td><span class="cost-tag cost-code">��式層</span></td><td></td></tr>
-              <tr><td>5</td><td>errCode=110 新設備</td><td>彈出 NewDeviceAuth 驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td>需要手機號碼</td></tr>
-              <tr><td>6</td><td>errCode=114 新 IP</td><td>彈出 NewDeviceAuth（異地登入）</td><td><span class="cost-tag cost-code">程式層</span></td><td>簡訊驗證</td></tr>
-              <tr><td>7</td><td>isKeyCodeOpen</td><td>部分業主有圖形驗證碼前置</td><td><span class="cost-tag cost-config">��定層</span></td><td></td></tr>
-              <tr><td>8</td><td>密碼儲存</td><td>AES 加密存 localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td>key 32 位固��</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>accountLoginEnabled + phoneNumberLoginEnabled</td><td>兩者皆開 → 雙 Tab</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台 baseConfig 控制</td></tr>
+                <tr><td>2</td><td>只開一種</td><td>隱藏 Tab，直接顯示單一表單</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>已登入</td><td>自動跳轉 toPushTypePage()</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>errCode=9/14</td><td>彈出圖形驗證碼 NumberCaptchPopup</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>errCode=110 新設備</td><td>彈出 NewDeviceAuth 驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td>需要手機號碼</td></tr>
+                <tr><td>6</td><td>errCode=114 新 IP</td><td>彈出 NewDeviceAuth（異地登入）</td><td><span class="cost-tag cost-code">程式層</span></td><td>簡訊驗證</td></tr>
+                <tr><td>7</td><td>isKeyCodeOpen</td><td>部分業主有圖形驗證碼前置</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>8</td><td>密碼儲存</td><td>AES 加密存 localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td>key 32 位固定</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/login/index.vue<br>composables/useLogin/index.ts:loginByAccount()/loginByPhone()</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/login/index.vue<br>composables/useLogin/index.ts:loginByAccount()/loginByPhone()</div></details>
           </div>
         </details>
+      </div>
 
-        <!-- ===== 0.3 註冊 ===== -->
-        <div class="logic-merge-divider" id="sec-register">0.3 註冊</div>
+      <!-- === 3. 註冊 === -->
+      <div class="section" id="sec-register">
+        <div class="section-title"><span class="num">3</span> 註冊</div>
+        <div class="section-desc">帳號註冊、手機註冊、邀請碼、自動登入</div>
 
         <div class="annotated-row">
           <div class="screen-col">
@@ -289,16 +360,18 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-validation">驗證</span> 帳號格式</h4>
+              <h4><span class="type-tag type-rule">規則</span>帳號格式 <span class="cost-tag cost-config">設定層</span></h4>
               <p>accountValidRole=2 → 首位必須字母，6-13 位英數。由 registerOption API 控制。</p>
+              <div class="pm-note">格式規則由 API 下發，不用發版。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 推薦人 ID</h4>
+              <h4><span class="type-tag type-rule">規則</span>推薦人 ID <span class="cost-tag cost-code">程式層</span></h4>
               <p>Base64 decode → 含 | 取後段。inviteCodeEnabled 且無 recommendId 時顯示邀請碼欄位。</p>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-flow">流程</span> 註冊成功</h4>
+              <h4><span class="type-tag type-rule">規則</span>註冊成功 <span class="cost-tag cost-code">程式層</span></h4>
               <p>自動觸發 handleLoginSuccess → 直接登入，不需再輸帳密。</p>
+              <div class="pm-note">註冊 = 自動登入，流程是一氣呵成的。</div>
             </div>
           </div>
         </div>
@@ -307,49 +380,62 @@
           <summary>註冊頁面 <span class="rule-count">6 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>���件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>accountValidRole=2</td><td>帳號首位必須是字母</td><td><span class="cost-tag cost-config">設定層</span></td><td>registerOption API 控制</td></tr>
-              <tr><td>2</td><td>accountRegisterBoundPhoneNumber</td><td>帳號註冊需填手機號</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>3</td><td>inviteCodeEnabled 且無 recommendId</td><td>顯示邀請碼欄位</td><td><span class="cost-tag cost-config">設定��</span></td><td></td></tr>
-              <tr><td>4</td><td>推薦人 ID</td><td>Base64 decode → 含 | 取後段</td><td><span class="cost-tag cost-code">程式層</span></td><td>外部帶���</td></tr>
-              <tr><td>5</td><td>測試渠道</td><td>自動清空邀請碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>6</td><td>註冊成功</td><td>自動登入（handleLoginSuccess）</td><td><span class="cost-tag cost-code">程式��</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>accountValidRole=2</td><td>帳號首位必須是字母</td><td><span class="cost-tag cost-config">設定層</span></td><td>registerOption API 控制</td></tr>
+                <tr><td>2</td><td>accountRegisterBoundPhoneNumber</td><td>帳號註冊需填手機號</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>inviteCodeEnabled 且無 recommendId</td><td>顯示邀請碼欄位</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>推薦人 ID</td><td>Base64 decode → 含 | 取後段</td><td><span class="cost-tag cost-code">程式層</span></td><td>外部帶入</td></tr>
+                <tr><td>5</td><td>測試渠道</td><td>自動清空邀請碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>註冊成功</td><td>自動登入（handleLoginSuccess）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/login/components/Register.vue<br>composables/useLogin/useRegister.ts</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/login/components/Register.vue<br>composables/useLogin/useRegister.ts</div></details>
           </div>
         </details>
+      </div>
 
-        <!-- ===== 0.4 路由守衛 ===== -->
-        <div class="logic-merge-divider" id="sec-guard">0.4 路由守衛 / Token / 維護</div>
+      <!-- === 4. 路由守衛 / Token / 維護 === -->
+      <div class="section" id="sec-guard">
+        <div class="section-title"><span class="num">4</span> 路由守衛 / Token / 維護</div>
+        <div class="section-desc">全站路由攔截、Token 生命週期、維護頁面、IP 封鎖</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>Token 72 小時有效，設備不變就不失效（跟 IP 無關）。但設備變動 → 立即失效 + 需新設備驗證。玩家換手機必定重新登入。維護模式從 baseConfig 取得、不是即時推送，所以維護公告要提前發布。
+        </div>
 
         <details class="page-logic-card" id="sec-route-guard">
           <summary>路由守衛 <span class="rule-count">6 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條��</th><th>行為</th><th>��動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>to.meta.needLogin && !token</td><td>顯示登入 Sheet，abort 導航</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>2</td><td>測試帳號 + 受限頁</td><td>攔截 deposit/withdraw/mine-transfer</td><td><span class="cost-tag cost-code">程式層</span></td><td>測試帳號功能受限</td></tr>
-              <tr><td>3</td><td>離開 /home/topic</td><td>清除 themeOverride</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>channelId 繼承</td><td>from.query.channelId → to.query</td><td><span class="cost-tag cost-code">程式層</span></td><td>全站必帶</td></tr>
-              <tr><td>5</td><td>路由切換</td><td>清空直播購物車</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>6</td><td>from query 記錄</td><td>渠道追蹤寫入 localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>to.meta.needLogin && !token</td><td>顯示登入 Sheet，abort 導航</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>測試帳號 + 受限頁</td><td>攔截 deposit/withdraw/mine-transfer</td><td><span class="cost-tag cost-code">程式層</span></td><td>測試帳號功能受限</td></tr>
+                <tr><td>3</td><td>離開 /home/topic</td><td>清除 themeOverride</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>channelId 繼承</td><td>from.query.channelId → to.query</td><td><span class="cost-tag cost-code">程式層</span></td><td>全站必帶</td></tr>
+                <tr><td>5</td><td>路由切換</td><td>清空直播購物車</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>from query 記錄</td><td>渠道追蹤寫入 localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">middleware/router-guard.global.ts</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">middleware/router-guard.global.ts</div></details>
           </div>
         </details>
 
         <details class="page-logic-card" id="sec-token">
-          <summary>Token 管理 <span class="rule-count">5 條規��</span></summary>
+          <summary>Token 管理 <span class="rule-count">5 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>���件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>Token 有效期</td><td>72 小時，設備不變不失���</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>全站通則規定</td></tr>
-              <tr><td>2</td><td>設備變動</td><td>Token 立即失效</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>3</td><td>HTTP 401</td><td>toast 過期 → logout → 跳首頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>errCode 163</td><td>暫封/踢下線 → ExpiredPopup</td><td><span class="cost-tag cost-code">程式���</span></td><td>需聯繫客服</td></tr>
-              <tr><td>5</td><td>API prefix</td><td>有 token → /ajax-migration；無 → /public</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Token 有效期</td><td>72 小時，設備不變不失效</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>全站通則規定</td></tr>
+                <tr><td>2</td><td>設備變動</td><td>Token 立即失效</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>HTTP 401</td><td>toast 過期 → logout → 跳首頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>errCode 163</td><td>暫封/踢下線 → ExpiredPopup</td><td><span class="cost-tag cost-code">程式層</span></td><td>需聯繫客服</td></tr>
+                <tr><td>5</td><td>API prefix</td><td>有 token → /ajax-migration；無 → /public</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">plugins/fetch.ts:platformStatusCodeHandler<br>stores/user.ts:setToken/logout</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">plugins/fetch.ts:platformStatusCodeHandler<br>stores/user.ts:setToken/logout</div></details>
           </div>
         </details>
 
@@ -364,12 +450,14 @@
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="rule-tag tag-logic">邏輯</span> 維護偵測</h4>
+              <h4><span class="type-tag type-rule">規則</span>維護偵測 <span class="cost-tag cost-config">設定層</span></h4>
               <p>watch isInMaintain → 維護結束自動 logout + reload，使用者無感。</p>
+              <div class="pm-note">維護狀態從 baseConfig 取得，非即時推送。公告要提前發。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="rule-tag tag-warning">注意</span> IP 封鎖無出口</h4>
+              <h4><span class="type-tag type-rule">規則</span>IP 封鎖 <span class="cost-tag cost-config">設定層</span></h4>
               <p>封鎖頁顯示玩家 IP + 地區，唯一出口是聯繫客服，無法自行解鎖。</p>
+              <div class="pm-note">誤封需聯繫後台管理員操作雲平台。</div>
             </div>
           </div>
         </div>
@@ -378,17 +466,19 @@
           <summary>維護頁 / IP 封鎖 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
-              <tr><th>#</th><th>條件</th><th>行���</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>isInMaintain</td><td>全屏維護頁 + Lottie 動畫</td><td><span class="cost-tag cost-config">設定��</span></td><td>後台控制開關</td></tr>
-              <tr><td>2</td><td>維護結束</td><td>watch 偵測 → logout + reload</td><td><span class="cost-tag cost-code">程式層</span></td><td>使用者無感</td></tr>
-              <tr><td>3</td><td>IP 在黑名單</td><td>全屏封鎖頁 + 顯示 IP 地區</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定</td></tr>
-              <tr><td>4</td><td>封鎖出口</td><td>僅能聯繫客服</td><td><span class="cost-tag cost-venue">場館限制</span></td><td>無法自行解鎖</td></tr>
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>isInMaintain</td><td>全屏維護頁 + Lottie 動畫</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台控制開關</td></tr>
+                <tr><td>2</td><td>維護結束</td><td>watch 偵測 → logout + reload</td><td><span class="cost-tag cost-code">程式層</span></td><td>使用者無感</td></tr>
+                <tr><td>3</td><td>IP 在黑名單</td><td>全屏封鎖頁 + 顯示 IP 地區</td><td><span class="cost-tag cost-config">設定層</span></td><td>雲平台設定</td></tr>
+                <tr><td>4</td><td>封鎖出口</td><td>僅能聯繫客服</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>無法自行解鎖</td></tr>
+              </tbody>
             </table>
-            <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/(system)/maintain.vue<br>pages/(system)/block.vue</div></details>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/(system)/maintain.vue<br>pages/(system)/block.vue</div></details>
           </div>
         </details>
-
       </div>
+
     </div>
 
     <!-- ========================================== -->
@@ -907,16 +997,19 @@ sequenceDiagram
     overview: {
       title: '功能總覽',
       items: [
-        { id: 'sec-init', label: '0.1 App 初始化' },
-        { id: 'sec-init-flow', label: '初始化流程' },
-        { id: 'sec-login', label: '0.2 登入' },
-        { id: 'sec-login-page', label: '登入頁面' },
-        { id: 'sec-register', label: '0.3 註��' },
-        { id: 'sec-register-page', label: '註冊頁面' },
-        { id: 'sec-guard', label: '0.4 路由守衛/Token' },
-        { id: 'sec-route-guard', label: '路由守衛' },
-        { id: 'sec-token', label: 'Token 管理' },
-        { id: 'sec-maintain', label: '維護頁/IP 封鎖' },
+        { id: 'sec-init', label: '0 App 初始化' },
+        { id: 'sec-flow', label: '1 主要動線' },
+        { type: 'group', label: '登入' },
+        { id: 'sec-login', label: '2 登入' },
+        { id: 'sec-login-page', label: '└ 登入頁面' },
+        { type: 'group', label: '註冊' },
+        { id: 'sec-register', label: '3 註冊' },
+        { id: 'sec-register-page', label: '└ 註冊頁面' },
+        { type: 'group', label: '系統守衛' },
+        { id: 'sec-guard', label: '4 路由守衛/Token/維護' },
+        { id: 'sec-route-guard', label: '├ 路由守衛' },
+        { id: 'sec-token', label: '├ Token 管理' },
+        { id: 'sec-maintain', label: '└ 維護頁/IP 封鎖' },
       ]
     },
     userflow: {
