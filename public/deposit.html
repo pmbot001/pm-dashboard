@@ -805,6 +805,68 @@
         </details>
       </div>
 
+      <!-- === 5. 提款金額計算公式 === -->
+      <div class="section" id="sec-withdraw-formula">
+        <div class="section-title"><span class="num">5</span> 提款金額計算與限制</div>
+        <div class="section-desc">提款金額公式、倍數限制、最低保留金、提款優惠</div>
+        <details class="page-logic-card" open>
+          <summary>提款金額計算公式 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>最低提款金額</td><td><code>max(minWithdrawAmount, limitRangeAmountMin)</code>（limitRangeAmountInputSwitch=1 時）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>最高提款金額</td><td><code>maxWithdrawAmount</code></td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>金額倍數限制</td><td>金額必須是 <code>(withdraw_gold_times / 100)</code> 的整倍數。例：100→1 元的整倍數；10000→100 元的整倍數</td><td><span class="cost-tag cost-config">設定層</span></td><td>倍數不符會提示</td></tr>
+                <tr><td>4</td><td>最低保留金</td><td><code>withdraw_reserve_gold</code>（分），提款後餘額需 &gt;= 此值</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>提款優惠</td><td>折扣金額 = 提款金額 × <code>offerPer / 100</code>；上限 = <code>min(maxOffer - curOffer, maxOfferWeek - curOfferWeek)</code></td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>6</td><td>虛擬幣換算</td><td><code>digitalNum = gold / cryptoRate</code>（或 usdt_rate）</td><td><span class="cost-tag cost-code">程式層</span></td><td>匯率即時取</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 6. 轉帳（場館錢包）=== -->
+      <div class="section" id="sec-transfer">
+        <div class="section-title"><span class="num">6</span> 轉帳（場館錢包）</div>
+        <div class="section-desc">場館之間的金額互轉，路由 pages/mine/transfer/</div>
+        <details class="page-logic-card" open>
+          <summary>場館轉帳 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>查詢錢包餘額</td><td><code>POST /wallet/gameListBalance</code> 取得各場館餘額</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>場館轉帳</td><td><code>POST /wallet/gameAmountTransferV2</code>（gameOutId, gameInId, gold）</td><td><span class="cost-tag cost-code">程式層</span></td><td>金額以「分」計算</td></tr>
+                <tr><td>3</td><td>一鍵回收</td><td>將所有場館餘額一次性轉回中心錢包</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>自動轉帳</td><td>部分場館進入遊戲時自動從中心錢包轉入</td><td><span class="cost-tag cost-code">程式層</span></td><td>場館設定決定</td></tr>
+                <tr><td>5</td><td>鎖定金額</td><td><code>activityLockWalletGold</code> — 活動鎖定金額不可轉出</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>活動彩金鎖定</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 7. 交易記錄 === -->
+      <div class="section" id="sec-transaction">
+        <div class="section-title"><span class="num">7</span> 交易記錄</div>
+        <div class="section-desc">路由 pages/transaction-record/ — 查看存款、提款、轉帳歷史</div>
+        <details class="page-logic-card" open>
+          <summary>交易記錄 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>分類 Tab</td><td>存款記錄 / 提款記錄 / 轉帳記錄</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>時間篩選</td><td>支持日期範圍查詢</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>訂單詳情</td><td>點擊可展開訂單明細（金額、狀態、時間、通道）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
     </div>
 
     <!-- ========================================== -->
@@ -1209,6 +1271,10 @@ sequenceDiagram
         { id: 'sec-waterflow', label: '├ 流水與場館存款' },
         { id: 'sec-daike', label: '├ 代客充值' },
         { id: 'sec-dd-wallet', label: '└ DD 錢包' },
+        { type: 'group', label: '補充' },
+        { id: 'sec-withdraw-formula', label: '5 提款金額公式' },
+        { id: 'sec-transfer', label: '6 轉帳（場館錢包）' },
+        { id: 'sec-transaction', label: '7 交易記錄' },
       ]
     },
     userflow: {

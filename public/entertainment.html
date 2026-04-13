@@ -503,6 +503,29 @@
       </div>
 
       </div>
+
+      <!-- === 5. 收藏與試玩 === -->
+      <div class="section" id="sec-favorite">
+        <div class="section-title"><span class="num">5</span> 收藏與試玩模式</div>
+        <div class="section-desc">子遊戲收藏完整邏輯、試玩模式說明</div>
+        <details class="page-logic-card" open>
+          <summary>收藏/最近遊戲邏輯 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>收藏範圍</td><td>僅限子遊戲（自研電子/捕魚大廳內）；場館級別無收藏功能</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>收藏操作</td><td><code>POST /user/storeSubGame</code>（storeType: 1=收藏, 2=取消）→ 重新拉取子遊戲列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>排序</td><td>已收藏排前面（<code>isCollect ? -1 : 1</code>），其餘維持原順序</td><td><span class="cost-tag cost-code">程式層</span></td><td>重新進入頁面後排序才生效</td></tr>
+                <tr><td>4</td><td>自動收藏</td><td>投注成功的電子類遊戲預設被收藏（後端邏輯）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>試玩模式</td><td>前端無明確試玩邏輯；一律需登入。試玩（如有）由第三方場館自行處理</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>玩家問「能不能試玩」→ 看場館支不支援</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      </div>
     </div>
 
     <!-- TAB 2: User Flow -->

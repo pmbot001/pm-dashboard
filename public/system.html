@@ -498,6 +498,235 @@
         </details>
       </div>
 
+      <!-- === 5. 忘記密碼 === -->
+      <div class="section" id="sec-forgot-password">
+        <div class="section-title"><span class="num">5</span> 忘記密碼</div>
+        <div class="section-desc">帳號登入頁面的「忘記密碼」功能 — 重設新密碼</div>
+        <details class="page-logic-card" open>
+          <summary>忘記密碼 欄位規則 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>欄位</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>用户名</td><td>必填；4-20 位字母+數字；空值/格式錯誤提示；用戶名不存在 toast「此賬號並未被注冊」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>验证码 + 获取</td><td>6 位純數字；用戶名空/格式不符 → 按鈕 disabled；發送後倒計時 + toast「驗證碼已發送」；超出次數 toast「獲取太頻繁，請稍後重試」</td><td><span class="cost-tag cost-code">程式層</span></td><td>雲平台需開啟「注冊須綁定手機號」才顯示</td></tr>
+                <tr><td>3</td><td>新密码</td><td>8-20 位字母+數字；空值/格式錯誤提示；預設隱碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>确认新密码</td><td>必填；與新密碼不匹配 → 錯誤提示；預設隱碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>确定</td><td>驗證所有必填欄 → 正確則成功更新密碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>联系客服</td><td>後台設定一條/多條線路邏輯（一條直接進客服；多條先選線路）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <div class="pm-note">忘記密碼是帳號登入頁面的子功能。前提是帳號有綁定手機號，否則無法發送驗證碼。</div>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 6. RP 帳號/手機欄位規則 === -->
+      <div class="section" id="sec-rp-fields">
+        <div class="section-title"><span class="num">6</span> RP 欄位驗證規則</div>
+        <div class="section-desc">帳號登入、手機登入、帳號註冊、手機註冊的完整欄位規則（來源：RP）</div>
+
+        <details class="page-logic-card">
+          <summary>帳號登入 欄位規則 <span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>欄位</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>用户名</td><td>4-20 位字母+數字；空值提示；格式錯誤提示；下拉選單顯示已登入帳號</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>密码</td><td>8-20 位字母+數字；空值/格式錯誤提示；預設隱碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>登录</td><td>驗證帳密 → 正確登入；判斷雲平台是否開啟驗證碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>记住密码</td><td>勾選後記錄上次登錄成功密碼；預設勾選</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>忘记密码</td><td>跳轉至忘記密碼頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>随便逛逛</td><td>以訪客身分進入遊戲首頁</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>在线客服</td><td>一條/多條線路邏輯</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>手機登入 欄位規則 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>欄位</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>區碼 + 手機號</td><td>僅限數字，最多 13 位；逐字驗證格式；空值/格式錯誤提示</td><td><span class="cost-tag cost-code">程式層</span></td><td>雲平台開啟「注冊須綁定手機號」才顯示</td></tr>
+                <tr><td>2</td><td>验证码 + 获取</td><td>6 位純數字；手機號空/不符 → disabled；發送短信 + 倒計時；超出次數 toast</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>记住手机号</td><td>勾選後記錄上次成功手機號；預設勾選</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>登录</td><td>判斷手機號+驗證碼 → 正確登入/錯誤提示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>随便逛逛 / 在线客服</td><td>同帳號登入邏輯</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>帳號註冊 欄位規則 <span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>欄位</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>帳號</td><td>首位必須字母，6-13 位英數（accountValidRole=2）</td><td><span class="cost-tag cost-config">設定層</span></td><td>registerOption API 控制</td></tr>
+                <tr><td>2</td><td>密碼</td><td>8-20 位字母+數字</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>確認密碼</td><td>必須與密碼一致</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>區碼 + 手機號</td><td>僅在 accountRegisterBoundPhoneNumber 開啟時顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>验证码</td><td>手機號有效時可發送；6 位數字；倒計時</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>邀請碼</td><td>inviteCodeEnabled 且無 recommendId 時顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>7</td><td>立即注册</td><td>成功 → 自動登入（handleLoginSuccess）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>手機註冊 欄位規則 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>欄位</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>區碼 + 手機號</td><td>僅限數字，最多 13 位；逐字驗證</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>验证码 + 获取</td><td>6 位數字；倒計時；超出次數 toast</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>密碼</td><td>8-20 位字母+數字</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>邀請碼</td><td>inviteCodeEnabled 時顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>立即注册</td><td>成功 → 自動登入</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 7. RP 全站通則 === -->
+      <div class="section" id="sec-rp-rules">
+        <div class="section-title"><span class="num">7</span> RP 全站通則</div>
+        <div class="section-desc">遊戲端全站通用規則 — Token / Timeout / 金額顯示 / 外鏈</div>
+        <details class="page-logic-card" open>
+          <summary>游戏端全站通则 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>類別</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Token 通則</td><td>72 小時有效；設備不變 + IP 變動 → 不失效；設備變動 → 失效。持續遊玩有延長機制。PC/H5/APP 機制相同</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>全站統一規定</td></tr>
+                <tr><td>2</td><td>跳轉類型「開啟 APP」</td><td>PC 無 APP → 用跳轉參數。H5/APP → 判斷 iOS scheme / Android package → 有符合開啟 APP；無符合用跳轉參數</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>Timeout</td><td>全站統一 20 秒（原 10 秒，2023/07 調整）；沙巴體育超時顯示「請查看投注記錄」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>網頁重整判斷</td><td>重整後停留在原頁面（GOR-5608）；Token 失效刷新 → 回推廣類型頁面</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>體育場館外鏈</td><td>雲平台設定內開/外鏈；「自定-體育大廳」→ 顯示 TAB；「自定-普通」→ 不顯示 TAB。PC/H5 另開分頁；APP 內外開/橫式全屏</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>6</td><td>Safari 限制</td><td>Safari 限制彈出項目 → 需加提醒彈窗「即將另開遊戲界面，是否繼續」</td><td><span class="cost-tag cost-code">程式層</span></td><td>Safari 專屬處理</td></tr>
+                <tr><td>7</td><td>金額顯示通則</td><td>顯示至小數點第二位，小數點後無條件捨去。積分不列入</td><td><span class="cost-tag cost-code">程式層</span></td><td>全站統一（2026/03 確認）</td></tr>
+                <tr><td>8</td><td>異地登錄觸發</td><td>上次 IP ≠ 本次 IP &amp; 登記 IP ≠ 本次 IP；上次裝置 ≠ 本次裝置 &amp; 註冊裝置 ≠ 本次裝置</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 8. 區碼通則 === -->
+      <div class="section" id="sec-area-code">
+        <div class="section-title"><span class="num">8</span> 手機號、區碼通則</div>
+        <div class="section-desc">區碼預設規則 + 語系→居住國→預設區碼對照</div>
+        <details class="page-logic-card" open>
+          <summary>區碼通則 <span class="rule-count">3 條規則 + 對照表</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>PC / H5</td><td>取瀏覽器語系對應的區碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>APP</td><td>取手機系統語系對應的區碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>皆無法匹配</td><td>預設取排序第一個區碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <table class="type-table" style="margin-top: 12px;">
+              <thead><tr><th>語系</th><th>居住國</th><th>幣種</th><th>預設區碼</th></tr></thead>
+              <tbody>
+                <tr><td>簡體中文</td><td>中國</td><td>人民幣</td><td>+86</td></tr>
+                <tr><td>繁體中文（台灣）</td><td>台灣</td><td>人民幣</td><td>+866（⚠️ 僅測試環境）</td></tr>
+                <tr><td>繁體中文（香港）</td><td>香港</td><td>港幣</td><td>+852</td></tr>
+                <tr><td>繁體中文（澳門）</td><td>澳門</td><td>港幣</td><td>+853</td></tr>
+                <tr><td>越南文</td><td>越南</td><td>越南盾</td><td>+84</td></tr>
+                <tr><td>馬來文</td><td>馬來西亞</td><td>馬幣</td><td>+60</td></tr>
+                <tr><td>印尼文</td><td>印尼</td><td>印尼盾</td><td>+62</td></tr>
+                <tr><td>日文</td><td>日本</td><td>日幣</td><td>+81</td></tr>
+                <tr><td>韓文</td><td>韓國</td><td>韓圓</td><td>+82</td></tr>
+                <tr><td>泰文</td><td>泰國</td><td>泰銖</td><td>+66</td></tr>
+                <tr><td>印地語</td><td>印度</td><td>印度盧比</td><td>+91</td></tr>
+                <tr><td>英文</td><td>美國</td><td>美金</td><td>+1</td></tr>
+                <tr><td>葡萄牙文</td><td>巴西</td><td>雷亞爾</td><td>+55</td></tr>
+              </tbody>
+            </table>
+            <div class="pm-note">台灣區碼 +866 僅測試環境出現（QIP-9303），正式環境不會顯示。</div>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 9. 彈窗通則 === -->
+      <div class="section" id="sec-popup-rules">
+        <div class="section-title"><span class="num">9</span> 彈窗通則</div>
+        <div class="section-desc">全站彈窗類型、優先序規則</div>
+        <details class="page-logic-card" open>
+          <summary>彈窗通則 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>彈窗類型</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>廣告 / 活動彈窗</td><td>有「不再顯示」和「確認」按鈕（GOR-4537）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>首存彈窗</td><td>有充值/稍後再說按鈕（GOR-5231）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>版本更新彈窗</td><td>含強制/非強制更新邏輯（GOR-5243）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>遊戲教學彈窗</td><td>圖片型，左右滑動說明（GOR-5243）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>超級優惠/重要公告</td><td>高優先級彈窗（GOR-5251）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>6</td><td>首頁彈窗優先序</td><td>由後台控制多個彈窗的顯示順序，同一時段只顯示一個（GOR-5125）</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可調優先序</td></tr>
+                <tr><td>7</td><td>廣告橫幅（全版）</td><td>橫式橫幅廣告（GOR-5727）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>8</td><td>App Store 好評引導</td><td>好評引導彈窗（GOR-5877）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 10. 紅點通則 === -->
+      <div class="section" id="sec-reddot-rules">
+        <div class="section-title"><span class="num">10</span> 紅點顯示通則</div>
+        <div class="section-desc">「我的」頁面及各功能的紅點觸發規則</div>
+        <details class="page-logic-card" open>
+          <summary>紅點顯示通則 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>功能</th><th>紅點條件</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>「我的」頁面</td><td>頁面內任何功能有紅點 → 「我的」顯示紅點</td><td><span class="cost-tag cost-code">程式層</span></td><td>匯總邏輯</td></tr>
+                <tr><td>2</td><td>消息</td><td>有未讀信息 → 顯示紅點</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>我的稱號</td><td>有已獲得但未領取的稱號 → 顯示紅點（GOR-2528）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>我要提款</td><td>流水已達標 + 玩家未提款過 → 顯示提示框（GOR-2807）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>優惠活動</td><td>有活動未查看 → 顯示紅點</td><td><span class="cost-tag cost-code">程式層</span></td><td>分頁標籤也有紅點、列表圖顯示「新」</td></tr>
+                <tr><td>6</td><td>領獎通知系統</td><td>有數據 → icon 紅點；無數據 → 不顯示。導航欄「活動」icon 連動</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>帮助中心 / 玩法教程</td><td>首次顯示紅點，點選後消失（GOR-2807）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>福利中心</td><td>有未領取數據 → 顯示紅點（GOR-2806）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 11. 踢下線機制 === -->
+      <div class="section" id="sec-kickoff">
+        <div class="section-title"><span class="num">11</span> 踢下線機制</div>
+        <div class="section-desc">雲平台會員管理的踢下線操作及前端表現</div>
+        <details class="page-logic-card" open>
+          <summary>踢下線機制 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>後台執行踢下線</td><td>路徑：雲平台 &gt; 會員管理 &gt; 會員列表 &gt; 帳號操作「踢下線」</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台操作</td></tr>
+                <tr><td>2</td><td>被踢下線後登錄</td><td>半版溫馨提示彈窗「登錄異常，請聯系客服」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>彈窗按鈕</td><td>確認 → 跳轉在線客服（一條/多條線路邏輯）；取消 → 關閉彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- OMIT: 版本資訊（Version Plugin）— 純後台 console log，PM 不操作 -->
+      <!-- OMIT: 字型大小自適應（Resize Fontsize Plugin）— 純程式碼實作細節 -->
+
     </div>
 
     <!-- ========================================== -->
@@ -1029,6 +1258,14 @@ sequenceDiagram
         { id: 'sec-route-guard', label: '├ 路由守衛' },
         { id: 'sec-token', label: '├ Token 管理' },
         { id: 'sec-maintain', label: '└ 維護頁/IP 封鎖' },
+        { type: 'group', label: '補充' },
+        { id: 'sec-forgot-password', label: '5 忘記密碼' },
+        { id: 'sec-rp-fields', label: '6 RP 欄位規則' },
+        { id: 'sec-rp-rules', label: '7 全站通則' },
+        { id: 'sec-area-code', label: '8 區碼通則' },
+        { id: 'sec-popup-rules', label: '9 彈窗通則' },
+        { id: 'sec-reddot-rules', label: '10 紅點通則' },
+        { id: 'sec-kickoff', label: '11 踢下線' },
       ]
     },
     userflow: {

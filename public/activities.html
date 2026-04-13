@@ -752,6 +752,170 @@
       </div>
 
       </div>
+
+      <!-- === 5. 轉盤系統深度 === -->
+      <div class="section" id="sec-wheel-deep">
+        <div class="section-title"><span class="num">5</span> 轉盤系統 — 深度展開</div>
+        <div class="section-desc">三獎池結構、權重機制、抽獎流程、風控、視覺樣式、跨模組關聯</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>轉盤系統是活動模組中最複雜的子系統。Amanda Chi 已離職，GOR-6237（通用模版）、GOR-6367（優化）、GOR-6481（新樣式）均無 PM owner。活動開關關閉後重新開啟，<b>抽獎次數和任務累計歸零</b>。
+        </div>
+
+        <details class="page-logic-card" open>
+          <summary>三層獎池結構 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>獎池</th><th>定位</th><th>領獎條件</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>大獎池（Grand）</td><td>高價值（iPhone 等）</td><td>需完成大額任務（存款/投注達標），低中獎率</td><td>需領獎任務+倒計時</td></tr>
+                <tr><td>2</td><td>中獎池（Medium）</td><td>中等價值（彩金等）</td><td>需完成中等任務</td><td>需領獎任務+倒計時</td></tr>
+                <tr><td>3</td><td>小獎池（Small）</td><td>低價值/安慰（碎片、小額彩金）</td><td>即領即得，高中獎率</td><td>直接發放到餘額或背包</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" open>
+          <summary>權重機制（三層分離）<span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>權重類型</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>獎池選擇權重</td><td>由轉盤配置的抽取數量決定本次落入哪個獎池</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台設定</td></tr>
+                <tr><td>2</td><td>顯示概率權重（DisplayWeight）</td><td>控制獎品在轉盤/九宮格上的顯示面積（純視覺）</td><td><span class="cost-tag cost-config">設定層</span></td><td>跟實際中獎率無關</td></tr>
+                <tr><td>3</td><td>中獎概率權重（HitWeight）</td><td>控制實際中獎機率（與顯示分離）</td><td><span class="cost-tag cost-config">設定層</span></td><td>小數第三位無條件捨去，不足 100% 自動補到保底</td></tr>
+                <tr><td>4</td><td>保底獎品（IsGuaranteed）</td><td>每獎池一個，概率不足 100% 時自動補到保底</td><td><span class="cost-tag cost-config">設定層</span></td><td>保底獎品的顯示/中獎權重為 -</td></tr>
+              </tbody>
+            </table>
+            <div class="pm-note">顯示概率 ≠ 中獎概率。業主看到獎品佔轉盤很大面積不代表機率高，這是常見誤解。</div>
+          </div>
+        </details>
+
+        <details class="page-logic-card" open>
+          <summary>抽獎流程 <span class="rule-count">7 步驟</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>步驟</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>玩家消耗抽獎次數</td><td>前端扣次數</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>呼叫 API</td><td><code>POST /wheelSystem/spin</code>（含 activityId、period）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>後端決定獎品</td><td>根據獎池抽取數量決定獎品組合</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>各獎池計算</td><td>根據中獎概率權重計算具體獎品</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>前端動畫</td><td>根據顯示概率權重播放轉盤動畫</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>發獎（小獎池）</td><td>直接發放（彩金→餘額，道具→背包）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>發獎（大/中獎池）</td><td>需完成領獎任務（有倒計時）；風控攔截 → 不派獎</td><td><span class="cost-tag cost-config">設定層</span></td><td>風控攔截在中獎紀錄顯示為 -</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" open>
+          <summary>轉盤風控 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>風控類型</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>WheelRiskConfig — 同 IP 限制</td><td>勾選後，同 IP 已領獎者不可抽</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>WheelRiskConfig — 同設備限制</td><td>勾選後，同設備已領獎者不可抽</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>InvitedRiskConfig — 被邀請人風控</td><td>同 IP / 同設備限制，勾選後系統不派獎</td><td><span class="cost-tag cost-config">設定層</span></td><td>不派獎但不報錯</td></tr>
+                <tr><td>4</td><td>彩金金額</td><td>後端存分，前端需除以 100 顯示元</td><td><span class="cost-tag cost-code">程式層</span></td><td>金額顯示可能有落差</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>任務條件四類 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>任務分類</th><th>說明</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>大獎池任務</td><td>完成任務 → 獲得大獎池抽獎次數，可配多個任務</td><td><span class="cost-tag cost-config">設定層</span></td><td>conditionTypeLv1/2/3 三層結構</td></tr>
+                <tr><td>2</td><td>中獎池任務</td><td>完成任務 → 獲得中獎池抽獎次數，可配多個任務</td><td><span class="cost-tag cost-config">設定層</span></td><td>同上</td></tr>
+                <tr><td>3</td><td>加碼抽獎</td><td>額外任務 → 加碼獎勵，最少 1 個，有標題欄位（maxlength=20），可複製/排序</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>被邀請人</td><td>邀請好友完成任務 → 獎勵；僅能配置 1 個，有獎品類型、獎勵、流水倍數</td><td><span class="cost-tag cost-config">設定層</span></td><td>裂變核心機制</td></tr>
+              </tbody>
+            </table>
+            <div class="pm-note">任務條件引擎跟任務系統、賽事分頁共用同一套，改條件 = 全部共用活動要測。<b>最大地雷</b>。</div>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>視覺樣式 <span class="rule-count">6 + 2 待開發</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>樣式</th><th>wheelType</th><th>狀態</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>驚喜轉不停（紅）</td><td>0 — SpinWheel</td><td>已上線</td><td></td></tr>
+                <tr><td>2</td><td>驚喜轉不停（藍）</td><td>0 — SpinWheel</td><td>已上線</td><td></td></tr>
+                <tr><td>3</td><td>幸運大轉盤（藍）</td><td>1 — FruitMachine</td><td>已上線</td><td>九宮格</td></tr>
+                <tr><td>4</td><td>幸運大轉盤（橘）</td><td>1 — FruitMachine</td><td>已上線</td><td></td></tr>
+                <tr><td>5</td><td>節慶風格（世界杯/中秋/國慶/聖誕）</td><td>共用 0/1</td><td>已上線</td><td>style 值 4~7</td></tr>
+                <tr><td>6</td><td>轉盤模板+顯示規則</td><td>依序(0) / 隨機(1)</td><td>—</td><td>活動開啟後不可修改</td></tr>
+                <tr><td>7</td><td>幸運刮刮樂（待開發）</td><td>—</td><td>GOR-6481</td><td>手指刮開 &gt;50% 顯示結果</td></tr>
+                <tr><td>8</td><td>豪禮翻翻樂（待開發）</td><td>—</td><td>GOR-6481</td><td>3~6 張 vs 7 張以上排列不同</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>跨模組關聯 <span class="rule-count">10 項</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>關聯模組</th><th>關係</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>懸浮窗口（GOR-5709）</td><td>體育/活動/直播等頁面的懸浮窗口入口</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>2</td><td>獎品管理</td><td>獎品從獎品管理模組搜尋（TagType=2）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>背包中心</td><td>虛擬道具/實體獎品進入背包</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>兌換中心（GOR-6017）</td><td>碎片可兌換獎品（多配方方案）</td><td><span class="cost-tag cost-code">程式層</span></td><td>已上正式服</td></tr>
+                <tr><td>5</td><td>任務系統（每日任務）</td><td>完成每日任務 → 獲轉盤抽獎次數</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>6</td><td>邀請好友</td><td>被邀請人完成任務 → 邀請人獲獎</td><td><span class="cost-tag cost-code">程式層</span></td><td>裂變核心</td></tr>
+                <tr><td>7</td><td>活動紅利通則（GOR-2944）</td><td>彩金發放遵循紅利通則</td><td><span class="cost-tag cost-locked">場館限制</span></td><td></td></tr>
+                <tr><td>8</td><td>會員詳情</td><td>彩金影響金幣紅利記錄</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>9</td><td>全服公告 / 提醒推送</td><td>大獎中獎可推送公告/彈窗</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>10</td><td>聊天室</td><td>可展示轉盤大獎中獎通知</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>獎品配置規則 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>獎品類型</td><td>彩金(5) / 虛擬道具(1) / 虛擬獎品(2) / 實體獎品(3) / 優惠券(4)</td><td><span class="cost-tag cost-config">設定層</span></td><td>實體獎品數量固定 1</td></tr>
+                <tr><td>2</td><td>各獎池限制</td><td>最少一個保底 + 一個獎池獎品；每獎池最多 11 個（含保底）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>活動開啟後</td><td>不可新增/刪除獎品（僅可編輯）</td><td><span class="cost-tag cost-config">設定層</span></td><td>開啟前要確認好</td></tr>
+                <tr><td>4</td><td>彩金金額</td><td>0.01 ~ 999,999,999，兩位小數；流水倍數 1~999,999,999</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>轉盤圖片</td><td>PNG/JPG/JPEG，&lt; 500KB，尺寸 84x112</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>轉盤設置關鍵限制 <span class="rule-count">6 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>欄位</th><th>限制</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Enabled（活動開關）</td><td>關閉後重開 → 抽獎次數和任務累計歸零</td><td><span class="cost-tag cost-config">設定層</span></td><td>⚠️ 高風險操作</td></tr>
+                <tr><td>2</td><td>ParticipantTarget</td><td>參與對象，活動開啟後不可編輯</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>3</td><td>EventPeriod</td><td>活動週期（長期/指定），開啟後不可修改</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>DrawLimitType</td><td>抽獎次數限制，開啟後不可修改</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>轉盤模板</td><td>活動開啟後不可修改</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>6</td><td>ClaimLimit</td><td>綁定手機號 / 綁定銀行帳號（銀行帳號強制綁手機）</td><td><span class="cost-tag cost-config">設定層</span></td><td>綁定流程改版要回測</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      </div>
     </div><!-- /overview -->
 
     <!-- ================================================================ -->
@@ -1427,6 +1591,8 @@ sequenceDiagram
         { id: 'sec-venue-bonus', label: '├ 場館存款' },
         { id: 'sec-apply-prize', label: '├ 獎品申請' },
         { id: 'sec-display', label: '└ 純展示' },
+        { type: 'group', label: '轉盤深度' },
+        { id: 'sec-wheel-deep', label: '5 轉盤系統深度' },
       ]
     },
     userflow: {

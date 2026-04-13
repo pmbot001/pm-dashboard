@@ -475,13 +475,45 @@
               <h4><span class="type-tag type-ui">UI</span>Banner 輪播 <span class="cost-tag cost-config">設定層</span></h4>
               <p>自動輪播的活動橫幅。運營在後台設定要上哪幾張、上架 / 下架時間、點了連去哪。</p>
               <ul>
-                <li>設定了起迄時間的，過期會自動消失</li>
-                <li>沒有圖片檔的會被過濾掉</li>
+                <li><code>status === 2</code> 的 Banner 會被過濾掉（已關閉）</li>
+                <li>設定了起迄時間的，過期會自動消失（<code>beginTime / endTime</code> 不在有效期內）</li>
+                <li>沒有圖片檔（<code>src</code>）的會被過濾掉</li>
               </ul>
               <div class="pm-note">上 / 下 Banner 是運營日常操作，不用發版。但圖片尺寸 / 排版 / 動畫是寫死的。</div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- === 2.5 滾動公告 === -->
+      <div class="section" id="sec-rolling">
+        <div class="section-title"><span class="num">2.5</span> 滾動公告（Rolling Bar）</div>
+        <div class="section-desc">首頁頂部跑馬燈式公告列，循環顯示平台通知</div>
+        <details class="page-logic-card" open>
+          <summary>
+            滾動公告
+            <span class="rule-count">4 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>有公告資料</td><td>跑馬燈循環顯示多條公告，速度 <code>BASE_PX_MOVING_MS = 30/1000</code></td><td><span class="cost-tag cost-code">程式層</span></td><td>速度是寫死的，想調要發版</td></tr>
+                <tr><td>2</td><td>無公告資料</td><td>預設顯示「欢迎来到娱乐平台」</td><td><span class="cost-tag cost-code">程式層</span></td><td>預設文字寫死在前端</td></tr>
+                <tr><td>3</td><td>點擊公告文字</td><td>展開 dialog 顯示完整公告內容</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>點擊左側 icon</td><td>顯示備用域名彈窗（<code>DomainPopup</code>），提供域名備用入口</td><td><span class="cost-tag cost-code">程式層</span></td><td>備用域名功能是固定流程</td></tr>
+              </tbody>
+            </table>
+            <div class="pm-note">公告內容由運營在後台設定（日常運營 &gt; 遊戲公告），不用發版。API：<code>POST /config/notice/v2</code></div>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                主檔案：pages/home/components/RollingBar.vue<br>
+                資料來源：useHome → useRolling()，KEY_OF_NOTICE_LIST 注入
+              </div>
+            </details>
+          </div>
+        </details>
       </div>
 
       <!-- === 3. 賽事列表 === -->
@@ -915,6 +947,7 @@
             <tr><td>IM（自營）</td><td>自營盤</td><td>簡易盤規則是自己定的</td></tr>
             <tr><td>YOO / WS168 / LiveCasino</td><td>次要場館</td><td>功能支援度最少，各種新功能通常不包含</td></tr>
             <tr><td>IM-Esport</td><td>電競專場</td><td>不支援提前結算</td></tr>
+            <tr><td>dc007（東方體育）</td><td>2025-10 新增</td><td>GOR-5855 上線，功能支援度待確認</td></tr>
           </tbody>
         </table>
 
@@ -980,9 +1013,15 @@
               <div class="pm-note">想改教學內容 / 順序 / 指向要發版。</div>
             </div>
             <div class="rule-card">
-              <h4><span class="type-tag type-rule">規則</span>特定皮膚的每日提示 <span class="cost-tag cost-code">程式層</span></h4>
-              <p>有些皮膚會每天首次進場時顯示「場館切換」提示。</p>
-              <div class="pm-note">「哪些皮膚啟用」是寫死的。</div>
+              <h4><span class="type-tag type-rule">規則</span>場館切換提示 Sport Tips（TB 專用）<span class="cost-tag cost-code">程式層</span></h4>
+              <p>TB 業主專用：每日首次進入體育首頁時，顯示場館切換提示。當日內已顯示過則不再出現。</p>
+              <ul>
+                <li>啟用條件：<code>vdIs.tb === true</code></li>
+                <li>記錄方式：<code>localStorage('showSportTips')</code> 存上次顯示時間戳</li>
+                <li>跨日判斷：若時間戳不在今日範圍內 → 更新 ts 並顯示</li>
+                <li>前置條件：新手引導完成（<code>curShowGuide = ''</code>）+ popup flow 完成</li>
+              </ul>
+              <div class="pm-note">只有 TB 業主會看到。「哪些業主啟用」是寫死的（<code>vdIs.tb</code>）。</div>
             </div>
           </div>
         </div>
@@ -1008,6 +1047,32 @@
             <div class="pm-note">這是省流量的設計。業主問「為什麼我打開 app 後要等一下賠率才會動」要解釋這是正常行為。</div>
           </div>
         </div>
+      </div>
+
+      <!-- === 11.5 懸浮窗口通則 === -->
+      <div class="section" id="sec-floating">
+        <div class="section-title"><span class="num">11.5</span> 懸浮窗口通則</div>
+        <div class="section-desc">體育首頁會出現的各種懸浮元素及其位置規則</div>
+        <details class="page-logic-card" open>
+          <summary>
+            懸浮窗口通則 — 體育首頁
+            <span class="rule-count">7 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>串關購物車</td><td>體育首頁（含杯賽專區）、賽事詳情/直播間 → 畫面右側</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>推單浮窗</td><td>體育首頁 → 畫面右側</td><td><span class="cost-tag cost-config">設定層</span></td><td>需雲平台開啟推單功能</td></tr>
+                <tr><td>3</td><td>新手大轉盤</td><td>體育首頁（含杯賽專區）等多頁 → 畫面左側/右側（GOR-5709）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>4</td><td>砍單浮窗</td><td>體育首頁（含杯賽專區）→ 畫面右側（GOR-5709）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>轉盤系統</td><td>體育首頁（含杯賽）、活動、直播首頁、爆料、我的 → 畫面左側/右側（GOR-5709）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>6</td><td>App 好評獎勵</td><td>五大頁（首頁、活動、直播、爆料、我的）→ 畫面右側</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>7</td><td>位置可配</td><td>各懸浮窗口的顯示位置可由後台控制（GOR-5709 新增設定），預設為畫面右側</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可調位置，不用發版</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
       </div>
 
       <!-- ============================================================ -->
@@ -1682,6 +1747,49 @@
                 <tr><td>2</td><td>皮膚切換</td><td>影響整體配色和 UI 元件樣式</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
             </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === RP 1.1 體育首頁 功能項目規則 === -->
+      <div class="section" id="sec-rp-spec">
+        <div class="section-title"><span class="num">16</span> RP 功能項目規則（23 條）</div>
+        <div class="section-desc">來源：RP 1.1 體育首頁，讀取日期 2026-04-01 — 賽事頁面功能項目的完整規則清單</div>
+        <details class="page-logic-card" open>
+          <summary>
+            賽事頁面 功能項目規則
+            <span class="rule-count">23 條規則</span>
+          </summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>功能項目</th><th>規則摘要</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>注冊登錄廣告</td><td>依雲平台設置顯示（廣告管理 &gt; 快捷入口設置）；未上傳時顯示預設圖；體育首頁、娛樂首頁、杯賽都會顯示（QIP-10486）</td><td><span class="cost-tag cost-config">設定層</span></td><td>依廣告通則</td></tr>
+                <tr><td>2</td><td>跑馬燈</td><td>依雲平台設置顯示（日常運營 &gt; 遊戲公告 &gt; 遊戲公告）</td><td><span class="cost-tag cost-config">設定層</span></td><td>同滾動公告</td></tr>
+                <tr><td>3</td><td>永久域名浮窗</td><td>格式「永久域名{主域名}」；超過固定長度以「...」顯示（TSD-3882）；主域名來源：雲平台 &gt; 域名設置 &gt; 主站域名序號 1；未設置主站域名時不顯示此按鈕</td><td><span class="cost-tag cost-config">設定層</span></td><td>點選後彈跳備用域名說明 + 保存圖片 + 一鍵複製</td></tr>
+                <tr><td>4</td><td>快捷選單</td><td>依雲平台設置（廣告管理 &gt; 快捷入口設置）；最多 4 個；未上傳圖片顯示預設文字「APP 廣告」；類型：任意選(URL)、充值、活動、娛樂、廳館廣告、第三方客服</td><td><span class="cost-tag cost-config">設定層</span></td><td>文字+圖示可自訂</td></tr>
+                <tr><td>5</td><td>全標轉移提示</td><td>已登錄 + 雲平台有設置全標轉移業主時，進行全標轉移再一次提示限制</td><td><span class="cost-tag cost-config">設定層</span></td><td>限制內容詳見 RP 畫面</td></tr>
+                <tr><td>6</td><td>保存定坐</td><td>點擊暫存當前聯賽位置（標記記錄）；存 localStorage（不跨裝置同步）；可標記多個位置；滑動後顯示「回到頂部」按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td>PSB 版本不一定存在</td></tr>
+                <tr><td>7</td><td>鏈接定坐</td><td>鏈接時找到相同球種/聯賽/賽事位置並滾動顯示；找不到則顯示至首個球種</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>頁片標籤（Tabs）</td><td>滾球：顯示比賽狀態符號（彩色區分）；今日/串關/冠軍：無符號；無賽事時不顯示 count；切換後返回恢復上次位置；H5 版左右滑動</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>9</td><td>搜索</td><td>Placeholder「輸入/搜索/賽事/球隊」；最近搜索記錄存 localStorage；搜索賽事 → 匹配列表；篩選聯賽 ≤6 全部顯示，&gt;6 分頁；標記聯賽後在賽事頁面可見</td><td><span class="cost-tag cost-code">程式層</span></td><td>搜索記錄不跨裝置</td></tr>
+                <tr><td>10</td><td>賽事提醒</td><td>已登錄才能使用；設置後開賽前推送通知；鈴鐺圖示標記</td><td><span class="cost-tag cost-code">程式層</span></td><td>PSB 版本不一定存在</td></tr>
+                <tr><td>11</td><td>聯賽和局賽事（OT）</td><td>符合滾球顯示條件 + 因加時未結束的賽事繼續顯示；結束 3 小時後不再顯示</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>PSB 版本可能不顯示（GOR-4444）</td></tr>
+                <tr><td>12</td><td>盈利計算</td><td>點選後呈現下注輸贏計算介面；限制最小金額，小數後兩位無條件捨去</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>13</td><td>推廣</td><td>依雲平台設置（產品管理 &gt; 推廣設置 or 渠道管理 &gt; 推廣設置）；西班牙體育賽事頁頂部顯示推廣欄</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>14</td><td>推單</td><td>依雲平台「好友推單」開關；已登錄時顯示，未登錄時不顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>15</td><td>LOGO</td><td>顯示產品 Logo（左上角）；來源：雲平台 &gt; Loading 圖 &amp; Logo 組；顯示球場背景圖（GOR-6091）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>16</td><td>首頁彈窗廣告</td><td>依雲平台設置；符合條件時顯示廣告彈窗（依彈窗通則）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>17</td><td>版本更新</td><td>APP 版本過低時顯示；強制更新：不可繼續使用；非強制：可稍後更新</td><td><span class="cost-tag cost-config">設定層</span></td><td>不一定適用所有業主，視業主設定</td></tr>
+                <tr><td>18</td><td>文字鏈接</td><td>依雲平台設置顯示；依廣告通則進入相應頁面</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>19</td><td>全標導覽</td><td>依雲平台設置；已登錄才顯示；點選後進入玩家「全標」頁面</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>20</td><td>收合</td><td>收合頁面後隱藏已展開的聯賽列表，進入純賽事卡片視圖</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>21</td><td>廣告</td><td>顯示廣告位圖片；依雲平台設置；Loading 後顯示廣告圖（含 Loading &amp; Logo）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>22</td><td>等待</td><td>進入頁面時全頁 Loading；APP 啟動時若有 Loading 圖設定則顯示產品 Loading 圖</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>23</td><td>下載 APP 提醒</td><td>依雲平台設置；點選後跳轉至 APP 下載頁；H5 版另有引導下載邏輯</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <div class="pm-note">大部分 RP 功能項目都是「設定層」— 由運營在雲平台後台配置，不用發版。PSB 版本的功能支援度可能與主版不同。</div>
           </div>
         </details>
       </div>
@@ -2541,10 +2649,13 @@ sequenceDiagram
         { id: 'nav-schedule', label: '賽程表' },
         { id: 'nav-otherroom', label: 'OtherRoom' },
         { group: '其他' },
+        { id: 'sec-rolling', label: '滾動公告' },
+        { id: 'sec-floating', label: '懸浮窗口通則' },
         { id: 'nav-newbie', label: '新手引導' },
         { id: 'nav-player', label: '播放器控制' },
         { id: 'nav-score', label: '比分/跑馬燈' },
-        { id: 'nav-skin', label: '皮膚入口' }
+        { id: 'nav-skin', label: '皮膚入口' },
+        { id: 'sec-rp-spec', label: 'RP 23條規則' }
       ]
     },
     userflow: {

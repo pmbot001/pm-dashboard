@@ -477,6 +477,70 @@
         </details>
       </div>
 
+      <!-- === 2.5 直式半屏直播間（4.2） === -->
+      <div class="section" id="nav-half-screen">
+        <div class="section-title"><span class="num">2.5</span> 直式半屏直播間</div>
+        <div class="section-desc">畫面上半直播影片 + 下半聊天室互動區 — 主要的直播間入口形式</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>直式半屏是最主要的直播間形式。提供送禮、推單/晒單、競猜、跟單、聊天等完整互動功能。RP 對應 VIC-195、VIC-338、VIC-339 及大量 GOR 功能迭代。
+        </div>
+
+        <details class="page-logic-card" open>
+          <summary>直式半屏主體 <span class="rule-count">8 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入直播間</td><td>透過 LiveCard 點擊跳轉，畫面上半影片+下半聊天室互動區</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>主播下播</td><td>顯示推薦直播間彈窗（GOR-5909/GOR-6052）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>遊客模式 5 分鐘後</td><td>顯示充值引導廣告（GOR-6394），後端控制 on/off</td><td><span class="cost-tag cost-config">設定層</span></td><td>H5 遊客專用</td></tr>
+                <tr><td>4</td><td>主動式彈窗</td><td>依規則控制彈窗出現頻率/條件（GOR-6149，正式服）</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>任務提示</td><td>直播間內顯示每日任務進度提示+領獎引導（GOR-6053）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>聊天室</td><td>WebSocket 即時通訊，定期輪詢聊天記錄</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>送禮</td><td>扁平化樣式，支援禮物特效、全屏特效（VIC-338）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>8</td><td>競猜</td><td>PK 競猜/獎池競猜/娛樂競猜，續投、倍投、一鍵下注（GOR-5182/5183）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>VIC-195 PK 系統規格 <span class="rule-count">7 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>功能</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>主播頭像</td><td>固定主持紅色、嘉宾藍色；PK 輸了頭像灰色；點選展開 PK 貢獻排行榜</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>PK 公告</td><td>顯示 3 秒後關閉，變為進度條</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>PK 進度（戰力值）</td><td>百分比格式：999(99.9%)、9.9K(99.9%)、99.99K(99.9%)…固定顯示至小數點後一位</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>獲勝場次</td><td>依雲平台 PK 列表設定；數值為 0 不顯示；已有結果不顯示</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
+                <tr><td>5</td><td>PK 時間</td><td>不限制→「PK 中」；有時限→倒數 mm:ss；有回合→「已進行/全部回合」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>進度條</td><td>中間為限切 5 格每格 10%；點選黃色區塊開啟貢獻排行榜</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>稱號顯示</td><td>聊天室發言：{VIP等級} + {稱號圖片} + {會員ID}（VIC-339）</td><td><span class="cost-tag cost-code">程式層</span></td><td>稱號來源：雲平台 &gt; 稱號管理</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>直播間設置選項 <span class="rule-count">6 項</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>設置項</th><th>預設值</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>免責聲明</td><td>—</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>子母畫面滾屏自動縮放</td><td>預設關</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>投注下單動畫</td><td>預設開</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>會員入場特效</td><td>預設開</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>送禮全屏特效</td><td>預設開</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>6</td><td>晒單信息卡片</td><td>預設開</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
       <!-- === 3. 直式娛樂直播間 === -->
       <div class="section" id="nav-vertical">
         <div class="section-title"><span class="num">3</span> 直式娛樂直播間</div>
@@ -1822,6 +1886,7 @@ sequenceDiagram
         { type: 'group', label: '廣場' },
         { id: 'nav-plaza', label: '2 廣場主頁' },
         { type: 'group', label: '直播間' },
+        { id: 'nav-half-screen', label: '2.5 直式半屏' },
         { id: 'nav-vertical', label: '3 直式娛樂' },
         { id: 'nav-chatroom', label: '4 聊天室' },
         { id: 'nav-openroom', label: '5 開房對賭' },
