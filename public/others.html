@@ -180,6 +180,27 @@
         <!-- 客服 -->
         <div class="logic-merge-divider" id="sec-cs">7.1 線上客服</div>
 
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/others/screen-cs-home.png" alt="客服首頁">
+            <div class="screen-label">客服首頁</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/others/screen-cs-chat.png" alt="客服對話">
+            <div class="screen-label">客服對話視窗</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> VIP 分流</h4>
+              <p>線道依 vipBegin~vipEnd 篩選。多條線道 → BottomSheet 選擇；單條 → 直接開啟。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> iframe 跨域</h4>
+              <p>官方客服 csType=1 用 MD5 簽名 + iframe；三方 csType=2 用 IframeCommon。postMessage 溝通。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card" id="sec-cs-entry">
           <summary>客服進入邏輯 <span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
@@ -215,6 +236,27 @@
 
         <!-- 爆料 -->
         <div class="logic-merge-divider" id="sec-gossip">13. 爆料</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/others/screen-gossip-home-league.png" alt="爆料首頁">
+            <div class="screen-label">爆料首頁（依聯賽）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/others/screen-gossip-detail.png" alt="爆料詳情">
+            <div class="screen-label">爆料文章詳情</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 4 個 Tab</h4>
+              <p>已關注 / 依聯賽 / 依時間 / 熱度榜。預設 byLeague。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> 訪客攔截</h4>
+              <p>gamePredictVisitorDisplayMode 控制訪客是否可瀏覽。部分入口（直播間）未統一檢查。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card" id="sec-gossip-home">
           <summary>爆料首頁 <span class="rule-count">7 條規則</span></summary>
@@ -281,6 +323,27 @@
 
         <!-- 特色頁 / 消息 -->
         <div class="logic-merge-divider" id="sec-others">8. 特色頁 / 消息中心</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/others/landing-page.png" alt="落地頁">
+            <div class="screen-label">白產落地頁</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/others/screen-gossip-rank-full.png" alt="排行榜">
+            <div class="screen-label">爆料排行榜</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> 落地頁路由</h4>
+              <p>jumpType × jumpValue 矩陣決定跳轉目標。白產/轉盤/下載包 3 種。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 排行榜 4 榜</h4>
+              <p>命中榜 / 連紅榜 / 跟單榜 / 熱度榜，各自獨立 API。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card" id="sec-landing">
           <summary>白產/轉盤落地頁 <span class="rule-count">6 條規則</span></summary>

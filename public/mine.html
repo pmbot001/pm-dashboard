@@ -316,6 +316,27 @@
         <div class="section-title"><span class="num">1</span> 我的主頁面</div>
         <div class="section-desc">個人中心首頁，底部導航 Tab 入口。含使用者資訊卡、快捷 Menu、每日任務、12 項功能清單。</div>
 
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/mine/screen-mine-main.png" alt="我的主頁">
+            <div class="screen-label">我的主頁（已登入）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/mine/screen-mine-not-logged.png" alt="未登入">
+            <div class="screen-label">未登入狀態</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-ui">UI</span> 使用者資訊卡</h4>
+              <p>已登入顯示帳號、餘額（分轉元）、VIP 圖示、稱號 badge。未登入顯示「您还未登录」。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 餘額刷新冷卻</h4>
+              <p>10 秒冷卻期，冷卻中點擊 toast 提示。轉圈動畫 2 秒。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card" open>
           <summary>我的主頁面 <span class="rule-count">12 條規則</span></summary>
           <div class="card-body">
@@ -344,6 +365,23 @@
         <div class="section-title"><span class="num">2</span> 個人資料</div>
         <div class="section-desc">查看/修改暱稱、頭像、性別、生日、聯繫方式、登出。</div>
 
+        <div class="annotated-row single">
+          <div class="screen-col">
+            <img src="/images/mine/screen-profile.png" alt="個人資料">
+            <div class="screen-label">個人資料頁</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-validation">驗證</span> 暱稱規則</h4>
+              <p>禁特殊字元、中文算 2 字元、≤14 字元、數字 ≤3。冷卻期內不可改。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> 不可逆操作</h4>
+              <p>性別、生日只能設定一次，設定後無法修改。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card">
           <summary>個人資料 <span class="rule-count">9 條規則</span></summary>
           <div class="card-body">
@@ -369,6 +407,27 @@
         <div class="section-title"><span class="num">3</span> VIP 特權</div>
         <div class="section-desc">VIP 等級卡片輪播、升降級進度、豪禮領取、返水比例、生日禮金。</div>
 
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/mine/vip.png" alt="VIP 特權">
+            <div class="screen-label">VIP 特權頁</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/mine/screen-profile-badge.png" alt="徽章">
+            <div class="screen-label">稱號徽章</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 升級條件</h4>
+              <p>isPayAmount=1 → 取 min(存款進度, 流水進度)。否則只看流水。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> 生日禮金</h4>
+              <p>註冊未滿 90 天不可領取（防薅規則）。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card">
           <summary>VIP 特權頁 <span class="rule-count">6 條規則</span></summary>
           <div class="card-body">
@@ -390,6 +449,27 @@
       <div class="section" id="nav-welfare">
         <div class="section-title"><span class="num">4</span> 福利中心</div>
         <div class="section-desc">領取活動福利（紅利、獎品），支援篩選、單筆/一鍵領取。</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/mine/welfare.png" alt="福利中心">
+            <div class="screen-label">福利中心</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/mine/screen-backpack.png" alt="背包">
+            <div class="screen-label">背包中心</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> 領取流程</h4>
+              <p>單筆 debounce 800ms；一鍵領取部分失敗 → 彈窗計數 +「继续」遞迴再領。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-validation">驗證</span> 前置條件</h4>
+              <p>領取需綁定手機/銀行卡（errCode 103/104/105）。已失效 = claimExpireTime < now。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card">
           <summary>福利中心 <span class="rule-count">8 條規則</span></summary>
@@ -414,6 +494,27 @@
       <div class="section" id="nav-backpack">
         <div class="section-title"><span class="num">5</span> 背包中心</div>
         <div class="section-desc">背包管理（道具/背包）+ 兌換中心，獎品申請與兌換。</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/mine/backpack.png" alt="背包中心">
+            <div class="screen-label">背包管理</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/mine/screen-redeem.png" alt="兌換中心">
+            <div class="screen-label">兌換中心</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 獎品類型</h4>
+              <p>彩金 → 直接兌現到餘額。實體 → 開啟收件表單填地址。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> 兌換多元化</h4>
+              <p>一件商品可有多種兌換方案。效期延長至到期日 23:59:59（自然日）。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card">
           <summary>背包中心 <span class="rule-count">7 條規則</span></summary>
@@ -480,6 +581,22 @@
       <!-- 2.8 任務系統 -->
       <div class="section" id="nav-tasks">
         <div class="section-title"><span class="num">8</span> 任務系統</div>
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/mine/screen-task-expanded.png" alt="任務展開">
+            <div class="screen-label">每日任務（展開）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/mine/screen-message-center.png" alt="消息中心">
+            <div class="screen-label">消息中心</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> Mission 系統</h4>
+              <p>簽到 / 每日任務 / 新手任務整合。獎勵存背包，需手動領取。</p>
+            </div>
+          </div>
+        </div>
         <div class="section-desc">每日簽到、每日任務、新手任務、轉盤任務，各有開關。</div>
 
         <details class="page-logic-card">

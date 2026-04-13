@@ -183,6 +183,27 @@
 
         <div class="logic-merge-divider" id="sec-home">2.1 娛樂城首頁</div>
 
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/entertainment/screen-home-entertainment.png" alt="娛樂城首頁">
+            <div class="screen-label">娛樂城首頁（主力皮膚）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/entertainment/screen-venue-more.png" alt="場館更多">
+            <div class="screen-label">展開更多場館</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 分類排序</h4>
+              <p>gameStore.classifySort 由後台決定 Tab 順序。AI 推薦 classify=999 固定置頂。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-venue">場館</span> 維護遮罩</h4>
+              <p>serverAvailable=false → 卡片上蓋維護遮罩，場館方 API 控制。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card" id="sec-home-main">
           <summary>首頁（主力/YXB）<span class="rule-count">7 條規則</span></summary>
           <div class="card-body">
@@ -215,6 +236,23 @@
         </details>
 
         <div class="logic-merge-divider" id="sec-enter">2.2 遊戲進入</div>
+
+        <div class="annotated-row single">
+          <div class="screen-col">
+            <img src="/images/entertainment/screen-loading.png" alt="遊戲載入">
+            <div class="screen-label">遊戲載入畫面</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> LobbyType 分流</h4>
+              <p>9 種 LobbyType 決定遊戲開啟方式：外開 WebView / 內嵌體育 / 自研大廳 / 不顯示。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> 三道維護防線</h4>
+              <p>卡片層 → 轉帳層 → 進入層，三層各自檢查場館狀態。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card" id="sec-lobby-type">
           <summary>LobbyType 分流邏輯 <span class="rule-count">9 種類型</span></summary>
@@ -262,6 +300,27 @@
         </details>
 
         <div class="logic-merge-divider" id="sec-self">2.3 自研大廳 / AI / 體育</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/entertainment/screen-self-electronic-hall.png" alt="自研電子大廳">
+            <div class="screen-label">自研電子大廳</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/entertainment/screen-electronic-search.png" alt="遊戲搜尋">
+            <div class="screen-label">遊戲搜尋</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 自研大廳</h4>
+              <p>lobbyType=11/12 進入子遊戲列表。搜尋限 20 字，投注成功的遊戲自動收藏。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-api">API</span> AI 精選</h4>
+              <p>近 30 日注單 > 5 筆 → 依場館偏好推薦；不足 → 站台排名 + 隨機補齊 7 個。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card" id="sec-self-hall">
           <summary>自研電子/捕魚大廳 <span class="rule-count">5 條規則</span></summary>

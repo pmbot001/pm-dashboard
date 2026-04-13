@@ -232,6 +232,31 @@
         <!-- ===== 0.2 登入 ===== -->
         <div class="logic-merge-divider" id="sec-login">0.2 登入</div>
 
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/system/screen-account-login.png" alt="帳號登入">
+            <div class="screen-label">帳號登入</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/system/screen-phone-login.png" alt="手機登入">
+            <div class="screen-label">手機登入</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 雙登入模式</h4>
+              <p>accountLoginEnabled + phoneNumberLoginEnabled 控制顯示哪些 Tab。兩者皆開→雙 Tab；只開一種→隱藏 Tab。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-validation">驗證</span> 新設備 / 異地登入</h4>
+              <p>errCode=110 新設備、errCode=114 新 IP → 彈出 NewDeviceAuth 驗證（需手機號碼）。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-ui">UI</span> 圖形驗證碼</h4>
+              <p>isKeyCodeOpen 開啟時前置圖形驗證；errCode=9/14 時後置彈出 NumberCaptchPopup。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card" id="sec-login-page">
           <summary>登入頁面 <span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
@@ -252,6 +277,31 @@
 
         <!-- ===== 0.3 註冊 ===== -->
         <div class="logic-merge-divider" id="sec-register">0.3 註冊</div>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/system/screen-account-register.png" alt="帳號註冊">
+            <div class="screen-label">帳號註冊</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/system/screen-phone-register.png" alt="手機註冊">
+            <div class="screen-label">手機註冊</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-validation">驗證</span> 帳號格式</h4>
+              <p>accountValidRole=2 → 首位必須字母，6-13 位英數。由 registerOption API 控制。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 推薦人 ID</h4>
+              <p>Base64 decode → 含 | 取後段。inviteCodeEnabled 且無 recommendId 時顯示邀請碼欄位。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> 註冊成功</h4>
+              <p>自動觸發 handleLoginSuccess → 直接登入，不需再輸帳密。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card" id="sec-register-page">
           <summary>註冊頁面 <span class="rule-count">6 條規則</span></summary>
@@ -302,6 +352,27 @@
             <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">plugins/fetch.ts:platformStatusCodeHandler<br>stores/user.ts:setToken/logout</div></details>
           </div>
         </details>
+
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/system/screen-maintenance.png" alt="維護頁">
+            <div class="screen-label">維護中頁面</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/system/screen-ip-blocked.png" alt="IP 封鎖">
+            <div class="screen-label">IP 封鎖頁面</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 維護偵測</h4>
+              <p>watch isInMaintain → 維護結束自動 logout + reload，使用者無感。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> IP 封鎖無出口</h4>
+              <p>封鎖頁顯示玩家 IP + 地區，唯一出口是聯繫客服，無法自行解鎖。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card" id="sec-maintain">
           <summary>維護頁 / IP 封鎖 <span class="rule-count">4 條規則</span></summary>

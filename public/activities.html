@@ -262,6 +262,72 @@
         <img class="overview-img" src="/images/activities/screen-activity-list-overview.png" alt="活動列表總覽截圖">
       </div>
 
+      <!-- === Figma 截圖速覽 === -->
+      <div class="logic-merge-divider">Figma 截圖速覽</div>
+
+      <div class="section">
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-newbie-task.png" alt="新手任務">
+            <div class="screen-label">新手任務</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/activities/screen-lottery-wheel.png" alt="轉盤">
+            <div class="screen-label">裂變邀請轉盤</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> 任務系統（Mission）</h4>
+              <p>新版 Mission 整合簽到 / 每日任務 / 新手任務。任務獎勵存背包、需手動領取。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 轉盤系統</h4>
+              <p>裂變邀請驅動，每邀請一人得一次抽獎機會。獎品由後台 prizeList 控制。</p>
+            </div>
+          </div>
+        </div>
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-lottery-theme.png" alt="主題抽獎">
+            <div class="screen-label">主題抽獎</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/activities/screen-first-deposit-unclaimed.png" alt="首存包賠">
+            <div class="screen-label">首存包賠</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 主題抽獎</h4>
+              <p>杯賽活動期間限定。9 宮格抽獎 + 排行榜，獎品分即時到帳與背包兩種。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> 首存包賠</h4>
+              <p>48 小時內首次存款投注虧損可申請包賠。金額 = min(首存額, 虧損額)。</p>
+            </div>
+          </div>
+        </div>
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/activities/screen-daily-task-reward.png" alt="每日任務">
+            <div class="screen-label">每日任務獎勵</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/activities/screen-display-page.png" alt="純展示頁">
+            <div class="screen-label">純展示活動頁</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 活動分類</h4>
+              <p>21 種 aId 對應 15 個前端頁面。新增活動類型需加 aId 映射 + 新路由。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-ui">UI</span> 紅點策略</h4>
+              <p>redDotNotification 四種策略：永遠/每天/每週一/一次性。跨時區有邊界問題。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- === 頁面邏輯：活動列表頁 === -->
       <div class="logic-merge-divider">頁面邏輯卡片（16 張）</div>
 

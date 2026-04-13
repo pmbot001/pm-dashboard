@@ -311,6 +311,31 @@
         <!-- ===== 5.1 存款 ===== -->
         <div class="logic-merge-divider" id="sec-deposit">5.1 存款（充值）</div>
 
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/deposit/screen-main-deposit.png" alt="存款主頁">
+            <div class="screen-label">存款主頁（通道列表）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/deposit/screen-fill-info.png" alt="填寫資訊">
+            <div class="screen-label">存款表單</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-flow">流程</span> 通道選擇</h4>
+              <p>suggestType=1 標推薦、isHot 標熱門。推薦不足 2 個自動從 isHot 補。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-warning">注意</span> 進行中訂單</h4>
+              <p>有進行中訂單 → 隱藏通道列表，顯示訂單卡片。不能同時有兩張存款單。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-validation">驗證</span> 前置條件</h4>
+              <p>未綁手機 → 禁止充值。所有通道關閉 → 顯示 MaintainPay 維護頁。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card" id="sec-deposit-main">
           <summary>存款主頁面 <span class="rule-count">10 條規則</span></summary>
           <div class="card-body">
@@ -390,6 +415,27 @@
         <!-- ===== 5.2 提款 ===== -->
         <div class="logic-merge-divider" id="sec-withdraw">5.2 提款</div>
 
+        <div class="annotated-row">
+          <div class="screen-col">
+            <img src="/images/deposit/withdraw-top.png" alt="提款上半部">
+            <div class="screen-label">提款頁（錢包資訊）</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/deposit/withdraw-form.png" alt="提款表單">
+            <div class="screen-label">提款表單</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 雙 Tab</h4>
+              <p>中心錢包 + 邀請禮金（inviteInfo.enable 開啟時顯示）。各 Tab 過濾不同提款類型。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-risk">風控</span> 流水攔截</h4>
+              <p>流水未達標 → 彈窗選擇強制提現或繼續打流水（PM 可控是否允許強制）。</p>
+            </div>
+          </div>
+        </div>
+
         <details class="page-logic-card" id="sec-withdraw-main">
           <summary>提款主頁面 <span class="rule-count">10 條規則</span></summary>
           <div class="card-body">
@@ -467,6 +513,23 @@
 
         <!-- ===== 5.3 其他 ===== -->
         <div class="logic-merge-divider" id="sec-others">5.3 轉帳 / 優惠 / 流水</div>
+
+        <div class="annotated-row single">
+          <div class="screen-col">
+            <img src="/images/deposit/transfer.png" alt="場館轉帳">
+            <div class="screen-label">場館轉帳</div>
+          </div>
+          <div class="rules-col">
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-logic">邏輯</span> 轉帳模式</h4>
+              <p>轉帳錢包模式下，進入遊戲前需手動轉帳。免轉模式由後台 walletMode 控制。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="rule-tag tag-discount">優惠</span> 充值優惠</h4>
+              <p>min(金額×%, maxDiscount, maxWeek) 三重上限。USDT 匯率通道級 > 全域。</p>
+            </div>
+          </div>
+        </div>
 
         <details class="page-logic-card" id="sec-deposit-discount">
           <summary>存款優惠與匯率 <span class="rule-count">4 條規則</span></summary>
