@@ -122,7 +122,7 @@
       margin-bottom: 18px; overflow: hidden;
     }
     .page-logic-card summary {
-      padding: 14px 18px; font-size: 15px; font-weight: 700; color: #f1f5f9;
+      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
       cursor: pointer; display: flex; align-items: center; gap: 10px;
       user-select: none; list-style: none;
     }
@@ -164,7 +164,7 @@
     .constraint-category { margin-bottom: 24px; }
     .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
-    .constraint-pm-guide { font-size: 13px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-pm-guide { font-size: 14px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
     .constraint-card {
       background: #1e293b; border: 1px solid #334155; border-radius: 8px;
       margin-bottom: 14px; overflow: hidden;
@@ -174,7 +174,7 @@
     .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
     .constraint-card.cat-biz { border-left: 3px solid #64748b; }
     .constraint-card summary {
-      padding: 10px 14px; font-size: 13px; font-weight: 600; color: #e2e8f0;
+      padding: 10px 14px; font-size: 14px; font-weight: 600; color: #e2e8f0;
       cursor: pointer; user-select: none; list-style: none;
       display: flex; align-items: center; gap: 8px;
     }
@@ -186,7 +186,7 @@
     .constraint-card summary:hover { background: #263548; }
     .constraint-detail {
       padding: 10px 14px 14px; border-top: 1px solid #334155;
-      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+      font-size: 14px; color: #cbd5e1; line-height: 1.7;
     }
     .constraint-detail .label {
       font-size: 11px; font-weight: 700; color: #64748b;
@@ -196,7 +196,7 @@
 
     .stats-pill {
       display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
-      border-radius: 20px; padding: 8px 18px; font-size: 13px; color: #e2e8f0;
+      border-radius: 20px; padding: 8px 18px; font-size: 14px; color: #e2e8f0;
       font-weight: 600; margin-bottom: 20px;
     }
 
@@ -204,8 +204,8 @@
       max-width: 960px; margin: 0 auto; padding: 50px 16px 30px;
     }
     .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .tool-section-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; }
-    .tool-section-desc { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+    .tool-section-header h2 { font-size: 24px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 15px; margin-bottom: 20px; }
     .tool-divider { max-width: 960px; margin: 0 auto; border: none; border-top: 1px solid #334155; }
 
     /* Side Nav */
@@ -278,6 +278,19 @@
       .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
     }
 
+
+    /* Module switcher dropdown */
+    .module-switcher {
+      background: #1e293b; color: #e2e8f0; border: 1px solid #334155;
+      border-radius: 8px; padding: 4px 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; outline: none; appearance: none;
+      -webkit-appearance: none; -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center;
+      padding-right: 28px;
+    }
+    .module-switcher:hover { border-color: #475569; background-color: #263548; }
+    .module-switcher:focus { border-color: #64748b; }
   </style>
 </head>
 <body>
@@ -290,9 +303,7 @@
   <div class="main-content v2-main">
 
     <nav class="compact-header" id="tabnav">
-      <span class="compact-header-title">&#x1F464; 我的</span>
-      <span class="compact-header-breadcrumb"><a href="features.html">功能知識庫</a> / 我的</span>
-      <div class="compact-header-pills">
+        <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html">📺 廣場/直播間</option><option value="mine.html" selected>👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
         <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
         <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
         <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
