@@ -45,8 +45,8 @@
     /* Tab pills */
     .tab-pill {
       display: inline-block;
-      font-size: 13px;
-      padding: 8px 20px;
+      font-size: 15px;
+      padding: 8px 22px;
       border-radius: 20px;
       color: #94a3b8;
       background: #1e293b;
@@ -1469,7 +1469,7 @@ sequenceDiagram
     if (!data) { sideNavInner.innerHTML = ''; return; }
     let html = '<div class="sn-title">' + data.title + '</div>';
     data.items.forEach(item => {
-      if (item.group) {
+      if (item.type === 'group') {
         html += '<div class="sn-group">' + item.group + '</div>';
       } else {
         html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
