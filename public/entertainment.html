@@ -895,28 +895,28 @@ flowchart TD
 sequenceDiagram
     participant U as 使用者
     participant App as 娛樂城頁面
-    participant GStore as gameStore
+    participant GStore as 遊戲模組
     participant API as 後端 API
     participant Game as 遊戲視窗
 
     U->>App: 點擊場館卡片
-    App->>GStore: 檢查 serverAvailable
+    App->>GStore: 檢查場館是否可用
 
     alt 維護中
-        GStore-->>App: serverAvailable = false
+        GStore-->>App: 場館不可用
         App-->>U: toast 場館維護中
     else 正常
-        App->>App: 判斷 lobbyType
+        App->>App: 判斷大廳類型
 
-        alt lobbyType = 11/12（自研大廳）
+        alt 自研大廳（lobbyType 11/12）
             App->>API: POST /user/subGameList
             API-->>App: 子遊戲列表
             App-->>U: 顯示大廳頁面
-        else lobbyType = 0/21（外開）
+        else 外開模式（lobbyType 0/21）
             App->>API: POST /user/gameToken
             API-->>App: gameUrl + token
-            App->>Game: window.open(gameUrl)
-        else lobbyType = 1/22（內嵌）
+            App->>Game: 新視窗開啟遊戲
+        else 內嵌模式（lobbyType 1/22）
             App->>API: POST /user/gameToken
             API-->>App: gameUrl + token
             App-->>U: iframe 內嵌顯示
@@ -931,12 +931,12 @@ sequenceDiagram
 sequenceDiagram
     participant U as 使用者
     participant App as 娛樂城
-    participant WStore as walletStore
+    participant WStore as 錢包模組
     participant API as 後端 API
     participant Game as 遊戲
 
     U->>App: 點擊場館進入遊戲
-    App->>WStore: 檢查錢包模式
+    App->>WStore: 檢查錢包類型
 
     alt 轉帳錢包
         WStore->>API: 查詢中心錢包餘額
@@ -967,24 +967,24 @@ sequenceDiagram
 sequenceDiagram
     participant U as 使用者
     participant App as 娛樂城首頁
-    participant GStore as gameStore
+    participant GStore as 遊戲模組
     participant API as 後端 API
 
     U->>App: 進入娛樂城 Tab
     App->>API: POST /user/gameList
-    Note over API: channelId, isVirtual: 1
-    API-->>GStore: gameList + classifySort + aiRecommend
+    Note over API: 帶渠道 ID 請求
+    API-->>GStore: 場館列表 + 分類排序 + AI 推薦
 
-    GStore->>App: 依 classifySort 排列分類
+    GStore->>App: 依分類排序排列
 
-    alt aiRecommend 有資料
-        App->>App: 置頂 AI 推薦區 classify=999
+    alt 有 AI 推薦資料
+        App->>App: 置頂 AI 推薦區
     end
 
     loop 每個 classify 分類
-        App->>App: 過濾 lobbyType=13
-        App->>App: 依 game.sort 排序
-        App->>App: serverAvailable=false 加維護遮罩
+        App->>App: 過濾隱藏類型場館
+        App->>App: 依排序值排列
+        App->>App: 不可用場館加維護遮罩
     end
 
     App-->>U: 渲染場館卡片格
@@ -1000,25 +1000,25 @@ sequenceDiagram
 sequenceDiagram
     participant U as 使用者
     participant App as 子遊戲列表
-    participant Flow as useGameEntryFlow
+    participant Flow as 遊戲進入流程
     participant API as 後端 API
     participant Game as 遊戲
 
     U->>App: 點擊子遊戲卡片
-    App->>Flow: handleSubGameEntry(game)
-    Flow->>Flow: checkGameMaintenance(parentId)
+    App->>Flow: 處理子遊戲進入
+    Flow->>Flow: 檢查母場館維護狀態
 
     alt 母場館維護中
         Flow-->>U: toast 游戏维护中
     else 正常
         Flow->>API: POST /user/enterGame
         API-->>Flow: { url, gameId, errCode }
-        Flow->>Flow: validateGameResponse()
+        Flow->>Flow: 驗證遊戲回應
 
         alt MG 電子 (8816/8929/8936)
-            Flow->>Game: setEnterGameData → 外開 WebView
+            Flow->>Game: 外開 WebView 進入遊戲
         else 其他子遊戲
-            Flow->>Flow: sessionStorage 存遊戲資料
+            Flow->>Flow: 暫存遊戲資料
             Flow->>Game: iframe 內嵌顯示
         end
     end
@@ -1030,25 +1030,25 @@ sequenceDiagram
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
     participant U as 使用者
-    participant Card as SubGameCard
-    participant List as useSubGameList
+    participant Card as 子遊戲卡片
+    participant List as 子遊戲列表
     participant API as 後端 API
 
-    U->>Card: 點擊收藏 icon（@click.stop）
-    Card->>List: handleFavorite(game)
-    List->>List: setSettingConfig('loading', true)
+    U->>Card: 點擊收藏圖示
+    Card->>List: 處理收藏操作
+    List->>List: 顯示載入狀態
     List->>API: POST /user/storeSubGame
     API-->>List: { errCode }
 
     alt errCode = 1
-        List->>API: fetchSubGameList(parentId)
+        List->>API: 重新載入子遊戲列表
         API-->>List: 更新子遊戲列表
         List->>List: 已收藏排前面排序
     else errCode != 1
         List->>List: 靜默失敗
     end
 
-    List->>List: setSettingConfig('loading', false)
+    List->>List: 關閉載入狀態
     List-->>U: UI 更新收藏狀態
           </div></div>
         </div>

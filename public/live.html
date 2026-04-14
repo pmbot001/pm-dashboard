@@ -1456,7 +1456,7 @@ flowchart TD
         <div class="tool-section-header"><h2>3.1 進入直播間初始化流程</h2></div>
         <div class="tool-section-desc">使用者只做了「點一下」，後面全部自動跑</div>
 
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-1">
           <div class="mermaid-card-title">直播間初始化（系統自動）</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
@@ -1468,15 +1468,15 @@ sequenceDiagram
     participant V as 串流伺服器
 
     U->>FE: 點擊直播間卡片
-    FE->>FE: useGoStreaming 判斷 roomType
-    FE->>FE: useEnterRoomInit 初始化
+    FE->>FE: 判斷直播間類型
+    FE->>FE: 初始化進入直播間
     FE->>WS: UserPlat_EnterChatroom_C
     WS-->>FE: Chatroom_Config_S（房間設定）
     WS-->>FE: Chatroom_RoomData_S（房間資料）
     FE->>FE: 解析房間設定
     FE->>V: 載入 HLS 串流
     V-->>FE: 串流資料
-    FE->>FE: video.js 播放
+    FE->>FE: 開始播放串流
     Note over FE: 平行：啟動 WS 聊天計數
     FE->>WS: UserPlat_ChatCountList_CS
     WS-->>FE: 各直播間聊天人數
@@ -1497,7 +1497,7 @@ sequenceDiagram
         <div class="tool-section-header"><h2>3.2 WebSocket 聊天訊息流</h2></div>
         <div class="tool-section-desc">進入直播間後自動建立的即時通訊</div>
 
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-2">
           <div class="mermaid-card-title">聊天訊息流（系統自動）</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
@@ -1535,7 +1535,7 @@ sequenceDiagram
         <div class="tool-section-header"><h2>3.3 送禮流程</h2></div>
         <div class="tool-section-desc">使用者發起 → 餘額判斷 → 特效或充值</div>
 
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-3">
           <div class="mermaid-card-title">送禮流程（使用者動作）</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
@@ -1545,7 +1545,7 @@ sequenceDiagram
     participant BE as 後端
 
     U->>FE: 點擊禮物按鈕
-    FE->>FE: 開啟 GiftGivingSheet
+    FE->>FE: 開啟禮物面板
     U->>FE: 選擇禮物 + 確認送出
     FE->>BE: 送禮 API
     alt 餘額足夠
@@ -1567,7 +1567,7 @@ sequenceDiagram
         <div class="tool-section-header"><h2>3.4 開房對賭建房 + 進房流程</h2></div>
         <div class="tool-section-desc">建房 4 步驟精靈 + 進房密碼驗證</div>
 
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-4">
           <div class="mermaid-card-title">開房對賭流程（使用者動作）</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
@@ -1615,7 +1615,7 @@ sequenceDiagram
         <div class="tool-section-header"><h2>3.5 Funky 火箭遊戲流程</h2></div>
         <div class="tool-section-desc">遠端 iframe 遊戲引擎 + postMessage 通訊</div>
 
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-5">
           <div class="mermaid-card-title">Funky 火箭（系統自動 + 使用者動作）</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
@@ -1626,26 +1626,26 @@ sequenceDiagram
     participant GE as Funky 遊戲引擎
 
     U->>FE: 進入 Funky 火箭房
-    FE->>FE: defineAsyncComponent 載入
-    FE->>BE: enterGame API
-    BE-->>FE: game token
-    FE->>GE: sendMessage init
-    GE-->>FE: gameInfo
+    FE->>FE: 動態載入遊戲元件
+    FE->>BE: 進入遊戲 API
+    BE-->>FE: 遊戲 Token
+    FE->>GE: 發送初始化指令
+    GE-->>FE: 遊戲資訊
 
     loop 遊戲回合
-        GE-->>FE: buttonUpdate
+        GE-->>FE: 更新按鈕狀態
         U->>FE: 點擊下注
-        FE->>GE: sendMessage placeOrder
-        GE-->>FE: updateBalance
-        GE-->>FE: historyUpdate
+        FE->>GE: 發送下注指令
+        GE-->>FE: 更新餘額
+        GE-->>FE: 更新歷史紀錄
     end
 
     alt 主播下播
-        GE-->>FE: joinGame Offline
-        FE->>FE: AnchorOfflineDialog
+        GE-->>FE: 主播已離線
+        FE->>FE: 顯示主播離線彈窗
     else Token 過期
-        GE-->>FE: unAuthorized
-        FE->>BE: 重新 enterGame
+        GE-->>FE: Token 已過期
+        FE->>BE: 重新取得遊戲 Token
     end
             </div>
           </div>
@@ -1658,7 +1658,7 @@ sequenceDiagram
         <div class="tool-section-header"><h2>3.6 Cocos 遊戲直播間初始化</h2></div>
         <div class="tool-section-desc">iframe postMessage 雙向通訊</div>
 
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-6">
           <div class="mermaid-card-title">Cocos 遊戲初始化（系統自動）</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
@@ -1669,26 +1669,26 @@ sequenceDiagram
     participant COCOS as Cocos iframe
 
     U->>FE: 進入 Cocos 遊戲直播間
-    FE->>BE: enterGame API
-    BE-->>FE: WS URL + token
+    FE->>BE: 進入遊戲 API
+    BE-->>FE: WebSocket 連線資訊 + Token
 
     alt 手動轉帳模式
         FE->>FE: 彈出轉帳彈窗
     end
 
     FE->>FE: 載入 Cocos iframe
-    COCOS-->>FE: postMessage Init
-    FE->>FE: cocosLoading = false
-    FE->>COCOS: sendMessage init
+    COCOS-->>FE: 初始化完成通知
+    FE->>FE: 關閉載入畫面
+    FE->>COCOS: 發送初始化指令
 
     Note over COCOS,FE: === 遊戲中事件 ===
-    COCOS-->>FE: GameState
-    COCOS-->>FE: PlayerWin
+    COCOS-->>FE: 遊戲狀態更新
+    COCOS-->>FE: 玩家勝出通知
 
     Note over BE,FE: === WS 事件 ===
-    BE->>FE: SwitchCasino
-    FE->>COCOS: EndGameNotice ChangeGame
-    FE->>COCOS: 重新 initGame
+    BE->>FE: 切換賭桌通知
+    FE->>COCOS: 結束當前遊戲 + 切換遊戲
+    FE->>COCOS: 重新初始化遊戲
             </div>
           </div>
         </div>

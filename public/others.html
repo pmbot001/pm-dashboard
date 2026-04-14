@@ -730,19 +730,19 @@ flowchart TD
 sequenceDiagram
     participant U as 使用者
     participant App as 客服元件
-    participant Store as serviceStore
+    participant Store as 客服模組
     participant API as 後端 API
     participant CS as 客服 iframe
 
     U->>App: 點擊客服圖示
-    App->>Store: setSettingConfig loading=true
+    App->>Store: 顯示載入狀態
     App->>API: POST /config/getCsLineConfig
-    API-->>Store: csLineConfig + csLiveConfig + csAgentConfig + thirdCsUrl
+    API-->>Store: 客服線道設定 + 直播客服設定 + 代理客服設定 + 三方客服網址
 
-    Store->>Store: _btnFilter VIP 等級篩選<br>vipBegin≤vipLevel≤vipEnd
+    Store->>Store: VIP 等級篩選可用線道
 
-    alt 幣商來的 (imDealer)
-        Store->>Store: 跳過 VIP 檢查<br>篩選 csType=1 線道隨機取一條
+    alt 幣商來源
+        Store->>Store: 跳過 VIP 檢查，隨機取一條官方線道
     else 多條線道
         App-->>U: BottomSheet 選擇
         U->>App: 選擇線道
@@ -752,21 +752,21 @@ sequenceDiagram
         App-->>U: Toast 系统维护中
     end
 
-    alt csType = 1 官方
-        Store->>Store: confirmAndOpenService 切換確認
-        App->>CS: 載入 kfUrl + MD5 簽名參數
-        Note over CS: uid/uname/agentid/token/mac<br>theme=4/stype/timestamp/sign
-        CS-->>App: postMessage 事件
-        Note over App: jump/close/view/queue<br>tips/move/keyboard
-    else csType = 2 三方
-        App->>CS: IframeCommon 載入三方 URL
-        Note over CS: 關閉時彈 ConfirmDialog
+    alt 官方客服
+        Store->>Store: 確認並開啟客服
+        App->>CS: 載入官方客服頁面（帶簽名參數）
+        Note over CS: 使用者資訊 + 認證簽名
+        CS-->>App: iframe 通訊事件
+        Note over App: 跳轉/關閉/檢視/排隊<br>提示/拖曳/鍵盤
+    else 三方客服
+        App->>CS: 載入三方客服頁面
+        Note over CS: 關閉時彈出確認對話框
     end
 
-    opt 有進行中對話 (10分鐘內)
-        App->>API: POST custom/getChatInfo (or getGuestChatInfo)
-        API-->>App: Status=1 對話中
-        App->>App: setisAutoOpen true
+    opt 有進行中對話（10 分鐘內）
+        App->>API: 查詢進行中的對話
+        API-->>App: 對話進行中
+        App->>App: 標記自動開啟
         App-->>U: 自動恢復半版 iframe + 未讀紅點
     end
           </div></div>
@@ -781,40 +781,40 @@ sequenceDiagram
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
     participant CS as 客服 iframe
-    participant App as IframeContainer
-    participant Store as serviceStore
+    participant App as 客服容器
+    participant Store as 客服模組
 
-    CS->>App: action=view data=3 (載入完成)
-    App->>App: 檢查 isAutoOpen
-    alt isAutoOpen=true
-        App->>CS: postMessage {action:auto, data:1}
-        App->>Store: setisAutoOpen false
+    CS->>App: 載入完成通知
+    App->>App: 檢查是否需要自動開啟
+    alt 需要自動開啟
+        App->>CS: 發送自動開啟指令
+        App->>Store: 清除自動開啟標記
     end
 
-    CS->>App: action=view data=0
-    App->>Store: setIframeStatus(small) 切半版
+    CS->>App: 切換半版模式
+    App->>Store: 設定 iframe 為半版
 
-    CS->>App: action=view data=1
-    App->>Store: setIframeStatus(large) 切全版
+    CS->>App: 切換全版模式
+    App->>Store: 設定 iframe 為全版
 
-    CS->>App: action=view data=2
-    App->>Store: setIframeStatus(hidden) 最小化
+    CS->>App: 最小化
+    App->>Store: 設定 iframe 為隱藏
 
-    CS->>App: action=queue data=排隊號碼
-    App->>Store: setIframeQueue 更新排隊卡片
+    CS->>App: 排隊通知
+    App->>Store: 更新排隊卡片資訊
 
-    CS->>App: action=tips data=true
-    App->>Store: setIframeTips 顯示未讀紅點
+    CS->>App: 未讀訊息通知
+    App->>Store: 顯示未讀紅點
 
-    CS->>App: action=close
-    App->>Store: setIframeStatus(close)<br>重置 queue/tips/imDealer/timeStamp
+    CS->>App: 關閉通知
+    App->>Store: 關閉 iframe 並重置狀態
 
-    CS->>App: action=jump data={type,val}
-    alt type=0
-        App->>Store: close + queue=0
-    else type≠0
-        App->>Store: setIframeStatus hidden
-        App->>App: Goto.jump(type, val)
+    CS->>App: 跳轉通知
+    alt 關閉型跳轉
+        App->>Store: 關閉並清除排隊
+    else 頁面跳轉
+        App->>Store: 最小化 iframe
+        App->>App: 跳轉到指定頁面
     end
           </div></div>
         </div>
@@ -840,33 +840,33 @@ sequenceDiagram
 
     Page-->>U: 顯示文章 + 盤口列表
 
-    opt 多場賽事 (matches.length > 1)
+    opt 多場賽事
         U->>Page: 左右滑動切換賽事
-        Note over Page: snap-x snap-mandatory<br>handleMatchScroll 100ms節流
+        Note over Page: 滑動吸附 + 100ms 節流
     end
 
     U->>Page: 選擇盤口跟單
-    Page->>Page: userStore.requireLogin 檢查
-    Page->>Page: formatCartData 格式化
+    Page->>Page: 檢查登入狀態
+    Page->>Page: 格式化購物車資料
 
-    alt marketType !== 2 (單注)
-        Page->>Cart: addSingleCartData
-    else marketType === 2 (串關)
-        Page->>Cart: addComboCartData
+    alt 單注模式
+        Page->>Cart: 加入單注購物車
+    else 串關模式
+        Page->>Cart: 加入串關購物車
     end
-    Page->>Page: setBetSource(predict)
+    Page->>Page: 標記投注來源為爆料跟單
 
     opt 按讚
         U->>Page: 點擊讚
-        Page->>API: POST /predict/like {like: isLike ? -1 : 1}
-        Note over Page: 未讚→likeCount++ 已讚→likeCount--
+        Page->>API: POST /predict/like 切換按讚
+        Note over Page: 未讚→讚數+1，已讚→讚數-1
     end
 
     opt 分享
         U->>Page: 點擊分享
         Page->>API: GET /config/share-image/gossip
-        API-->>Page: 分享底圖 + safeShareImageUrl
-        Page->>Page: shareStore.openShare('gossiping')
+        API-->>Page: 分享底圖 + 安心分享圖片
+        Page->>Page: 開啟分享面板
     end
           </div></div>
         </div>
@@ -879,29 +879,29 @@ sequenceDiagram
     participant Page as 榜單頁面
     participant API as 後端 API
 
-    U->>Page: 進入榜單 from RankBoard 或 Tab
-    Page->>Page: 讀取 URL query type（預設 hitBoard）
+    U->>Page: 進入榜單頁面
+    Page->>Page: 判斷榜單類型（預設命中率榜）
 
-    alt type = hitBoard
-        Page->>API: GET /predict/winRateRanking {agentId}
-    else type = winRowBoard
-        Page->>API: GET /predict/winComboRanking {agentId}
-    else type = followBoard
-        Page->>API: GET /predict/followBetRanking {agentId}
-    else type = popularBoard
-        Page->>API: GET /predict/viewRanking {agentId}
+    alt 命中率榜
+        Page->>API: GET /predict/winRateRanking
+    else 連勝榜
+        Page->>API: GET /predict/winComboRanking
+    else 跟單榜
+        Page->>API: GET /predict/followBetRanking
+    else 人氣榜
+        Page->>API: GET /predict/viewRanking
     end
 
     API-->>Page: TOP 10 排名資料
-    Note over Page: TOP3 排列：list[0]=2nd左<br>list[1]=1st中(突出)<br>list[2]=3rd右
-    Page-->>U: 顯示排行榜<br>數字≥1M→XM ≥10K→XK
+    Note over Page: TOP3 排列：左=第2 / 中=第1（突出）/ 右=第3
+    Page-->>U: 顯示排行榜（大數字自動縮寫）
 
     alt 資料不足 3 筆
         Page-->>U: 空位顯示「宝座尚空」
     end
 
     U->>Page: 切換 Tab
-    Page->>Page: router.replace 更新 URL query
+    Page->>Page: 更新網址參數
     Page->>API: 重新請求對應 API
 
     U->>Page: 點擊主播
@@ -923,32 +923,32 @@ sequenceDiagram
     participant LS as localStorage
 
     U->>Page: 進入 /gossiping/search
-    Page->>API: GET /search/getSearchLive {cType: Gossiping}
+    Page->>API: GET /search/getSearchLive 取得熱搜
     API-->>Page: 熱搜列表
-    Page->>LS: 讀取 gossipingSearchHistory
+    Page->>LS: 讀取搜索歷史
     LS-->>Page: 歷史記錄 (max 5)
     Page-->>U: 顯示熱搜 + 歷史 + 人氣排序
 
     alt 輸入搜索
         U->>Page: 輸入關鍵字 blur/Enter
     else 點擊歷史
-        U->>Page: handleHistoryTagClick
+        U->>Page: 選擇歷史關鍵字
     else 點擊熱搜
-        U->>Page: handleHotSearchClick
+        U->>Page: 選擇熱搜關鍵字
     end
 
-    Page->>API: addHotSearchKey 上報
-    Page->>API: GET /predict/list {keyword, sort, unifySportId}
-    API-->>Page: 搜索結果 (pageSize=20)
+    Page->>API: 上報熱搜關鍵字
+    Page->>API: GET /predict/list 搜索文章
+    API-->>Page: 搜索結果（每頁 20 筆）
 
     alt 有結果
-        Page->>LS: updateSearchHistory 儲存
-        Note over LS: 重複→先刪再unshift<br>超過5筆→移除最舊
+        Page->>LS: 更新搜索歷史
+        Note over LS: 重複→先刪再加入最前<br>超過 5 筆→移除最舊
     end
 
     opt 球種篩選
         U->>Page: 點擊足球/籃球
-        Page->>API: unifySportId=1或2 重新搜索
+        Page->>API: 依球種重新搜索
     end
 
     opt 返回
@@ -957,7 +957,7 @@ sequenceDiagram
             Page->>Page: 重置搜索狀態 不離開頁面
         else 搜索首頁
             U->>Page: 點擊返回
-            Page->>Page: router.back()
+            Page->>Page: 返回上一頁
         end
     end
           </div></div>

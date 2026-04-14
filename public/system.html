@@ -1304,14 +1304,14 @@ flowchart TD
             <div class="mermaid">
 sequenceDiagram
     participant U as 使用者
-    participant App as App (useInit)
-    participant Store as Pinia Store
+    participant App as App
+    participant Store as 前端狀態
     participant API as 後端 API
     participant WS as WebSocket
 
     U->>App: 開啟 App
-    App->>App: useDeviceUuid()
-    App->>App: fetchChannelId()
+    App->>App: 取得裝置識別碼
+    App->>App: 取得渠道 ID
     Note over App: query > localStorage > ENV > API
 
     par 並行拉取
@@ -1333,7 +1333,7 @@ sequenceDiagram
         API-->>Store: playerId + userInfo
     end
 
-    App->>Store: setIsInitSuccess(true)
+    App->>Store: 標記初始化完成
     Store->>WS: 啟動平台 WS + 用戶 WS
     App->>App: 觸發 watch 聯動初始化
     Note over App: 活動/VIP/直播/任務...
@@ -1350,31 +1350,31 @@ sequenceDiagram
     participant Page as 登入頁
     participant Valid as 前端驗證
     participant API as 後端 API
-    participant Store as userStore
+    participant Store as 前端狀態
 
     U->>Page: 輸入帳號/密碼
-    Page->>Valid: vee-validate + zod 驗證
+    Page->>Valid: 表單驗證
     Valid-->>Page: 通過
 
     Page->>Page: AES 加密密碼
     Page->>API: POST /login/login
 
     alt errCode === 1
-        API-->>Store: setToken(token)
+        API-->>Store: 儲存登入 Token
         Store->>API: POST /user/getUserInfo
         API-->>Store: playerId + userInfo
-        Store->>Page: toPushTypePage()
+        Store->>Page: 跳轉目標頁面
     else errCode === 9/14
         API-->>Page: 需要圖形驗證碼
         Page->>U: 顯示 NumberCaptchPopup
         U->>Page: 完成驗證
-        Page->>API: retryWithNumber 重送請求
+        Page->>API: 帶驗證碼重送請求
     else errCode === 110
         API-->>Page: 新設備驗證
         Page->>U: 顯示 NewDeviceAuth
         U->>Page: 輸入手機驗證碼
         Page->>API: POST /login/newDevice
-        API-->>Store: setToken
+        API-->>Store: 儲存登入 Token
     else errCode === 163
         API-->>Page: 暫封
         Page->>U: ExpiredPopup 聯繫客服
@@ -1391,7 +1391,7 @@ sequenceDiagram
     participant U as 使用者
     participant Page as 註冊頁
     participant API as 後端 API
-    participant Store as userStore
+    participant Store as 前端狀態
 
     Page->>API: POST /login/registerOption
     API-->>Page: accountValidRole + 開關設定
@@ -1413,12 +1413,12 @@ sequenceDiagram
     Page->>API: POST /login/register
 
     alt 成功
-        API-->>Store: setToken(token)
+        API-->>Store: 儲存登入 Token
         Store->>API: POST /user/getUserInfo
         API-->>Store: userInfo
-        Store->>Page: toPushTypePage()
+        Store->>Page: 跳轉目標頁面
     else 失敗
-        API-->>Page: errCode handleError
+        API-->>Page: 錯誤處理
     end
             </div>
           </div>
@@ -1430,26 +1430,26 @@ sequenceDiagram
             <div class="mermaid">
 sequenceDiagram
     participant U as 使用者
-    participant Router as router-guard.global
-    participant Store as Pinia Stores
+    participant Router as 路由守衛
+    participant Store as 前端狀態
     participant Page as 目標頁面
 
     U->>Router: 路由跳轉 to
 
-    Router->>Router: channelId 繼承 from to query
-    Router->>Router: from query 記錄到 localStorage
+    Router->>Router: 繼承渠道 ID 參數
+    Router->>Router: 記錄來源頁面參數
 
     alt to.meta.needLogin 且 無 token
-        Router->>Store: setIsLoginSheetOpen(true)
+        Router->>Store: 開啟登入彈窗
         Router-->>U: 顯示登入 Sheet 不跳轉
     else 測試帳號訪問受限頁面
         Note over Router: deposit/withdraw/mine-transfer
         Router-->>U: 攔截跳轉
     else 離開杯賽主題頁
-        Router->>Store: 清除 themeOverride
+        Router->>Store: 清除主題覆蓋設定
     end
 
-    Router->>Store: useLiveCartsStore.$reset()
+    Router->>Store: 清空直播購物車
     Note over Router: 每次路由切換清空直播購物車
 
     Router->>Page: 放行跳轉
@@ -1464,12 +1464,12 @@ sequenceDiagram
 sequenceDiagram
     participant U as 使用者
     participant App as App
-    participant Store as userStore
+    participant Store as 前端狀態
     participant API as 後端 API
 
     Note over App: App 初始化階段
-    App->>Store: 檢查 hasToken
-    alt hasToken = true
+    App->>Store: 檢查是否有 Token
+    alt 有 Token
         App->>API: POST /login/refreshToken
         alt 續期成功
             API-->>Store: token 維持有效
@@ -1477,27 +1477,27 @@ sequenceDiagram
             API-->>Store: playerId + userInfo
         else 續期失敗
             API-->>App: error
-            App->>App: console.warn 不中斷
+            App->>App: 記錄警告，不中斷流程
         end
     end
 
     Note over U: 正常使用期間
     U->>App: 發起 API 請求
-    App->>API: 請求 header Token: token
+    App->>API: 帶 Token 發送請求
 
     alt errCode === 1
         API-->>App: 正常回應
     else HTTP 401
         API-->>App: Token 過期
         App->>U: toast 登入已過期
-        App->>Store: logout 清 localStorage
+        App->>Store: 登出並清除本地資料
         App->>U: 跳轉首頁
     else errCode === 163
         API-->>App: 暫封/踢下線
-        App->>Store: logout
-        App->>U: ExpiredPopup 聯繫客服
+        App->>Store: 登出
+        App->>U: 彈窗提示聯繫客服
         App->>U: 跳轉 /login
-    else API 錯誤 retry=true
+    else API 錯誤且允許重試
         API-->>App: 錯誤回應
         loop 最多 3 次
             App->>App: 等待 3*(n+1) 秒
@@ -1508,8 +1508,8 @@ sequenceDiagram
     Note over U: 主動登出
     U->>App: 點擊登出
     App->>API: POST /login/logout
-    App->>Store: 清 localStorage 指定 key
-    App->>Store: 清所有相關 store
+    App->>Store: 清除本地登入資料
+    App->>Store: 清除所有相關狀態
             </div>
           </div>
         </div>
@@ -1520,34 +1520,34 @@ sequenceDiagram
             <div class="mermaid">
 sequenceDiagram
     participant App as 前端 App
-    participant Fetch as plugins/fetch.ts
+    participant Fetch as 請求攔截層
     participant Crypto as AES 加解密
     participant API as 後端 API
 
     App->>Fetch: 發起 API 請求
-    Fetch->>Fetch: 判斷 apiType 決定 prefix
+    Fetch->>Fetch: 判斷 API 類型決定前綴
 
     alt POST 請求
-        Fetch->>Crypto: body URLEncode
-        Crypto->>Crypto: AES encrypt
-        Crypto-->>Fetch: encodeURIComponent 後的密文
+        Fetch->>Crypto: 請求 body 編碼
+        Crypto->>Crypto: AES 加密
+        Crypto-->>Fetch: 加密後的密文
     else GET 請求 非 dev
         Fetch->>Crypto: query params AES 加密
         Crypto-->>Fetch: 加密後 query string
     end
 
-    alt isIgnoreApiEncrypt 白名單
+    alt 在免加密白名單內
         Fetch->>Fetch: 跳過加密
     end
 
-    Fetch->>Fetch: 注入 Token header
+    Fetch->>Fetch: 注入 Token 到請求標頭
     Fetch->>API: 發送加密請求
 
     API-->>Fetch: 回應
 
-    alt response header crypto-response = true
-        Fetch->>Crypto: AES decrypt response
-        Crypto-->>Fetch: JSON.parse 後的明文
+    alt 回應需要解密
+        Fetch->>Crypto: AES 解密回應
+        Crypto-->>Fetch: 解密後的明文資料
     else 無加密標記
         Fetch-->>App: 直接回傳
     end

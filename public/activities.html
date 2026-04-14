@@ -1440,45 +1440,45 @@ flowchart TD
       <div class="tool-section" id="sl-3-1">
         <div class="tool-section-header"><h2>3.1 任務條件判斷 → 跳轉流程</h2></div>
         <div class="tool-section-desc">使用者點擊任務「前往」按鈕後的完整判斷與跳轉邏輯</div>
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-1">
           <div class="mermaid-card-title">任務條件判斷 → 跳轉流程</div>
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
     participant U as 使用者
     participant FE as 前端
-    participant Store as dailyMissions Store
+    participant Store as 任務模組
     participant BE as 後端
 
     U->>FE: 點擊任務「前往」按鈕
-    FE->>FE: requireLogin 檢查登入
+    FE->>FE: 檢查登入狀態
     alt 未登入
         FE-->>U: 彈出登入頁
     end
-    FE->>Store: setSpecifyConditionLv1(conditionTypeLv1)
-    FE->>FE: 從 missionHandlers 映射表取得 handler
+    FE->>Store: 設定任務條件
+    FE->>FE: 查詢對應的跳轉邏輯
 
     alt 安心分享任務
-        FE->>Store: openShareWithMission({forceSafeShare: true})
+        FE->>Store: 開啟安心分享任務
         Store-->>U: 開啟安心分享面板
     else 綁手機
-        FE-->>U: navigateTo('/mine/mine-center/bind-phone')
+        FE-->>U: 跳轉綁手機頁面
     else 綁銀行卡
-        FE->>FE: verfiyPhoneBind() 檢查手機綁定
+        FE->>FE: 檢查手機是否已綁定
         alt 未綁手機
             FE-->>U: 彈窗「請先綁定手機」
         else 已綁手機
-            FE-->>U: navigateTo('/withdraw/addBankCard')
+            FE-->>U: 跳轉新增銀行卡頁面
         end
     else 邀請好友
-        FE->>Store: fetchInfoAction() 載入邀請資訊
-        FE->>Store: openShareAction('mutiple', 'inviteFriend', 1)
+        FE->>Store: 載入邀請資訊
+        FE->>Store: 開啟邀請分享面板
         Store-->>U: 開啟邀請分享面板
     else 簽到/每日任務次數
-        FE-->>U: navigateTo('/mine/rewardsTasks')
+        FE-->>U: 跳轉獎勵任務頁面
     else 看八卦
-        FE-->>U: navigateTo('/gossiping?currentTabType=byTime')
+        FE-->>U: 跳轉八卦頁面
     else 其他（通用跳轉）
-        FE->>FE: Goto.jump({jumpType, jumpValue, visitEntrance})
+        FE->>FE: 依跳轉類型前往對應頁面
     end
           </div></div>
         </div>
@@ -1489,33 +1489,33 @@ sequenceDiagram
       <div class="tool-section" id="sl-3-2">
         <div class="tool-section-header"><h2>3.2 獎勵通知載入與派發流程</h2></div>
         <div class="tool-section-desc">系統自動：初始化時載入可領獎列表，派發到通知佇列</div>
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-2">
           <div class="mermaid-card-title">獎勵通知載入與派發</div>
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
     participant App as 前端（初始化）
-    participant AS as activityStore
+    participant AS as 活動模組
     participant API as 後端 API
-    participant NS as notificationStore
+    participant NS as 通知模組
     participant U as 使用者
 
-    App->>AS: initActivityData({addNotification: true, isInit: true})
+    App->>AS: 初始化活動資料
     AS->>API: POST /activity/activityList
-    API-->>AS: 活動列表（含 redDotNotification, visitTime）
+    API-->>AS: 活動列表（含紅點設定、訪問時間）
 
     alt 已登入
         AS->>API: POST /matchactivity/activityRewardNotification
-        API-->>AS: rewardNotifyList + missionNotifyList + welfareCenterList
-        AS->>AS: _addActivityNotification()
+        API-->>AS: 獎勵通知 + 任務通知 + 福利中心列表
+        AS->>AS: 派發活動通知
 
         alt 可領獎 > 1 個
-            AS->>NS: addNotification({isCollapsed: true}) 摺疊通知
+            AS->>NS: 新增摺疊通知
         else 可領獎 = 1 個
-            AS->>NS: addNotification(rewardNotifyList[0]) 單條通知
+            AS->>NS: 新增單條獎勵通知
         end
 
         alt 有福利中心待領
-            AS->>NS: addNotification({isWelfare: true})
+            AS->>NS: 新增福利中心通知
         end
 
         NS-->>U: 彈出通知（依佇列排序）
@@ -1529,40 +1529,40 @@ sequenceDiagram
       <div class="tool-section" id="sl-3-3">
         <div class="tool-section-header"><h2>3.3 活動列表排序 + 紅點判斷流程</h2></div>
         <div class="tool-section-desc">系統自動：遍歷活動列表判斷紅點與排序</div>
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-3">
           <div class="mermaid-card-title">活動列表排序 + 紅點判斷</div>
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
-    participant FE as 前端（useActivity）
+    participant FE as 前端
     participant LS as localStorage
     participant API as 後端
 
-    FE->>FE: 遍歷 activityList，對每個活動執行 setUnRead()
+    FE->>FE: 遍歷活動列表，判斷每個活動的未讀狀態
     loop 每個活動
-        FE->>FE: 取 redDotNotification 欄位
+        FE->>FE: 取得紅點通知設定
 
-        alt updateVisitTime 有值
-            FE->>FE: 使用 updateVisitTime
-        else 已登入且 localStorage 有記錄
-            FE->>LS: 讀 logged_user_activity_visit[uId]
+        alt 有更新訪問時間
+            FE->>FE: 使用更新時間
+        else 已登入且本地有記錄
+            FE->>LS: 讀取使用者活動訪問紀錄
         else 伺服器有記錄
-            FE->>FE: 使用 visitTime * 1000（秒→毫秒）
+            FE->>FE: 使用伺服器訪問時間
         else
-            FE->>FE: visitTime = null
+            FE->>FE: 無訪問紀錄
         end
 
-        alt 活動未開始（timeNow < beginTime）
-            FE->>FE: unRead = false
-        else START(2) 且未訪問
-            FE->>FE: unRead = true
-        else START_AND_MONDAY(3) 且（未訪問 或 週一未訪問）
-            FE->>FE: unRead = true
-        else START_AND_EVERYDAY(4) 且今天未訪問
-            FE->>FE: unRead = true
+        alt 活動未開始
+            FE->>FE: 不顯示紅點
+        else 活動開始後未訪問
+            FE->>FE: 顯示紅點
+        else 每週一重置且本週未訪問
+            FE->>FE: 顯示紅點
+        else 每日重置且今天未訪問
+            FE->>FE: 顯示紅點
         end
     end
 
-    FE->>FE: 依 canClaim 分兩組排序
+    FE->>FE: 依可領獎狀態分兩組排序
     Note over FE: 可領獎組：依結束時間由近到遠 → 依 sort 降序
     Note over FE: 普通組：依 sort 降序 → 依 uId 升序
           </div></div>
@@ -1574,7 +1574,7 @@ sequenceDiagram
       <div class="tool-section" id="sl-3-4">
         <div class="tool-section-header"><h2>3.4 砍單完整流程</h2></div>
         <div class="tool-section-desc">使用者動作 + 系統推送：從發起砍單到好友幫砍完成</div>
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-4">
           <div class="mermaid-card-title">砍單完整流程（含 WebSocket 推送）</div>
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
@@ -1613,7 +1613,7 @@ sequenceDiagram
     alt 砍單達標
         BE->>WS: 推送砍單成功通知
         WS-->>FE: 收到成功通知
-        FE->>FE: activityStore.openRallySuccessPopup(wsData)
+        FE->>FE: 開啟砍單成功彈窗
         FE-->>U: 砍單成功彈窗
     end
           </div></div>
@@ -1625,16 +1625,16 @@ sequenceDiagram
       <div class="tool-section" id="sl-3-5">
         <div class="tool-section-header"><h2>3.5 主題抽獎前置檢查 + 碎片兌換流程</h2></div>
         <div class="tool-section-desc">使用者動作：抽獎前 13 種錯誤碼檢查 + 碎片/金粉兌換流程</div>
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-5">
           <div class="mermaid-card-title">主題抽獎前置檢查 + 碎片兌換</div>
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
     participant U as 使用者
-    participant FE as 前端（useLottery）
-    participant BE as 後端（luckydraw）
+    participant FE as 前端
+    participant BE as 後端
 
     U->>FE: 點擊抽獎按鈕
-    FE->>FE: handleDrawItemDialogOpen() 前置檢查
+    FE->>FE: 抽獎前置檢查
 
     alt 手動錯誤碼 1：未登入
         FE-->>U: 引導登入
@@ -1687,14 +1687,14 @@ sequenceDiagram
       <div class="tool-section" id="sl-3-6">
         <div class="tool-section-header"><h2>3.6 新手任務領獎 + 綁定檢查流程</h2></div>
         <div class="tool-section-desc">使用者動作：新手任務的身份判斷 → 綁定檢查 → 領獎審核完整流程</div>
-        <div class="mermaid-card">
+        <div class="mermaid-card" id="sw-6">
           <div class="mermaid-card-title">新手任務領獎 + 綁定檢查</div>
           <div class="mermaid-card-body"><div class="mermaid">
 sequenceDiagram
     participant U as 使用者
-    participant FE as 前端（useNewbieTask）
-    participant Bind as 綁定檢查（useBindDialogInfo）
-    participant BE as 後端（newplayer）
+    participant FE as 前端
+    participant Bind as 綁定檢查
+    participant BE as 後端
 
     U->>FE: 進入新手任務頁
     FE->>BE: POST /newplayer/info（取活動配置）
@@ -1713,16 +1713,16 @@ sequenceDiagram
 
     U->>FE: 點擊領獎按鈕
     FE->>Bind: 三步驟綁定檢查
-    Bind->>Bind: checkIsLogin
+    Bind->>Bind: 檢查是否登入
     alt 未登入
         Bind-->>U: 引導登入
     end
-    Bind->>Bind: checkIsBindPhone
+    Bind->>Bind: 檢查是否綁手機
     alt 未綁手機
         Bind-->>U: 彈窗引導綁手機
     end
-    Bind->>Bind: checkIsBindBankCard
-    alt isSkipBindBankCheck=true
+    Bind->>Bind: 檢查是否綁銀行卡
+    alt 設定跳過銀行卡檢查
         Bind->>Bind: 跳過銀行卡檢查
     else 未綁銀行卡
         Bind-->>U: 彈窗引導綁卡
