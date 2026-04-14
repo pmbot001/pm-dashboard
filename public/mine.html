@@ -42,25 +42,40 @@
       margin-left: auto;
     }
 
-    .tab-pill {
-      display: inline-block;
-      font-size: 15px;
-      padding: 8px 22px;
-      border-radius: 20px;
-      color: #94a3b8;
-      background: #1e293b;
-      border: 1px solid #334155;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all .15s;
-      cursor: pointer;
-    }
-    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #eab308; color: #fff; border-color: #eab308; }
+    /* ===== Old tab pills — hidden ===== */
+    .tab-pill { display: none !important; }
+    .compact-header-pills { display: none !important; }
 
+    /* ===== Side Nav Module List ===== */
+    .sn-module-list {
+      padding: 8px 8px 8px; border-bottom: 1px solid #1e293b;
+    }
+    .sn-module {
+      display: block; padding: 5px 12px; font-size: 14px;
+      color: #94a3b8; text-decoration: none; border-radius: 4px;
+      transition: all .1s;
+    }
+    .sn-module:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-module.active { color: #fbbf24; font-weight: 600; }
+
+    /* ===== Side Nav Tab List ===== */
+    .sn-tab-list {
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 6px 8px 8px; border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .sn-tab {
+      display: block; padding: 8px 12px; font-size: 15px; font-weight: 600;
+      color: #94a3b8; text-decoration: none; border-radius: 6px;
+      transition: all .12s; cursor: pointer;
+    }
+    .sn-tab:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-tab.active { color: #fff; background: #fbbf24; }
+
+    /* Tab content panels */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* Full-width layout (no sidebar) */
     .v2-main { margin-left: 0; }
 
     /* Mermaid card */
@@ -300,25 +315,43 @@
     /* Accent color overrides */
     .num { background: #eab308 !important; }
     .flow-step.highlight { background: #eab308 !important; border-color: #eab308 !important; }
+    .sn-tab.active { background: #fbbf24 !important; }
+    .sn-module.active { color: #fbbf24 !important; }
   </style>
 </head>
 <body>
 
 <div class="layout">
+  <!-- ============ Side Nav — 所有導航集中在這裡 ============ -->
   <aside class="side-nav" id="sideNav">
+    <!-- 1. 模組切換 -->
+    <div class="sn-module-list">
+      <a class="sn-module" href="sports.html">⚽ 體育賽事</a>
+      <a class="sn-module" href="system.html">🔐 系統</a>
+      <a class="sn-module" href="entertainment.html">🎰 娛樂城</a>
+      <a class="sn-module" href="activities.html">🎁 活動中心</a>
+      <a class="sn-module" href="live.html">📺 直播</a>
+      <a class="sn-module active" href="mine.html">👤 我的</a>
+      <a class="sn-module" href="others.html">💬 其他</a>
+      <a class="sn-module" href="deposit.html">💰 金流</a>
+    </div>
+    <!-- 2. Tab 切換 -->
+    <div class="sn-tab-list" id="sideNavTabs">
+      <div class="sn-group">分類</div>
+      <a class="sn-tab active" data-tab="overview" href="#overview">📋 功能總覽</a>
+      <a class="sn-tab" data-tab="userflow" href="#userflow">🔀 User Flow</a>
+      <a class="sn-tab" data-tab="swimlane" href="#swimlane">🏊 泳道圖</a>
+      <a class="sn-tab" data-tab="constraints" href="#constraints">🚧 跨服務限制</a>
+    </div>
+    <!-- 3. 當前 tab 的內容導航 -->
     <div class="side-nav-inner" id="sideNavInner"></div>
   </aside>
 
   <div class="main-content v2-main">
 
+    <!-- ============ Compact Header — 只留標題 ============ -->
     <nav class="compact-header" id="tabnav">
         <span class="module-title-text">👤 我的</span>
-        <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html">📺 廣場/直播間</option><option value="mine.html" selected>👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
-        <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
-        <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
-        <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
-        <a class="tab-pill" href="#constraints" data-tab="constraints">跨服務限制</a>
-      </div>
     </nav>
 
     <!-- ================================================================ -->
@@ -489,40 +522,98 @@
 
         <div class="annotated-row">
           <div class="screen-col">
-            <img src="/images/mine/vip.png" alt="VIP 特權">
+            <img src="/images/mine/screen-vip-privilege.png" alt="VIP 特權頁">
             <div class="screen-label">VIP 特權頁</div>
           </div>
           <div class="screen-col">
-            <img src="/images/mine/screen-profile-badge.png" alt="徽章">
-            <div class="screen-label">稱號徽章</div>
+            <img src="/images/mine/screen-vip-detail.png" alt="VIP 等級詳情">
+            <div class="screen-label">VIP 等級詳情</div>
           </div>
           <div class="rules-col">
             <div class="rule-card">
-              <h4><span class="type-tag type-rule">邏輯</span> 升級條件</h4>
-              <p>isPayAmount=1 → 取 min(存款進度, 流水進度)。否則只看流水。</p>
+              <h4><span class="type-tag type-rule">邏輯</span> 升級雙條件</h4>
+              <p>isPayAmount=1 時取 min(存款進度, 流水進度)，否則只看流水。後台可配。</p>
+            </div>
+            <div class="rule-card">
+              <h4><span class="type-tag type-rule">邏輯</span> 豪禮五態</h4>
+              <p>可領取 → 已申請 → 已領取 → 等級不符。5 種 GiftState 決定按鈕文案。</p>
             </div>
             <div class="rule-card">
               <h4><span class="type-tag type-ui">注意</span> 生日禮金</h4>
-              <p>註冊未滿 90 天不可領取（防薅規則）。</p>
+              <p>3 分支：未綁生日→引導設定、註冊＜90天→不可領、≥90天+有獎→前往領取。</p>
             </div>
           </div>
         </div>
 
-        <details class="page-logic-card">
-          <summary>VIP 特權頁 <span class="rule-count">6 條規則</span></summary>
+        <details class="page-logic-card" open>
+          <summary>VIP 升級進度計算 <span class="rule-count">4 條規則</span></summary>
           <div class="card-body">
+            <div class="pm-note">PM 提醒：isPayAmount 是後台開關，開啟後升級變成雙條件（存款+流水），PM 需確認此設定與運營策略一致。</div>
             <table class="logic-table">
               <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
-              <tr><td>1</td><td>isPayAmount=1</td><td>升級取 min(存款進度, 流水進度)</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可開關存款條件</td></tr>
-              <tr><td>2</td><td>isPayAmount!=1</td><td>只看流水進度</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
-              <tr><td>3</td><td>豪禮可領取</td><td>「领取豪礼」→ applyVipOrder</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>4</td><td>生日禮金-未滿90天</td><td>提示文案，不可領</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>防薅規則</td></tr>
-              <tr><td>5</td><td>測試帳號</td><td>隱藏豪禮申請 + 地址設定</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
-              <tr><td>6</td><td>保級彈窗</td><td>保級資訊從 checkVipPlayer 取</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5230</td></tr>
+              <tr><td>1</td><td>isPayAmount=1</td><td>進度 = min(流水/levelUpWater, 存款/levelUpAmount) × 100，BigNumber ROUND_DOWN 2 位</td><td><span class="cost-tag cost-config">設定層</span></td><td>後台可開關存款條件</td></tr>
+              <tr><td>2</td><td>isPayAmount≠1</td><td>進度 = (vipWater / levelUpWater) × 100</td><td><span class="cost-tag cost-config">設定層</span></td><td>單條件模式</td></tr>
+              <tr><td>3</td><td>升級門檻取值</td><td>levelInfos[userVipLevel + 1] 的 levelUpWater / levelUpAmount</td><td><span class="cost-tag cost-code">程式層</span></td><td>門檻值由後台配置各等級</td></tr>
+              <tr><td>4</td><td>已達最高等級</td><td>無下一等級 → 進度不顯示</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
             </table>
           </div>
         </details>
-        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/vip/index/index.vue: vipProgress L124-L137, checkBirthday L178-L200<br>stores/vip.ts</div></details>
+
+        <details class="page-logic-card">
+          <summary>VIP 保級流水 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>VIP &gt; 0</td><td>顯示保級流水進度條 = (seasonWater / levelDownWater) × 100</td><td><span class="cost-tag cost-code">程式層</span></td><td>ROUND_DOWN 2 位</td></tr>
+              <tr><td>2</td><td>保級未達標</td><td>checkVipPlayer API 回傳保級狀態 → 降級彈窗</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-5230</td></tr>
+              <tr><td>3</td><td>VIP 0</td><td>不顯示保級區塊</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>VIP 豪禮狀態轉換 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <div class="pm-note">PM 提醒：豪禮有 5 種 GiftState，按鈕文案和可點擊性完全由 state 決定。測試帳號無法操作。</div>
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>StateCanApply</td><td>按鈕「领取豪礼」可點擊 → POST applyVipOrder</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>2</td><td>StateReview / StateAgree / StateRefuse / StateSend / StateRefuseSend</td><td>按鈕「已申请」link 樣式，不可操作</td><td><span class="cost-tag cost-code">程式層</span></td><td>多個中間態統一顯示</td></tr>
+              <tr><td>3</td><td>StateComplete</td><td>按鈕「已领取」</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>StateNone / 查看非當前等級</td><td>按鈕「等级不符」disabled</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>5</td><td>isTestAccount</td><td>toast「此为测试账号，无法操作！」禁止領取</td><td><span class="cost-tag cost-code">程式層</span></td><td>測試帳號也跳過地址設定</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>生日禮金顯示邏輯 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>birth 為空</td><td>isShow=2 →「设置出生日期，尊享生日礼金」+「立刻设置」按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td>引導到個人資料綁定</td></tr>
+              <tr><td>2</td><td>有 birth，registerTime + 90天 &gt; now</td><td>isShow=0 →「注册超过90天，可领取生日礼金」（不可領）</td><td><span class="cost-tag cost-locked">場館限制</span></td><td>防薅規則，90 天硬限制</td></tr>
+              <tr><td>3</td><td>有 birth，≥90天，giftReward &gt; 0</td><td>isShow=1 →「达到VIPx，尊享xx元生日礼金」+「前往领取」</td><td><span class="cost-tag cost-code">程式層</span></td><td>金額由等級決定</td></tr>
+              <tr><td>4</td><td>checkBirthday=1 且 giftReward=0</td><td>顯示「注册超过90天，可领取」但無金額</td><td><span class="cost-tag cost-code">程式層</span></td><td>等級太低無獎金</td></tr>
+              <tr><td>5</td><td>生日只能設定一次</td><td>已設定後 isDisable=true，不可修改</td><td><span class="cost-tag cost-code">程式層</span></td><td>設定後無法修改</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card">
+          <summary>VIP Store 初始化 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr>
+              <tr><td>1</td><td>setVipIcons</td><td>未登入帶 channelId + agentId 取圖示；errCode≠1 → vipIcons={}</td><td><span class="cost-tag cost-code">程式層</span></td><td>未登入也能看等級圖示</td></tr>
+              <tr><td>2</td><td>setVipInfo</td><td>POST /vip/vipInfo → 等級、升級條件、特權、返水比例</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>3</td><td>setVipOrder</td><td>POST /vip/vipOrder → 豪禮訂單列表</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              <tr><td>4</td><td>setUserAddress</td><td>isTestAccount → 跳過；playerId 不存在先 getUserInfo</td><td><span class="cost-tag cost-code">程式層</span></td><td>測試帳號無地址功能</td></tr>
+            </table>
+          </div>
+        </details>
+
+        <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/vip/index/index.vue: vipProgress L124-L137, vipWaterProgress L139-L144, vipGiftState L84-L109, checkBirthday L178-L200<br>stores/vip.ts: L1-L70</div></details>
       </div>
 
       <!-- 2.4 福利中心 -->
@@ -837,6 +928,160 @@ flowchart LR
             <li>一鍵領取會遞迴直到全部處理完</li>
           </ul></div>
           <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">composables/useWelfareActions.ts: L32-L182</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-5">
+          <div class="mermaid-card-title">5. 個人資料與暱稱</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入個人資料"] --> B["顯示資訊列表\n帳號/暱稱/頭像/性別/生日"]
+    B --> C{"選擇操作"}
+    C --> D["修改暱稱"]
+    C --> E["修改頭像"]
+    C --> F["設定性別/生日"]
+    C --> G["綁定聯繫方式"]
+    C --> H["登出"]
+    D --> D1{"暱稱狀態"}
+    D1 -- 未設定 --> D2["輸入暱稱"]
+    D1 -- 審核中 --> D3["不可操作"]
+    D1 -- 冷卻中 --> D4["X天後可改"]
+    D1 -- 可修改 --> D2
+    D2 --> D5["zod 驗證\n禁特殊字元/中文算2字元/≤14"]
+    D5 --> D6{"API 回傳"}
+    D6 -- 重複 --> D7["toast 已重複"]
+    D6 -- 敏感詞 --> D8["toast 含敏感詞"]
+    D6 -- 審核中 --> D9["等待審核"]
+    D6 -- 成功 --> D10["暱稱更新"]
+    F --> F1["只能設定一次\n設定後不可逆"]
+    H --> H1["清 token → 跳登入頁"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>暱稱修改有冷卻期(changeAliasInterval)，後台設定天數</li>
+            <li>性別和生日設定後無法修改，PM 需在 UI 提示使用者</li>
+            <li>純直播模式隱藏暱稱和稱號，新增「即將開放」項目</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/mine-center/index.vue: L9-L316<br>pages/mine/mine-center/aliasInfo-name/index.vue: zod 驗證</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-6">
+          <div class="mermaid-card-title">6. 稱號系統</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入我的稱號"] --> B["載入稱號列表\nGET /user/badges"]
+    B --> C["瀏覽稱號卡片"]
+    C --> D{"稱號狀態"}
+    D -- 未解鎖 --> E["顯示解鎖條件\n6種規則類型"]
+    D -- 可領取 --> F["點擊領取\nPOST /user/badge"]
+    D -- 已擁有(未配戴) --> G["點擊配戴\nPUT /user/bindBadge"]
+    D -- 已配戴 --> H["點擊取消\nPUT /user/unbindBadge"]
+    D -- 已失效 --> I["不可操作"]
+    C --> J["一鍵領取\nPOST /user/receiveAllBadges"]
+    C --> K["刷新進度\n180秒冷卻"]
+    E --> E1{"時效類型"}
+    E1 -- 限時 --> E2["剩餘天數\n≤3天紅色警示"]
+    E1 -- 限量 --> E3["剩餘數量\n<10%紅色警示"]
+    E1 -- 不限時 --> E4["長期活動"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>稱號規則 6 種：存款/有效投注/直播/登入/邀請/VIP，各有不同格式化邏輯</li>
+            <li>刷新進度 180 秒冷卻，倒計時結束自動清除</li>
+            <li>限時稱號剩餘 ≤3 天、限量稱號剩餘 <10% 會觸發紅色警示</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/mine-center/badgeInfo/useBadge.ts: BADGE_STATUS L34, getBadgeTimeInfo L74, formatRule L440</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-7">
+          <div class="mermaid-card-title">7. 投注記錄查詢</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入投注記錄"] --> B{"選擇 Tab"}
+    B -- 體育 --> C["SportRecordList\n體育投注記錄"]
+    B -- 直播 --> D["LiveRecordList\n直播投注記錄"]
+    B -- 遊戲 --> E["GameRecordList"]
+    E --> F["Promise.all\n同撈未結算+已結算"]
+    F --> G{"有未結算?"}
+    G -- 是 --> H["優先顯示未結算"]
+    G -- 否 --> I["顯示已結算"]
+    H --> J["結算狀態\n贏/輸/已取消"]
+    I --> J
+    E --> K{"gameId=8928?"}
+    K -- 是 --> L["特殊解析\nbetDetails JSON"]
+    K -- 否 --> M["標準格式"]
+    J --> N["分頁載入\n每頁20筆"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>遊戲 8928 有特殊的 betDetails JSON 解析邏輯</li>
+            <li>結算狀態由場館回傳，前端無法修改</li>
+            <li>每頁 20 筆，回傳 <20 筆判定為最後一頁</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/bet-record/index.vue: L1-L80<br>utils/useBetRecord.ts: getGameRecord L7-L251</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-8">
+          <div class="mermaid-card-title">8. 場館轉帳</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入轉帳頁"] --> B["選擇轉出場館"]
+    B --> C{"轉出=中心錢包?"}
+    C -- 是 --> D["轉入=第二場館"]
+    C -- 否 --> E["轉入=鎖定中心錢包"]
+    D --> F["輸入金額"]
+    E --> F
+    F --> G{"金額>餘額?"}
+    G -- 是 --> H["toast + 修正為最大值"]
+    G -- 否 --> I{"活動鎖定場館?"}
+    I -- 是 --> J["二次確認彈窗\n顯示流水計算"]
+    J --> K["確認轉帳"]
+    I -- 否 --> K
+    K --> L["POST /wallet/gameAmountTransfer"]
+    L --> M["轉帳成功\n刷新餘額"]
+    A --> N["自動轉帳開關"]
+    N --> O["一鍵回收所有場館\nPOST /wallet/collectAll"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>場館間不支援互轉，必須經過中心錢包（核心架構限制）</li>
+            <li>流水計算三模式：不提高(0)/倍數(1)/金額(2)，由 isRaisingWater 控制</li>
+            <li>自動轉帳設定持久化到 serversidewebstorage</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/transfer/index.vue: confirmTransferVenue L240, transfer L279, getGameWater L311</div></details>
+        </div>
+
+        <div class="mermaid-card" id="uf-9">
+          <div class="mermaid-card-title">9. 任務系統</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["進入每日任務"] --> B["初始化\nPromise.all 三支 API"]
+    B --> C["判斷可見性"]
+    C --> D{"任務類型(各有開關)"}
+    D --> E["每日簽到"]
+    D --> F["每日任務"]
+    D --> G["新手任務"]
+    D --> H["轉盤任務"]
+    E --> I["簽到領獎"]
+    F --> J["完成條件 → 領取\nPOST /mission/dailyActivity"]
+    G --> K["60秒輪詢刷新進度"]
+    H --> L["轉盤活動入口"]
+    G --> M{"純直播模式?"}
+    M -- 是 --> N["新手任務不顯示"]
+    M -- 否 --> K
+    A --> O["頁面標題動態組合\n依開啟項目不同標題"]
+            </div>
+          </div>
+          <div class="pm-notice"><ul>
+            <li>四種任務各有獨立開關，頁面標題根據開啟的組合動態生成</li>
+            <li>新手任務 60 秒輪詢，純直播模式下不顯示</li>
+            <li>任務領取成功後自動刷新列表</li>
+          </ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/mine/RewardsTasks/index.vue<br>stores/dailyMissions.ts: initDailySignAndMissions L207</div></details>
         </div>
 
       </div>
@@ -1195,7 +1440,7 @@ sequenceDiagram
         <div class="pitfall-list">
           <details class="pitfall-card sev-high">
             <summary class="pitfall-summary">
-              <span class="pid">L2-mine-001</span>
+              <span class="pid">mine-001</span>
               <span class="sev-tag sev-high">HIGH</span>
               <span class="pattern-tag pattern-tech-bottleneck">技術瓶頸</span>
               <span class="ptitle">背包兌換上線後密集 TSD</span>
@@ -1210,7 +1455,7 @@ sequenceDiagram
 
           <details class="pitfall-card sev-high">
             <summary class="pitfall-summary">
-              <span class="pid">L2-mine-002</span>
+              <span class="pid">mine-002</span>
               <span class="sev-tag sev-high">HIGH</span>
               <span class="pattern-tag pattern-tech-bottleneck">技術瓶頸</span>
               <span class="ptitle">福利中心兌換穩定性問題</span>
@@ -1225,7 +1470,7 @@ sequenceDiagram
 
           <details class="pitfall-card sev-medium">
             <summary class="pitfall-summary">
-              <span class="pid">L2-mine-003</span>
+              <span class="pid">mine-003</span>
               <span class="sev-tag sev-medium">MED</span>
               <span class="pattern-tag pattern-cross-module">跨模組耦合</span>
               <span class="ptitle">返水資料不一致</span>
@@ -1240,7 +1485,7 @@ sequenceDiagram
 
           <details class="pitfall-card sev-medium">
             <summary class="pitfall-summary">
-              <span class="pid">L2-mine-004</span>
+              <span class="pid">mine-004</span>
               <span class="sev-tag sev-medium">MED</span>
               <span class="pattern-tag pattern-shared-engine">共用引擎</span>
               <span class="ptitle">福利中心模組行為統整（大重構中）</span>
@@ -1254,7 +1499,7 @@ sequenceDiagram
 
           <details class="pitfall-card sev-medium">
             <summary class="pitfall-summary">
-              <span class="pid">L2-mine-005</span>
+              <span class="pid">mine-005</span>
               <span class="sev-tag sev-medium">MED</span>
               <span class="pattern-tag pattern-version-switch">版本切換</span>
               <span class="ptitle">場館轉帳 v1 → v2 遷移中</span>
@@ -1270,93 +1515,90 @@ sequenceDiagram
       </div>
     </div>
 
+    <!-- ============ Footer ============ -->
+    <div class="footer">
+      <p>我的 &middot; 功能知識庫</p>
+      <div class="footer-links">
+        <a href="features.html">回模組總覽 &rarr;</a>
+        <a href="index.html">回首頁 &rarr;</a>
+      </div>
+      <p style="margin-top:12px;">最後更新：2026-04-14</p>
+    </div>
+
   </div><!-- /main-content -->
 </div><!-- /layout -->
-</div>
 
 <script>
+  // Mermaid init
   mermaid.initialize({
     startOnLoad: false,
     theme: 'dark',
+    flowchart: { useMaxWidth: false, htmlLabels: true },
+    sequence: { useMaxWidth: false },
     themeVariables: {
       primaryColor: '#1e293b',
-      primaryBorderColor: '#475569',
-      primaryTextColor: '#e2e8f0',
-      lineColor: '#64748b',
-      secondaryColor: '#263548',
-      tertiaryColor: '#0f172a'
-    },
-    flowchart: { htmlLabels: true, curve: 'basis' },
-    sequence: { useMaxWidth: false }
-  });
-
-  // Pitfall toggle
-  document.querySelectorAll('.pitfall-card').forEach(card => {
-    card.querySelector('.pitfall-summary').addEventListener('click', () => {
-      card.classList.toggle('open');
-    });
-  });
-
-  // Side nav data
-  const sideNavData = {
-    overview: {
-      title: '功能總覽',
-      items: [
-        { id: 'sec-overview', label: '0 模組概覽' },
-        { id: 'sec-flow', label: '1 主要動線' },
-        { type: 'group', label: '核心功能' },
-        { id: 'nav-mine-home', label: '2 我的主頁面' },
-        { id: 'nav-profile', label: '3 個人資料' },
-        { id: 'nav-vip', label: '4 VIP 特權' },
-        { type: 'group', label: '資產管理' },
-        { id: 'nav-welfare', label: '5 福利中心' },
-        { id: 'nav-backpack', label: '6 背包中心' },
-        { id: 'nav-bet-record', label: '7 投注記錄' },
-        { id: 'nav-transfer', label: '8 場館轉帳' },
-        { type: 'group', label: '其他' },
-        { id: 'nav-tasks', label: '9 任務系統' },
-        { id: 'nav-badge', label: '10 稱號系統' },
-      ]
-    },
-    userflow: {
-      title: 'User Flow',
-      items: [
-        { id: 'uf-1', label: '1. 個人中心主線' },
-        { id: 'uf-2', label: '2. VIP 等級計算' },
-        { id: 'uf-3', label: '3. 背包兌換' },
-        { id: 'uf-4', label: '4. 福利領取' }
-      ]
-    },
-    swimlane: {
-      title: '泳道圖',
-      items: [
-        { group: '使用者動作' },
-        { id: 'sl-1', label: '1. 福利單筆領取' },
-        { id: 'sl-2', label: '2. 場館轉帳' },
-        { id: 'sl-3', label: '3. 背包兌換' },
-        { group: '系統自動' },
-        { id: 'sl-4', label: '4. VIP 資料初始化' },
-        { id: 'sl-5', label: '5. 每日任務初始化' }
-      ]
-    },
-    constraints: {
-      title: '跨服務限制',
-      items: [
-        { id: 'cat-coupling', label: '\uD83D\uDFE1 模組耦合' },
-        { id: 'cat-tech', label: '\uD83D\uDD35 技術限制' },
-        { id: 'cat-biz', label: '\u26AB 業務限制' }
-      ]
+      primaryTextColor: '#f1f5f9',
+      lineColor: '#475569',
+      secondaryColor: '#334155',
+      fontSize: '16px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }
-  };
+  });
 
-  // Side Nav
+  // ===== Side Nav Data (動態掃描 DOM，不硬編碼) =====
+  const tabTitles = { overview: '功能總覽', userflow: 'User Flow', swimlane: '泳道圖', constraints: '跨服務限制' };
+
+  function buildSideNavData(tabId) {
+    const panel = document.getElementById(tabId);
+    if (!panel) return null;
+    const items = [];
+
+    if (tabId === 'overview') {
+      const sections = panel.querySelectorAll('.section[id]');
+      if (sections.length > 0) {
+        sections.forEach(sec => {
+          const titleEl = sec.querySelector('.section-title');
+          const label = titleEl ? titleEl.textContent.trim() : sec.id;
+          items.push({ id: sec.id, label });
+        });
+      } else {
+        panel.querySelectorAll('.page-logic-card').forEach((card, i) => {
+          if (!card.id) card.id = 'plc-' + i;
+        });
+        panel.querySelectorAll('.page-logic-card').forEach(card => {
+          const summary = card.querySelector('summary');
+          if (summary) {
+            const label = summary.textContent.replace(/\d+ 條規則/g, '').trim();
+            items.push({ id: card.id, label });
+          }
+        });
+      }
+    } else if (tabId === 'userflow' || tabId === 'swimlane') {
+      panel.querySelectorAll('.mermaid-card').forEach(card => {
+        const id = card.id;
+        const title = card.querySelector('.mermaid-card-title')?.textContent?.trim() || id;
+        if (id) items.push({ id, label: title });
+      });
+    } else if (tabId === 'constraints') {
+      panel.querySelectorAll('.constraint-category, [id^="cst-"]').forEach(cat => {
+        const id = cat.id;
+        const h3 = cat.querySelector('h3, .constraint-header h3');
+        const label = h3?.textContent?.trim() || id;
+        if (id) items.push({ id, label });
+      });
+    }
+
+    return { title: tabTitles[tabId] || tabId, items };
+  }
+
   const sideNavInner = document.getElementById('sideNavInner');
   let currentTabId = 'overview';
   let scrollSpyObserver = null;
 
   function renderSideNav(tabId) {
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) { sideNavInner.innerHTML = ''; return; }
+
     let html = '<div class="sn-title">' + data.title + '</div>';
     data.items.forEach(item => {
       if (item.group) {
@@ -1366,23 +1608,31 @@ sequenceDiagram
       }
     });
     sideNavInner.innerHTML = html;
+
     sideNavInner.querySelectorAll('.sn-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.getElementById(el.getAttribute('data-target'));
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (target) {
+          if (target.tagName === 'DETAILS' && !target.open) target.open = true;
+          const y = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          highlightNavItem(el.getAttribute('data-target'));
+        }
       });
     });
+
     setupScrollSpy(tabId);
   }
 
   function setupScrollSpy(tabId) {
     if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) return;
     const targetIds = data.items.filter(i => i.id).map(i => i.id);
     const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
     if (targets.length === 0) return;
+
     const visibleSections = new Map();
     scrollSpyObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -1392,12 +1642,11 @@ sequenceDiagram
       let topId = null, topY = Infinity;
       visibleSections.forEach((y, id) => {
         const el = document.getElementById(id);
-        if (el) { const r = el.getBoundingClientRect(); if (r.top < topY) { topY = r.top; topId = id; } }
+        if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } }
       });
-      if (!topId) {
-        let cl = null, cd = -Infinity;
-        targets.forEach(t => { const r = t.getBoundingClientRect(); if (r.top < 0 && r.top > cd) { cd = r.top; cl = t.id; } });
-        if (cl) topId = cl;
+      if (!topId && targets.length > 0) {
+        let closestDist = -Infinity;
+        targets.forEach(t => { const rect = t.getBoundingClientRect(); if (rect.top < 0 && rect.top > closestDist) { closestDist = rect.top; topId = t.id; } });
       }
       if (topId) highlightNavItem(topId);
     }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
@@ -1408,19 +1657,20 @@ sequenceDiagram
     sideNavInner.querySelectorAll('.sn-item').forEach(el => {
       el.classList.toggle('active', el.getAttribute('data-target') === id);
     });
-    const a = sideNavInner.querySelector('.sn-item.active');
-    if (a) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const activeEl = sideNavInner.querySelector('.sn-item.active');
+    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  // Tab switching
-  const tabPills = document.querySelectorAll('.tab-pill');
+  // ===== Tab switching =====
+  const snTabs = document.querySelectorAll('.sn-tab');
   const tabPanels = document.querySelectorAll('.tab-panel');
   let mermaidRendered = {};
 
   function switchTab(tabId) {
     currentTabId = tabId;
-    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    snTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabId));
     tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+
     if (!mermaidRendered[tabId]) {
       const panel = document.getElementById(tabId);
       const diagrams = panel.querySelectorAll('.mermaid');
@@ -1429,20 +1679,22 @@ sequenceDiagram
         mermaidRendered[tabId] = true;
       }
     }
+
     renderSideNav(tabId);
     history.replaceState(null, '', '#' + tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  tabPills.forEach(pill => {
-    pill.addEventListener('click', (e) => {
+  snTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
       e.preventDefault();
-      switchTab(pill.getAttribute('data-tab'));
+      switchTab(tab.getAttribute('data-tab'));
     });
   });
 
-  // Init
+  // ===== Init =====
   document.querySelector('.layout').classList.add('has-side-nav');
+
   const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
   const hash = location.hash.slice(1);
   if (validTabs.includes(hash)) {

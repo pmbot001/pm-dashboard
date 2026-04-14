@@ -18,16 +18,41 @@
     .compact-header-breadcrumb a { color: #64748b; text-decoration: none; }
     .compact-header-breadcrumb a:hover { color: #94a3b8; }
     .compact-header-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+    /* ===== Old tab pills — hidden ===== */
     .tab-nav { display: none !important; }
-    .tab-pill {
-      display: inline-block; font-size: 15px; padding: 8px 22px; border-radius: 20px;
-      color: #94a3b8; background: #1e293b; border: 1px solid #334155;
-      text-decoration: none; font-weight: 600; transition: all .15s; cursor: pointer;
+    .tab-pill { display: none !important; }
+    .compact-header-pills { display: none !important; }
+
+    /* ===== Side Nav Module List ===== */
+    .sn-module-list {
+      padding: 8px 8px 8px; border-bottom: 1px solid #1e293b;
     }
-    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #ec4899; color: #fff; border-color: #ec4899; }
+    .sn-module {
+      display: block; padding: 5px 12px; font-size: 14px;
+      color: #94a3b8; text-decoration: none; border-radius: 4px;
+      transition: all .1s;
+    }
+    .sn-module:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-module.active { color: #ec4899; font-weight: 600; }
+
+    /* ===== Side Nav Tab List ===== */
+    .sn-tab-list {
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 6px 8px 8px; border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .sn-tab {
+      display: block; padding: 8px 12px; font-size: 15px; font-weight: 600;
+      color: #94a3b8; text-decoration: none; border-radius: 6px;
+      transition: all .12s; cursor: pointer;
+    }
+    .sn-tab:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-tab.active { color: #fff; background: #ec4899; }
+
+    /* Tab content panels */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+
+    /* Full-width layout (no sidebar) */
     .v2-main { margin-left: 0; }
     .mermaid-card {
       background: #1e293b; border: 1px solid #334155; border-radius: 12px;
@@ -172,24 +197,44 @@
     /* Accent color overrides */
     .num { background: #ec4899 !important; }
     .flow-step.highlight { background: #ec4899 !important; border-color: #ec4899 !important; }
+    .sn-tab.active { background: #ec4899 !important; }
+    .sn-module.active { color: #ec4899 !important; }
   </style>
 </head>
 <body>
-<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });</script>
 
 <div class="layout">
-  <nav class="side-nav" id="sideNav"><div class="side-nav-inner" id="sideNavInner"></div></nav>
+  <!-- ============ Side Nav — 所有導航集中在這裡 ============ -->
+  <aside class="side-nav" id="sideNav">
+    <!-- 1. 模組切換 -->
+    <div class="sn-module-list">
+      <a class="sn-module" href="sports.html">⚽ 體育賽事</a>
+      <a class="sn-module" href="system.html">🔐 系統</a>
+      <a class="sn-module active" href="entertainment.html">🎰 娛樂城</a>
+      <a class="sn-module" href="activities.html">🎁 活動中心</a>
+      <a class="sn-module" href="live.html">📺 直播</a>
+      <a class="sn-module" href="mine.html">👤 我的</a>
+      <a class="sn-module" href="others.html">💬 其他</a>
+      <a class="sn-module" href="deposit.html">💰 金流</a>
+    </div>
+    <!-- 2. Tab 切換 -->
+    <div class="sn-tab-list" id="sideNavTabs">
+      <div class="sn-group">分類</div>
+      <a class="sn-tab active" data-tab="overview" href="#overview">📋 功能總覽</a>
+      <a class="sn-tab" data-tab="userflow" href="#userflow">🔀 User Flow</a>
+      <a class="sn-tab" data-tab="swimlane" href="#swimlane">🏊 泳道圖</a>
+      <a class="sn-tab" data-tab="constraints" href="#constraints">🚧 跨服務限制</a>
+    </div>
+    <!-- 3. 當前 tab 的內容導航 -->
+    <div class="side-nav-inner" id="sideNavInner"></div>
+  </aside>
 
   <div class="main-content v2-main">
-    <header class="compact-header">
+
+    <!-- ============ Compact Header — 只留標題 ============ -->
+    <nav class="compact-header" id="tabnav">
         <span class="module-title-text">🎰 娛樂城</span>
-        <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html" selected>🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html">📺 廣場/直播間</option><option value="mine.html">👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
-        <span class="tab-pill active" data-tab="overview">功能總覽</span>
-        <span class="tab-pill" data-tab="userflow">User Flow</span>
-        <span class="tab-pill" data-tab="swimlane">泳道圖</span>
-        <span class="tab-pill" data-tab="constraints">跨服務限制</span>
-      </div>
-    </header>
+    </nav>
 
     <!-- TAB 1: 功能總覽 -->
     <!-- TAB 1: 功能總覽 -->
@@ -337,6 +382,60 @@
             <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/vendors/index/yxrg/home/index/casino/</div></details>
           </div>
         </details>
+
+        <details class="page-logic-card" id="sec-home-badge">
+          <summary>角標類型（GameBadge）<span class="rule-count">4 種類型</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>cornerIconId</th><th>類型</th><th>文字</th><th>樣式</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>NONE</td><td>不顯示</td><td>--</td><td></td></tr>
+                <tr><td>1</td><td>OFFICIAL</td><td>官方认证</td><td><span class="cost-tag cost-code">bg-primaryS</span></td><td></td></tr>
+                <tr><td>2</td><td>NEW</td><td>新上线</td><td><span class="cost-tag cost-config" style="background:#22c55e;">綠底</span></td><td></td></tr>
+                <tr><td>3</td><td>RECOMMENDED</td><td>推荐</td><td><span class="cost-tag cost-config" style="background:#eab308;">黃底</span></td><td></td></tr>
+                <tr><td>4</td><td>CUSTOM</td><td>自訂圖片</td><td>遠端圖片載入</td><td>max-width 128px</td></tr>
+              </tbody>
+            </table>
+            <div class="pm-notice"><ul>
+              <li>角標位於卡片底部左對齊，高度 0.9375rem</li>
+              <li>更多遊戲頁（game-more-list）強制不顯示角標</li>
+            </ul></div>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/index/casino/components/GameBadge.vue</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-home-more">
+          <summary>更多遊戲頁 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>分類場館 &gt; 3 個</td><td>顯示「更多」按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td>&le; 3 個不顯示</td></tr>
+                <tr><td>2</td><td>點擊更多</td><td>navigateTo('/home/game-more-list/{classify}')</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>更多頁排版</td><td>3 欄 grid、slim 模式、不顯示角標</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>AI 推薦（999）</td><td>從 aiRecommend 陣列映射 GameItem</td><td><span class="cost-tag cost-code">程式層</span></td><td>特殊處理</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/game-more-list/[classify].vue<br>validate-game-classify middleware</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-home-getter">
+          <summary>Store Getter 輔助判斷 <span class="rule-count">5 個 Getter</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>Getter</th><th>用途</th><th>邏輯</th></tr></thead>
+              <tbody>
+                <tr><td><code>hasCasino</code></td><td>娛樂城是否有場館</td><td>過濾 No_Lobby 和非 TB/YXRG 大廳體育後 &gt; 0</td></tr>
+                <tr><td><code>hasSport</code></td><td>是否有體育場館</td><td>classify=SPORT &amp;&amp; lobbyType=Sport 的場館 &gt; 0</td></tr>
+                <tr><td><code>hasTopic</code></td><td>是否有杯賽主題</td><td>gameCupList 中有 short 的項目 &gt; 0</td></tr>
+                <tr><td><code>getGameListByGameId</code></td><td>gameId 快查</td><td>reduce 成 { [gameId]: GameItem }</td></tr>
+                <tr><td><code>getGameListByClassify</code></td><td>按分類分組</td><td>按 classifySort 分組</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">stores/game.ts</div></details>
+          </div>
+        </details>
       </div>
 
       <!-- === 3. 遊戲進入 === -->
@@ -416,6 +515,45 @@
               </tbody>
             </table>
             <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">stores/wallet.ts<br>GOR-4837（暫停）、GOR-1911</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-sub-game-entry">
+          <summary>子遊戲進入流程 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>點擊子遊戲</td><td>checkGameMaintenance(parentId) 檢查母場館</td><td><span class="cost-tag cost-code">程式層</span></td><td>母場館維護 = 子遊戲全停</td></tr>
+                <tr><td>2</td><td>POST /user/enterGame</td><td>傳 parentId + gameCode + walletType</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>MG 電子 (8816/8929/8936)</td><td>setEnterGameData → 外開 WebView</td><td><span class="cost-tag cost-code">程式層</span></td><td>GOR-2870 特殊處理</td></tr>
+                <tr><td>4</td><td>其他子遊戲</td><td>sessionStorage 存資料 → 內嵌 iframe</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>5</td><td>lockedGameId &gt; 0</td><td>toast「场馆钱包被锁定」</td><td><span class="cost-tag cost-venue">場館限制</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useGameEntryFlow.ts<br>pages/home/sub-game-list/index/gameIframe.vue</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-error-codes">
+          <summary>遊戲進入錯誤碼 <span class="rule-count">10 種錯誤</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>errCode</th><th>說明</th><th>Toast 訊息</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>UGS 失敗</td><td>进入场馆失败</td><td></td></tr>
+                <tr><td>1 + code=5</td><td>三方連線失敗</td><td>三方场馆连线失败</td><td></td></tr>
+                <tr><td>1 + code=6</td><td>三方未知錯誤</td><td>三方场馆发生未知错误</td><td></td></tr>
+                <tr><td>1 + code=21</td><td>三方 token 失效</td><td>三方场馆连线异常</td><td></td></tr>
+                <tr><td>1 + code=22</td><td>遊戲 token 失效</td><td>三方游戏连线异常</td><td></td></tr>
+                <tr><td>3</td><td>API 參數錯誤</td><td>API参数错误</td><td></td></tr>
+                <tr><td>4</td><td>渠道不支持</td><td>您当前的渠道不支持此操作</td><td></td></tr>
+                <tr><td>108</td><td>維護中</td><td>场馆正在维护中</td><td></td></tr>
+                <tr><td>145</td><td>未開放</td><td>场馆尚未开放</td><td></td></tr>
+                <tr><td>--</td><td>URL 為空</td><td>顯示 data.msg</td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useGameEntryFlow.ts:getGameErrorMessage()</div></details>
           </div>
         </details>
       </div>
@@ -500,8 +638,53 @@
             <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">stores/game.ts:sportVendorList/externalSportVendorList</div></details>
           </div>
         </details>
-      </div>
 
+        <details class="page-logic-card" id="sec-sub-search">
+          <summary>子遊戲搜尋 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>搜尋輸入</td><td>maxlength=20，僅中英文和數字（正則過濾空白和標點）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>searchQuery 為空</td><td>不顯示任何結果（filteredGames=[]）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>搜尋比對</td><td>game.name.toLowerCase().includes(query) 前端本地篩選</td><td><span class="cost-tag cost-code">程式層</span></td><td>不呼叫 API</td></tr>
+                <tr><td>4</td><td>清除按鈕</td><td>searchQuery 有值時顯示 IconClose → 點擊清空</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/sub-game-list/index/searchSubGame.vue</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-sub-iframe">
+          <summary>子遊戲 iframe 嵌入 <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>進入 iframe 頁</td><td>從 sessionStorage 讀取 { titleName, url, parentId }</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>Header</td><td>顯示遊戲名稱 + 全螢幕切換按鈕</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>全螢幕切換</td><td>requestFullscreen() / exitFullscreen()</td><td><span class="cost-tag cost-code">程式層</span></td><td>切換失敗僅 console.error</td></tr>
+                <tr><td>4</td><td>離開清理</td><td>onUnmounted → sessionStorage.removeItem(key)</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/sub-game-list/index/gameIframe.vue</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-provide-inject">
+          <summary>Provide/Inject 架構 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>外層 provide</td><td>sub-game-list/index.vue 提供 processedSubGameList、handleFavorite、handleSubGameEntry</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>子頁面 inject</td><td>[gameId].vue / searchSubGame.vue / gameIframe.vue 透過 inject 取得共用狀態</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>守衛邏輯</td><td>gameId 或 currentGame 不存在 → 自動跳回 /home/casino</td><td><span class="cost-tag cost-code">程式層</span></td><td>防止直接訪問</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/sub-game-list/index.vue<br>pages/home/sub-game-list/constants.ts:SUB_GAME_INJECTION_KEY</div></details>
+          </div>
+        </details>
       </div>
 
       <!-- === 5. 收藏與試玩 === -->
@@ -525,13 +708,51 @@
         </details>
       </div>
 
+      <!-- === 6. WebSocket 與圖片 === -->
+      <div class="section" id="sec-ws">
+        <div class="section-title"><span class="num">6</span> WebSocket 即時更新 / 圖片 Fallback</div>
+        <div class="section-desc">場館即時狀態推送與圖片載入降級鏈</div>
+
+        <details class="page-logic-card" id="sec-ws-update" open>
+          <summary>WebSocket 即時更新 <span class="rule-count">2 種推送</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>type</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>gameList</td><td>即時更新場館清單（新場館上線/下線/維護狀態變更）</td><td><span class="cost-tag cost-code">程式層</span></td><td>場館維護即時反映</td></tr>
+                <tr><td>2</td><td>classifySort</td><td>即時更新分類排序（後台調整順序）</td><td><span class="cost-tag cost-config">設定層</span></td><td>不需重新整理</td></tr>
+              </tbody>
+            </table>
+            <div class="pm-notice"><ul>
+              <li>updateGameList 會檢查 type 是否在 $state 中存在，不存在則 return（安全機制）</li>
+            </ul></div>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">stores/game.ts:updateGameList()</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-img-fallback">
+          <summary>GameCard 圖片 Fallback 鏈 <span class="rule-count">3 種圖片</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>圖片</th><th>優先路徑</th><th>Fallback 路徑</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>場館主圖</td><td>{remoteStaticPath}{game.appThumbnail}</td><td>casinoMainImg/{gameId}.png</td><td></td></tr>
+                <tr><td>場館 Logo</td><td>{remoteStaticPath}{nightLogo / dayLogo}</td><td>casinoLogo/{gameId}.png</td><td>依深色/淺色主題切換</td></tr>
+                <tr><td>子遊戲圖片</td><td>apiSubGameIcon/{parentId}/games_{pic}.png</td><td>無 fallback</td><td>固定路徑</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/home/index/casino/components/GameCard.vue<br>pages/home/sub-game-list/index/components/SubGameCard.vue</div></details>
+          </div>
+        </details>
+      </div>
+
       </div>
     </div>
 
     <!-- TAB 2: User Flow -->
     <div class="tab-panel" id="userflow">
       <div class="tool-section">
-        <div class="stats-pill"><span>3 User Flow</span></div>
+        <div class="stats-pill"><span>5 User Flow</span></div>
 
         <div class="mermaid-card" id="uf-main">
           <div class="mermaid-card-title">娛樂城首頁進入流程</div>
@@ -616,13 +837,57 @@ flowchart TD
     K --> O[進入遊戲]
           </div></div>
         </div>
+
+        <div class="mermaid-card" id="uf-sub-entry">
+          <div class="mermaid-card-title">子遊戲進入分流</div>
+          <div class="pm-notice"><ul>
+            <li>MG 電子（8816/8929/8936）走外開 WebView，其他走 iframe 內嵌</li>
+            <li>母場館維護中 = 所有子遊戲都無法進入</li>
+          </ul></div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[點擊子遊戲] --> B{母場館維護?}
+    B -->|是| C["toast 游戏维护中"]
+    B -->|否| D["POST /user/enterGame"]
+    D --> E{validateGameResponse}
+    E -->|失敗| F["toast 錯誤訊息"]
+    E -->|成功| G{回傳 gameId?}
+    G -->|"8816/8929/8936"| H["外開 WebView"]
+    G -->|其他| I["sessionStorage 存資料"]
+    I --> J["iframe 內嵌顯示"]
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="uf-wallet">
+          <div class="mermaid-card-title">錢包轉帳判斷流程</div>
+          <div class="pm-notice"><ul>
+            <li>自動轉帳只在有活動提示（showTips）時彈窗</li>
+            <li>手動轉帳在場館有餘額且無活動提示時直接進入</li>
+          </ul></div>
+          <div class="mermaid-card-body"><div class="mermaid">
+flowchart TD
+    A[進入遊戲前] --> B{錢包模式?}
+    B -->|"walletType=0 自動轉帳"| C["refreshBalance"]
+    B -->|"walletType=1 手動轉帳"| D["refreshBalance"]
+    C --> E["getVenueSetting"]
+    D --> E
+    E --> F{showTips?}
+    F -->|"自動+showTips=true"| G["顯示轉帳提示彈窗"]
+    F -->|"自動+showTips=false"| H["直接進入遊戲"]
+    F -->|"手動+venueBalance>0+showTips=false"| H
+    F -->|"手動+其他"| I["顯示轉帳彈窗"]
+    G --> J{確認}
+    I --> J
+    J --> H
+          </div></div>
+        </div>
       </div>
     </div>
 
     <!-- TAB 3: 泳道圖 -->
     <div class="tab-panel" id="swimlane">
       <div class="tool-section">
-        <div class="stats-pill"><span>3 泳道圖</span></div>
+        <div class="stats-pill"><span>5 泳道圖</span></div>
 
         <div class="mermaid-card" id="sw-game-launch">
           <div class="mermaid-card-title">遊戲啟動前後端互動</div>
@@ -726,6 +991,65 @@ sequenceDiagram
 
     U->>App: 點擊分類 Tab
     App->>App: 錨點滾動到對應分區
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-sub-game">
+          <div class="mermaid-card-title">子遊戲進入序列</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant App as 子遊戲列表
+    participant Flow as useGameEntryFlow
+    participant API as 後端 API
+    participant Game as 遊戲
+
+    U->>App: 點擊子遊戲卡片
+    App->>Flow: handleSubGameEntry(game)
+    Flow->>Flow: checkGameMaintenance(parentId)
+
+    alt 母場館維護中
+        Flow-->>U: toast 游戏维护中
+    else 正常
+        Flow->>API: POST /user/enterGame
+        API-->>Flow: { url, gameId, errCode }
+        Flow->>Flow: validateGameResponse()
+
+        alt MG 電子 (8816/8929/8936)
+            Flow->>Game: setEnterGameData → 外開 WebView
+        else 其他子遊戲
+            Flow->>Flow: sessionStorage 存遊戲資料
+            Flow->>Game: iframe 內嵌顯示
+        end
+    end
+          </div></div>
+        </div>
+
+        <div class="mermaid-card" id="sw-favorite">
+          <div class="mermaid-card-title">子遊戲收藏序列</div>
+          <div class="mermaid-card-body"><div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant Card as SubGameCard
+    participant List as useSubGameList
+    participant API as 後端 API
+
+    U->>Card: 點擊收藏 icon（@click.stop）
+    Card->>List: handleFavorite(game)
+    List->>List: setSettingConfig('loading', true)
+    List->>API: POST /user/storeSubGame
+    API-->>List: { errCode }
+
+    alt errCode = 1
+        List->>API: fetchSubGameList(parentId)
+        API-->>List: 更新子遊戲列表
+        List->>List: 已收藏排前面排序
+    else errCode != 1
+        List->>List: 靜默失敗
+    end
+
+    List->>List: setSettingConfig('loading', false)
+    List-->>U: UI 更新收藏狀態
           </div></div>
         </div>
       </div>
@@ -863,79 +1187,96 @@ sequenceDiagram
       </div>
     </div>
 
-  </div>
-</div>
+    <!-- ============ Footer ============ -->
+    <div class="footer">
+      <p>娛樂城 &middot; 功能知識庫</p>
+      <div class="footer-links">
+        <a href="features.html">回模組總覽 &rarr;</a>
+        <a href="index.html">回首頁 &rarr;</a>
+      </div>
+      <p style="margin-top:12px;">最後更新：2026-04-14</p>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
 
 <script>
-  const sideNavData = {
-    overview: {
-      title: '功能總覽',
-      items: [
-        { id: 'sec-overview', label: '0 模組概覽' },
-        { id: 'sec-flow', label: '1 主要動線' },
-        { type: 'group', label: '首頁' },
-        { id: 'sec-home', label: '2 娛樂城首頁' },
-        { id: 'sec-home-main', label: '├ 首頁（主力/YXB）' },
-        { id: 'sec-home-yxr', label: '└ 首頁（YXR）' },
-        { type: 'group', label: '遊戲進入' },
-        { id: 'sec-enter', label: '3 遊戲進入' },
-        { id: 'sec-lobby-type', label: '├ LobbyType 分流' },
-        { id: 'sec-maintain', label: '├ 場館維護狀態' },
-        { id: 'sec-wallet', label: '└ 錢包轉帳' },
-        { type: 'group', label: '大廳/推薦' },
-        { id: 'sec-self', label: '4 自研/AI/體育' },
-        { id: 'sec-self-hall', label: '├ 自研大廳' },
-        { id: 'sec-ai', label: '├ AI 精選推薦' },
-        { id: 'sec-sport-vendor', label: '└ 體育場館選擇' },
-      ]
-    },
-    userflow: {
-      title: 'User Flow',
-      items: [
-        { id: 'uf-main', label: '娛樂城首頁流程' },
-        { id: 'uf-game-enter', label: '遊戲進入流程' },
-        { id: 'uf-search', label: '搜尋/收藏' },
-      ]
-    },
-    swimlane: {
-      title: '泳道圖',
-      items: [
-        { type: 'group', label: '使用者動作' },
-        { id: 'sw-game-launch', label: '遊戲啟動' },
-        { id: 'sw-wallet', label: '錢包轉帳' },
-        { type: 'group', label: '系統自動' },
-        { id: 'sw-venue-list', label: '場館列表載入' },
-      ]
-    },
-    constraints: {
-      title: '跨服務限制',
-      items: [
-        { id: 'cst-venue', label: '場館限制 (3)' },
-        { id: 'cst-coupling', label: '模組耦合 (3)' },
-        { id: 'cst-tech', label: '技術限制 (3)' },
-        { id: 'cst-biz', label: '業務限制 (3)' },
-      ]
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    flowchart: { useMaxWidth: false, htmlLabels: true },
+    sequence: { useMaxWidth: false },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      lineColor: '#475569',
+      secondaryColor: '#334155',
+      fontSize: '16px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }
-  };
+  });
 
+  const tabTitles = { overview: '功能總覽', userflow: 'User Flow', swimlane: '泳道圖', constraints: '跨服務限制' };
+
+  function buildSideNavData(tabId) {
+    const panel = document.getElementById(tabId);
+    if (!panel) return null;
+    const items = [];
+    if (tabId === 'overview') {
+      const sections = panel.querySelectorAll('.section[id]');
+      if (sections.length > 0) {
+        sections.forEach(sec => {
+          const titleEl = sec.querySelector('.section-title');
+          const label = titleEl ? titleEl.textContent.trim() : sec.id;
+          items.push({ id: sec.id, label });
+        });
+      } else {
+        panel.querySelectorAll('.page-logic-card').forEach((card, i) => { if (!card.id) card.id = 'plc-' + i; });
+        panel.querySelectorAll('.page-logic-card').forEach(card => {
+          const summary = card.querySelector('summary');
+          if (summary) { items.push({ id: card.id, label: summary.textContent.replace(/\d+ 條規則/g, '').trim() }); }
+        });
+      }
+    } else if (tabId === 'userflow' || tabId === 'swimlane') {
+      panel.querySelectorAll('.mermaid-card').forEach(card => {
+        const id = card.id;
+        const title = card.querySelector('.mermaid-card-title')?.textContent?.trim() || id;
+        if (id) items.push({ id, label: title });
+      });
+    } else if (tabId === 'constraints') {
+      panel.querySelectorAll('.constraint-category, [id^="cst-"]').forEach(cat => {
+        const id = cat.id;
+        const h3 = cat.querySelector('h3, .constraint-header h3');
+        const label = h3?.textContent?.trim() || id;
+        if (id) items.push({ id, label });
+      });
+    }
+    return { title: tabTitles[tabId] || tabId, items };
+  }
+
+  const sideNavInner = document.getElementById('sideNavInner');
   let currentTabId = 'overview';
   let scrollSpyObserver = null;
-  const sideNavInner = document.getElementById('sideNavInner');
 
   function renderSideNav(tabId) {
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) { sideNavInner.innerHTML = ''; return; }
-    let html = `<div class="sn-title">${data.title}</div>`;
+    let html = '<div class="sn-title">' + data.title + '</div>';
     data.items.forEach(item => {
-      if (item.type === 'group') html += `<div class="sn-group">${item.label}</div>`;
-      else html += `<a class="sn-item" data-target="${item.id}" href="#${item.id}">${item.label}</a>`;
+      if (item.group) { html += '<div class="sn-group">' + item.group + '</div>'; }
+      else { html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>'; }
     });
     sideNavInner.innerHTML = html;
     sideNavInner.querySelectorAll('.sn-item').forEach(el => {
-      el.addEventListener('click', e => {
+      el.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.getElementById(el.getAttribute('data-target'));
-        if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(() => highlightNavItem(el.getAttribute('data-target')), 300); }
+        if (target) {
+          if (target.tagName === 'DETAILS' && !target.open) target.open = true;
+          const y = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          highlightNavItem(el.getAttribute('data-target'));
+        }
       });
     });
     setupScrollSpy(tabId);
@@ -943,46 +1284,66 @@ sequenceDiagram
 
   function setupScrollSpy(tabId) {
     if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
-    const data = sideNavData[tabId]; if (!data) return;
+    const data = buildSideNavData(tabId);
+    if (!data) return;
     const targetIds = data.items.filter(i => i.id).map(i => i.id);
     const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
     if (targets.length === 0) return;
     const visibleSections = new Map();
     scrollSpyObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => { if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top); else visibleSections.delete(entry.target.id); });
+      entries.forEach(entry => {
+        if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top);
+        else visibleSections.delete(entry.target.id);
+      });
       let topId = null, topY = Infinity;
-      visibleSections.forEach((y, id) => { const el = document.getElementById(id); if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } } });
-      if (!topId && targets.length > 0) { let d = -Infinity; targets.forEach(t => { const r = t.getBoundingClientRect(); if (r.top < 0 && r.top > d) { d = r.top; topId = t.id; } }); }
+      visibleSections.forEach((y, id) => {
+        const el = document.getElementById(id);
+        if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } }
+      });
+      if (!topId && targets.length > 0) {
+        let closestDist = -Infinity;
+        targets.forEach(t => { const rect = t.getBoundingClientRect(); if (rect.top < 0 && rect.top > closestDist) { closestDist = rect.top; topId = t.id; } });
+      }
       if (topId) highlightNavItem(topId);
     }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
     targets.forEach(t => scrollSpyObserver.observe(t));
   }
 
   function highlightNavItem(id) {
-    sideNavInner.querySelectorAll('.sn-item').forEach(el => el.classList.toggle('active', el.getAttribute('data-target') === id));
-    const a = sideNavInner.querySelector('.sn-item.active'); if (a) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-target') === id);
+    });
+    const activeEl = sideNavInner.querySelector('.sn-item.active');
+    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  const tabPills = document.querySelectorAll('.tab-pill');
+  const snTabs = document.querySelectorAll('.sn-tab');
   const tabPanels = document.querySelectorAll('.tab-panel');
   let mermaidRendered = {};
 
   function switchTab(tabId) {
     currentTabId = tabId;
-    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    snTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabId));
     tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
-    if (!mermaidRendered[tabId]) { const panel = document.getElementById(tabId); const d = panel.querySelectorAll('.mermaid'); if (d.length > 0) { mermaid.run({ nodes: d }); mermaidRendered[tabId] = true; } }
+    if (!mermaidRendered[tabId]) {
+      const panel = document.getElementById(tabId);
+      const diagrams = panel.querySelectorAll('.mermaid');
+      if (diagrams.length > 0) { mermaid.run({ nodes: diagrams }); mermaidRendered[tabId] = true; }
+    }
     renderSideNav(tabId);
     history.replaceState(null, '', '#' + tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  tabPills.forEach(pill => pill.addEventListener('click', e => { e.preventDefault(); switchTab(pill.getAttribute('data-tab')); }));
+  snTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => { e.preventDefault(); switchTab(tab.getAttribute('data-tab')); });
+  });
 
   document.querySelector('.layout').classList.add('has-side-nav');
   const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
   const hash = location.hash.slice(1);
-  if (validTabs.includes(hash)) switchTab(hash); else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
+  if (validTabs.includes(hash)) { switchTab(hash); }
+  else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
 </script>
 </body>
 </html>

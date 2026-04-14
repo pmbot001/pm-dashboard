@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>系��/登入/註冊 — 功能知識庫</title>
+  <title>系統/登入/註冊 — 功能知識庫</title>
   <link rel="stylesheet" href="css/kb-shared.css">
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
@@ -20,17 +20,41 @@
     .compact-header-breadcrumb a:hover { color: #94a3b8; }
     .compact-header-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
 
+    /* ===== Old tab pills — hidden ===== */
     .tab-nav { display: none !important; }
-    .tab-pill {
-      display: inline-block; font-size: 15px; padding: 8px 22px; border-radius: 20px;
-      color: #94a3b8; background: #1e293b; border: 1px solid #334155;
-      text-decoration: none; font-weight: 600; transition: all .15s; cursor: pointer;
-    }
-    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #10b981; color: #fff; border-color: #10b981; }
+    .tab-pill { display: none !important; }
+    .compact-header-pills { display: none !important; }
 
+    /* ===== Side Nav Module List ===== */
+    .sn-module-list {
+      padding: 8px 8px 8px; border-bottom: 1px solid #1e293b;
+    }
+    .sn-module {
+      display: block; padding: 5px 12px; font-size: 14px;
+      color: #94a3b8; text-decoration: none; border-radius: 4px;
+      transition: all .1s;
+    }
+    .sn-module:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-module.active { color: #10b981; font-weight: 600; }
+
+    /* ===== Side Nav Tab List ===== */
+    .sn-tab-list {
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 6px 8px 8px; border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .sn-tab {
+      display: block; padding: 8px 12px; font-size: 15px; font-weight: 600;
+      color: #94a3b8; text-decoration: none; border-radius: 6px;
+      transition: all .12s; cursor: pointer;
+    }
+    .sn-tab:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-tab.active { color: #fff; background: #10b981; }
+
+    /* Tab content panels */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+
+    /* Full-width layout (no sidebar) */
     .v2-main { margin-left: 0; }
 
     /* ===== Mermaid card ===== */
@@ -165,6 +189,8 @@
     /* ===== System accent color overrides (green #10b981) ===== */
     .num { background: #10b981 !important; }
     .flow-step.highlight { background: #10b981 !important; border-color: #10b981 !important; }
+    .sn-tab.active { background: #10b981 !important; }
+    .sn-module.active { color: #10b981 !important; }
 
     @media(max-width: 900px) {
       .side-nav { display: none; }
@@ -195,23 +221,39 @@
   </style>
 </head>
 <body>
-<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });</script>
 
 <div class="layout">
-  <nav class="side-nav" id="sideNav">
+  <!-- ============ Side Nav — 所有導航集中在這裡 ============ -->
+  <aside class="side-nav" id="sideNav">
+    <!-- 1. 模組切換 -->
+    <div class="sn-module-list">
+      <a class="sn-module" href="sports.html">⚽ 體育賽事</a>
+      <a class="sn-module active" href="system.html">🔐 系統</a>
+      <a class="sn-module" href="entertainment.html">🎰 娛樂城</a>
+      <a class="sn-module" href="activities.html">🎁 活動中心</a>
+      <a class="sn-module" href="live.html">📺 直播</a>
+      <a class="sn-module" href="mine.html">👤 我的</a>
+      <a class="sn-module" href="others.html">💬 其他</a>
+      <a class="sn-module" href="deposit.html">💰 金流</a>
+    </div>
+    <!-- 2. Tab 切換 -->
+    <div class="sn-tab-list" id="sideNavTabs">
+      <div class="sn-group">分類</div>
+      <a class="sn-tab active" data-tab="overview" href="#overview">📋 功能總覽</a>
+      <a class="sn-tab" data-tab="userflow" href="#userflow">🔀 User Flow</a>
+      <a class="sn-tab" data-tab="swimlane" href="#swimlane">🏊 泳道圖</a>
+      <a class="sn-tab" data-tab="constraints" href="#constraints">🚧 跨服務限制</a>
+    </div>
+    <!-- 3. 當前 tab 的內容導航 -->
     <div class="side-nav-inner" id="sideNavInner"></div>
-  </nav>
+  </aside>
 
   <div class="main-content v2-main">
-    <header class="compact-header">
+
+    <!-- ============ Compact Header — 只留標題 ============ -->
+    <nav class="compact-header" id="tabnav">
         <span class="module-title-text">🔐 系統/登入/註冊</span>
-        <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html" selected>🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html">📺 廣場/直播間</option><option value="mine.html">👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
-        <span class="tab-pill active" data-tab="overview">功能總覽</span>
-        <span class="tab-pill" data-tab="userflow">User Flow</span>
-        <span class="tab-pill" data-tab="swimlane">泳道圖</span>
-        <span class="tab-pill" data-tab="constraints">跨服務限制</span>
-      </div>
-    </header>
+    </nav>
 
     <!-- ========================================== -->
     <!-- TAB 1: 功能總覽                            -->
@@ -234,7 +276,7 @@
         </div>
 
         <details class="page-logic-card" id="sec-init-flow" open>
-          <summary>初始化流程 <span class="rule-count">9 步驟</span></summary>
+          <summary>初始化流程 <span class="rule-count">14 步驟</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>步驟</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
@@ -248,6 +290,11 @@
                 <tr><td>7</td><td>fetchIngService()</td><td>取得進行中客服連線</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>8</td><td>setIsInitSuccess(true)</td><td>觸發 25+ 模組 watch 聯動</td><td><span class="cost-tag cost-code">程式層</span></td><td>首屏效能瓶頸</td></tr>
                 <tr><td>9</td><td>啟動 WebSocket</td><td>平台 WS + 用戶 WS</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>10</td><td>DeBox 偵測</td><td>navigator.userAgent 含 'DeBox' → 走自動登入分支</td><td><span class="cost-tag cost-code">程式層</span></td><td>DeBox 內嵌時自動登入，不經登入頁</td></tr>
+                <tr><td>11</td><td>initCnnzCode()</td><td>統計碼初始化（第三方追蹤埋點）</td><td><span class="cost-tag cost-code">程式層</span></td><td>阻塞不影響主流程</td></tr>
+                <tr><td>12</td><td>fetchGameList</td><td>非維護中 → openAppHitPoint + fetchGameList</td><td><span class="cost-tag cost-code">程式層</span></td><td>維護中不拉遊戲列表</td></tr>
+                <tr><td>13</td><td>watch 聯動 25+ 模組</td><td>isInitSuccess 觸發活動/VIP/直播/任務/場館/錢包/紅包/體育/公告等模組初始化</td><td><span class="cost-tag cost-code">程式層</span></td><td>首屏效能瓶頸，新增模組需評估</td></tr>
+                <tr><td>14</td><td>初始化失敗 catch</td><td>toast 提示 + 300ms 後 localStorage.clear()</td><td><span class="cost-tag cost-code">程式層</span></td><td>清除本地快取後重載</td></tr>
               </tbody>
             </table>
             <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">composables/useInit.ts:initFlow()<br>composables/useSystemCheck.ts:checkSystemStatusAndRoute()</div></details>
@@ -324,6 +371,14 @@
             <img src="/images/system/screen-phone-login.png" alt="手機登入">
             <div class="screen-label">手機登入</div>
           </div>
+          <div class="screen-col">
+            <img src="/images/system/screen-forgot-password.png" alt="忘記密碼">
+            <div class="screen-label">忘記密碼</div>
+          </div>
+          <div class="screen-col">
+            <img src="/images/system/screen-phone-region-select.png" alt="區碼選擇">
+            <div class="screen-label">區碼選擇</div>
+          </div>
           <div class="rules-col">
             <div class="rule-card">
               <h4><span class="type-tag type-rule">規則</span>雙登入模式 <span class="cost-tag cost-config">設定層</span></h4>
@@ -343,7 +398,7 @@
         </div>
 
         <details class="page-logic-card" id="sec-login-page">
-          <summary>登入頁面 <span class="rule-count">8 條規則</span></summary>
+          <summary>登入頁面 <span class="rule-count">12 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
@@ -356,9 +411,40 @@
                 <tr><td>6</td><td>errCode=114 新 IP</td><td>彈出 NewDeviceAuth（異地登入）</td><td><span class="cost-tag cost-code">程式層</span></td><td>簡訊驗證</td></tr>
                 <tr><td>7</td><td>isKeyCodeOpen</td><td>部分業主有圖形驗證碼前置</td><td><span class="cost-tag cost-config">設定層</span></td><td></td></tr>
                 <tr><td>8</td><td>密碼儲存</td><td>AES 加密存 localStorage</td><td><span class="cost-tag cost-code">程式層</span></td><td>key 32 位固定</td></tr>
+                <tr><td>9</td><td>errCode=192</td><td>驗證碼刷新 → 重新取得圖形驗證碼</td><td><span class="cost-tag cost-code">程式層</span></td><td>驗證碼過期自動觸發</td></tr>
+                <tr><td>10</td><td>retryWithNumber 自動重送</td><td>圖形驗證碼完成後用 lastValues 自動重送登入請求</td><td><span class="cost-tag cost-code">程式層</span></td><td>玩家不需重新輸入帳密</td></tr>
+                <tr><td>11</td><td>已登入保護 onMounted</td><td>isLogin=true → toPushTypePage() 跳離登入頁</td><td><span class="cost-tag cost-code">程式層</span></td><td>onMounted 時即檢查，防重複登入</td></tr>
+                <tr><td>12</td><td>errCode 全域攔截</td><td>其他非預期 errCode → toast 錯誤訊息</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
               </tbody>
             </table>
             <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/login/index.vue<br>composables/useLogin/index.ts:loginByAccount()/loginByPhone()</div></details>
+          </div>
+        </details>
+
+        <!-- 遊戲內登入 -->
+        <details class="page-logic-card">
+          <summary>遊戲內登入（InGame） <span class="rule-count">4 條規則</span></summary>
+          <div class="card-body">
+            <div class="annotated-row" style="margin-bottom:12px;">
+              <div class="screen-col">
+                <img src="/images/system/screen-ingame-phone-login.png" alt="遊戲內手機登入">
+                <div class="screen-label">遊戲內手機登入</div>
+              </div>
+              <div class="screen-col">
+                <img src="/images/system/screen-ingame-account-login.png" alt="遊戲內帳號登入">
+                <div class="screen-label">遊戲內帳號登入</div>
+              </div>
+            </div>
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>InGamePhoneLogin 模式</td><td>遊戲內嵌 WebView 開啟手機登入表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>無頂部導航，簡化 UI</td></tr>
+                <tr><td>2</td><td>InGameAccountLogin 模式</td><td>遊戲內嵌 WebView 開啟帳號登入表單</td><td><span class="cost-tag cost-code">程式層</span></td><td>無頂部導航，簡化 UI</td></tr>
+                <tr><td>3</td><td>登入成功回調</td><td>postMessage 通知遊戲端 Token</td><td><span class="cost-tag cost-code">程式層</span></td><td>跨域通訊，需遊戲端配合</td></tr>
+                <tr><td>4</td><td>入口差異</td><td>遊戲端主動開啟，非玩家從 App 進入</td><td><span class="cost-tag cost-code">程式層</span></td><td>路由參數區分來源</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/login/InGamePhoneLogin.vue<br>pages/login/InGameAccountLogin.vue</div></details>
           </div>
         </details>
       </div>
@@ -396,7 +482,7 @@
         </div>
 
         <details class="page-logic-card" id="sec-register-page">
-          <summary>註冊頁面 <span class="rule-count">6 條規則</span></summary>
+          <summary>註冊頁面 <span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
             <table class="logic-table">
               <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
@@ -407,6 +493,8 @@
                 <tr><td>4</td><td>推薦人 ID</td><td>Base64 decode → 含 | 取後段</td><td><span class="cost-tag cost-code">程式層</span></td><td>外部帶入</td></tr>
                 <tr><td>5</td><td>測試渠道</td><td>自動清空邀請碼</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
                 <tr><td>6</td><td>註冊成功</td><td>自動登入（handleLoginSuccess）</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>7</td><td>accountRegisterBoundPhoneNumber 動態顯示</td><td>帳號註冊模式下，後台開啟時手機號欄位動態出現</td><td><span class="cost-tag cost-config">設定層</span></td><td>欄位依設定動態增減，QA 需測開/關兩種</td></tr>
+                <tr><td>8</td><td>註冊模式切換防呆</td><td>兩者皆開 → 雙 Tab；只開一種 → 直接顯示；都沒開 → 隱藏註冊入口</td><td><span class="cost-tag cost-config">設定層</span></td><td>都沒開時玩家無法註冊，上線前必查</td></tr>
               </tbody>
             </table>
             <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">pages/login/components/Register.vue<br>composables/useLogin/useRegister.ts</div></details>
@@ -664,6 +752,16 @@
         <details class="page-logic-card" open>
           <summary>彈窗通則 <span class="rule-count">8 條規則</span></summary>
           <div class="card-body">
+            <div class="annotated-row" style="margin-bottom:12px;">
+              <div class="screen-col">
+                <img src="/images/system/screen-popup-emergency.png" alt="緊急公告彈窗">
+                <div class="screen-label">緊急公告彈窗</div>
+              </div>
+              <div class="screen-col">
+                <img src="/images/system/screen-popup-version-update.png" alt="版本更新彈窗">
+                <div class="screen-label">版本更新彈窗</div>
+              </div>
+            </div>
             <table class="logic-table">
               <thead><tr><th>#</th><th>彈窗類型</th><th>規則</th><th>改動成本</th><th>PM 注意</th></tr></thead>
               <tbody>
@@ -727,6 +825,257 @@
       <!-- OMIT: 版本資訊（Version Plugin）— 純後台 console log，PM 不操作 -->
       <!-- OMIT: 字型大小自適應（Resize Fontsize Plugin）— 純程式碼實作細節 -->
 
+      <!-- === 12. API 規格總覽 === -->
+      <div class="section" id="sec-api-spec">
+        <div class="section-title"><span class="num">12</span> API 規格總覽</div>
+        <div class="section-desc">系統模組所有 API Endpoint、認證方式、用途一覽</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>系統模組共 18 支 API。登入/註冊相關 API 使用 withoutPublic prefix（不經 /public 路徑），Token 在 header 以 <code>Token: {token}</code> 格式傳遞（非 Bearer）。密碼傳輸一律 AES 加密。
+        </div>
+
+        <details class="page-logic-card" id="sec-api-endpoints" open>
+          <summary>Endpoint 總覽 <span class="rule-count">18 支 API</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>API</th><th>Method</th><th>Path</th><th>apiType</th><th>認證</th><th>用途</th></tr></thead>
+              <tbody>
+                <tr><td>帳號登入</td><td>POST</td><td>/login/login</td><td>withoutPublic</td><td>否</td><td>帳號+密碼登入</td></tr>
+                <tr><td>手機登入</td><td>POST</td><td>/login/phoneLoginV2</td><td>withoutPublic</td><td>否</td><td>手機號+驗證碼登入</td></tr>
+                <tr><td>帳號註冊</td><td>POST</td><td>/login/register</td><td>withoutPublic</td><td>否</td><td>帳號註冊（成功自動登入）</td></tr>
+                <tr><td>手機註冊</td><td>POST</td><td>/login/phoneRegisterV2</td><td>withoutPublic</td><td>否</td><td>手機號碼註冊</td></tr>
+                <tr><td>新設備綁定</td><td>POST</td><td>/login/newDevice</td><td>withoutPublic</td><td>否</td><td>新設備/新 IP 驗證</td></tr>
+                <tr><td>圖形驗證碼</td><td>GET</td><td>/login/imageValidCode</td><td>withoutPublic</td><td>否</td><td>取得圖形驗證碼圖片</td></tr>
+                <tr><td>發送手機驗證碼</td><td>POST</td><td>/login/phoneCode</td><td>platform</td><td>依 token</td><td>發送簡訊驗證碼</td></tr>
+                <tr><td>註冊選項</td><td>POST</td><td>/login/registerOption</td><td>withoutPublic</td><td>否</td><td>取得註冊設定（驗證規則等）</td></tr>
+                <tr><td>綁定手機</td><td>POST</td><td>/login/bindPhone</td><td>platform</td><td>是</td><td>綁定手機號碼</td></tr>
+                <tr><td>修改密碼</td><td>POST</td><td>/login/changePassword</td><td>platform</td><td>是</td><td>修改登入密碼</td></tr>
+                <tr><td>重置密碼</td><td>POST</td><td>/login/resetPwd</td><td>withoutPublic</td><td>否</td><td>忘記密碼重設</td></tr>
+                <tr><td>Token 刷新</td><td>POST</td><td>/login/refreshToken</td><td>public</td><td>否</td><td>靜默續期 Token</td></tr>
+                <tr><td>登出</td><td>POST</td><td>/login/logout</td><td>withoutPublic</td><td>否</td><td>登出</td></tr>
+                <tr><td>取得渠道 ID</td><td>POST</td><td>/config/getH5Domain</td><td>public</td><td>否</td><td>依 domain 取 channelId</td></tr>
+                <tr><td>基礎設定</td><td>GET</td><td>/config/baseConfig/v2</td><td>public</td><td>否</td><td>平台設定（agentId、開關等）</td></tr>
+                <tr><td>IP 黑名單</td><td>POST</td><td>/config/channelIpBlackList/v3</td><td>public</td><td>否</td><td>IP 封鎖判斷</td></tr>
+                <tr><td>國碼列表</td><td>POST</td><td>/config/countryCodeList</td><td>platform</td><td>依 token</td><td>取得可用國碼</td></tr>
+                <tr><td>使用者資訊</td><td>POST</td><td>/user/userData/v2</td><td>platform</td><td>是</td><td>取得 playerId 等使用者資料</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">apis/login/index.ts（13 個登入端點）<br>apis/config/index.ts（5 個設定端點）<br>apis/user/index.ts（使用者端點）</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-api-prefix">
+          <summary>API prefix 路由規則 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>apiType</th><th>有 Token</th><th>prefix</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>platform</td><td>是</td><td>/ajax-migration</td><td>一般已登入 API</td></tr>
+                <tr><td>2</td><td>platform</td><td>否</td><td>/ajax-migration/public</td><td>未登入的 platform API</td></tr>
+                <tr><td>3</td><td>public</td><td>不論</td><td>/ajax-migration/public</td><td>公開 API（baseConfig 等）</td></tr>
+                <tr><td>4</td><td>withoutPublic</td><td>不論</td><td>/ajax-migration</td><td>登入/註冊用，不加 /public</td></tr>
+                <tr><td>5</td><td>sport</td><td>不論</td><td>/sport</td><td>體育相關 API</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">plugins/fetch.ts:L169-L232</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-api-crypto">
+          <summary>API 加解密機制 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>POST 請求</td><td>body URLEncode → AES encrypt → encodeURIComponent</td><td><span class="cost-tag cost-code">程式層</span></td><td>全站統一加密</td></tr>
+                <tr><td>2</td><td>GET 請求（非 dev）</td><td>query params 也會 AES 加密</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>3</td><td>Response header crypto-response: true</td><td>AES decrypt → JSON.parse</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>4</td><td>dev 環境</td><td>X-Skip-Crypto: true header 可跳過加密</td><td><span class="cost-tag cost-code">程式層</span></td><td>僅開發環境可用</td></tr>
+                <tr><td>5</td><td>白名單 API</td><td>isIgnoreApiEncrypt() 判斷不加密</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">plugins/fetch.ts:L70-L93（加密）, L236-L267（解密）</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-api-retry">
+          <summary>API 錯誤重試機制 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>errCode !== 1（平台）或 code !== 0（體育）</td><td>handleApiError 判斷是否重試</td><td><span class="cost-tag cost-code">程式層</span></td><td></td></tr>
+                <tr><td>2</td><td>retry=true 且 retryCount &lt; 3</td><td>等待 3*(retryCount+1) 秒後重試（3s/6s/9s）</td><td><span class="cost-tag cost-code">程式層</span></td><td>最多 3 次重試</td></tr>
+                <tr><td>3</td><td>有 newToken 回傳</td><td>更新 body.t 後重新發送</td><td><span class="cost-tag cost-code">程式層</span></td><td>Token 自動更新</td></tr>
+              </tbody>
+            </table>
+            <details class="rd-ref"><summary>RD 參考（展開）</summary><div class="rd-content">plugins/fetch.ts:L153-L348</div></details>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-error-codes">
+          <summary>全域錯誤碼對照表 <span class="rule-count">11 個錯誤碼</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>errCode</th><th>說明</th><th>前端行為</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>成功</td><td>正常處理</td></tr>
+                <tr><td>2</td><td>無效帳號</td><td>toast 提示帳號未註冊</td></tr>
+                <tr><td>9</td><td>登入需圖形驗證碼</td><td>開啟 NumberCaptchPopup</td></tr>
+                <tr><td>13</td><td>IP 註冊上限</td><td>toast 顯示 IP + 地區 + 已達上限</td></tr>
+                <tr><td>14</td><td>註冊需圖形驗證碼</td><td>開啟 NumberCaptchPopup</td></tr>
+                <tr><td>51</td><td>驗證碼不匹配</td><td>toast 驗證碼不匹配</td></tr>
+                <tr><td>110</td><td>新設備驗證</td><td>開啟 NewDeviceAuth</td></tr>
+                <tr><td>114</td><td>新 IP 驗證</td><td>開啟 NewDeviceAuth</td></tr>
+                <tr><td>163</td><td>暫封/踢下線</td><td>logout + ExpiredPopup + 跳 /login</td></tr>
+                <tr><td>192</td><td>驗證碼需刷新</td><td>refreshTrigger++</td></tr>
+                <tr><td>HTTP 401</td><td>Token 過期</td><td>toast + logout + 跳首頁</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- === 13. 驗測矩陣 === -->
+      <div class="section" id="sec-test-matrix">
+        <div class="section-title"><span class="num">13</span> 驗測矩陣</div>
+        <div class="section-desc">系統模組完整測試場景 — 初始化、登入、註冊、Token、路由守衛</div>
+
+        <div class="pm-focus">
+          <b>PM 提醒：</b>共 58 個測試場景，P0 = 必測（25 個）、P1 = 重要（23 個）、P2 = 次要（10 個）。每次版本上線至少覆蓋所有 P0 場景。
+        </div>
+
+        <details class="page-logic-card" id="sec-test-init">
+          <summary>初始化場景 <span class="rule-count">14 個場景</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>預期結果</th><th>優先級</th></tr></thead>
+              <tbody>
+                <tr><td>I-01</td><td>channelId 取不到</td><td>URL 無 channelId、非 localhost</td><td>toast + 清 localStorage</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-02</td><td>baseConfig API 失敗</td><td>網路異常</td><td>toast + logger.trace</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-03</td><td>blackList API 失敗</td><td>API 錯誤</td><td>同 I-02</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-04</td><td>errCode !== 1</td><td>後台設定異常</td><td>跳轉 /maintain</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-05</td><td>isInMaintain=true</td><td>維護公告存在</td><td>跳轉 /maintain</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-06</td><td>isBlocked=true</td><td>IP 在黑名單</td><td>跳轉 /block</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-07</td><td>refreshToken 失敗</td><td>Token 已過期</td><td>不中斷，console.warn</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>I-08</td><td>DeBox 環境登入成功</td><td>UA 含 DeBox</td><td>自動 setToken + getUserInfo</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>I-09</td><td>DeBox 環境登入失敗</td><td>UA 含 DeBox</td><td>不阻斷初始化</td><td><span class="cost-tag cost-code">P2</span></td></tr>
+                <tr><td>I-10</td><td>維護結束自動重載</td><td>正在維護頁</td><td>logout + reload</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-11</td><td>IP 封鎖頁顯示</td><td>IP 在黑名單</td><td>顯示 IP + 地區 + 客服入口</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-12</td><td>channelId 變更重拉</td><td>初始化完成後</td><td>重拉 fetchConfig + getDomainData</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>I-13</td><td>Token 觸發 getUserInfo</td><td>登入成功</td><td>getUserInfo + fetchGameList</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>I-14</td><td>isLogin+isInitSuccess 觸發模組</td><td>兩者皆 true</td><td>觸發 23 個模組初始化</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-test-login">
+          <summary>登入場景 <span class="rule-count">22 個場景</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>預期結果</th><th>優先級</th></tr></thead>
+              <tbody>
+                <tr><td>L-01</td><td>帳號密碼正確登入</td><td>帳號存在</td><td>成功跳轉 + token 寫入</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-02</td><td>帳號不存在</td><td>--</td><td>toast 帳號未註冊</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-03</td><td>密碼錯誤</td><td>帳號正確</td><td>toast API 錯誤訊息</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-04</td><td>觸發圖形驗證碼</td><td>後台開啟</td><td>彈出 NumberCaptchPopup</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-05</td><td>驗證碼輸入錯誤</td><td>已觸發驗證碼</td><td>刷新驗證碼圖片</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-06</td><td>驗證碼完成後自動重試</td><td>已暫存 lastValues</td><td>retryWithNumber 自動重送</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-07</td><td>新設備觸發異地驗證</td><td>設備號變更</td><td>彈出 NewDeviceAuth</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-08</td><td>新 IP 觸發異地驗證</td><td>IP 變更</td><td>同 L-07</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-09</td><td>新設備驗證成功</td><td>NewDeviceAuth 彈窗中</td><td>bindNewDevice → 登入成功</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-10</td><td>手機號+驗證碼登入</td><td>手機號已綁定</td><td>成功登入</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-11</td><td>驗證碼 60 秒冷卻</td><td>已發送驗證碼</td><td>按鈕倒計時 disabled</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-12</td><td>驗證碼頻率過高</td><td>短時間多次發送</td><td>toast 太頻繁</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-13</td><td>記住密碼勾選</td><td>勾選記住密碼</td><td>localStorage 記住帳密</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-14</td><td>記住密碼取消</td><td>取消勾選</td><td>localStorage 清空</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-15</td><td>帳號下拉選單</td><td>有歷史帳號</td><td>顯示 accountStorageList</td><td><span class="cost-tag cost-code">P2</span></td></tr>
+                <tr><td>L-16</td><td>已登入進入 /login</td><td>isLogin=true</td><td>自動跳轉 pushTypePage</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-17</td><td>被踢下線</td><td>後台執行踢下線</td><td>logout + ExpiredPopup</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-18</td><td>Token 過期</td><td>Token 已失效</td><td>HTTP 401 → toast + logout</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>L-19</td><td>只開帳號登入</td><td>phoneLogin=false</td><td>隱藏 Tab，直接顯示帳號</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-20</td><td>只開手機登入</td><td>accountLogin=false</td><td>隱藏 Tab，直接顯示手機</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-21</td><td>忘記密碼</td><td>帳號已綁手機</td><td>開啟重設密碼流程</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>L-22</td><td>isLoading 防重複</td><td>正在登入中</td><td>直接 return，不重複發送</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-test-register">
+          <summary>註冊場景 <span class="rule-count">17 個場景</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>預期結果</th><th>優先級</th></tr></thead>
+              <tbody>
+                <tr><td>R-01</td><td>帳號註冊成功</td><td>--</td><td>自動登入 + 跳轉首頁</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>R-02</td><td>帳號格式錯誤（預設）</td><td>accountValidRole=預設</td><td>提示 6-13 位英數</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>R-03</td><td>帳號格式錯誤（role=2）</td><td>accountValidRole=2</td><td>提示首位須字母</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>R-04</td><td>密碼不符規則</td><td>--</td><td>提示 8-20 位英數</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>R-05</td><td>確認密碼不一致</td><td>--</td><td>提示密碼不一致</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>R-06</td><td>IP 註冊上限</td><td>IP 達上限</td><td>toast IP 已達上限</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>R-07</td><td>觸發註冊驗證碼</td><td>後台開啟</td><td>彈出 NumberCaptchPopup</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>R-08</td><td>手機號碼註冊成功</td><td>--</td><td>自動登入</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>R-09</td><td>需綁定手機號</td><td>boundPhoneNumber=true</td><td>多出手機號+驗證碼欄位</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>R-10</td><td>邀請碼欄位顯示</td><td>inviteCodeEnabled=true</td><td>顯示邀請碼欄位</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>R-11</td><td>測試渠道邀請碼清空</td><td>isTestChannel=true</td><td>inviteCode 自動傳空</td><td><span class="cost-tag cost-code">P2</span></td></tr>
+                <tr><td>R-12</td><td>推薦人 ID 解析</td><td>URL 帶 recommendId</td><td>Base64 decode + 分隔取後段</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>R-13</td><td>從直播間註冊</td><td>query 帶 RoomId</td><td>帶入 roomId 參數</td><td><span class="cost-tag cost-code">P2</span></td></tr>
+                <tr><td>R-14</td><td>只開帳號註冊</td><td>phoneRegister=false</td><td>隱藏 Tab，直接帳號</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>R-15</td><td>只開手機註冊</td><td>accountRegister=false</td><td>隱藏 Tab，直接手機</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>R-16</td><td>訪客模式</td><td>--</td><td>跳轉 pushTypePage</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>R-17</td><td>註冊打點（彈窗觸發）</td><td>自動彈窗觸發</td><td>logData dialogTriggerMode=1</td><td><span class="cost-tag cost-code">P2</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-test-token">
+          <summary>Token 管理場景 <span class="rule-count">10 個場景</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>預期結果</th><th>優先級</th></tr></thead>
+              <tbody>
+                <tr><td>T-01</td><td>初始化時有 token</td><td>hasToken=true</td><td>自動 refreshToken + getUserInfo</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>T-02</td><td>refreshToken 成功</td><td>Token 未過期</td><td>靜默續期，無 UI 變化</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>T-03</td><td>refreshToken 失敗</td><td>Token 已過期</td><td>不登出，保留 token</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>T-04</td><td>API 回傳 HTTP 401</td><td>Token 失效</td><td>toast + logout + 跳首頁</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>T-05</td><td>API 回傳 errCode=163</td><td>被踢下線</td><td>logout + ExpiredPopup</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>T-06</td><td>API 錯誤重試機制</td><td>retry=true</td><td>最多 3 次（3s/6s/9s）</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>T-07</td><td>登出清空</td><td>已登入</td><td>清 localStorage + stores</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>T-08</td><td>Token header 傳遞</td><td>有 token</td><td>Token: {token}（非 Bearer）</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>T-09</td><td>公開 API 不帶 token</td><td>--</td><td>prefix = /ajax-migration/public</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>T-10</td><td>私有 API 帶 token</td><td>有 token</td><td>prefix = /ajax-migration</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="page-logic-card" id="sec-test-guard">
+          <summary>路由守衛場景 <span class="rule-count">12 個場景</span></summary>
+          <div class="card-body">
+            <table class="logic-table">
+              <thead><tr><th>#</th><th>場景</th><th>前置條件</th><th>預期結果</th><th>優先級</th></tr></thead>
+              <tbody>
+                <tr><td>G-01</td><td>未登入訪問 needLogin 頁</td><td>token 為空</td><td>彈出登入 Sheet + abort</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>G-02</td><td>重整時未登入在 needLogin 頁</td><td>token 空 + 重整</td><td>由 useSystemCheck 處理</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>G-03</td><td>測試帳號進入 deposit</td><td>isTestAccount=true</td><td>toast + abort</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>G-04</td><td>測試帳號進入 withdraw</td><td>isTestAccount=true</td><td>toast + abort</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>G-05</td><td>測試帳號進入 transfer</td><td>isTestAccount=true</td><td>toast + abort</td><td><span class="cost-tag cost-locked">P0</span></td></tr>
+                <tr><td>G-06</td><td>channelId 跨頁繼承</td><td>from 有 channelId</td><td>to URL 自動帶上</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>G-07</td><td>from 參數記錄</td><td>URL 有 from 參數</td><td>localStorage 寫入</td><td><span class="cost-tag cost-code">P2</span></td></tr>
+                <tr><td>G-08</td><td>離開杯賽頁面</td><td>在 /home/topic</td><td>themeOverride 清空</td><td><span class="cost-tag cost-code">P2</span></td></tr>
+                <tr><td>G-09</td><td>路由切換清購物車</td><td>有直播購物車</td><td>liveCartsStore.$reset()</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>G-10</td><td>砍單跳轉</td><td>referenceId + rally=10019</td><td>跳轉 /activity/rally/3</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>G-11</td><td>落地頁跳轉（登入）</td><td>jumpType=3, jumpValue=7</td><td>跳轉 /login</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+                <tr><td>G-12</td><td>落地頁跳轉（註冊）</td><td>jumpType=3, jumpValue=8</td><td>跳轉 /login?isRegister=true</td><td><span class="cost-tag cost-config">P1</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
     </div>
 
     <!-- ========================================== -->
@@ -734,7 +1083,7 @@
     <!-- ========================================== -->
     <div class="tab-panel" id="userflow">
       <div class="tool-section">
-        <div class="stats-pill"><span>4 User Flow</span></div>
+        <div class="stats-pill"><span>6 User Flow</span></div>
 
         <div class="mermaid-card" id="uf-init">
           <div class="mermaid-card-title">App 初始化流程</div>
@@ -762,12 +1111,12 @@ flowchart TD
     M -->|是| N[跳轉 /block]
     M -->|否| O{hasToken?}
     O -->|是| P[refreshToken + getUserInfo]
-    O -->|否| Q{需要登��?}
+    O -->|否| Q{需要登入?}
     Q -->|是| R[跳轉 /login]
     Q -->|否| S[toPushTypePage]
     P --> S
     S --> T[setIsInitSuccess true]
-    T --> U[��動 WebSocket]
+    T --> U[啟動 WebSocket]
             </div>
           </div>
         </div>
@@ -828,7 +1177,7 @@ flowchart TD
     H -->|否| J["POST /login/register"]
     I --> J
     D --> K[填手機號]
-    K --> L["發送驗��碼 opType=7"]
+    K --> L["發送驗證碼 opType=7"]
     L --> M["POST /login/phoneRegisterV2"]
     J & M --> N{成功?}
     N -->|是| O[handleLoginSuccess 自動登入]
@@ -838,8 +1187,76 @@ flowchart TD
           </div>
         </div>
 
+        <div class="mermaid-card" id="uf-system-check">
+          <div class="mermaid-card-title">系統狀態檢查 checkSystemStatusAndRoute()</div>
+          <div class="pm-notice">
+            <ul>
+              <li>初始化完成後 + finally 階段執行，決定玩家跳轉目標</li>
+              <li>watchEffect 持續監聽 isBlocked / isInMaintain 狀態變化</li>
+            </ul>
+          </div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart TD
+    A["checkSystemStatusAndRoute()"] --> B{"errCode !== 1 或 isInMaintain?"}
+    B -->|是| C["跳轉 /maintain"]
+    B -->|否| D{"isBlocked?"}
+    D -->|是| E["跳轉 /block"]
+    D -->|否| F{"needLogin 且無 token?"}
+    F -->|是| G{"有 getEntrance?"}
+    G -->|是| H["跳轉 getEntrance"]
+    G -->|否| I["跳轉 /login"]
+    F -->|否| J{"referenceId 且 rally=10019?"}
+    J -->|是| K["跳轉 /activity/rally/3"]
+    J -->|否| L{"isOpenRoom?"}
+    L -->|是| M["跳轉 /open-room"]
+    L -->|否| N{"redirect=goJump?"}
+    N -->|"jumpType=2"| O["Goto.jump 活動頁"]
+    N -->|"jumpType=3 val=8"| P["/login?isRegister=true"]
+    N -->|"jumpType=3 val=7"| I
+    N -->|否| Q{"路徑為 / 或 maintain 或 block?"}
+    Q -->|是| R["toPushTypePage()"]
+    Q -->|否| S["停留當前頁"]
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="uf-forgot-password">
+          <div class="mermaid-card-title">忘記密碼流程</div>
+          <div class="pm-notice">
+            <ul>
+              <li>前提：帳號必須已綁定手機號，否則無法發送驗證碼</li>
+              <li>registerOption 須開啟「注冊須綁定手機號」才會顯示驗證碼欄位</li>
+            </ul>
+          </div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart TD
+    A["點擊忘記密碼"] --> B["setIsForgetPasswordOpen true"]
+    B --> C["ForgetPassword 面板"]
+    C --> D["輸入用戶名"]
+    D --> E{"4-20 位字母加數字?"}
+    E -->|否| F["格式錯誤提示"]
+    E -->|是| G{"帳號有綁手機?"}
+    G -->|否| H["無法發送驗證碼"]
+    G -->|是| I["發送驗證碼"]
+    I --> J["輸入 6 位數字驗證碼"]
+    J --> K["輸入新密碼"]
+    K --> L{"8-20 位英數?"}
+    L -->|否| M["密碼格式錯誤"]
+    L -->|是| N["確認新密碼"]
+    N --> O{"兩次一致?"}
+    O -->|否| P["密碼不匹配"]
+    O -->|是| Q["POST /login/resetPwd"]
+    Q --> R{"成功?"}
+    R -->|是| S["toast 提示加返回登入頁"]
+    R -->|否| T["顯示錯誤訊息"]
+            </div>
+          </div>
+        </div>
+
         <div class="mermaid-card" id="uf-token">
-          <div class="mermaid-card-title">Token 生命週��</div>
+          <div class="mermaid-card-title">Token 生命週期</div>
           <div class="pm-notice">
             <ul>
               <li>Token 72 小時有效，設備不變 + IP 變動 → 不失效</li>
@@ -849,14 +1266,14 @@ flowchart TD
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart TD
-    A[Token 生命週期] --> B{Token 來��}
+    A[Token 生命週期] --> B{Token 來源}
     B -->|登入成功| C[setToken 存入 Pinia + localStorage]
     B -->|App 初始化| D[refreshToken 續期]
     C --> E[72 小時有效期]
     D --> F{續期成功?}
     F -->|是| G[getUserInfo 更新用戶資料]
     F -->|否| H["console.warn 不中斷"]
-    E --> I{設備變��?}
+    E --> I{設備變動?}
     I -->|是| J[Token 失效]
     I -->|否| K{IP 變動?}
     K -->|是或否| L[Token 不失效]
@@ -879,7 +1296,7 @@ flowchart TD
     <!-- ========================================== -->
     <div class="tab-panel" id="swimlane">
       <div class="tool-section">
-        <div class="stats-pill"><span>4 泳道圖</span></div>
+        <div class="stats-pill"><span>6 泳道圖</span></div>
 
         <div class="mermaid-card" id="sw-init">
           <div class="mermaid-card-title">初始化 API 序列</div>
@@ -908,7 +1325,7 @@ sequenceDiagram
     alt errCode !== 1
         App->>U: 跳轉 /maintain
     else IP 在黑名單
-        App->>U: 跳��� /block
+        App->>U: 跳轉 /block
     else hasToken
         App->>API: POST /login/refreshToken
         API-->>Store: 續期成功
@@ -973,7 +1390,7 @@ sequenceDiagram
 sequenceDiagram
     participant U as 使用者
     participant Page as 註冊頁
-    participant API as 後��� API
+    participant API as 後端 API
     participant Store as userStore
 
     Page->>API: POST /login/registerOption
@@ -1039,6 +1456,106 @@ sequenceDiagram
             </div>
           </div>
         </div>
+
+        <div class="mermaid-card" id="sw-token-lifecycle">
+          <div class="mermaid-card-title">Token 生命週期 API 互動</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant App as App
+    participant Store as userStore
+    participant API as 後端 API
+
+    Note over App: App 初始化階段
+    App->>Store: 檢查 hasToken
+    alt hasToken = true
+        App->>API: POST /login/refreshToken
+        alt 續期成功
+            API-->>Store: token 維持有效
+            Store->>API: POST /user/userData/v2
+            API-->>Store: playerId + userInfo
+        else 續期失敗
+            API-->>App: error
+            App->>App: console.warn 不中斷
+        end
+    end
+
+    Note over U: 正常使用期間
+    U->>App: 發起 API 請求
+    App->>API: 請求 header Token: token
+
+    alt errCode === 1
+        API-->>App: 正常回應
+    else HTTP 401
+        API-->>App: Token 過期
+        App->>U: toast 登入已過期
+        App->>Store: logout 清 localStorage
+        App->>U: 跳轉首頁
+    else errCode === 163
+        API-->>App: 暫封/踢下線
+        App->>Store: logout
+        App->>U: ExpiredPopup 聯繫客服
+        App->>U: 跳轉 /login
+    else API 錯誤 retry=true
+        API-->>App: 錯誤回應
+        loop 最多 3 次
+            App->>App: 等待 3*(n+1) 秒
+            App->>API: 重新發送請求
+        end
+    end
+
+    Note over U: 主動登出
+    U->>App: 點擊登出
+    App->>API: POST /login/logout
+    App->>Store: 清 localStorage 指定 key
+    App->>Store: 清所有相關 store
+            </div>
+          </div>
+        </div>
+
+        <div class="mermaid-card" id="sw-api-crypto">
+          <div class="mermaid-card-title">API 加解密流程</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+sequenceDiagram
+    participant App as 前端 App
+    participant Fetch as plugins/fetch.ts
+    participant Crypto as AES 加解密
+    participant API as 後端 API
+
+    App->>Fetch: 發起 API 請求
+    Fetch->>Fetch: 判斷 apiType 決定 prefix
+
+    alt POST 請求
+        Fetch->>Crypto: body URLEncode
+        Crypto->>Crypto: AES encrypt
+        Crypto-->>Fetch: encodeURIComponent 後的密文
+    else GET 請求 非 dev
+        Fetch->>Crypto: query params AES 加密
+        Crypto-->>Fetch: 加密後 query string
+    end
+
+    alt isIgnoreApiEncrypt 白名單
+        Fetch->>Fetch: 跳過加密
+    end
+
+    Fetch->>Fetch: 注入 Token header
+    Fetch->>API: 發送加密請求
+
+    API-->>Fetch: 回應
+
+    alt response header crypto-response = true
+        Fetch->>Crypto: AES decrypt response
+        Crypto-->>Fetch: JSON.parse 後的明文
+    else 無加密標記
+        Fetch-->>App: 直接回傳
+    end
+
+    Fetch-->>App: 處理後的回應資料
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1067,14 +1584,14 @@ sequenceDiagram
           </details>
 
           <details class="constraint-card cat-tech">
-            <summary>AES 密碼加密 key 寫死在前���</summary>
+            <summary>AES 密碼加密 key 寫死在前端</summary>
             <div class="constraint-detail">
               <div class="label">描述</div>
               密碼加密用固定 32 位 key + 全零 IV，localStorage 和 API 傳輸共用。
               <div class="label">影響</div>
               安全性依賴 HTTPS 傳輸層，key 洩漏可解密本地密碼。
               <div class="label">PM 對策</div>
-              暫無替代方案，已知風險��
+              暫無替代方案，已知風險。
             </div>
           </details>
 
@@ -1083,7 +1600,7 @@ sequenceDiagram
             <div class="constraint-detail">
               <div class="label">描述</div>
               isLogin + isInitSuccess 變化時觸發大量模組初始化 API（活動/VIP/直播/任務/場館/錢包等）。
-              <div class="label">���響</div>
+              <div class="label">影響</div>
               首屏載入效能瓶頸，低速網路體感明顯。
               <div class="label">PM 對策</div>
               新增模組初始化需評估效能影響。
@@ -1181,7 +1698,7 @@ sequenceDiagram
               accountLoginEnabled / phoneNumberLoginEnabled / accountRegisterEnabled / phoneNumberRegisterEnabled 四個開關。
               <div class="label">影響</div>
               開關組合錯誤（如全關）有防呆但體驗差。
-              <div class="label">PM ���策</div>
+              <div class="label">PM 對策</div>
               新業主上線前確認登入/註冊開關設定。
             </div>
           </details>
@@ -1217,7 +1734,7 @@ sequenceDiagram
               全站通則：重新整理後需停留在原有頁面。Token 失效時刷新回到 pushType 頁。
               <div class="label">影響</div>
               重整場景的跳轉由 useSystemCheck 處理，不走 router-guard 的 needLogin 攔截。
-              <div class="label">PM ��策</div>
+              <div class="label">PM 對策</div>
               這是刻意的雙軌設計，避免雙重觸發。
             </div>
           </details>
@@ -1237,103 +1754,125 @@ sequenceDiagram
       </div>
     </div>
 
-  </div><!-- main-content -->
-</div><!-- layout -->
+    <!-- ============ Footer ============ -->
+    <div class="footer">
+      <p>系統/登入/註冊 &middot; 功能知識庫</p>
+      <div class="footer-links">
+        <a href="features.html">回模組總覽 &rarr;</a>
+        <a href="index.html">回首頁 &rarr;</a>
+      </div>
+      <p style="margin-top:12px;">最後更新：2026-04-14</p>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
 
 <script>
-  const sideNavData = {
-    overview: {
-      title: '功能總覽',
-      items: [
-        { id: 'sec-init', label: '0 App 初始化' },
-        { id: 'sec-flow', label: '1 主要動線' },
-        { type: 'group', label: '登入' },
-        { id: 'sec-login', label: '2 登入' },
-        { id: 'sec-login-page', label: '└ 登入頁面' },
-        { type: 'group', label: '註冊' },
-        { id: 'sec-register', label: '3 註冊' },
-        { id: 'sec-register-page', label: '└ 註冊頁面' },
-        { type: 'group', label: '系統守衛' },
-        { id: 'sec-guard', label: '4 路由守衛/Token/維護' },
-        { id: 'sec-route-guard', label: '├ 路由守衛' },
-        { id: 'sec-token', label: '├ Token 管理' },
-        { id: 'sec-maintain', label: '└ 維護頁/IP 封鎖' },
-        { type: 'group', label: '補充' },
-        { id: 'sec-forgot-password', label: '5 忘記密碼' },
-        { id: 'sec-rp-fields', label: '6 RP 欄位規則' },
-        { id: 'sec-rp-rules', label: '7 全站通則' },
-        { id: 'sec-area-code', label: '8 區碼通則' },
-        { id: 'sec-popup-rules', label: '9 彈窗通則' },
-        { id: 'sec-reddot-rules', label: '10 紅點通則' },
-        { id: 'sec-kickoff', label: '11 踢下線' },
-      ]
-    },
-    userflow: {
-      title: 'User Flow',
-      items: [
-        { id: 'uf-init', label: 'App 初始化流程' },
-        { id: 'uf-login', label: '登入流��' },
-        { id: 'uf-register', label: '註冊流程' },
-        { id: 'uf-token', label: 'Token 生命週期' },
-      ]
-    },
-    swimlane: {
-      title: '泳道圖',
-      items: [
-        { type: 'group', label: '使用者動作' },
-        { id: 'sw-init', label: '初始化 API 序列' },
-        { id: 'sw-login', label: '登入前後端互動' },
-        { id: 'sw-register', label: '註冊前後端互動' },
-        { type: 'group', label: '系統自動' },
-        { id: 'sw-route-guard', label: '路由守衛判斷' },
-      ]
-    },
-    constraints: {
-      title: '跨服務限��',
-      items: [
-        { id: 'cst-tech', label: '技術限制 (4)' },
-        { id: 'cst-coupling', label: '���組耦合 (5)' },
-        { id: 'cst-config', label: '設定層限制 (5)' },
-      ]
+  // Mermaid init
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    flowchart: { useMaxWidth: false, htmlLabels: true },
+    sequence: { useMaxWidth: false },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      lineColor: '#475569',
+      secondaryColor: '#334155',
+      fontSize: '16px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }
-  };
+  });
 
+  // ===== Side Nav Data (動態掃描 DOM，不硬編碼) =====
+  const tabTitles = { overview: '功能總覽', userflow: 'User Flow', swimlane: '泳道圖', constraints: '跨服務限制' };
+
+  function buildSideNavData(tabId) {
+    const panel = document.getElementById(tabId);
+    if (!panel) return null;
+    const items = [];
+
+    if (tabId === 'overview') {
+      const sections = panel.querySelectorAll('.section[id]');
+      if (sections.length > 0) {
+        sections.forEach(sec => {
+          const titleEl = sec.querySelector('.section-title');
+          const label = titleEl ? titleEl.textContent.trim() : sec.id;
+          items.push({ id: sec.id, label });
+        });
+      } else {
+        panel.querySelectorAll('.page-logic-card').forEach((card, i) => {
+          if (!card.id) card.id = 'plc-' + i;
+        });
+        panel.querySelectorAll('.page-logic-card').forEach(card => {
+          const summary = card.querySelector('summary');
+          if (summary) {
+            const label = summary.textContent.replace(/\d+ 條規則/g, '').trim();
+            items.push({ id: card.id, label });
+          }
+        });
+      }
+    } else if (tabId === 'userflow' || tabId === 'swimlane') {
+      panel.querySelectorAll('.mermaid-card').forEach(card => {
+        const id = card.id;
+        const title = card.querySelector('.mermaid-card-title')?.textContent?.trim() || id;
+        if (id) items.push({ id, label: title });
+      });
+    } else if (tabId === 'constraints') {
+      panel.querySelectorAll('.constraint-category, [id^="cst-"]').forEach(cat => {
+        const id = cat.id;
+        const h3 = cat.querySelector('h3, .constraint-header h3');
+        const label = h3?.textContent?.trim() || id;
+        if (id) items.push({ id, label });
+      });
+    }
+
+    return { title: tabTitles[tabId] || tabId, items };
+  }
+
+  // ===== Side Nav Rendering =====
+  const sideNavInner = document.getElementById('sideNavInner');
   let currentTabId = 'overview';
   let scrollSpyObserver = null;
-  const sideNavInner = document.getElementById('sideNavInner');
 
   function renderSideNav(tabId) {
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) { sideNavInner.innerHTML = ''; return; }
-    let html = `<div class="sn-title">${data.title}</div>`;
+
+    let html = '<div class="sn-title">' + data.title + '</div>';
     data.items.forEach(item => {
-      if (item.type === 'group') {
-        html += `<div class="sn-group">${item.label}</div>`;
+      if (item.group) {
+        html += '<div class="sn-group">' + item.group + '</div>';
       } else {
-        html += `<a class="sn-item" data-target="${item.id}" href="#${item.id}">${item.label}</a>`;
+        html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
       }
     });
     sideNavInner.innerHTML = html;
+
     sideNavInner.querySelectorAll('.sn-item').forEach(el => {
-      el.addEventListener('click', e => {
+      el.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.getElementById(el.getAttribute('data-target'));
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          setTimeout(() => highlightNavItem(el.getAttribute('data-target')), 300);
+          if (target.tagName === 'DETAILS' && !target.open) target.open = true;
+          const y = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          highlightNavItem(el.getAttribute('data-target'));
         }
       });
     });
+
     setupScrollSpy(tabId);
   }
 
   function setupScrollSpy(tabId) {
     if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) return;
     const targetIds = data.items.filter(i => i.id).map(i => i.id);
     const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
     if (targets.length === 0) return;
+
     const visibleSections = new Map();
     scrollSpyObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -1362,33 +1901,48 @@ sequenceDiagram
     if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  const tabPills = document.querySelectorAll('.tab-pill');
+  // ===== Tab switching =====
+  const snTabs = document.querySelectorAll('.sn-tab');
   const tabPanels = document.querySelectorAll('.tab-panel');
   let mermaidRendered = {};
 
   function switchTab(tabId) {
     currentTabId = tabId;
-    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    snTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabId));
     tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+
     if (!mermaidRendered[tabId]) {
       const panel = document.getElementById(tabId);
       const diagrams = panel.querySelectorAll('.mermaid');
-      if (diagrams.length > 0) { mermaid.run({ nodes: diagrams }); mermaidRendered[tabId] = true; }
+      if (diagrams.length > 0) {
+        mermaid.run({ nodes: diagrams });
+        mermaidRendered[tabId] = true;
+      }
     }
+
     renderSideNav(tabId);
     history.replaceState(null, '', '#' + tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  tabPills.forEach(pill => {
-    pill.addEventListener('click', e => { e.preventDefault(); switchTab(pill.getAttribute('data-tab')); });
+  snTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab(tab.getAttribute('data-tab'));
+    });
   });
 
+  // ===== Init =====
   document.querySelector('.layout').classList.add('has-side-nav');
+
   const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
   const hash = location.hash.slice(1);
-  if (validTabs.includes(hash)) switchTab(hash);
-  else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
+  if (validTabs.includes(hash)) {
+    switchTab(hash);
+  } else {
+    mermaidRendered['overview'] = true;
+    renderSideNav('overview');
+  }
 </script>
 </body>
 </html>

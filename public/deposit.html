@@ -42,26 +42,41 @@
       margin-left: auto;
     }
 
+    /* ===== Old tab pills — hidden ===== */
     .tab-nav { display: none !important; }
-    .tab-pill {
-      display: inline-block;
-      font-size: 15px;
-      padding: 8px 22px;
-      border-radius: 20px;
-      color: #94a3b8;
-      background: #1e293b;
-      border: 1px solid #334155;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all .15s;
-      cursor: pointer;
-    }
-    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #f97316; color: #fff; border-color: #f97316; }
+    .tab-pill { display: none !important; }
+    .compact-header-pills { display: none !important; }
 
+    /* ===== Side Nav Module List ===== */
+    .sn-module-list {
+      padding: 8px 8px 8px; border-bottom: 1px solid #1e293b;
+    }
+    .sn-module {
+      display: block; padding: 5px 12px; font-size: 14px;
+      color: #94a3b8; text-decoration: none; border-radius: 4px;
+      transition: all .1s;
+    }
+    .sn-module:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-module.active { color: #3b82f6; font-weight: 600; }
+
+    /* ===== Side Nav Tab List ===== */
+    .sn-tab-list {
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 6px 8px 8px; border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .sn-tab {
+      display: block; padding: 8px 12px; font-size: 15px; font-weight: 600;
+      color: #94a3b8; text-decoration: none; border-radius: 6px;
+      transition: all .12s; cursor: pointer;
+    }
+    .sn-tab:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-tab.active { color: #fff; background: #3b82f6; }
+
+    /* Tab content panels */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* Full-width layout (no sidebar) */
     .v2-main { margin-left: 0; }
 
     /* ===== Mermaid card ===== */
@@ -263,10 +278,11 @@
     /* ===== Deposit accent color overrides (blue #3b82f6) ===== */
     .num { background: #3b82f6 !important; }
     .flow-step.highlight { background: #3b82f6 !important; border-color: #3b82f6 !important; }
-    .tab-pill.active { background: #3b82f6 !important; border-color: #3b82f6 !important; }
     .page-logic-card[open] summary::before { color: #3b82f6 !important; }
     .constraint-card[open] summary::after { color: #3b82f6 !important; }
     .sn-item.active { border-left-color: #3b82f6 !important; background: rgba(59,130,246,.06) !important; }
+    .sn-tab.active { background: #3b82f6 !important; }
+    .sn-module.active { color: #3b82f6 !important; }
     .logic-merge-divider { border-left-color: #3b82f6; color: #3b82f6; }
 
     @media(max-width: 900px) {
@@ -299,25 +315,39 @@
   </style>
 </head>
 <body>
-<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });</script>
 
 <div class="layout">
-  <!-- ===== Side Nav ===== -->
-  <nav class="side-nav" id="sideNav">
+  <!-- ============ Side Nav — 所有導航集中在這裡 ============ -->
+  <aside class="side-nav" id="sideNav">
+    <!-- 1. 模組切換 -->
+    <div class="sn-module-list">
+      <a class="sn-module" href="sports.html">⚽ 體育賽事</a>
+      <a class="sn-module" href="system.html">🔐 系統</a>
+      <a class="sn-module" href="entertainment.html">🎰 娛樂城</a>
+      <a class="sn-module" href="activities.html">🎁 活動中心</a>
+      <a class="sn-module" href="live.html">📺 直播</a>
+      <a class="sn-module" href="mine.html">👤 我的</a>
+      <a class="sn-module" href="others.html">💬 其他</a>
+      <a class="sn-module active" href="deposit.html">💰 金流</a>
+    </div>
+    <!-- 2. Tab 切換 -->
+    <div class="sn-tab-list" id="sideNavTabs">
+      <div class="sn-group">分類</div>
+      <a class="sn-tab active" data-tab="overview" href="#overview">📋 功能總覽</a>
+      <a class="sn-tab" data-tab="userflow" href="#userflow">🔀 User Flow</a>
+      <a class="sn-tab" data-tab="swimlane" href="#swimlane">🏊 泳道圖</a>
+      <a class="sn-tab" data-tab="constraints" href="#constraints">🚧 跨服務限制</a>
+    </div>
+    <!-- 3. 當前 tab 的內容導航 -->
     <div class="side-nav-inner" id="sideNavInner"></div>
-  </nav>
+  </aside>
 
   <div class="main-content v2-main">
-    <!-- ===== Compact Header ===== -->
-    <header class="compact-header">
+
+    <!-- ============ Compact Header — 只留標題 ============ -->
+    <nav class="compact-header" id="tabnav">
         <span class="module-title-text">💰 存提款/金流</span>
-        <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html">📺 廣場/直播間</option><option value="mine.html">👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html" selected>💰 存提款/金流</option></select>      <div class="compact-header-pills">
-        <span class="tab-pill active" data-tab="overview">功能總覽</span>
-        <span class="tab-pill" data-tab="userflow">User Flow</span>
-        <span class="tab-pill" data-tab="swimlane">泳道圖</span>
-        <span class="tab-pill" data-tab="constraints">跨服務限制</span>
-      </div>
-    </header>
+    </nav>
 
     <!-- ========================================== -->
     <!-- TAB 1: 功能總覽                            -->
@@ -1162,6 +1192,93 @@ sequenceDiagram
           </pre></div>
         </div>
 
+        <div class="mermaid-card" id="sw-transfer">
+          <div class="mermaid-card-title">3.6 場館轉帳（單筆 / 一鍵歸集 / 禮金轉入）</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant V as 場館系統
+
+    U->>FE: 進入轉帳頁
+    FE->>BE: POST /wallet/gameListBalance
+    BE->>V: 逐場館查餘額
+    V-->>BE: 各場館餘額
+    BE-->>FE: gameBalanceList[]
+    FE->>U: 顯示場館列表+餘額
+
+    alt 單筆轉帳
+        U->>FE: 選場館+輸入金額
+        FE->>FE: 檢查 activityLock / maintainLock
+        alt 場館鎖定
+            FE->>U: 禁止轉帳提示
+        else 正常
+            FE->>BE: POST /wallet/gameAmountTransferV2
+            Note over FE,BE: params: gameOutId, gameInId, gold(分)
+            BE->>V: 執行轉帳
+            V-->>BE: 結果+遊戲URL
+            BE-->>FE: outGold, inGold, url
+            FE->>U: 更新餘額顯示
+        end
+    else 一鍵歸集
+        U->>FE: 點「一鍵回收」
+        FE->>FE: 冷卻檢查(10秒倒數)
+        alt 冷卻中
+            FE->>U: 等待提示
+        else 可執行
+            FE->>BE: POST /wallet/collectAll
+            BE->>V: 逐場館歸集
+            V-->>BE: 歸集結果
+            BE-->>FE: 更新 totalBalance, playerGold
+            FE->>U: 餘額刷新
+        end
+    else 邀請禮金轉入
+        U->>FE: 點轉入中心錢包
+        FE->>BE: POST /wallet/invitedGoldTransfer
+        Note over FE,BE: gold 需乘100(元轉分)
+        BE-->>FE: 轉帳結果
+        FE->>U: 更新餘額
+    end
+          </pre></div>
+          <div class="pm-notice"><ul><li>金額單位：API 以「分」計算，前端顯示轉元</li><li>activityLock 活動鎖定金額不可轉出；maintainLock 場館維護中不可操作</li><li>一鍵歸集有 10 秒冷卻，防連點</li></ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/withdraw/composables/useWithdrawWallet.ts:collectAllMoney()<br>stores/wallet.ts:gameAmountTransfer()<br>POST /wallet/invitedGoldTransfer</div></details>
+        </div>
+
+        <div class="mermaid-card" id="sw-transaction-record">
+          <div class="mermaid-card-title">3.7 交易記錄查詢</div>
+          <div class="mermaid-card-body"><pre class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+
+    U->>FE: 進入交易記錄頁
+    Note over FE: 路由 /transaction-record
+
+    FE->>FE: 預設 Tab=存款記錄
+    U->>FE: 選 Tab(存款/提款/轉帳)
+    U->>FE: 設定日期範圍
+
+    alt 存款記錄
+        FE->>BE: 查詢存款訂單列表
+        BE-->>FE: 存款記錄(金額/狀態/時間/通道)
+    else 提款記錄
+        FE->>BE: 查詢提款訂單列表
+        BE-->>FE: 提款記錄(金額/狀態/時間/通道)
+    else 轉帳記錄
+        FE->>BE: 查詢轉帳記錄
+        BE-->>FE: 轉帳記錄(場館/金額/時間)
+    end
+
+    FE->>U: 顯示記錄列表
+    U->>FE: 點擊某筆記錄
+    FE->>U: 展開訂單明細(金額/狀態/時間/通道)
+          </pre></div>
+          <div class="pm-notice"><ul><li>交易記錄入口：存款頁右上角 / 我的頁面</li><li>三種分類 Tab，支援日期範圍篩選</li></ul></div>
+          <details class="rd-ref"><summary>RD 參考</summary><div class="rd-content">pages/transaction-record/index.vue</div></details>
+        </div>
+
       </div>
     </div>
 
@@ -1241,111 +1358,128 @@ sequenceDiagram
       </div>
     </div>
 
-    <!-- ===== Footer ===== -->
-  </div>
-</div>
+    <!-- ============ Footer ============ -->
+    <div class="footer">
+      <p>存提款/金流 &middot; 功能知識庫</p>
+      <div class="footer-links">
+        <a href="features.html">回模組總覽 &rarr;</a>
+        <a href="index.html">回首頁 &rarr;</a>
+      </div>
+      <p style="margin-top:12px;">最後更新：2026-04-14</p>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /layout -->
 
 <script>
-  // ===== Side Nav Data =====
-  const sideNavData = {
-    overview: {
-      title: '功能總覽',
-      items: [
-        { id: 'sec-common', label: '0 共用規則' },
-        { id: 'sec-flow', label: '1 主要動線' },
-        { type: 'group', label: '存款' },
-        { id: 'sec-deposit', label: '2 存款（充值）' },
-        { id: 'sec-deposit-main', label: '├ 存款主頁面' },
-        { id: 'sec-channel-select', label: '├ 通道選擇邏輯' },
-        { id: 'sec-deposit-form', label: '├ 存款下單表單' },
-        { id: 'sec-deposit-order', label: '└ 存款訂單追蹤' },
-        { type: 'group', label: '提款' },
-        { id: 'sec-withdraw', label: '3 提款' },
-        { id: 'sec-withdraw-main', label: '├ 提款主頁面' },
-        { id: 'sec-withdraw-type', label: '├ 提款通道策略' },
-        { id: 'sec-withdraw-order', label: '├ 提款訂單追蹤' },
-        { id: 'sec-bind-account', label: '└ 綁定帳戶管理' },
-        { type: 'group', label: '其他' },
-        { id: 'sec-others', label: '4 轉帳/優惠/流水' },
-        { id: 'sec-deposit-discount', label: '├ 優惠與匯率' },
-        { id: 'sec-waterflow', label: '├ 流水與場館存款' },
-        { id: 'sec-daike', label: '├ 代客充值' },
-        { id: 'sec-dd-wallet', label: '└ DD 錢包' },
-        { type: 'group', label: '補充' },
-        { id: 'sec-withdraw-formula', label: '5 提款金額公式' },
-        { id: 'sec-transfer', label: '6 轉帳（場館錢包）' },
-        { id: 'sec-transaction', label: '7 交易記錄' },
-      ]
-    },
-    userflow: {
-      title: 'User Flow',
-      items: [
-        { id: 'uf-deposit-main', label: '1.1 存款主線' },
-        { id: 'uf-withdraw-main', label: '1.2 提款主線' },
-        { id: 'uf-usdt-fast', label: '1.3 USDT 快捷' },
-        { id: 'uf-bank-manage', label: '1.4 銀行卡管理' },
-        { id: 'uf-transfer', label: '1.5 轉帳' },
-        { id: 'uf-tx-record', label: '1.6 交易記錄' },
-      ]
-    },
-    swimlane: {
-      title: '泳道圖',
-      items: [
-        { type: 'group', label: '使用者動作' },
-        { id: 'sw-deposit-order', label: '3.1 存款下單' },
-        { id: 'sw-withdraw-order', label: '3.2 提款+風控' },
-        { id: 'sw-usdt-fast', label: '3.5 USDT 快捷' },
-        { type: 'group', label: '系統自動' },
-        { id: 'sw-deposit-polling', label: '3.3 存款訂單輪詢' },
-        { id: 'sw-wallet-refresh', label: '3.4 錢包餘額刷新' },
-      ]
-    },
-    constraints: {
-      title: '跨服務限制',
-      items: [
-        { id: 'cst-venue', label: '場館限制 (6)' },
-        { id: 'cst-coupling', label: '模組耦合 (10)' },
-        { id: 'cst-tech', label: '技術限制 (7)' },
-        { id: 'cst-biz', label: '業務限制 (7)' },
-      ]
+  // Mermaid init
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    flowchart: { useMaxWidth: false, htmlLabels: true },
+    sequence: { useMaxWidth: false },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      lineColor: '#475569',
+      secondaryColor: '#334155',
+      fontSize: '16px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }
-  };
+  });
 
+  // ===== Side Nav Data (動態掃描 DOM，不硬編碼) =====
+  const tabTitles = { overview: '功能總覽', userflow: 'User Flow', swimlane: '泳道圖', constraints: '跨服務限制' };
+
+  function buildSideNavData(tabId) {
+    const panel = document.getElementById(tabId);
+    if (!panel) return null;
+    const items = [];
+
+    if (tabId === 'overview') {
+      // 掃描 section 容器（存款/系統/我的 等模組的結構）
+      const sections = panel.querySelectorAll('.section[id]');
+      if (sections.length > 0) {
+        sections.forEach(sec => {
+          const titleEl = sec.querySelector('.section-title');
+          const label = titleEl ? titleEl.textContent.trim() : sec.id;
+          items.push({ id: sec.id, label });
+        });
+      } else {
+        // 掃描 page-logic-card（Sports 模組的結構）
+        panel.querySelectorAll('.page-logic-card').forEach((card, i) => {
+          if (!card.id) card.id = 'plc-' + i;
+        });
+        panel.querySelectorAll('.page-logic-card').forEach(card => {
+          const summary = card.querySelector('summary');
+          if (summary) {
+            const label = summary.textContent.replace(/\d+ 條規則/g, '').trim();
+            items.push({ id: card.id, label });
+          }
+        });
+      }
+    } else if (tabId === 'userflow' || tabId === 'swimlane') {
+      // 掃描所有 mermaid-card，用 title 文字
+      panel.querySelectorAll('.mermaid-card').forEach(card => {
+        const id = card.id;
+        const title = card.querySelector('.mermaid-card-title')?.textContent?.trim() || id;
+        if (id) items.push({ id, label: title });
+      });
+    } else if (tabId === 'constraints') {
+      // 掃描限制分類
+      panel.querySelectorAll('.constraint-category, [id^="cst-"]').forEach(cat => {
+        const id = cat.id;
+        const h3 = cat.querySelector('h3, .constraint-header h3');
+        const label = h3?.textContent?.trim() || id;
+        if (id) items.push({ id, label });
+      });
+    }
+
+    return { title: tabTitles[tabId] || tabId, items };
+  }
+
+  // ===== Side Nav Rendering =====
+  const sideNavInner = document.getElementById('sideNavInner');
   let currentTabId = 'overview';
   let scrollSpyObserver = null;
-  const sideNavInner = document.getElementById('sideNavInner');
 
   function renderSideNav(tabId) {
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) { sideNavInner.innerHTML = ''; return; }
 
-    let html = `<div class="sn-title">${data.title}</div>`;
+    let html = '<div class="sn-title">' + data.title + '</div>';
     data.items.forEach(item => {
-      if (item.type === 'group') {
-        html += `<div class="sn-group">${item.label}</div>`;
+      if (item.group) {
+        html += '<div class="sn-group">' + item.group + '</div>';
       } else {
-        html += `<a class="sn-item" data-target="${item.id}" href="#${item.id}">${item.label}</a>`;
+        html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
       }
     });
     sideNavInner.innerHTML = html;
 
+    // Bind click events
     sideNavInner.querySelectorAll('.sn-item').forEach(el => {
-      el.addEventListener('click', e => {
+      el.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.getElementById(el.getAttribute('data-target'));
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          setTimeout(() => highlightNavItem(el.getAttribute('data-target')), 300);
+          // Open the card if it's a collapsed details element
+          if (target.tagName === 'DETAILS' && !target.open) target.open = true;
+          // Scroll with offset for sticky header
+          const y = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          highlightNavItem(el.getAttribute('data-target'));
         }
       });
     });
 
+    // Setup scroll spy
     setupScrollSpy(tabId);
   }
 
   function setupScrollSpy(tabId) {
     if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) return;
     const targetIds = data.items.filter(i => i.id).map(i => i.id);
     const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
@@ -1379,34 +1513,54 @@ sequenceDiagram
     if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  // Tab switching
-  const tabPills = document.querySelectorAll('.tab-pill');
+  // ===== Tab switching =====
+  const snTabs = document.querySelectorAll('.sn-tab');
   const tabPanels = document.querySelectorAll('.tab-panel');
   let mermaidRendered = {};
 
   function switchTab(tabId) {
     currentTabId = tabId;
-    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    // Update side nav tab active state
+    snTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabId));
+    // Update tab panels
     tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+
+    // Render mermaid diagrams when their tab becomes visible
     if (!mermaidRendered[tabId]) {
       const panel = document.getElementById(tabId);
       const diagrams = panel.querySelectorAll('.mermaid');
-      if (diagrams.length > 0) { mermaid.run({ nodes: diagrams }); mermaidRendered[tabId] = true; }
+      if (diagrams.length > 0) {
+        mermaid.run({ nodes: diagrams });
+        mermaidRendered[tabId] = true;
+      }
     }
+
+    // Update side nav section items
     renderSideNav(tabId);
+
     history.replaceState(null, '', '#' + tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  tabPills.forEach(pill => {
-    pill.addEventListener('click', e => { e.preventDefault(); switchTab(pill.getAttribute('data-tab')); });
+  // Side nav tab click handlers
+  snTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab(tab.getAttribute('data-tab'));
+    });
   });
 
+  // ===== Init =====
   document.querySelector('.layout').classList.add('has-side-nav');
+
   const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
   const hash = location.hash.slice(1);
-  if (validTabs.includes(hash)) switchTab(hash);
-  else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
+  if (validTabs.includes(hash)) {
+    switchTab(hash);
+  } else {
+    mermaidRendered['overview'] = true;
+    renderSideNav('overview');
+  }
 </script>
 </body>
 </html>

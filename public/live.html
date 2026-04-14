@@ -42,28 +42,26 @@
       margin-left: auto;
     }
 
-    /* ===== Tab Pills ===== */
-    .tab-pill {
-      display: inline-block;
-      font-size: 15px;
-      padding: 8px 22px;
-      border-radius: 20px;
-      color: #94a3b8;
-      background: #1e293b;
-      border: 1px solid #334155;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all .15s;
-      cursor: pointer;
-    }
-    .tab-pill:hover { color: #e2e8f0; background: #263548; border-color: #475569; }
-    .tab-pill.active { background: #06b6d4; color: #fff; border-color: #06b6d4; }
+    /* ===== Old tab pills — hidden ===== */
+    .tab-nav { display: none !important; }
+    .tab-pill { display: none !important; }
+    .compact-header-pills { display: none !important; }
+
+    /* ===== Side Nav Module List ===== */
+    .sn-module-list { padding: 8px 8px 8px; border-bottom: 1px solid #1e293b; }
+    .sn-module { display: block; padding: 5px 12px; font-size: 14px; color: #94a3b8; text-decoration: none; border-radius: 4px; transition: all .1s; }
+    .sn-module:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-module.active { color: #06b6d4; font-weight: 600; }
+
+    /* ===== Side Nav Tab List ===== */
+    .sn-tab-list { display: flex; flex-direction: column; gap: 2px; padding: 6px 8px 8px; border-bottom: 1px solid #1e293b; margin-bottom: 4px; }
+    .sn-tab { display: block; padding: 8px 12px; font-size: 15px; font-weight: 600; color: #94a3b8; text-decoration: none; border-radius: 6px; transition: all .12s; cursor: pointer; }
+    .sn-tab:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-tab.active { color: #fff; background: #06b6d4; }
 
     /* Tab content panels */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-
-    /* Full-width layout — overridden by .has-side-nav */
     .v2-main { margin-left: 0; }
 
     /* ===== Mermaid card ===== */
@@ -311,27 +309,37 @@
     .module-switcher:focus { border-color: #64748b; }
 
     /* Accent color overrides */
+    .sn-tab.active { background: #06b6d4 !important; }
+    .sn-module.active { color: #06b6d4 !important; }
   </style>
 </head>
 <body>
 
 <div class="layout">
-  <!-- ============ Side Nav ============ -->
   <aside class="side-nav" id="sideNav">
+    <div class="sn-module-list">
+      <a class="sn-module" href="sports.html">⚽ 體育賽事</a>
+      <a class="sn-module" href="system.html">🔐 系統</a>
+      <a class="sn-module" href="entertainment.html">🎰 娛樂城</a>
+      <a class="sn-module" href="activities.html">🎁 活動中心</a>
+      <a class="sn-module active" href="live.html">📺 直播</a>
+      <a class="sn-module" href="mine.html">👤 我的</a>
+      <a class="sn-module" href="others.html">💬 其他</a>
+      <a class="sn-module" href="deposit.html">💰 金流</a>
+    </div>
+    <div class="sn-tab-list" id="sideNavTabs">
+      <div class="sn-group">分類</div>
+      <a class="sn-tab active" data-tab="overview" href="#overview">📋 功能總覽</a>
+      <a class="sn-tab" data-tab="userflow" href="#userflow">🔀 User Flow</a>
+      <a class="sn-tab" data-tab="swimlane" href="#swimlane">🏊 泳道圖</a>
+      <a class="sn-tab" data-tab="constraints" href="#constraints">🚧 跨服務限制</a>
+    </div>
     <div class="side-nav-inner" id="sideNavInner"></div>
   </aside>
 
   <div class="main-content v2-main">
-
-    <!-- ============ Compact Sticky Header ============ -->
     <nav class="compact-header" id="tabnav">
         <span class="module-title-text">📺 廣場/直播間</span>
-        <select class="module-switcher" onchange="if(this.value)window.location.href=this.value"><option value="sports.html">⚽ 體育賽事</option><option value="system.html">🔐 系統/登入/註冊</option><option value="entertainment.html">🎰 娛樂城</option><option value="activities.html">🎁 活動中心</option><option value="live.html" selected>📺 廣場/直播間</option><option value="mine.html">👤 我的</option><option value="others.html">💬 客服/爆料/其他</option><option value="deposit.html">💰 存提款/金流</option></select>      <div class="compact-header-pills">
-        <a class="tab-pill active" href="#overview" data-tab="overview">功能總覽</a>
-        <a class="tab-pill" href="#userflow" data-tab="userflow">User Flow</a>
-        <a class="tab-pill" href="#swimlane" data-tab="swimlane">泳道圖</a>
-        <a class="tab-pill" href="#constraints" data-tab="constraints">跨服務限制</a>
-      </div>
     </nav>
 
     <!-- ================================================================ -->
@@ -1202,6 +1210,241 @@ flowchart LR
         </div>
       </div>
 
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-6">
+        <div class="tool-section-header"><h2>1.6 節目表瀏覽動線</h2></div>
+        <div class="tool-section-desc">廣場節目表 Tab → 體育/非體育分流 → 預約/進入直播間</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">節目表動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["廣場「節目表」Tab"] --> B["載入類別標籤"]
+    B --> C{"類別是體育?"}
+    C -- "是" --> D["選擇場館 dropdown"]
+    D --> E{"場館是 OB?"}
+    E -- "是" --> F["並行呼叫一般+電競賽事"]
+    E -- "否" --> G["遞歸自動分頁載入"]
+    F --> H["合併結果，按聯賽分組"]
+    G --> H
+    C -- "否（美女等）" --> I["NormalContent 按時段顯示"]
+    H --> J["瀏覽賽事卡片"]
+    I --> J
+    J --> K{"主播狀態?"}
+    K -- "未上播" --> L["點擊預約 → 關注賽事"]
+    K -- "已上播" --> M["點擊進入直播間"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>OB 場館因電競獨立 sportIds，需要並行呼叫 2 次 API 再合併</li>
+              <li>非 OB 場館的賽事用遞歸方式自動載入所有分頁</li>
+              <li>搜尋使用 SearchSheet 組件，storageKey: ScheduleTypeRow</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              Tab 容器：pages/live/components/Schedule/index.vue<br>
+              體育資料：pages/live/components/Schedule/composables/useSchedule.ts（283 行）<br>
+              場館下拉：pages/live/components/Schedule/components/SportDropdown.vue
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-7">
+        <div class="tool-section-header"><h2>1.7 晒單排行榜動線</h2></div>
+        <div class="tool-section-desc">廣場排行榜 Tab → 日/週/月切換 → 玩家詳情</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">排行榜動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["廣場「排行榜」Tab"] --> B{"後台 isEnabled?"}
+    B -- "false" --> C["Tab 不顯示"]
+    B -- "true" --> D{"已登入?"}
+    D -- "否" --> E{"遊客模式?"}
+    E -- "showBetGuestDisplayMode=0" --> F["Tab 禁用，觸發登入 Sheet"]
+    E -- "其他值" --> G["遊客可瀏覽"]
+    D -- "是" --> G
+    G --> H["選擇日榜/週榜/月榜"]
+    H --> I["選擇當期/上期"]
+    I --> J{"有排行資料?"}
+    J -- "是" --> K["前 3 名特殊卡片 + 第 4 名起列表"]
+    J -- "否" --> L["空榜 → 去晒單按鈕"]
+    L --> M["找第一間體育房進入"]
+    K --> N["點擊玩家卡片"]
+    N --> O["跳轉玩家詳情頁"]
+    O --> P["查看投注榜/賠率榜晒單明細"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>排行榜 Tab 受後台 isEnabled 開關控制，關掉整個 Tab 消失</li>
+              <li>遊客模式有三種值（0=不顯示/1=全部顯示/2=不顯示投注項），影響未登入用戶能看到什麼</li>
+              <li>已登入用戶在 body 底部固定顯示自己的排名（Teleport）</li>
+              <li>名次判定相同時：紅單數 > 紅單金額 > 投注金額 > 跟單數 > 晒單數</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              主檔案：pages/live/components/Ranking/index.vue（150 行）<br>
+              玩家詳情：pages/live/ranking-detail/[playerId]/index.vue（637 行）<br>
+              API：GET /showbet/rank（periodType + periodValue）
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-8">
+        <div class="tool-section-header"><h2>1.8 直播間競猜/投注動線</h2></div>
+        <div class="tool-section-desc">直播間內的競猜投注，從按鈕或聊天室推單卡片觸發</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">競猜投注動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["直播間內"] --> B{"觸發來源?"}
+    B -- "投注按鈕" --> C["開啟 LiveBettingSheet"]
+    B -- "聊天室推單卡片" --> D["handleChangeTab liveBetting"]
+    D --> C
+    C --> E{"競猜類型?"}
+    E -- "PK 競猜" --> F["選擇主持/嘉賓陣營"]
+    E -- "獎池競猜" --> G["選擇投注項"]
+    E -- "娛樂競猜" --> H["選擇投注項"]
+    F --> I["設定投注金額"]
+    G --> I
+    H --> I
+    I --> J{"續投/倍投?"}
+    J -- "一般" --> K["確認投注"]
+    J -- "續投" --> K
+    J -- "倍投" --> K
+    K --> L["投注記錄"]
+    L --> M["navigateTo bet-record"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>triggerSource 區分從按鈕還是聊天室觸發，影響打點統計</li>
+              <li>續投、倍投、一鍵下注功能來自 GOR-5182/5183</li>
+              <li>投注走 Unify 中間層轉接三方場館，三方異常時錯誤訊息不明確</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-9">
+        <div class="tool-section-header"><h2>1.9 Cocos 遊戲動線</h2></div>
+        <div class="tool-section-desc">進入 Cocos 遊戲直播間 → iframe 通訊 → 面板切換</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">Cocos 遊戲動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["點擊 LiveCard roomType=7"] --> B["進入 Cocos 直播間"]
+    B --> C["enterGame API gameId=8930"]
+    C --> D{"自動轉帳?"}
+    D -- "否" --> E["彈出轉帳彈窗"]
+    D -- "是" --> F["載入 Cocos iframe"]
+    E --> F
+    F --> G["Cocos Init → cocosLoading=false"]
+    G --> H["initGame 發送遊戲參數"]
+    H --> I["遊戲進行中"]
+    I --> J{"面板切換?"}
+    J -- "遊戲" --> K["GAME 面板"]
+    J -- "投注記錄" --> L["BET_RECORD"]
+    J -- "資訊" --> M["INFO"]
+    J -- "開路" --> N["OPEN_ROAD"]
+    J -- "聊天" --> O["CHAT"]
+    I --> P{"異常事件?"}
+    P -- "主播切遊戲" --> Q["ChangeGame → 重新 initGame"]
+    P -- "斷線" --> R["重新連線"]
+    P -- "下播" --> S["AnchorOfflineDialog"]
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>支援 4 種遊戲：百家樂(5)/牛牛(4)/龍虎(32)/紅黑大戰(40)</li>
+              <li>遊戲引擎跑在 iframe 內，前端只能透過 postMessage 通訊，遊戲 bug 前端無法 hotfix</li>
+              <li>玩家勝利時：在聊天面板顯示前端動畫 3 秒，在遊戲面板由 Cocos 自行顯示</li>
+              <li>10 種 EndGameNoticeType，其中 Disconnected 會自動重連，AnchorOffline 彈對話框</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              主邏輯：pages/live/live-casino/composable/useCocosGame.ts（415 行）<br>
+              iframe 通訊：handleCocosMessage（postMessage 雙向）<br>
+              遊戲狀態：GameStateMap — 讀取中/開盤中/開獎中
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <hr class="tool-divider">
+
+      <div class="tool-section" id="uf-1-10">
+        <div class="tool-section-header"><h2>1.10 主播搜尋與篩選動線</h2></div>
+        <div class="tool-section-desc">廣場主播 Tab 的搜尋、篩選、排序與無限捲動</div>
+
+        <div class="mermaid-card">
+          <div class="mermaid-card-title">主播搜尋篩選動線</div>
+          <div class="mermaid-card-body">
+            <div class="mermaid">
+flowchart LR
+    A["廣場「主播」Tab"] --> B{"已登入?"}
+    B -- "否" --> C["觸發登入 Sheet"]
+    B -- "是" --> D["載入分類標籤"]
+    D --> E["前端插入全部 categoryId=0"]
+    E --> F{"操作?"}
+    F -- "切換分類" --> G{"是體育類別?"}
+    G -- "是" --> H["顯示人氣/紅單三級選項"]
+    G -- "否" --> I["隱藏三級選項"]
+    H --> J["getStreamerList API"]
+    I --> J
+    F -- "搜尋" --> K["SearchSheet + 熱搜關鍵字"]
+    K --> L["popularkeywords API"]
+    L --> J
+    F -- "向下滾動" --> M["無限捲動 page++"]
+    M --> J
+    J --> N["主播卡片列表"]
+    N --> O{"載完?"}
+    O -- "length >= maxCount" --> P["停止載入"]
+    O -- "否" --> M
+            </div>
+          </div>
+          <div class="pm-notice">
+            <ul>
+              <li>每頁 30 筆，搭配 CustomInfiniteScroll 自動分頁</li>
+              <li>非體育類別（美女等）不顯示人氣/紅單排序選項</li>
+              <li>搜尋歷史前端存 Storage，上限 10 筆；熱門搜索取後端近 90 天前 10 名</li>
+              <li>取消關注有二次確認彈窗</li>
+            </ul>
+          </div>
+          <details class="rd-ref">
+            <summary>RD 參考（展開）</summary>
+            <div class="rd-content">
+              主檔案：pages/live/components/Streamer/index.vue（224 行）<br>
+              API：GET /anchor/listV2（分頁+篩選）、GET /anchor/popularkeywords（熱搜）<br>
+              搜尋組件：SearchSheet + storageKey
+            </div>
+          </details>
+        </div>
+      </div>
+
     </div><!-- /tab-panel userflow -->
 
     <!-- ================================================================ -->
@@ -1466,7 +1709,7 @@ sequenceDiagram
           <span>模組耦合 8</span>
           <span>系統限制 6</span>
           <span>技術限制 14</span>
-          <span>業務限制 7</span>
+          <span>業務限制 8</span>
         </div>
 
         <!-- ===== 模組耦合 ===== -->
@@ -1859,220 +2102,121 @@ sequenceDiagram
 
     </div><!-- /tab-panel constraints -->
 
+    <div class="footer">
+      <p>廣場/直播間 &middot; 功能知識庫</p>
+      <div class="footer-links">
+        <a href="features.html">回模組總覽 &rarr;</a>
+        <a href="index.html">回首頁 &rarr;</a>
+      </div>
+      <p style="margin-top:12px;">最後更新：2026-04-14</p>
+    </div>
+
   </div><!-- /main-content -->
 </div><!-- /layout -->
-</div>
 
 <script>
-  // Mermaid init
   mermaid.initialize({
-    startOnLoad: false,
-    theme: 'dark',
-    themeVariables: {
-      primaryColor: '#1e293b',
-      primaryTextColor: '#f1f5f9',
-      lineColor: '#475569',
-      secondaryColor: '#334155'
-    }
+    startOnLoad: false, theme: 'dark',
+    flowchart: { useMaxWidth: false, htmlLabels: true },
+    sequence: { useMaxWidth: false },
+    themeVariables: { primaryColor: '#1e293b', primaryTextColor: '#f1f5f9', lineColor: '#475569', secondaryColor: '#334155', fontSize: '16px', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }
   });
 
-  // ===== Side Nav Data =====
-  const sideNavData = {
-    overview: {
-      title: '功能總覽',
-      items: [
-        { id: 'sec-overview', label: '0 模組概覽' },
-        { id: 'sec-flow', label: '1 主要動線' },
-        { type: 'group', label: '廣場' },
-        { id: 'nav-plaza', label: '2 廣場主頁' },
-        { type: 'group', label: '直播間' },
-        { id: 'nav-half-screen', label: '2.5 直式半屏' },
-        { id: 'nav-vertical', label: '3 直式娛樂' },
-        { id: 'nav-chatroom', label: '4 聊天室' },
-        { id: 'nav-openroom', label: '5 開房對賭' },
-        { id: 'nav-gift', label: '6 送禮' },
-        { id: 'nav-anchor', label: '7 主播個人頁' },
-        { id: 'nav-funky', label: '8 Funky 火箭' },
-        { id: 'nav-cocos', label: '9 Cocos 遊戲' },
-        { type: 'group', label: '周邊' },
-        { id: 'nav-schedule', label: '10 節目表' },
-        { id: 'nav-ranking', label: '11 排行榜' },
-        { id: 'nav-videohub', label: '12 影片專區' },
-        { id: 'nav-common', label: '13 通用規則' },
-      ]
-    },
-    userflow: {
-      title: 'User Flow',
-      items: [
-        { id: 'uf-1-1', label: '廣場 → 直播間' },
-        { id: 'uf-1-2', label: '聊天互動' },
-        { id: 'uf-1-3', label: '送禮' },
-        { id: 'uf-1-4', label: '開房對賭' },
-        { id: 'uf-1-5', label: '主播頁瀏覽' }
-      ]
-    },
-    swimlane: {
-      title: '泳道圖',
-      items: [
-        { id: 'sl-3-1', label: '直播間初始化' },
-        { id: 'sl-3-2', label: 'WS 聊天訊息流' },
-        { id: 'sl-3-3', label: '送禮流程' },
-        { id: 'sl-3-4', label: '開房建房+進房' },
-        { id: 'sl-3-5', label: 'Funky 火箭' },
-        { id: 'sl-3-6', label: 'Cocos 遊戲初始化' }
-      ]
-    },
-    constraints: {
-      title: '跨服務限制',
-      items: [
-        { id: 'cat-coupling', label: '\uD83D\uDFE1 模組耦合' },
-        { id: 'cat-system', label: '\uD83D\uDD34 系統限制' },
-        { id: 'cat-tech', label: '\uD83D\uDD35 技術限制' },
-        { id: 'cat-biz', label: '\u26AB 業務限制' }
-      ]
-    }
-  };
+  const tabTitles = { overview: '功能總覽', userflow: 'User Flow', swimlane: '泳道圖', constraints: '跨服務限制' };
 
-  // ===== Side Nav Rendering =====
+  function buildSideNavData(tabId) {
+    const panel = document.getElementById(tabId);
+    if (!panel) return null;
+    const items = [];
+    if (tabId === 'overview') {
+      const sections = panel.querySelectorAll('.section[id]');
+      if (sections.length > 0) {
+        sections.forEach(sec => { const titleEl = sec.querySelector('.section-title'); items.push({ id: sec.id, label: titleEl ? titleEl.textContent.trim() : sec.id }); });
+      } else {
+        panel.querySelectorAll('.page-logic-card').forEach((card, i) => { if (!card.id) card.id = 'plc-' + i; });
+        panel.querySelectorAll('.page-logic-card').forEach(card => { const summary = card.querySelector('summary'); if (summary) { items.push({ id: card.id, label: summary.textContent.replace(/\d+ 條規則/g, '').trim() }); } });
+      }
+    } else if (tabId === 'userflow' || tabId === 'swimlane') {
+      panel.querySelectorAll('.mermaid-card').forEach(card => { const id = card.id; const title = card.querySelector('.mermaid-card-title')?.textContent?.trim() || id; if (id) items.push({ id, label: title }); });
+    } else if (tabId === 'constraints') {
+      panel.querySelectorAll('.constraint-category, [id^="cst-"]').forEach(cat => { const id = cat.id; const h3 = cat.querySelector('h3, .constraint-header h3'); if (id) items.push({ id, label: h3?.textContent?.trim() || id }); });
+    }
+    return { title: tabTitles[tabId] || tabId, items };
+  }
+
   const sideNavInner = document.getElementById('sideNavInner');
   let currentTabId = 'overview';
   let scrollSpyObserver = null;
 
   function renderSideNav(tabId) {
-    const data = sideNavData[tabId];
+    const data = buildSideNavData(tabId);
     if (!data) { sideNavInner.innerHTML = ''; return; }
-
     let html = '<div class="sn-title">' + data.title + '</div>';
     data.items.forEach(item => {
-      if (item.type === 'group') {
-        html += '<div class="sn-group">' + item.group + '</div>';
-      } else {
-        html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
-      }
+      if (item.group) { html += '<div class="sn-group">' + item.group + '</div>'; }
+      else { html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>'; }
     });
     sideNavInner.innerHTML = html;
-
     sideNavInner.querySelectorAll('.sn-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
         const target = document.getElementById(el.getAttribute('data-target'));
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (target.tagName === 'DETAILS' && !target.open) target.open = true;
+          const y = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          highlightNavItem(el.getAttribute('data-target'));
         }
       });
     });
-
     setupScrollSpy(tabId);
   }
 
   function setupScrollSpy(tabId) {
-    if (scrollSpyObserver) {
-      scrollSpyObserver.disconnect();
-      scrollSpyObserver = null;
-    }
-
-    const data = sideNavData[tabId];
+    if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
+    const data = buildSideNavData(tabId);
     if (!data) return;
-
     const targetIds = data.items.filter(i => i.id).map(i => i.id);
     const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
     if (targets.length === 0) return;
-
     const visibleSections = new Map();
-
     scrollSpyObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          visibleSections.set(entry.target.id, entry.boundingClientRect.top);
-        } else {
-          visibleSections.delete(entry.target.id);
-        }
-      });
-
-      let topId = null;
-      let topY = Infinity;
-      visibleSections.forEach((y, id) => {
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top < topY) { topY = rect.top; topId = id; }
-        }
-      });
-
-      if (!topId && targets.length > 0) {
-        let closestAbove = null;
-        let closestDist = -Infinity;
-        targets.forEach(t => {
-          const rect = t.getBoundingClientRect();
-          if (rect.top < 0 && rect.top > closestDist) {
-            closestDist = rect.top;
-            closestAbove = t.id;
-          }
-        });
-        if (closestAbove) topId = closestAbove;
-      }
-
+      entries.forEach(entry => { if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.boundingClientRect.top); else visibleSections.delete(entry.target.id); });
+      let topId = null, topY = Infinity;
+      visibleSections.forEach((y, id) => { const el = document.getElementById(id); if (el) { const rect = el.getBoundingClientRect(); if (rect.top < topY) { topY = rect.top; topId = id; } } });
+      if (!topId && targets.length > 0) { let closestDist = -Infinity; targets.forEach(t => { const rect = t.getBoundingClientRect(); if (rect.top < 0 && rect.top > closestDist) { closestDist = rect.top; topId = t.id; } }); }
       if (topId) highlightNavItem(topId);
-    }, {
-      rootMargin: '-80px 0px -60% 0px',
-      threshold: 0
-    });
-
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
     targets.forEach(t => scrollSpyObserver.observe(t));
   }
 
   function highlightNavItem(id) {
-    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
-      el.classList.toggle('active', el.getAttribute('data-target') === id);
-    });
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => { el.classList.toggle('active', el.getAttribute('data-target') === id); });
     const activeEl = sideNavInner.querySelector('.sn-item.active');
-    if (activeEl) {
-      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    }
+    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  // ===== Tab switching =====
-  const tabPills = document.querySelectorAll('.tab-pill');
+  const snTabs = document.querySelectorAll('.sn-tab');
   const tabPanels = document.querySelectorAll('.tab-panel');
   let mermaidRendered = {};
 
   function switchTab(tabId) {
     currentTabId = tabId;
-    tabPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-tab') === tabId));
+    snTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabId));
     tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
-
-    if (!mermaidRendered[tabId]) {
-      const panel = document.getElementById(tabId);
-      const diagrams = panel.querySelectorAll('.mermaid');
-      if (diagrams.length > 0) {
-        mermaid.run({ nodes: diagrams });
-        mermaidRendered[tabId] = true;
-      }
-    }
-
+    if (!mermaidRendered[tabId]) { const panel = document.getElementById(tabId); const diagrams = panel.querySelectorAll('.mermaid'); if (diagrams.length > 0) { mermaid.run({ nodes: diagrams }); mermaidRendered[tabId] = true; } }
     renderSideNav(tabId);
     history.replaceState(null, '', '#' + tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  tabPills.forEach(pill => {
-    pill.addEventListener('click', (e) => {
-      e.preventDefault();
-      switchTab(pill.getAttribute('data-tab'));
-    });
-  });
+  snTabs.forEach(tab => { tab.addEventListener('click', (e) => { e.preventDefault(); switchTab(tab.getAttribute('data-tab')); }); });
 
-  // ===== Init =====
   document.querySelector('.layout').classList.add('has-side-nav');
-
   const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
   const hash = location.hash.slice(1);
-  if (validTabs.includes(hash)) {
-    switchTab(hash);
-  } else {
-    mermaidRendered['overview'] = true;
-    renderSideNav('overview');
-  }
+  if (validTabs.includes(hash)) { switchTab(hash); }
+  else { mermaidRendered['overview'] = true; renderSideNav('overview'); }
 </script>
 </body>
 </html>

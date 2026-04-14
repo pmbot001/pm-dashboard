@@ -488,7 +488,7 @@
         <div class="module-intro" id="nav-overview-intro">
           <div class="module-intro-title">體育模組總覽</div>
           <div class="module-intro-desc">
-            體育模組是多場館賽事聚合入口，包含 <b style="color:#f97316">6 個主要頁面</b>、<b style="color:#f97316">8 個場館</b>（FB / IM / OB / SABA / YOO / IM-Esport / LiveCasino / WS168）、<b style="color:#f97316">300+ 前端元件</b>。我們不是做市商，不自己出賽事、不自己定賠率、不自己做直播。所有資料都是向場館拿的，我們是聚合入口。
+            體育模組是多場館賽事聚合入口，包含 <b style="color:#f97316">6 個主要頁面 + 2 個附屬頁面</b>、<b style="color:#f97316">8 個場館</b>（FB / IM / OB / SABA / YOO / IM-Esport / LiveCasino / WS168）、<b style="color:#f97316">300+ 前端元件</b>。我們不是做市商，不自己出賽事、不自己定賠率、不自己做直播。所有資料都是向場館拿的，我們是聚合入口。
           </div>
         </div>
 
@@ -1050,6 +1050,134 @@
               <div class="rd-content">
                 Code: AI selection within live room (match-detail)<br>
                 Config: aiSelection toggle in backend
+              </div>
+            </details>
+
+          </div>
+        </details>
+
+        <!-- ========== 附屬功能分隔 ========== -->
+        <div class="logic-merge-divider">附屬功能</div>
+
+        <!-- ===== 7. 賽事結果 ===== -->
+        <details class="page-logic-card" open>
+          <summary>&#128202; 賽事結果 <span class="rule-count">5 條規則</span></summary>
+          <div class="card-body">
+
+            <div class="card-body-split">
+              <div class="card-right" style="flex:1;">
+                <div class="convergence-warning">
+                  &#9888; Copy 問題 &mdash; pages/result/ 和 pages/mine/match-result/ 是兩份相似但獨立維護的 copy。改一邊要手動同步另一邊，否則行為不一致。
+                </div>
+                <table class="logic-table">
+                  <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>使用者查詢賽事結果</td>
+                      <td>選擇場館 &rarr; 選擇聯賽 &rarr; 檢視賽果列表</td>
+                      <td><span class="cost-tag cost-code">程式層</span></td>
+                      <td>場館 tab 來自 gameStore.sportVendorList，和首頁/排程頁共用同一資料源</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>場館下發賽果</td>
+                      <td>聯賽列表 + 賽果列表 + 賽果詳情三層結構</td>
+                      <td><span class="cost-tag cost-venue">場館限制</span></td>
+                      <td>比分和結算結果由場館決定，前端僅展示</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>兩份 copy 程式碼</td>
+                      <td>result/index.vue 是 mine/match-result/ 的獨立維護版</td>
+                      <td><span class="cost-tag cost-code">程式層</span></td>
+                      <td>架構債：需求改動要兩邊同步，漏改 = 行為不一致</td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>聯賽篩選</td>
+                      <td>先載入聯賽列表，再依選擇載入賽果</td>
+                      <td><span class="cost-tag cost-code">程式層</span></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>5</td>
+                      <td>賽果詳情</td>
+                      <td>點擊單場賽事展開詳細結算資訊</td>
+                      <td><span class="cost-tag cost-venue">場館限制</span></td>
+                      <td>結算時間和規則由場館方決定</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="pm-notice">
+              <ul>
+                <li>pages/result/ 和 pages/mine/match-result/ 是兩份獨立維護的 copy，改動時務必兩邊同步。</li>
+                <li>場館 tab 使用 gameStore.sportVendorList，和體育首頁/排程頁共用，改 game store = 這裡也要回測。</li>
+              </ul>
+            </div>
+
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                Code: pages/result/index.vue + pages/mine/match-result/<br>
+                APIs: POST /api/unify/v2/:platform/result/tournament/list, POST /api/unify/v2/:platform/result/list, POST /api/unify/v2/:platform/result/detail<br>
+                Store: gameStore.sportVendorList（場館 tab 來源）
+              </div>
+            </details>
+
+          </div>
+        </details>
+
+        <!-- ===== 8. 賽程 ===== -->
+        <details class="page-logic-card" open>
+          <summary>&#128197; 賽程 <span class="rule-count">3 條規則</span></summary>
+          <div class="card-body">
+
+            <div class="card-body-split">
+              <div class="card-right" style="flex:1;">
+                <table class="logic-table">
+                  <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>使用者查看賽程</td>
+                      <td>按場館 tab 查看未來賽事安排</td>
+                      <td><span class="cost-tag cost-code">程式層</span></td>
+                      <td>場館 tab 來自 gameStore.sportVendorList，和首頁/賽果頁共用同一資料源</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>場館切換</td>
+                      <td>切換場館 tab 載入該場館的賽程資料</td>
+                      <td><span class="cost-tag cost-venue">場館限制</span></td>
+                      <td>賽程資料由場館下發，各場館支援的球種和聯賽不同</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>與 game store 耦合</td>
+                      <td>sportVendorList 變更會影響賽程頁場館 tab</td>
+                      <td><span class="cost-tag cost-config">設定層</span></td>
+                      <td>改 game store 場館排序/過濾邏輯 = 賽程頁要回測</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="pm-notice">
+              <ul>
+                <li>場館 tab 使用 gameStore.sportVendorList，改 game store = 賽程頁也要回測。</li>
+              </ul>
+            </div>
+
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">
+                Code: pages/schedule/<br>
+                Store: gameStore.sportVendorList（場館 tab 來源）
               </div>
             </details>
 
