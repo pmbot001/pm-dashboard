@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{MODULE_TITLE}} — 功能知識庫</title>
+  <link rel="stylesheet" href="css/kb-shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ===== Compact Sticky Header ===== */
+    .compact-header {
+      position: sticky; top: 0; z-index: 150;
+      background: #0f172a; border-bottom: 1px solid #334155;
+      padding: 8px 16px; height: 50px; box-sizing: border-box;
+      display: flex; align-items: center;
+    }
+    .compact-header .module-title-text {
+      font-size: 20px; font-weight: 700; color: #f1f5f9;
+    }
+
+    /* ===== Old tab pills — hidden, replaced by side nav ===== */
+    .tab-nav { display: none !important; }
+    .tab-pill { display: none !important; }
+    .compact-header-pills { display: none !important; }
+
+    /* ===== Side Nav Module List ===== */
+    .sn-module-list {
+      padding: 8px 8px 8px; border-bottom: 1px solid #1e293b;
+    }
+    .sn-module {
+      display: block; padding: 5px 12px; font-size: 14px;
+      color: #94a3b8; text-decoration: none; border-radius: 4px;
+      transition: all .1s;
+    }
+    .sn-module:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-module.active { color: #f97316; font-weight: 600; }
+
+    /* ===== Side Nav Tab List ===== */
+    .sn-tab-list {
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 6px 8px 8px; border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .sn-tab {
+      display: block; padding: 8px 12px; font-size: 15px; font-weight: 600;
+      color: #94a3b8; text-decoration: none; border-radius: 6px;
+      transition: all .12s; cursor: pointer;
+    }
+    .sn-tab:hover { color: #e2e8f0; background: #1e293b; }
+    .sn-tab.active { color: #fff; background: #f97316; }
+
+    /* ===== Tab Panels ===== */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ===== Side Nav (desktop fixed left) ===== */
+    .side-nav {
+      position: fixed; left: 0; top: 50px; width: 220px;
+      height: calc(100vh - 50px); background: #111827;
+      border-right: 1px solid #1e293b; z-index: 140;
+      display: flex; flex-direction: column;
+    }
+    .side-nav-inner {
+      flex: 1; overflow-y: auto; padding: 8px 0 24px;
+      scrollbar-width: thin; scrollbar-color: #334155 transparent;
+    }
+    .side-nav-inner::-webkit-scrollbar { width: 4px; }
+    .side-nav-inner::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .side-nav .sn-title {
+      padding: 12px 16px 6px; font-size: 13px; font-weight: 700;
+      color: #e2e8f0; border-bottom: 1px solid #1e293b; margin-bottom: 4px;
+    }
+    .side-nav .sn-group {
+      padding: 10px 16px 4px; font-size: 12px; font-weight: 600;
+      color: #475569; letter-spacing: .5px;
+    }
+    .side-nav .sn-item {
+      display: block; padding: 6px 16px 6px 18px; font-size: 14px;
+      color: #94a3b8; cursor: pointer; border-left: 3px solid transparent;
+      transition: all .12s; text-decoration: none; line-height: 1.4;
+    }
+    .side-nav .sn-item:hover { color: #e2e8f0; background: #1e293b; }
+    .side-nav .sn-item.active {
+      color: #fff; border-left-color: #f97316; background: rgba(249,115,22,.06);
+    }
+    .has-side-nav .main-content.v2-main { margin-left: 220px !important; }
+    @media (max-width: 768px) {
+      .side-nav { display: none; }
+      .has-side-nav .main-content.v2-main { margin-left: 0 !important; }
+    }
+
+    /* ===== Mermaid Card ===== */
+    .mermaid-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      margin-bottom: 28px; overflow: hidden;
+    }
+    .mermaid-card-title {
+      padding: 14px 18px; font-size: 16px; font-weight: 700; color: #f1f5f9;
+      border-bottom: 1px solid #334155;
+    }
+    .mermaid-card-body { padding: 20px; overflow-x: auto; }
+    .mermaid-card-body .mermaid { display: flex; justify-content: center; }
+    .mermaid-card-body .mermaid svg { min-width: 500px; max-width: 100%; }
+    .mermaid-card-body .mermaid .nodeLabel,
+    .mermaid-card-body .mermaid .edgeLabel,
+    .mermaid-card-body .mermaid .label,
+    .mermaid-card-body .mermaid text { font-size: 15px !important; }
+    .mermaid-card-body .mermaid .messageText,
+    .mermaid-card-body .mermaid .loopText,
+    .mermaid-card-body .mermaid .noteText,
+    .mermaid-card-body .mermaid .actor { font-size: 15px !important; }
+
+    /* ===== PM Notice (yellow) ===== */
+    .pm-notice {
+      background: #2a2210; border-left: 3px solid #fbbf24;
+      padding: 12px 16px; margin: 12px 18px; border-radius: 6px;
+      font-size: 13px; color: #fde68a;
+    }
+    .pm-notice::before { content: "PM 注意"; font-weight: 700; display: block; margin-bottom: 4px; color: #fbbf24; }
+    .pm-notice ul { margin: 6px 0 0 18px; }
+    .pm-notice li { margin-bottom: 4px; }
+
+    /* ===== RD Reference (collapsible) ===== */
+    .rd-ref { margin: 8px 18px 16px; }
+    .rd-ref summary { font-size: 12px; color: #64748b; cursor: pointer; padding: 6px 0; }
+    .rd-ref summary:hover { color: #94a3b8; }
+    .rd-ref .rd-content {
+      font-size: 12px; color: #94a3b8; padding: 8px 12px;
+      background: #0f172a; border-radius: 6px; margin-top: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace; line-height: 1.8;
+    }
+
+    /* ===== Page Logic Card (collapsible, split layout) ===== */
+    .page-logic-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin-bottom: 18px; overflow: hidden;
+    }
+    .page-logic-card summary {
+      padding: 16px 20px; font-size: 18px; font-weight: 700; color: #f1f5f9;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      user-select: none; list-style: none;
+    }
+    .page-logic-card summary::-webkit-details-marker { display: none; }
+    .page-logic-card summary::before { content: "▸"; color: #64748b; font-size: 14px; transition: transform .2s; }
+    .page-logic-card[open] summary::before { transform: rotate(90deg); color: #f97316; }
+    .page-logic-card summary:hover { background: #263548; }
+    .page-logic-card .rule-count { font-size: 13px; color: #64748b; font-weight: 400; }
+    .page-logic-card .card-body { padding: 0 18px 16px; border-top: 1px solid #334155; }
+
+    /* Split layout: image left, table right */
+    .card-body-split {
+      display: flex; gap: 18px; align-items: flex-start; margin-top: 12px;
+    }
+    .card-body-split .card-left {
+      flex-shrink: 0; width: 260px; position: sticky; top: 80px;
+    }
+    .card-body-split .card-left img {
+      width: 100%; border-radius: 8px; border: 1px solid #334155;
+    }
+    .card-body-split .card-right { flex: 1; min-width: 0; overflow-x: auto; }
+    @media (max-width: 900px) {
+      .card-body-split { flex-direction: column; }
+      .card-body-split .card-left { width: 200px; position: static; }
+    }
+
+    /* ===== Logic Table (5 columns) ===== */
+    .logic-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+    .logic-table th {
+      background: #334155; color: #f1f5f9; padding: 8px 10px; text-align: left; font-size: 14px;
+    }
+    .logic-table td {
+      background: #1e293b; padding: 12px 14px; border-bottom: 1px solid #334155;
+      color: #cbd5e1; vertical-align: top;
+    }
+    .logic-table tr:hover td { background: #263548; }
+
+    /* ===== Cost Tags ===== */
+    .cost-tag { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 4px; font-weight: 600; }
+    .cost-locked { background: #3b1a1a; color: #fca5a5; }
+    .cost-config { background: #2a2210; color: #fde68a; }
+    .cost-code { background: #1a2638; color: #93c5fd; }
+    .cost-venue { background: #3b1a1a; color: #fca5a5; border: 1px solid #7f1d1d; }
+    .cost-mixed { background: #1a2638; color: #c4b5fd; border: 1px solid #4c1d95; }
+
+    /* ===== Convergence Warning (red) ===== */
+    .convergence-warning {
+      background: #3b1a1a; border: 1px solid #7f1d1d; border-radius: 8px;
+      padding: 12px 16px; margin: 12px 0; font-size: 13px; color: #fca5a5; font-weight: 600;
+    }
+
+    /* ===== PM Focus Callout (amber) ===== */
+    .pm-focus {
+      background: #2a2210; border: 1px solid #78350f; border-radius: 10px;
+      padding: 16px 20px; margin-bottom: 24px; font-size: 14px; color: #fde68a; line-height: 1.7;
+    }
+    .pm-focus b { color: #fbbf24; }
+
+    /* ===== Flow Box (main user path) ===== */
+    .flow-box {
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      padding: 18px; margin-bottom: 18px;
+    }
+    .flow-label { font-size: 14px; color: #94a3b8; margin-bottom: 10px; }
+    .flow-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .flow-step {
+      background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+      padding: 8px 14px; font-size: 13px; color: #e2e8f0; text-align: center; min-width: 80px;
+    }
+    .flow-step.highlight { background: #f97316; border-color: #f97316; color: #fff; font-weight: 700; }
+    .flow-arrow { color: #475569; font-size: 18px; }
+
+    /* ===== Constraint Cards (four colors) ===== */
+    .constraint-category { margin-bottom: 24px; }
+    .constraint-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .constraint-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; padding: 0; border: none; }
+    .constraint-pm-guide { font-size: 14px; color: #94a3b8; margin-bottom: 12px; font-style: italic; }
+    .constraint-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .constraint-card.cat-venue { border-left: 3px solid #f87171; }
+    .constraint-card.cat-coupling { border-left: 3px solid #fbbf24; }
+    .constraint-card.cat-tech { border-left: 3px solid #60a5fa; }
+    .constraint-card.cat-biz { border-left: 3px solid #64748b; }
+    .constraint-card summary {
+      padding: 10px 14px; font-size: 15px; font-weight: 600; color: #e2e8f0;
+      cursor: pointer; user-select: none; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .constraint-card summary::-webkit-details-marker { display: none; }
+    .constraint-card summary::after {
+      content: "▸"; color: #475569; font-size: 12px; margin-left: auto; transition: transform .2s;
+    }
+    .constraint-card[open] summary::after { transform: rotate(90deg); color: #f97316; }
+    .constraint-card summary:hover { background: #263548; }
+    .constraint-detail {
+      padding: 10px 14px 14px; border-top: 1px solid #334155;
+      font-size: 15px; color: #cbd5e1; line-height: 1.7;
+    }
+    .constraint-detail .label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: .5px; margin-top: 8px;
+    }
+    .constraint-detail .label:first-child { margin-top: 0; }
+
+    /* ===== Stats Pill ===== */
+    .stats-pill {
+      display: inline-flex; gap: 12px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 8px 18px; font-size: 15px; color: #e2e8f0;
+      font-weight: 600; margin-bottom: 20px;
+    }
+
+    /* ===== Source Badge ===== */
+    .source-badge {
+      display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 4px;
+      font-weight: 600; margin-left: 6px;
+    }
+    .source-badge.code { background: #1a2638; color: #93c5fd; }
+    .source-badge.jira { background: #3b2f1a; color: #fde68a; }
+    .source-badge.rp { background: #1a2e1a; color: #86efac; }
+
+    /* ===== Tool Section ===== */
+    .tool-section { max-width: 960px; margin: 0 auto; padding: 50px 16px 30px; }
+    .tool-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-section-header h2 { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+    .tool-section-desc { color: #94a3b8; font-size: 16px; margin-bottom: 20px; }
+
+    /* ===== Module Intro ===== */
+    .module-intro {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      padding: 24px; margin-bottom: 20px;
+    }
+    .module-intro-title { font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; }
+    .module-intro-desc { font-size: 15px; color: #cbd5e1; line-height: 1.7; }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- ============ Side Nav — 所有導航集中在這裡 ============ -->
+  <aside class="side-nav" id="sideNav">
+    <!-- 1. 模組切換（永遠展開） -->
+    <div class="sn-module-list">
+      <a class="sn-module" href="sports.html">⚽ 體育賽事</a>
+      <a class="sn-module" href="system.html">🔐 系統</a>
+      <a class="sn-module" href="entertainment.html">🎰 娛樂城</a>
+      <a class="sn-module" href="activities.html">🎁 活動中心</a>
+      <a class="sn-module" href="live.html">📺 直播</a>
+      <a class="sn-module" href="mine.html">👤 我的</a>
+      <a class="sn-module" href="others.html">💬 其他</a>
+      <a class="sn-module" href="deposit.html">💰 金流</a>
+    </div>
+    <!-- 2. Tab 切換 -->
+    <div class="sn-tab-list" id="sideNavTabs">
+      <div class="sn-group">分類</div>
+      <a class="sn-tab active" data-tab="overview" href="#overview">📋 功能總覽</a>
+      <a class="sn-tab" data-tab="userflow" href="#userflow">🔀 User Flow</a>
+      <a class="sn-tab" data-tab="swimlane" href="#swimlane">🏊 泳道圖</a>
+      <a class="sn-tab" data-tab="constraints" href="#constraints">🚧 跨服務限制</a>
+    </div>
+    <!-- 3. 當前 tab 的內容導航（動態掃描 DOM 產生） -->
+    <div class="side-nav-inner" id="sideNavInner"></div>
+  </aside>
+
+  <div class="main-content v2-main">
+    <!-- ============ Header — 只放標題 ============ -->
+    <nav class="compact-header" id="tabnav">
+      <span class="module-title-text">{{MODULE_ICON}} {{MODULE_TITLE}}</span>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- TAB 1: 功能總覽                                                   -->
+    <!-- ================================================================ -->
+    <div class="tab-panel active" id="overview">
+      <div class="tool-section">
+
+        <!-- 模組概覽 -->
+        <div class="module-intro">
+          <div class="module-intro-title">{{MODULE_TITLE}}模組總覽</div>
+          <div class="module-intro-desc">
+            {{MODULE_DESCRIPTION}}
+          </div>
+        </div>
+
+        <div class="stats-pill">{{PITFALL_COUNT}} 踩坑紀錄 · {{CONSTRAINT_COUNT}} 限制 · {{COUPLING_COUNT}} 耦合點</div>
+
+        <!-- PM 三條主要動線 -->
+        <div class="pm-focus">
+          {{PM_FOCUS_CONTENT}}
+        </div>
+
+        <!-- 主要動線 -->
+        <h2 style="font-size:22px; font-weight:700; color:#f1f5f9; margin-bottom:12px;">主要動線</h2>
+        <div class="flow-box">
+          <div class="flow-label">{{FLOW_LABEL}}</div>
+          <div class="flow-row">
+            <!-- {{FLOW_STEPS}} -->
+          </div>
+        </div>
+
+        <!-- 各頁面業務規則 -->
+        <h2 style="font-size:22px; font-weight:700; color:#f1f5f9; margin:28px 0 12px;">各頁面業務規則</h2>
+
+        <!--
+          每個頁面一個 page-logic-card，結構如下：
+
+          <details class="page-logic-card" open>
+            <summary>{{PAGE_ICON}} {{PAGE_NAME}} <span class="rule-count">{{N}} 條規則</span></summary>
+            <div class="card-body">
+              <div class="card-body-split">
+                <div class="card-left">
+                  <img src="images/{{module}}/{{page}}.png" alt="{{PAGE_NAME}}">
+                </div>
+                <div class="card-right">
+                  ★ 如果有 convergence-warning 放這裡 ★
+                  <table class="logic-table">
+                    <thead><tr><th>#</th><th>條件</th><th>行為</th><th>改動成本</th><th>PM 注意</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td>使用者做了什麼</td>
+                        <td>系統怎麼回應</td>
+                        <td><span class="cost-tag cost-config">設定層</span></td>
+                        <td>PM 要注意什麼</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              ★ pm-notice 和 rd-ref 放在 card-body-split 外面 ★
+              <div class="pm-notice"><ul><li>...</li></ul></div>
+              <details class="rd-ref">
+                <summary>RD 參考（展開）</summary>
+                <div class="rd-content">Code paths, Figma nodeIds 放這裡</div>
+              </details>
+            </div>
+          </details>
+        -->
+
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 2: User Flow（全部 flowchart TD，上到下）                       -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="userflow">
+      <div class="tool-section">
+        <h2 class="tool-section-header">User Flow</h2>
+        <p class="tool-section-desc">使用者走過的路徑。寫需求時先畫這個，確認動線對了再往下。共 {{UF_COUNT}} 張。</p>
+
+        <!--
+          每張 User Flow：
+
+          <div class="mermaid-card" id="uf-N-N">
+            <div class="mermaid-card-title">N.N {{TITLE}}</div>
+            <div class="mermaid-card-body">
+              <div class="mermaid">
+flowchart TD
+    A["起點"] --> B["步驟"]
+    B --> C{"判斷?"}
+    C -- "是" --> D["結果A"]
+    C -- "否" --> E["結果B"]
+              </div>
+            </div>
+            <div class="pm-notice"><ul><li>...</li></ul></div>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">source file paths</div>
+            </details>
+          </div>
+        -->
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 3: 泳道圖                                                     -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="swimlane">
+      <div class="tool-section">
+        <h2 class="tool-section-header">泳道圖</h2>
+        <p class="tool-section-desc">前端 ↔ 後端 ↔ 場館之間的訊息流程。PM 看完知道延遲卡在誰身上。共 {{SL_COUNT}} 張。</p>
+
+        <!--
+          每張泳道圖：
+
+          <div class="mermaid-card" id="sl-N-N">
+            <div class="mermaid-card-title">N.N {{TITLE}}</div>
+            <div class="mermaid-card-body">
+              <div class="mermaid">
+sequenceDiagram
+    participant U as 使用者
+    participant FE as 前端
+    participant BE as 後端
+    participant V as 場館
+
+    U->>FE: 動作
+    FE->>BE: API 呼叫
+    BE->>V: 轉發
+    V-->>BE: 回應
+    BE-->>FE: 回傳
+    FE-->>U: 顯示結果
+              </div>
+            </div>
+            <div class="pm-notice"><ul><li>...</li></ul></div>
+            <details class="rd-ref">
+              <summary>RD 參考（展開）</summary>
+              <div class="rd-content">source file paths</div>
+            </details>
+          </div>
+        -->
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 4: 跨服務限制                                                  -->
+    <!-- ================================================================ -->
+    <div class="tab-panel" id="constraints">
+      <div class="tool-section">
+        <h2 class="tool-section-header">跨服務限制</h2>
+        <p class="tool-section-desc">四種顏色、四種回應方式。PM 照著顏色回覆業主就好。共 {{CONSTRAINT_COUNT}} 條。</p>
+
+        <!--
+          四個分類：
+
+          <div class="constraint-category" id="cat-venue">
+            <div class="constraint-header"><h3>🔴 場館限制（N 條）</h3></div>
+            <div class="constraint-pm-guide">碰到這類需求，不用轉 RD，直接告訴業主做不到。</div>
+
+            <details class="constraint-card cat-venue">
+              <summary>#1 限制標題 <span class="source-badge code">Code</span></summary>
+              <div class="constraint-detail">
+                <div class="label">描述</div>描述文字
+                <div class="label">影響範圍</div>影響範圍文字
+                <div class="label">來源</div>Code: file:line 或 Jira: TSD-XXXX
+              </div>
+            </details>
+          </div>
+
+          <div class="constraint-category" id="cat-coupling">
+            <div class="constraint-header"><h3>🟡 模組耦合（N 條）</h3></div>
+            <div class="constraint-pm-guide">收到改動需求時，把同步測試範圍寫進需求單。</div>
+            ...
+          </div>
+
+          <div class="constraint-category" id="cat-tech">
+            <div class="constraint-header"><h3>🔵 技術限制（N 條）</h3></div>
+            <div class="constraint-pm-guide">先別答應工時，拉 RD 評估可行性再回覆。</div>
+            ...
+          </div>
+
+          <div class="constraint-category" id="cat-biz">
+            <div class="constraint-header"><h3>⚫ 業務限制（N 條）</h3></div>
+            <div class="constraint-pm-guide">程式碼裡寫死的業務規則。</div>
+            ...
+          </div>
+        -->
+      </div>
+    </div>
+
+  </div><!-- .main-content -->
+</div><!-- .layout -->
+
+<script>
+  // ===== Mermaid Init =====
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    flowchart: { useMaxWidth: false, htmlLabels: true },
+    sequence: { useMaxWidth: false },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      lineColor: '#475569',
+      secondaryColor: '#334155',
+      fontSize: '16px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }
+  });
+
+  // ===== Side Nav Data (動態掃描 DOM) =====
+  const tabTitles = { overview: '功能總覽', userflow: 'User Flow', swimlane: '泳道圖', constraints: '跨服務限制' };
+
+  function buildSideNavData(tabId) {
+    const panel = document.getElementById(tabId);
+    if (!panel) return null;
+    const items = [];
+
+    if (tabId === 'overview') {
+      panel.querySelectorAll('.page-logic-card').forEach((card, i) => {
+        if (!card.id) card.id = 'plc-' + i;
+        const summary = card.querySelector('summary');
+        if (summary) {
+          const label = summary.textContent.replace(/\d+ 條規則/g, '').trim();
+          items.push({ id: card.id, label: label });
+        }
+      });
+    } else if (tabId === 'userflow' || tabId === 'swimlane') {
+      panel.querySelectorAll('.mermaid-card').forEach(card => {
+        const id = card.id;
+        const title = card.querySelector('.mermaid-card-title')?.textContent?.trim() || id;
+        if (id) items.push({ id, label: title });
+      });
+    } else if (tabId === 'constraints') {
+      panel.querySelectorAll('.constraint-category, [id^="cat-"]').forEach(cat => {
+        const id = cat.id;
+        const h3 = cat.querySelector('h3, .constraint-header h3');
+        const label = h3?.textContent?.trim() || id;
+        if (id) items.push({ id, label });
+      });
+    }
+
+    return { title: tabTitles[tabId] || tabId, items };
+  }
+
+  // ===== Side Nav Rendering =====
+  const sideNavInner = document.getElementById('sideNavInner');
+  let currentTabId = 'overview';
+  let scrollSpyObserver = null;
+
+  function renderSideNav(tabId) {
+    const data = buildSideNavData(tabId);
+    if (!data) { sideNavInner.innerHTML = ''; return; }
+
+    let html = '<div class="sn-title">' + data.title + '</div>';
+    data.items.forEach(item => {
+      if (item.group) {
+        html += '<div class="sn-group">' + item.group + '</div>';
+      } else {
+        html += '<a class="sn-item" data-target="' + item.id + '" href="#' + item.id + '">' + item.label + '</a>';
+      }
+    });
+    sideNavInner.innerHTML = html;
+
+    // Bind click events with scroll offset
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(el.getAttribute('data-target'));
+        if (target) {
+          if (target.tagName === 'DETAILS' && !target.open) target.open = true;
+          const y = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          highlightNavItem(el.getAttribute('data-target'));
+        }
+      });
+    });
+
+    // Setup scroll spy
+    setupScrollSpy(tabId);
+  }
+
+  function setupScrollSpy(tabId) {
+    if (scrollSpyObserver) { scrollSpyObserver.disconnect(); scrollSpyObserver = null; }
+    const data = buildSideNavData(tabId);
+    if (!data) return;
+    const targetIds = data.items.filter(i => i.id).map(i => i.id);
+    const targets = targetIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (targets.length === 0) return;
+
+    scrollSpyObserver = new IntersectionObserver((entries) => {
+      let topId = null, topY = Infinity;
+      targets.forEach(t => {
+        const rect = t.getBoundingClientRect();
+        if (rect.top >= 0 && rect.top < topY) { topY = rect.top; topId = t.id; }
+      });
+      if (!topId && targets.length > 0) {
+        let closestAbove = null, closestDist = -Infinity;
+        targets.forEach(t => {
+          const rect = t.getBoundingClientRect();
+          if (rect.top < 0 && rect.top > closestDist) { closestDist = rect.top; closestAbove = t.id; }
+        });
+        if (closestAbove) topId = closestAbove;
+      }
+      if (topId) highlightNavItem(topId);
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+    targets.forEach(t => scrollSpyObserver.observe(t));
+  }
+
+  function highlightNavItem(id) {
+    sideNavInner.querySelectorAll('.sn-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-target') === id);
+    });
+    const activeEl = sideNavInner.querySelector('.sn-item.active');
+    if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  // ===== Tab switching =====
+  const snTabs = document.querySelectorAll('.sn-tab');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  let mermaidRendered = {};
+
+  function switchTab(tabId) {
+    currentTabId = tabId;
+    snTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabId));
+    tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
+
+    if (!mermaidRendered[tabId]) {
+      const panel = document.getElementById(tabId);
+      const diagrams = panel.querySelectorAll('.mermaid');
+      if (diagrams.length > 0) {
+        mermaid.run({ nodes: diagrams });
+        mermaidRendered[tabId] = true;
+      }
+    }
+
+    renderSideNav(tabId);
+    history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  snTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchTab(tab.getAttribute('data-tab'));
+    });
+  });
+
+  // ===== Init =====
+  document.querySelector('.layout').classList.add('has-side-nav');
+  const validTabs = ['overview', 'userflow', 'swimlane', 'constraints'];
+  const hash = location.hash.slice(1);
+  if (validTabs.includes(hash)) {
+    switchTab(hash);
+  } else {
+    mermaidRendered['overview'] = true;
+    renderSideNav('overview');
+  }
+</script>
+</body>
+</html>
