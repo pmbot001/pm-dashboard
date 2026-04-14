@@ -1911,14 +1911,16 @@ sequenceDiagram
     snTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabId));
     tabPanels.forEach(p => p.classList.toggle('active', p.id === tabId));
 
-    if (!mermaidRendered[tabId]) {
-      const panel = document.getElementById(tabId);
-      const diagrams = panel.querySelectorAll('.mermaid');
-      if (diagrams.length > 0) {
-        mermaid.run({ nodes: diagrams });
-        mermaidRendered[tabId] = true;
+    requestAnimationFrame(() => {
+      if (!mermaidRendered[tabId]) {
+        const panel = document.getElementById(tabId);
+        const diagrams = panel.querySelectorAll('.mermaid');
+        if (diagrams.length > 0) {
+          mermaid.run({ nodes: diagrams });
+          mermaidRendered[tabId] = true;
+        }
       }
-    }
+    });
 
     renderSideNav(tabId);
     history.replaceState(null, '', '#' + tabId);
