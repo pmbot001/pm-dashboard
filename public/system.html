@@ -1096,26 +1096,26 @@
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart TD
-    A[App 啟動] --> B[useDeviceUuid 取得裝置指紋]
-    B --> C{channelId 來源}
-    C -->|URL query| D[用 query.channelId]
-    C -->|localStorage| E[用 settingStore.channelId]
-    C -->|localhost| F[用 ENV VITE_CHANNEL_ID]
-    C -->|線上環境| G["POST /config/getH5Domain"]
-    D & E & F & G --> H[fetchConfig 並行拉取]
-    H --> I["baseConfig/v2"]
-    H --> J["channelIpBlackList/v3"]
-    I & J --> K{errCode === 1?}
-    K -->|否| L[跳轉 /maintain]
-    K -->|是| M{IP 黑名單?}
-    M -->|是| N[跳轉 /block]
-    M -->|否| O{hasToken?}
-    O -->|是| P[refreshToken + getUserInfo]
+    A[App 啟動] --> B[取得裝置識別碼]
+    B --> C{渠道 ID 來源}
+    C -->|URL 參數| D[從網址取得]
+    C -->|本地快取| E[從快取取得]
+    C -->|本機開發| F[從環境變數取得]
+    C -->|線上環境| G[從後端拉取網域設定]
+    D & E & F & G --> H[並行拉取系統設定]
+    H --> I[基礎設定]
+    H --> J[IP 黑名單]
+    I & J --> K{設定拉取成功?}
+    K -->|否| L[跳轉維護頁]
+    K -->|是| M{IP 被封鎖?}
+    M -->|是| N[跳轉封鎖頁]
+    M -->|否| O{已有登入憑證?}
+    O -->|是| P[自動續期 + 取得用戶資料]
     O -->|否| Q{需要登入?}
-    Q -->|是| R[跳轉 /login]
-    Q -->|否| S[toPushTypePage]
+    Q -->|是| R[跳轉登入頁]
+    Q -->|否| S[跳轉預設首頁]
     P --> S
-    S --> T[setIsInitSuccess true]
+    S --> T[初始化完成]
     T --> U[啟動 WebSocket]
             </div>
           </div>
@@ -1133,28 +1133,28 @@ flowchart TD
             <div class="mermaid">
 flowchart TD
     A[進入登入頁] --> B{登入模式設定}
-    B -->|accountLoginEnabled| C[帳號登入 Tab]
-    B -->|phoneNumberLoginEnabled| D[手機登入 Tab]
+    B -->|開放帳號登入| C[帳號登入 Tab]
+    B -->|開放手機登入| D[手機登入 Tab]
     B -->|兩者皆開| E[顯示雙 Tab]
     C --> F[輸入帳號/密碼]
-    F --> G[AES 加密密碼]
-    G --> H["POST /login/login"]
+    F --> G[加密密碼]
+    G --> H[送出帳號登入]
     D --> I[輸入手機號]
-    I --> J["發送驗證碼 opType=8"]
-    J --> K["POST /login/phoneLoginV2"]
-    H & K --> L{errCode?}
-    L -->|1 成功| M[handleLoginSuccess]
-    L -->|9/14 需驗證碼| N[NumberCaptchPopup]
-    L -->|110 新設備| O[NewDeviceAuth 彈窗]
-    L -->|114 新 IP| O
-    M --> P[setToken]
-    P --> Q[getUserInfo]
-    Q --> R[toPushTypePage]
+    I --> J[發送驗證碼]
+    J --> K[送出手機登入]
+    H & K --> L{登入結果?}
+    L -->|成功| M[登入成功處理]
+    L -->|需圖形驗證| N[圖形驗證彈窗]
+    L -->|新設備| O[新設備驗證彈窗]
+    L -->|新 IP| O
+    M --> P[儲存登入憑證]
+    P --> Q[取得用戶資料]
+    Q --> R[跳轉預設首頁]
     O --> S[輸入手機驗證碼]
-    S --> T["POST /login/newDevice"]
+    S --> T[送出新設備驗證]
     T --> M
     N --> U[完成圖形驗證]
-    U --> V[retryWithNumber 重送]
+    U --> V[附驗證碼重新登入]
     V --> L
             </div>
           </div>
@@ -1166,29 +1166,29 @@ flowchart TD
             <div class="mermaid">
 flowchart TD
     A[進入註冊] --> B{註冊模式}
-    B -->|accountRegisterEnabled| C[帳號註冊]
-    B -->|phoneNumberRegisterEnabled| D[手機註冊]
+    B -->|開放帳號註冊| C[帳號註冊]
+    B -->|開放手機註冊| D[手機註冊]
     C --> E[填寫帳號/密碼/確認密碼]
     E --> F{需要手機號?}
-    F -->|accountRegisterBoundPhoneNumber| G[填手機號+驗證碼]
+    F -->|註冊需綁手機| G[填手機號+驗證碼]
     F -->|否| H{有邀請碼欄位?}
     G --> H
-    H -->|inviteCodeEnabled| I[填邀請碼]
-    H -->|否| J["POST /login/register"]
+    H -->|有邀請碼欄位| I[填邀請碼]
+    H -->|否| J[送出帳號註冊]
     I --> J
     D --> K[填手機號]
-    K --> L["發送驗證碼 opType=7"]
-    L --> M["POST /login/phoneRegisterV2"]
+    K --> L[發送驗證碼]
+    L --> M[送出手機註冊]
     J & M --> N{成功?}
-    N -->|是| O[handleLoginSuccess 自動登入]
-    N -->|否| P[handleError]
-    O --> Q[setToken + getUserInfo]
+    N -->|是| O[自動登入]
+    N -->|否| P[顯示錯誤]
+    O --> Q[儲存登入憑證 + 取得用戶資料]
             </div>
           </div>
         </div>
 
         <div class="mermaid-card" id="uf-system-check">
-          <div class="mermaid-card-title">系統狀態檢查 checkSystemStatusAndRoute()</div>
+          <div class="mermaid-card-title">系統狀態檢查</div>
           <div class="pm-notice">
             <ul>
               <li>初始化完成後 + finally 階段執行，決定玩家跳轉目標</li>
@@ -1198,25 +1198,25 @@ flowchart TD
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart TD
-    A["checkSystemStatusAndRoute()"] --> B{"errCode !== 1 或 isInMaintain?"}
-    B -->|是| C["跳轉 /maintain"]
-    B -->|否| D{"isBlocked?"}
-    D -->|是| E["跳轉 /block"]
-    D -->|否| F{"needLogin 且無 token?"}
-    F -->|是| G{"有 getEntrance?"}
-    G -->|是| H["跳轉 getEntrance"]
-    G -->|否| I["跳轉 /login"]
-    F -->|否| J{"referenceId 且 rally=10019?"}
-    J -->|是| K["跳轉 /activity/rally/3"]
-    J -->|否| L{"isOpenRoom?"}
-    L -->|是| M["跳轉 /open-room"]
-    L -->|否| N{"redirect=goJump?"}
-    N -->|"jumpType=2"| O["Goto.jump 活動頁"]
-    N -->|"jumpType=3 val=8"| P["/login?isRegister=true"]
-    N -->|"jumpType=3 val=7"| I
-    N -->|否| Q{"路徑為 / 或 maintain 或 block?"}
-    Q -->|是| R["toPushTypePage()"]
-    Q -->|否| S["停留當前頁"]
+    A[系統狀態檢查] --> B{"設定異常 或 維護中?"}
+    B -->|是| C[跳轉維護頁]
+    B -->|否| D{"IP 被封鎖?"}
+    D -->|是| E[跳轉封鎖頁]
+    D -->|否| F{"需要登入 且 尚未登入?"}
+    F -->|是| G{"有指定入口頁?"}
+    G -->|是| H[跳轉指定入口]
+    G -->|否| I[跳轉登入頁]
+    F -->|否| J{"有活動推薦?"}
+    J -->|是| K[跳轉活動頁]
+    J -->|否| L{"需開啟房間?"}
+    L -->|是| M[跳轉開房間頁]
+    L -->|否| N{"有外部跳轉指令?"}
+    N -->|跳轉活動| O[跳轉活動頁]
+    N -->|跳轉註冊| P[跳轉註冊頁]
+    N -->|跳轉登入| I
+    N -->|否| Q{"在首頁或系統頁?"}
+    Q -->|是| R[跳轉預設首頁]
+    Q -->|否| S[停留當前頁]
             </div>
           </div>
         </div>
@@ -1232,9 +1232,9 @@ flowchart TD
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart TD
-    A["點擊忘記密碼"] --> B["setIsForgetPasswordOpen true"]
-    B --> C["ForgetPassword 面板"]
-    C --> D["輸入用戶名"]
+    A[點擊忘記密碼] --> B[開啟忘記密碼面板]
+    B --> C[忘記密碼面板]
+    C --> D[輸入用戶名]
     D --> E{"4-20 位字母加數字?"}
     E -->|否| F["格式錯誤提示"]
     E -->|是| G{"帳號有綁手機?"}
@@ -1247,10 +1247,10 @@ flowchart TD
     L -->|是| N["確認新密碼"]
     N --> O{"兩次一致?"}
     O -->|否| P["密碼不匹配"]
-    O -->|是| Q["POST /login/resetPwd"]
-    Q --> R{"成功?"}
-    R -->|是| S["toast 提示加返回登入頁"]
-    R -->|否| T["顯示錯誤訊息"]
+    O -->|是| Q[送出重設密碼]
+    Q --> R{成功?}
+    R -->|是| S[提示成功並返回登入頁]
+    R -->|否| T[顯示錯誤訊息]
             </div>
           </div>
         </div>
@@ -1266,25 +1266,25 @@ flowchart TD
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart TD
-    A[Token 生命週期] --> B{Token 來源}
-    B -->|登入成功| C[setToken 存入 Pinia + localStorage]
-    B -->|App 初始化| D[refreshToken 續期]
+    A[Token 生命週期] --> B{憑證來源}
+    B -->|登入成功| C[儲存登入憑證]
+    B -->|App 初始化| D[自動續期]
     C --> E[72 小時有效期]
     D --> F{續期成功?}
-    F -->|是| G[getUserInfo 更新用戶資料]
-    F -->|否| H["console.warn 不中斷"]
+    F -->|是| G[更新用戶資料]
+    F -->|否| H[靜默失敗，不中斷]
     E --> I{設備變動?}
-    I -->|是| J[Token 失效]
+    I -->|是| J[憑證失效]
     I -->|否| K{IP 變動?}
-    K -->|是或否| L[Token 不失效]
-    L --> M{HTTP 401?}
-    M -->|是| N[toast 登入過期]
-    N --> O[logout + 清 localStorage]
+    K -->|是或否| L[憑證不失效]
+    L --> M{伺服器回應過期?}
+    M -->|是| N[提示登入過期]
+    N --> O[登出 + 清除本地資料]
     O --> P[跳轉首頁]
     J --> P
-    M -->|errCode 163| Q[暫封/踢下線]
-    Q --> R[ExpiredPopup 聯繫客服]
-    R --> S[跳轉 /login]
+    M -->|帳號被凍結| Q[暫封/踢下線]
+    Q --> R[彈窗提示聯繫客服]
+    R --> S[跳轉登入頁]
             </div>
           </div>
         </div>

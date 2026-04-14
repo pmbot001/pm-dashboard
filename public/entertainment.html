@@ -763,25 +763,25 @@
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
     A[進入娛樂城] --> B{皮膚判斷}
-    B -->|水果2.0/YXB| C["home/index/casino"]
-    B -->|YXR| D["vendors/index/yxrg/home/index/casino"]
-    C --> E["POST /user/gameList"]
+    B -->|水果2.0/YXB| C[進入通用娛樂城頁]
+    B -->|YXR| D[進入 YXR 專屬娛樂城頁]
+    C --> E[拉取遊戲列表]
     D --> E
-    E --> F[取得 gameList + classifySort + aiRecommend]
-    F --> G{"aiRecommend.length > 0?"}
-    G -->|是| H["置頂 AI 推薦區 classify=999"]
-    G -->|否| I[依 classifySort 排列分類 Tab]
+    E --> F[取得遊戲列表 + 分類排序 + AI 推薦資料]
+    F --> G{有 AI 推薦資料?}
+    G -->|是| H[置頂 AI 推薦區]
+    G -->|否| I[依分類排序排列 Tab]
     H --> I
     I --> J[遊戲卡片格]
-    J --> K{lobbyType?}
+    J --> K{大廳類型?}
     K -->|13 No_Lobby| L[過濾不顯示]
     K -->|1 Sport| M{業主判斷}
     M -->|TB/YXRG| N[顯示體育場館]
     M -->|其他| L
     K -->|其他| O[正常顯示卡片]
-    J --> P{serverAvailable?}
-    P -->|false| Q[顯示維護遮罩]
-    P -->|true| R[正常可點擊]
+    J --> P{場館是否可用?}
+    P -->|否| Q[顯示維護遮罩]
+    P -->|是| R[正常可點擊]
           </div></div>
         </div>
 
@@ -793,9 +793,9 @@ flowchart TD
           </ul></div>
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
-    A[點擊場館卡片] --> B{serverAvailable?}
-    B -->|false| C[顯示維護中 toast]
-    B -->|true| D{lobbyType?}
+    A[點擊場館卡片] --> B{場館是否可用?}
+    B -->|否| C[顯示維護中提示]
+    B -->|是| D{大廳類型?}
     D -->|0 Normal| E[外開 WebView]
     D -->|1 Sport| F[內嵌體育頁面]
     D -->|11 自研電子| G[跳轉電子大廳]
@@ -808,10 +808,10 @@ flowchart TD
     K --> L{餘額足夠?}
     L -->|否| M[彈出轉帳確認]
     L -->|是| N[直接進入遊戲]
-    M --> O[POST 轉帳 API]
+    M --> O[發送轉帳請求]
     O --> N
     J -->|免轉錢包| N
-    G --> P["POST /user/subGameList"]
+    G --> P[拉取子遊戲列表]
     P --> Q[子遊戲列表]
           </div></div>
         </div>
@@ -825,11 +825,11 @@ flowchart TD
     C --> D{字數檢查}
     D -->|超過20字| E[截斷]
     D -->|含空白/標點| F[移除]
-    D -->|合法| G[前端篩選 subGameList]
+    D -->|合法| G[篩選子遊戲列表]
     E & F --> G
     G --> H{有結果?}
     H -->|是| I[顯示搜尋結果]
-    H -->|否| J[空狀態]
+    H -->|否| J[顯示空狀態]
     I --> K[點擊子遊戲]
     K --> L{已收藏?}
     L -->|是| M[收藏圖示亮起]
@@ -847,13 +847,13 @@ flowchart TD
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
     A[點擊子遊戲] --> B{母場館維護?}
-    B -->|是| C["toast 游戏维护中"]
-    B -->|否| D["POST /user/enterGame"]
-    D --> E{validateGameResponse}
-    E -->|失敗| F["toast 錯誤訊息"]
-    E -->|成功| G{回傳 gameId?}
-    G -->|"8816/8929/8936"| H["外開 WebView"]
-    G -->|其他| I["sessionStorage 存資料"]
+    B -->|是| C[顯示維護中提示]
+    B -->|否| D[發送進入遊戲請求]
+    D --> E{進入是否成功?}
+    E -->|失敗| F[顯示錯誤訊息]
+    E -->|成功| G{遊戲類型判斷}
+    G -->|"MG 電子 8816/8929/8936"| H["外開 WebView"]
+    G -->|其他| I[暫存遊戲資料]
     I --> J["iframe 內嵌顯示"]
           </div></div>
         </div>
@@ -867,14 +867,14 @@ flowchart TD
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
     A[進入遊戲前] --> B{錢包模式?}
-    B -->|"walletType=0 自動轉帳"| C["refreshBalance"]
-    B -->|"walletType=1 手動轉帳"| D["refreshBalance"]
-    C --> E["getVenueSetting"]
+    B -->|自動轉帳| C[刷新餘額]
+    B -->|手動轉帳| D[刷新餘額]
+    C --> E[取得場館設定]
     D --> E
-    E --> F{showTips?}
-    F -->|"自動+showTips=true"| G["顯示轉帳提示彈窗"]
-    F -->|"自動+showTips=false"| H["直接進入遊戲"]
-    F -->|"手動+venueBalance>0+showTips=false"| H
+    E --> F{是否顯示活動提示?}
+    F -->|"自動+有活動提示"| G["顯示轉帳提示彈窗"]
+    F -->|"自動+無活動提示"| H["直接進入遊戲"]
+    F -->|"手動+場館有餘額+無活動提示"| H
     F -->|"手動+其他"| I["顯示轉帳彈窗"]
     G --> J{確認}
     I --> J

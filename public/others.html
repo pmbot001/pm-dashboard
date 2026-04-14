@@ -583,88 +583,88 @@
         <div class="mermaid-card" id="uf-cs">
           <div class="mermaid-card-title">客服進入流程</div>
           <div class="pm-notice"><ul>
-            <li>幣商跳轉跳過 VIP 檢查，只篩 csType=1 官方線道，隨機取一條直開</li>
-            <li>sign 用 MD5 加密：uid+agentid+mac+uname+avatar+theme+kefuSign</li>
-            <li>API 失敗僅 console.log 靜默處理，前端無錯誤提示</li>
+            <li>幣商跳轉跳過 VIP 檢查，只篩官方線道，隨機取一條直開</li>
+            <li>簽名使用加密方式：包含用戶ID、代理ID、裝置碼、暱稱、頭像、主題、客服金鑰</li>
+            <li>API 失敗時靜默處理，前端無錯誤提示</li>
           </ul></div>
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
-    A["點擊客服圖示"] --> B["openCustomService<br>顯示全域 loading"]
-    B --> C["POST /config/getCsLineConfig"]
+    A["點擊客服圖示"] --> B["開啟客服<br>顯示全域 loading"]
+    B --> C["拉線道設定"]
     C --> D{"API 回應？"}
-    D -->|"errCode !== 1"| E["靜默失敗<br>console.log"]
-    D -->|"errCode === 1"| F["取得 specialLine + normalLine + thirdCsUrl"]
-    F --> G{"幣商跳轉？<br>imDealer 有資料"}
-    G -->|"是"| H["跳過 VIP 檢查<br>篩選 csType=1"]
+    D -->|"失敗"| E["靜默失敗<br>無錯誤提示"]
+    D -->|"成功取得線道"| F["取得專屬線道 + 一般線道 + 三方客服網址"]
+    F --> G{"幣商跳轉？"}
+    G -->|"是"| H["跳過 VIP 檢查<br>僅篩官方線道"]
     H --> H2{"有官方線道？"}
-    H2 -->|"無"| H3["Toast 系统维护中"]
+    H2 -->|"無"| H3["Toast 系統維護中"]
     H2 -->|"有"| H4["隨機取一條直接開啟"]
-    G -->|"否"| I["_btnFilter<br>vipBegin≤vipLevel≤vipEnd"]
+    G -->|"否"| I["VIP 等級篩選"]
     I --> J{"可用線道數？"}
-    J -->|"0 條"| K["Toast 系统维护中"]
+    J -->|"0 條"| K["Toast 系統維護中"]
     J -->|"1 條"| L["直接開啟"]
-    J -->|"多條"| M["BottomSheet 選擇線道"]
+    J -->|"多條"| M["底部彈窗選擇線道"]
     M --> L
-    L --> N{"csType？"}
-    N -->|"1 官方"| O["confirmAndOpenService"]
-    N -->|"2 三方"| P["IframeCommon<br>載入 thirdCsUrl"]
-    O --> Q["IframeContainer<br>kfUrl + MD5 簽名"]
+    L --> N{"線道類型？"}
+    N -->|"官方"| O["確認並開啟官方客服"]
+    N -->|"三方"| P["開啟三方客服視窗"]
+    O --> Q["開啟官方客服視窗"]
     H4 --> O
           </div></div>
         </div>
 
         <div class="mermaid-card" id="uf-cs-restore">
-          <div class="mermaid-card-title">客服對話自動恢復（fetchIngService）</div>
+          <div class="mermaid-card-title">客服對話自動恢復</div>
           <div class="pm-notice"><ul>
             <li>10 分鐘逾時機制：超過 10 分鐘的對話不會自動恢復</li>
-            <li>區分已登入（getChatInfo）和訪客（getGuestChatInfo）</li>
+            <li>區分已登入和訪客，查詢不同的對話狀態 API</li>
           </ul></div>
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
-    A["APP 啟動<br>fetchIngService"] --> B{"localStorage<br>serviceTimestamp？"}
+    A["APP 啟動<br>自動恢復對話"] --> B{"有上次客服紀錄？"}
     B -->|"無紀錄"| C["不做任何事"]
-    B -->|"有紀錄"| D{"now - timestamp<br>≥ 600000？"}
-    D -->|"≥ 10分鐘"| C
-    D -->|"< 10分鐘"| E{"hasToken？"}
-    E -->|"已登入"| F["POST /custom/getChatInfo"]
-    E -->|"訪客"| G["POST /custom/getGuestChatInfo"]
-    F & G --> H{"Status === 1？"}
-    H -->|"對話中"| I["setisAutoOpen true<br>開啟半版 iframe"]
+    B -->|"有紀錄"| D{"距上次對話<br>超過 10 分鐘？"}
+    D -->|"已超時"| C
+    D -->|"未超時"| E{"登入狀態？"}
+    E -->|"已登入"| F["查詢對話狀態（會員）"]
+    E -->|"訪客"| G["查詢對話狀態（訪客）"]
+    F & G --> H{"對話進行中？"}
+    H -->|"對話中"| I["自動開啟客服視窗"]
     H -->|"非對話中"| C
-    I --> J["設定未讀紅點<br>iframeTips = Reading"]
+    I --> J["顯示未讀紅點"]
           </div></div>
         </div>
 
         <div class="mermaid-card" id="uf-gossip">
           <div class="mermaid-card-title">爆料瀏覽 + 跟單流程</div>
           <div class="pm-notice"><ul>
-            <li>gamePredictEnabled=false 時整個爆料模組跳轉到 /live</li>
-            <li>訪客模式由 gamePredictVisitorDisplayMode 控制（mode=1 放行）</li>
-            <li>跟單分單注/串關，marketType=2 為串關</li>
+            <li>爆料功能關閉時，整個模組跳轉到直播頁</li>
+            <li>訪客模式由後台開關控制（開放＝訪客可瀏覽）</li>
+            <li>跟單分單注/串關兩種模式</li>
           </ul></div>
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
-    A["進入爆料首頁"] --> B{"gamePredictEnabled？"}
-    B -->|"false"| C["跳轉 /live"]
-    B -->|"true"| D["預設顯示 byLeague Tab"]
+    A["進入爆料首頁"] --> B{"爆料功能開啟？"}
+    B -->|"關閉"| C["跳轉直播頁"]
+    B -->|"開啟"| D["預設顯示依聯賽 Tab"]
     D --> E["4 個 Tab 切換"]
-    E -->|"已關注"| F["StreamerList<br>已關注/推薦分區"]
-    E -->|"依聯賽"| G["LeagueList<br>支援新標記 1hr"]
-    E -->|"依時間"| H["PredictorList sort=0"]
-    E -->|"熱度榜"| I["PredictorList sort=1"]
-    D --> J["RankBoard 前三名榜單"]
+    E -->|"已關注"| F["已關注/推薦分區"]
+    E -->|"依聯賽"| G["聯賽列表<br>支援新標記 1hr"]
+    E -->|"依時間"| H["文章列表（依時間排序）"]
+    E -->|"熱度榜"| I["文章列表（依熱度排序）"]
+    D --> J["前三名榜單"]
     J --> K["點擊查看更多"]
-    K --> L["/gossiping/rank-detail"]
-    F & G & H & I --> M["CardList 文章卡片"]
-    M --> N{"訪客模式？<br>visitorDisplayMode"}
-    N -->|"mode≠1 且未登入"| O["requireLogin 攔截"]
-    N -->|"mode=1 或已登入"| P["點擊文章"]
-    P --> Q["/gossiping/:predictorId"]
-    Q --> R["GET /v3/predict/detail<br>GET /predict/content"]
+    K --> L["排行榜詳情頁"]
+    F & G & H & I --> M["文章卡片列表"]
+    M --> N{"訪客模式？"}
+    N -->|"不開放且未登入"| O["攔截要求登入"]
+    N -->|"開放或已登入"| P["點擊文章"]
+    P --> Q["文章詳情頁"]
+    Q --> R["載入文章詳情"]
     R --> S["顯示盤口 + 跟單按鈕"]
     S --> T{"跟單投注"}
-    T -->|"marketType≠2"| U["addSingleCartData"]
-    T -->|"marketType=2"| V["addComboCartData"]
+    T -->|"單注"| U["加入單注注單"]
+    T -->|"串關"| V["加入串關注單"]
           </div></div>
         </div>
 
@@ -700,17 +700,17 @@ flowchart TD
           <div class="mermaid-card-body"><div class="mermaid">
 flowchart TD
     A["進入消息中心"] --> B{"已登入？"}
-    B -->|"否"| C["攔截 needLogin"]
+    B -->|"否"| C["攔截，要求登入"]
     B -->|"是"| D["4 Tab 切換"]
-    D -->|"通知 type=2"| E["POST /user/getMailWithPagination"]
-    D -->|"活動 type=1"| E
-    D -->|"公告"| F["POST /config/notice/v2"]
+    D -->|"通知"| E["載入站內信列表"]
+    D -->|"活動"| E
+    D -->|"公告"| F["載入公告列表"]
     D -->|"賽事公告"| F
-    E --> G["分頁載入 pageSize=20"]
+    E --> G["分頁載入（每頁 20 筆）"]
     G --> H{"批量操作模式？"}
     H -->|"是"| I0["多選 checkbox"]
-    I0 --> J0["刪除 POST /user/deleteMail"]
-    I0 --> K0["已讀 POST /user/readMail"]
+    I0 --> J0["批量刪除"]
+    I0 --> K0["批量標為已讀"]
     H -->|"否"| L0["點擊查看詳情"]
     F --> M0["公告列表"]
     M0 --> N0["未讀數 badge 同步"]

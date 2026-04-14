@@ -1037,15 +1037,15 @@
 
       <div class="tool-section" id="uf-1-1">
         <div class="tool-section-header"><h2>1.1 廣場瀏覽 → 進入直播間（主線）</h2></div>
-        <div class="tool-section-desc">所有直播間依 roomType 走不同路由進入不同型態的直播間</div>
+        <div class="tool-section-desc">所有直播間依房間類型走不同路線進入不同型態的直播間</div>
 
         <div class="mermaid-card">
           <div class="mermaid-card-title">廣場 → 直播間路由</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart LR
-    A["進入廣場 /live"] --> B{"推廣模式?"}
-    B -- "純直播 pushType=2" --> C["只顯示：直播、主播"]
+    A["進入直播廣場"] --> B{"推廣模式?"}
+    B -- "純直播模式" --> C["只顯示：直播、主播"]
     B -- "標準模式" --> D["顯示：直播、排行榜、主播、節目表、影片專區"]
     C --> E["瀏覽直播列表"]
     D --> E
@@ -1053,12 +1053,12 @@ flowchart LR
     F --> G["瀏覽直播間卡片"]
     G --> H["點擊直播間卡片"]
     H --> I{"房間類型?"}
-    I -- "體育 roomType=3" --> J["跳轉賽事詳情頁"]
-    I -- "直式娛樂 roomType=8" --> K["進入直式全屏直播間"]
-    I -- "Cocos 遊戲 roomType=7" --> L["進入 Cocos 遊戲直播間"]
+    I -- "體育" --> J["跳轉賽事詳情頁"]
+    I -- "直式娛樂" --> K["進入直式全屏直播間"]
+    I -- "Cocos 遊戲" --> L["進入 Cocos 遊戲直播間"]
     I -- "Funky 火箭" --> M["進入 Funky 火箭房"]
-    I -- "鬥雞 roomType=9" --> N["進入鬥雞房"]
-    I -- "其他 roomType=4/5/6" --> O["進入 OtherRoom"]
+    I -- "鬥雞" --> N["進入鬥雞房"]
+    I -- "其他（橫式等）" --> O["進入一般直播間"]
             </div>
           </div>
           <div class="pm-notice">
@@ -1090,7 +1090,7 @@ flowchart LR
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart LR
-    A["進入直播間"] --> B["WebSocket 連線建立"]
+    A["進入直播間"] --> B["建立即時連線"]
     B --> C["即時聊天訊息流"]
     C --> D{"互動類型?"}
     D -- "發送訊息" --> E["輸入文字 → 送出"]
@@ -1123,19 +1123,19 @@ flowchart LR
             <div class="mermaid">
 flowchart LR
     A["直播間內"] --> B["點擊禮物按鈕"]
-    B --> C["開啟 GiftGivingSheet"]
+    B --> C["開啟送禮面板"]
     C --> D["選擇禮物"]
     D --> E["確認送禮"]
     E --> F{"餘額足夠?"}
     F -- "是" --> G["送禮成功 → 播放特效動畫"]
     F -- "否" --> H["引導充值"]
-    H --> I["開啟充值 Sheet"]
+    H --> I["開啟充值面板"]
             </div>
           </div>
           <div class="pm-notice">
             <ul>
               <li>送禮只在直式娛樂和 Funky 火箭有完整實作</li>
-              <li>Cocos 遊戲直播間 isShowGift = false，不支援送禮</li>
+              <li>Cocos 遊戲直播間不支援送禮（送禮按鈕隱藏）</li>
             </ul>
           </div>
         </div>
@@ -1154,7 +1154,7 @@ flowchart LR
 flowchart LR
     A["底部導覽列 → 開房入口"] --> B["進入開房列表"]
     B --> C{"已登入?"}
-    C -- "否" --> D["觸發登入 Sheet"]
+    C -- "否" --> D["觸發登入"]
     C -- "是" --> E["瀏覽房間列表"]
     E --> F{"操作?"}
     F -- "進入房間" --> G{"需要密碼?"}
@@ -1189,13 +1189,13 @@ flowchart LR
             <div class="mermaid">
 flowchart LR
     A["廣場「主播」Tab"] --> B{"已登入?"}
-    B -- "否" --> C["觸發登入 Sheet"]
+    B -- "否" --> C["觸發登入"]
     B -- "是" --> D["瀏覽主播卡片列表"]
     D --> E["點擊主播卡片"]
     E --> F["進入主播主頁"]
     F --> G{"主播 or 專家?"}
-    G -- "主播 roleId=7" --> H["顯示：時間表、推單、爆料"]
-    G -- "專家 roleId=3" --> I["只顯示：爆料"]
+    G -- "主播" --> H["顯示：時間表、推單、爆料"]
+    G -- "專家" --> I["只顯示：爆料"]
     H --> J["點擊推單 → 查看詳情"]
     H --> K["進入直播間"]
             </div>
@@ -1204,7 +1204,7 @@ flowchart LR
             <ul>
               <li>主播頁和直播間是兩回事。主播頁是資訊頁，直播間是互動頁</li>
               <li>專家只看得到爆料 Tab</li>
-              <li>爆料 Tab 受後台 gamePredictEnabled 開關控制</li>
+              <li>爆料 Tab 受後台開關控制，關掉就看不到</li>
             </ul>
           </div>
         </div>
@@ -1225,11 +1225,11 @@ flowchart LR
     B --> C{"類別是體育?"}
     C -- "是" --> D["選擇場館 dropdown"]
     D --> E{"場館是 OB?"}
-    E -- "是" --> F["並行呼叫一般+電競賽事"]
-    E -- "否" --> G["遞歸自動分頁載入"]
+    E -- "是" --> F["同時載入一般+電競賽事"]
+    E -- "否" --> G["自動載入所有分頁"]
     F --> H["合併結果，按聯賽分組"]
     G --> H
-    C -- "否（美女等）" --> I["NormalContent 按時段顯示"]
+    C -- "否（美女等）" --> I["按時段顯示節目"]
     H --> J["瀏覽賽事卡片"]
     I --> J
     J --> K{"主播狀態?"}
@@ -1240,8 +1240,8 @@ flowchart LR
           <div class="pm-notice">
             <ul>
               <li>OB 場館因電競獨立 sportIds，需要並行呼叫 2 次 API 再合併</li>
-              <li>非 OB 場館的賽事用遞歸方式自動載入所有分頁</li>
-              <li>搜尋使用 SearchSheet 組件，storageKey: ScheduleTypeRow</li>
+              <li>非 OB 場館的賽事會自動載入所有分頁</li>
+              <li>搜尋會記住最近使用的篩選類別</li>
             </ul>
           </div>
           <details class="rd-ref">
@@ -1266,12 +1266,12 @@ flowchart LR
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart LR
-    A["廣場「排行榜」Tab"] --> B{"後台 isEnabled?"}
-    B -- "false" --> C["Tab 不顯示"]
-    B -- "true" --> D{"已登入?"}
+    A["廣場「排行榜」Tab"] --> B{"後台開關?"}
+    B -- "關閉" --> C["Tab 不顯示"]
+    B -- "開啟" --> D{"已登入?"}
     D -- "否" --> E{"遊客模式?"}
-    E -- "showBetGuestDisplayMode=0" --> F["Tab 禁用，觸發登入 Sheet"]
-    E -- "其他值" --> G["遊客可瀏覽"]
+    E -- "禁止遊客瀏覽" --> F["Tab 禁用，觸發登入"]
+    E -- "允許遊客瀏覽" --> G["遊客可瀏覽"]
     D -- "是" --> G
     G --> H["選擇日榜/週榜/月榜"]
     H --> I["選擇當期/上期"]
@@ -1288,7 +1288,7 @@ flowchart LR
             <ul>
               <li>排行榜 Tab 受後台 isEnabled 開關控制，關掉整個 Tab 消失</li>
               <li>遊客模式有三種值（0=不顯示/1=全部顯示/2=不顯示投注項），影響未登入用戶能看到什麼</li>
-              <li>已登入用戶在 body 底部固定顯示自己的排名（Teleport）</li>
+              <li>已登入用戶在頁面底部固定顯示自己的排名</li>
               <li>名次判定相同時：紅單數 > 紅單金額 > 投注金額 > 跟單數 > 晒單數</li>
             </ul>
           </div>
@@ -1315,8 +1315,8 @@ flowchart LR
             <div class="mermaid">
 flowchart LR
     A["直播間內"] --> B{"觸發來源?"}
-    B -- "投注按鈕" --> C["開啟 LiveBettingSheet"]
-    B -- "聊天室推單卡片" --> D["handleChangeTab liveBetting"]
+    B -- "投注按鈕" --> C["開啟投注面板"]
+    B -- "聊天室推單卡片" --> D["切換到投注頁籤"]
     D --> C
     C --> E{"競猜類型?"}
     E -- "PK 競猜" --> F["選擇主持/嘉賓陣營"]
@@ -1330,14 +1330,14 @@ flowchart LR
     J -- "續投" --> K
     J -- "倍投" --> K
     K --> L["投注記錄"]
-    L --> M["navigateTo bet-record"]
+    L --> M["跳轉投注記錄頁"]
             </div>
           </div>
           <div class="pm-notice">
             <ul>
-              <li>triggerSource 區分從按鈕還是聊天室觸發，影響打點統計</li>
+              <li>系統會區分從按鈕還是聊天室觸發，影響數據統計</li>
               <li>續投、倍投、一鍵下注功能來自 GOR-5182/5183</li>
-              <li>投注走 Unify 中間層轉接三方場館，三方異常時錯誤訊息不明確</li>
+              <li>投注經中間層轉接三方場館，三方異常時錯誤訊息不明確</li>
             </ul>
           </div>
         </div>
@@ -1354,25 +1354,25 @@ flowchart LR
           <div class="mermaid-card-body">
             <div class="mermaid">
 flowchart LR
-    A["點擊 LiveCard roomType=7"] --> B["進入 Cocos 直播間"]
-    B --> C["enterGame API gameId=8930"]
+    A["點擊 Cocos 遊戲直播間卡片"] --> B["進入 Cocos 直播間"]
+    B --> C["請求進入遊戲"]
     C --> D{"自動轉帳?"}
     D -- "否" --> E["彈出轉帳彈窗"]
-    D -- "是" --> F["載入 Cocos iframe"]
+    D -- "是" --> F["載入遊戲畫面"]
     E --> F
-    F --> G["Cocos Init → cocosLoading=false"]
-    G --> H["initGame 發送遊戲參數"]
+    F --> G["遊戲載入完成"]
+    G --> H["初始化遊戲參數"]
     H --> I["遊戲進行中"]
     I --> J{"面板切換?"}
-    J -- "遊戲" --> K["GAME 面板"]
-    J -- "投注記錄" --> L["BET_RECORD"]
-    J -- "資訊" --> M["INFO"]
-    J -- "開路" --> N["OPEN_ROAD"]
-    J -- "聊天" --> O["CHAT"]
+    J -- "遊戲" --> K["遊戲面板"]
+    J -- "投注記錄" --> L["投注記錄面板"]
+    J -- "資訊" --> M["資訊面板"]
+    J -- "開路" --> N["開路面板"]
+    J -- "聊天" --> O["聊天面板"]
     I --> P{"異常事件?"}
-    P -- "主播切遊戲" --> Q["ChangeGame → 重新 initGame"]
+    P -- "主播切遊戲" --> Q["重新載入遊戲"]
     P -- "斷線" --> R["重新連線"]
-    P -- "下播" --> S["AnchorOfflineDialog"]
+    P -- "下播" --> S["顯示主播離線提示"]
             </div>
           </div>
           <div class="pm-notice">
@@ -1380,7 +1380,7 @@ flowchart LR
               <li>支援 4 種遊戲：百家樂(5)/牛牛(4)/龍虎(32)/紅黑大戰(40)</li>
               <li>遊戲引擎跑在 iframe 內，前端只能透過 postMessage 通訊，遊戲 bug 前端無法 hotfix</li>
               <li>玩家勝利時：在聊天面板顯示前端動畫 3 秒，在遊戲面板由 Cocos 自行顯示</li>
-              <li>10 種 EndGameNoticeType，其中 Disconnected 會自動重連，AnchorOffline 彈對話框</li>
+              <li>10 種遊戲結束通知類型，其中斷線會自動重連，主播離線會彈對話框</li>
             </ul>
           </div>
           <details class="rd-ref">
@@ -1406,31 +1406,31 @@ flowchart LR
             <div class="mermaid">
 flowchart LR
     A["廣場「主播」Tab"] --> B{"已登入?"}
-    B -- "否" --> C["觸發登入 Sheet"]
+    B -- "否" --> C["觸發登入"]
     B -- "是" --> D["載入分類標籤"]
-    D --> E["前端插入全部 categoryId=0"]
+    D --> E["顯示「全部」+各分類標籤"]
     E --> F{"操作?"}
     F -- "切換分類" --> G{"是體育類別?"}
     G -- "是" --> H["顯示人氣/紅單三級選項"]
     G -- "否" --> I["隱藏三級選項"]
-    H --> J["getStreamerList API"]
+    H --> J["載入主播列表"]
     I --> J
-    F -- "搜尋" --> K["SearchSheet + 熱搜關鍵字"]
-    K --> L["popularkeywords API"]
+    F -- "搜尋" --> K["開啟搜尋面板 + 熱搜關鍵字"]
+    K --> L["載入熱門關鍵字"]
     L --> J
-    F -- "向下滾動" --> M["無限捲動 page++"]
+    F -- "向下滾動" --> M["無限捲動載入下一頁"]
     M --> J
     J --> N["主播卡片列表"]
-    N --> O{"載完?"}
-    O -- "length >= maxCount" --> P["停止載入"]
+    N --> O{"全部載完?"}
+    O -- "是" --> P["停止載入"]
     O -- "否" --> M
             </div>
           </div>
           <div class="pm-notice">
             <ul>
-              <li>每頁 30 筆，搭配 CustomInfiniteScroll 自動分頁</li>
+              <li>每頁 30 筆，自動無限捲動分頁</li>
               <li>非體育類別（美女等）不顯示人氣/紅單排序選項</li>
-              <li>搜尋歷史前端存 Storage，上限 10 筆；熱門搜索取後端近 90 天前 10 名</li>
+              <li>搜尋歷史保存在本機，上限 10 筆；熱門搜索取後端近 90 天前 10 名</li>
               <li>取消關注有二次確認彈窗</li>
             </ul>
           </div>
