@@ -1254,7 +1254,7 @@
         <div class="mermaid-card">
           <div class="mermaid-card-title">活動列表瀏覽動線</div>
           <div class="mermaid-card-body"><div class="mermaid">
-flowchart LR
+flowchart TD
     A["底部導覽列 → 活動 Tab"] --> B["載入活動列表"]
     B --> C["選分類 Tab（全部/限時/新人/日常/體育/VIP）"]
     C --> D["瀏覽活動卡片"]
@@ -1294,7 +1294,7 @@ flowchart LR
         <div class="mermaid-card">
           <div class="mermaid-card-title">任務系統動線</div>
           <div class="mermaid-card-body"><div class="mermaid">
-flowchart LR
+flowchart TD
     A["入口（活動列表/我的頁面/直播間/浮窗）"] --> B["任務系統首頁"]
     B --> C["每日簽到區"]
     C --> D{"今天簽了?"}
@@ -1334,7 +1334,7 @@ flowchart LR
         <div class="mermaid-card">
           <div class="mermaid-card-title">轉盤 / 抽獎動線</div>
           <div class="mermaid-card-body"><div class="mermaid">
-flowchart LR
+flowchart TD
     A["活動列表 → 抽獎活動卡片"] --> B{"活動類型"}
     B -- "主題抽獎(10008)" --> C["主題抽獎頁"]
     B -- "裂變轉盤(10021)" --> D["裂變轉盤頁"]
@@ -1371,7 +1371,7 @@ flowchart LR
         <div class="mermaid-card">
           <div class="mermaid-card-title">邀請好友 / 砍單動線</div>
           <div class="mermaid-card-body"><div class="mermaid">
-flowchart LR
+flowchart TD
     A["活動列表 → 邀請好友(10001)"] --> B{"測試帳號?"}
     B -- "是" --> C["Toast 禁用"]
     B -- "否" --> D["邀請好友頁"]
@@ -1406,7 +1406,7 @@ flowchart LR
         <div class="mermaid-card">
           <div class="mermaid-card-title">返水 / 首存包賠 / 場館存款</div>
           <div class="mermaid-card-body"><div class="mermaid">
-flowchart LR
+flowchart TD
     A["活動列表"] --> B{"活動類型"}
     B -- "返水(10010)" --> C{"已登入?"}
     C -- "否" --> D["強制登入"]

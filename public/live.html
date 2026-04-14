@@ -1043,7 +1043,7 @@
           <div class="mermaid-card-title">廣場 → 直播間路由</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入直播廣場"] --> B{"推廣模式?"}
     B -- "純直播模式" --> C["只顯示：直播、主播"]
     B -- "標準模式" --> D["顯示：直播、排行榜、主播、節目表、影片專區"]
@@ -1089,7 +1089,7 @@ flowchart LR
           <div class="mermaid-card-title">聊天室互動流程</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入直播間"] --> B["建立即時連線"]
     B --> C["即時聊天訊息流"]
     C --> D{"互動類型?"}
@@ -1121,7 +1121,7 @@ flowchart LR
           <div class="mermaid-card-title">送禮流程</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["直播間內"] --> B["點擊禮物按鈕"]
     B --> C["開啟送禮面板"]
     C --> D["選擇禮物"]
@@ -1151,7 +1151,7 @@ flowchart LR
           <div class="mermaid-card-title">開房對賭流程</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["底部導覽列 → 開房入口"] --> B["進入開房列表"]
     B --> C{"已登入?"}
     C -- "否" --> D["觸發登入"]
@@ -1187,7 +1187,7 @@ flowchart LR
           <div class="mermaid-card-title">主播頁動線</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["廣場「主播」Tab"] --> B{"已登入?"}
     B -- "否" --> C["觸發登入"]
     B -- "是" --> D["瀏覽主播卡片列表"]
@@ -1220,7 +1220,7 @@ flowchart LR
           <div class="mermaid-card-title">節目表動線</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["廣場「節目表」Tab"] --> B["載入類別標籤"]
     B --> C{"類別是體育?"}
     C -- "是" --> D["選擇場館 dropdown"]
@@ -1265,7 +1265,7 @@ flowchart LR
           <div class="mermaid-card-title">排行榜動線</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["廣場「排行榜」Tab"] --> B{"後台開關?"}
     B -- "關閉" --> C["Tab 不顯示"]
     B -- "開啟" --> D{"已登入?"}
@@ -1313,7 +1313,7 @@ flowchart LR
           <div class="mermaid-card-title">競猜投注動線</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["直播間內"] --> B{"觸發來源?"}
     B -- "投注按鈕" --> C["開啟投注面板"]
     B -- "聊天室推單卡片" --> D["切換到投注頁籤"]
@@ -1353,7 +1353,7 @@ flowchart LR
           <div class="mermaid-card-title">Cocos 遊戲動線</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["點擊 Cocos 遊戲直播間卡片"] --> B["進入 Cocos 直播間"]
     B --> C["請求進入遊戲"]
     C --> D{"自動轉帳?"}
@@ -1404,7 +1404,7 @@ flowchart LR
           <div class="mermaid-card-title">主播搜尋篩選動線</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["廣場「主播」Tab"] --> B{"已登入?"}
     B -- "否" --> C["觸發登入"]
     B -- "是" --> D["載入分類標籤"]

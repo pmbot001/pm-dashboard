@@ -823,7 +823,7 @@
           <div class="mermaid-card-title">1. 個人中心主線</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["底部導航 '我的'"] --> B{"已登入?"}
     B -- 否 --> C["顯示未登入"]
     C --> D["點頭像跳登入"]
@@ -856,7 +856,7 @@ flowchart LR
           <div class="mermaid-card-title">2. VIP 等級計算</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入 VIP 頁"] --> B["載入 VIP 資料"]
     B --> C["自動定位當前等級"]
     C --> D["查看等級詳情"]
@@ -883,7 +883,7 @@ flowchart LR
           <div class="mermaid-card-title">3. 背包兌換</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入背包中心"] --> B{"選模式"}
     B -- 背包管理 --> C["道具/背包分類"]
     B -- 兌換中心 --> D["上架分類"]
@@ -909,7 +909,7 @@ flowchart LR
           <div class="mermaid-card-title">4. 福利領取</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入福利中心"] --> B["預設篩選\n待領取+近7日"]
     B --> C["瀏覽福利列表"]
     C --> D{"操作"}
@@ -934,7 +934,7 @@ flowchart LR
           <div class="mermaid-card-title">5. 個人資料與暱稱</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入個人資料"] --> B["顯示資訊列表\n帳號/暱稱/頭像/性別/生日"]
     B --> C{"選擇操作"}
     C --> D["修改暱稱"]
@@ -969,7 +969,7 @@ flowchart LR
           <div class="mermaid-card-title">6. 稱號系統</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入我的稱號"] --> B["載入稱號列表"]
     B --> C["瀏覽稱號卡片"]
     C --> D{"稱號狀態"}
@@ -998,7 +998,7 @@ flowchart LR
           <div class="mermaid-card-title">7. 投注記錄查詢</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入投注記錄"] --> B{"選擇 Tab"}
     B -- 體育 --> C["體育投注記錄"]
     B -- 直播 --> D["直播投注記錄"]
@@ -1027,7 +1027,7 @@ flowchart LR
           <div class="mermaid-card-title">8. 場館轉帳</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入轉帳頁"] --> B["選擇轉出場館"]
     B --> C{"轉出=中心錢包?"}
     C -- 是 --> D["轉入=第二場館"]
@@ -1058,7 +1058,7 @@ flowchart LR
           <div class="mermaid-card-title">9. 任務系統</div>
           <div class="mermaid-card-body">
             <div class="mermaid">
-flowchart LR
+flowchart TD
     A["進入每日任務"] --> B["同時載入任務資料"]
     B --> C["判斷可見性"]
     C --> D{"任務類型(各有開關)"}

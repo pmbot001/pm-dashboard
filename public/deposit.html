@@ -910,7 +910,7 @@
         <div class="mermaid-card" id="uf-deposit-main">
           <div class="mermaid-card-title">1.1 存款主線（一般支付）</div>
           <div class="mermaid-card-body"><pre class="mermaid">
-flowchart LR
+flowchart TD
     A["進入存款頁"] --> B{"已綁定手機?"}
     B -- 否 --> C["顯示綁手機提示"]
     B -- 是 --> D{"通道全關/黑名單?"}
@@ -940,7 +940,7 @@ flowchart LR
         <div class="mermaid-card" id="uf-withdraw-main">
           <div class="mermaid-card-title">1.2 提款主線</div>
           <div class="mermaid-card-body"><pre class="mermaid">
-flowchart LR
+flowchart TD
     A["進入提款頁"] --> B["載入通道+餘額"]
     B --> C{"有進行中單?"}
     C -- 是 --> D["頂部訂單卡"]
@@ -970,7 +970,7 @@ flowchart LR
         <div class="mermaid-card" id="uf-usdt-fast">
           <div class="mermaid-card-title">1.3 USDT 快捷充值</div>
           <div class="mermaid-card-body"><pre class="mermaid">
-flowchart LR
+flowchart TD
     A["選 USDT 快捷"] --> B["隱藏通道列表"]
     B --> C["選擇幣商"]
     C --> D["輸入金額"]
@@ -987,7 +987,7 @@ flowchart LR
         <div class="mermaid-card" id="uf-bank-manage">
           <div class="mermaid-card-title">1.4 銀行卡管理</div>
           <div class="mermaid-card-body"><pre class="mermaid">
-flowchart LR
+flowchart TD
     A["選銀行卡通道"] --> B{"已有綁定卡?"}
     B -- 否 --> C["新增銀行卡頁"]
     B -- 是 --> D["選擇已綁卡"]
@@ -1007,7 +1007,7 @@ flowchart LR
         <div class="mermaid-card" id="uf-transfer">
           <div class="mermaid-card-title">1.5 轉帳（場館錢包）</div>
           <div class="mermaid-card-body"><pre class="mermaid">
-flowchart LR
+flowchart TD
     A["進入轉帳頁"] --> B["載入錢包餘額"]
     B --> C["場館列表"]
     C --> D{"歸集/單筆?"}
@@ -1025,7 +1025,7 @@ flowchart LR
         <div class="mermaid-card" id="uf-tx-record">
           <div class="mermaid-card-title">1.6 交易記錄查詢</div>
           <div class="mermaid-card-body"><pre class="mermaid">
-flowchart LR
+flowchart TD
     A["存款頁右上角/我的頁面"] --> B["交易記錄頁"]
     B --> C["選 Tab"]
     C --> D["類型篩選"]
