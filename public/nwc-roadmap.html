@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>NWC H5/APP 上線專案 — 時程規劃</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --ink: #1d2030;
+    --ink-soft: #5a6075;
+    --ink-faint: #8a90a3;
+    --border: #e7e9f1;
+    --border-soft: #eef0f6;
+    --accent: #5b5bd6;
+    --frontend: #e57a6c;
+    --frontend-soft: #fdeae5;
+    --backend: #a989d8;
+    --backend-soft: #ede5f7;
+    --qa: #3eb591;
+    --qa-soft: #d6f1e7;
+    --bug: #db4055;
+    --milestone: #e09a3a;
+    --launch: #cf3b3b;
+    --shadow: 0 1px 2px rgba(20,22,30,.04), 0 6px 18px rgba(20,22,30,.05);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg); color: var(--ink);
+    font-size: 14px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1640px; margin: 0 auto; padding: 32px 24px 72px; }
+
+  header.hero {
+    background: linear-gradient(135deg, #2a2a4e 0%, #4949a3 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+  }
+  header.hero .eyebrow {
+    font-size: 12px; letter-spacing: .15em; text-transform: uppercase;
+    opacity: .7; margin-bottom: 8px;
+  }
+  header.hero h1 {
+    margin: 0 0 14px; font-size: 26px; font-weight: 700; letter-spacing: -.01em;
+  }
+  header.hero .meta-row { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 18px; }
+  header.hero .meta-row .item { display: flex; flex-direction: column; }
+  header.hero .meta-row .label { font-size: 11px; opacity: .65; letter-spacing: .08em; text-transform: uppercase; }
+  header.hero .meta-row .value { font-size: 17px; font-weight: 600; margin-top: 2px; }
+  header.hero .meta-row .value.accent { color: #ffd166; }
+
+  section { margin-bottom: 32px; }
+  section h2 {
+    font-size: 18px; font-weight: 700; margin: 0 0 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  section h2 .badge {
+    background: var(--accent); color: #fff;
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+    letter-spacing: .04em;
+  }
+  section h2 .desc {
+    font-size: 13px; color: var(--ink-faint); font-weight: 400;
+    margin-left: 4px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ====== Mini Gantt（關鍵里程碑用，3 色：開發 / QA / 里程碑）====== */
+  .mini-gantt {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .mini-gantt-row {
+    display: flex;
+    border-bottom: 1px solid var(--border-soft);
+    min-height: 38px;
+  }
+  .mini-gantt-row:last-child { border-bottom: 0; }
+  .mini-gantt-row.header { min-height: 28px; background: #f9fafd; }
+  .mini-gantt-row .mini-label {
+    width: 110px; min-width: 110px;
+    padding: 6px 12px;
+    background: #fafbfd;
+    border-right: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600;
+    color: var(--ink);
+  }
+  .mini-gantt-row.header .mini-label {
+    background: #f9fafd;
+    color: var(--ink-faint);
+    font-weight: 500;
+    font-size: 11px;
+  }
+  .mini-gantt-row .mini-label .swatch {
+    width: 10px; height: 10px; border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .mini-gantt-row .mini-label .swatch.dev       { background: #7a5fcc; }
+  .mini-gantt-row .mini-label .swatch.qa        { background: #3eb591; }
+  .mini-gantt-row .mini-label .swatch.milestone { background: #cf3b3b; transform: rotate(45deg); border-radius: 1px; }
+  .mini-gantt-row .mini-chart {
+    flex: 1;
+    position: relative;
+    background:
+      linear-gradient(to right,
+        transparent calc((22 / 83) * 100% - 1px), rgba(122,95,204,.15) calc((22 / 83) * 100% - 1px), rgba(122,95,204,.15) calc((22 / 83) * 100%), transparent calc((22 / 83) * 100%),
+        transparent calc((43 / 83) * 100% - 1px), rgba(122,95,204,.15) calc((43 / 83) * 100% - 1px), rgba(122,95,204,.15) calc((43 / 83) * 100%), transparent calc((43 / 83) * 100%)
+      ),
+      repeating-linear-gradient(to right, transparent 0, transparent calc(100%/12 - 1px), #eef0f6 calc(100%/12 - 1px), #eef0f6 calc(100%/12));
+  }
+  .mini-gantt-row.header .mini-chart {
+    background: #f9fafd;
+  }
+  .month-tag {
+    position: absolute; top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-soft);
+    padding: 0 8px;
+  }
+  .mini-bar {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    height: 22px;
+    border-radius: 4px;
+    padding: 0 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    letter-spacing: .02em;
+    box-shadow: 0 1px 2px rgba(20,22,30,.1);
+  }
+  .mini-bar.dev { background: linear-gradient(180deg, #8a6fd6, #6a4ec0); }
+  .mini-bar.qa  { background: linear-gradient(180deg, #4fc09e, #38a584); }
+  .mini-bar.narrow-bar { font-size: 10px; padding: 0 4px; }
+  /* 里程碑 marker（菱形 + 文字標籤）*/
+  .ms-marker {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex; align-items: center; gap: 6px;
+    z-index: 2;
+  }
+  .ms-marker.right {
+    flex-direction: row-reverse;
+    transform: translate(-100%, -50%);
+  }
+  .ms-marker .diamond {
+    width: 14px; height: 14px;
+    background: #cf3b3b;
+    transform: rotate(45deg);
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(207,59,59,.2);
+    flex-shrink: 0;
+  }
+  .ms-marker .text {
+    font-size: 11.5px; font-weight: 700; color: #cf3b3b;
+    white-space: nowrap;
+  }
+
+  /* ====== Gantt ====== */
+  .gantt-wrap { width: 100%; overflow: visible; }
+  .gantt-container {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .gantt-row {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    min-height: 36px;
+  }
+  .gantt-row:last-child { border-bottom: 0; }
+  .gantt-row .label {
+    width: 780px; min-width: 780px;
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 10px;
+    border-right: 1px solid var(--border);
+    background: #fafbfd;
+    font-size: 12.5px;
+  }
+  .gantt-row .label a.key {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px; color: var(--accent);
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 2px 7px; border-radius: 4px;
+    min-width: 84px; text-align: center;
+    flex-shrink: 0;
+    text-decoration: none;
+    transition: all .15s ease;
+  }
+  .gantt-row .label a.key:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 2px 4px rgba(91,91,214,.2);
+  }
+  .gantt-row .label a.key::after {
+    content: ' ↗';
+    font-size: 9px;
+    opacity: .5;
+  }
+  .gantt-row .label .name {
+    color: var(--ink); font-weight: 500;
+    flex: 1; line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .gantt-row .label .name.epic { font-weight: 700; font-size: 13px; }
+  .gantt-row .label .name .badge-warn {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    background: #fff5e5; color: #c47800;
+    border: 1px solid #f6e3b9;
+    padding: 1px 5px; border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: 1px;
+  }
+  .gantt-row .label .name .badge-risk {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    background: #fee5e9; color: var(--bug);
+    border: 1px solid #f6c0c7;
+    padding: 1px 5px; border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: 1px;
+  }
+  .gantt-row .label .name .badge-cross {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    background: #ede9fe; color: #6741a8;
+    border: 1px solid #d4c9f2;
+    padding: 1px 5px; border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: 1px;
+  }
+  /* Sprint commitment 標籤 */
+  .gantt-row .label .sprint-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px;
+    margin-left: 4px;
+    flex-shrink: 0;
+    letter-spacing: .03em;
+  }
+  .gantt-row .label .sprint-tag.s-s1 { background: #e0e0fa; color: #4747c4; }
+  .gantt-row .label .sprint-tag.s-s2 { background: #ebe0fa; color: #6741a8; }
+  .gantt-row .label .sprint-tag.s-s3 { background: #f3e0fa; color: #8a3aa8; }
+  /* sub 計數 — 固定寬度右對齊、單行不換行 */
+  .gantt-row .label .subcount {
+    font-size: 10.5px; color: var(--ink-faint);
+    background: #f1f3f9; padding: 2px 8px; border-radius: 8px;
+    flex-shrink: 0;
+    width: 56px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+  .gantt-row .label .subcount.empty {
+    visibility: hidden;
+  }
+  /* owner 群組：固定寬度欄、左對齊（讓 sub 上下對齊、人名整齊）*/
+  .gantt-row .label .owners {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    width: 260px;
+    justify-content: flex-start;
+  }
+  .gantt-row .label .owner-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    line-height: 1.2;
+    white-space: nowrap;
+    background: var(--owner-bg, #e0e0fa);
+    color: var(--owner-color, #4747c4);
+    border: 1px solid var(--owner-border, transparent);
+    /* 每個人名統一寬度 */
+    min-width: 56px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .gantt-row.epic .label {
+    background: linear-gradient(90deg, #f6f5ff, #fafbfd);
+    border-top: 2px solid var(--accent);
+  }
+  .gantt-row.epic.frontend .label { border-top-color: var(--frontend); }
+  .gantt-row.epic.backend .label { border-top-color: var(--backend); }
+  .gantt-row.epic.qa .label { border-top-color: var(--qa); }
+  .gantt-row.epic.uat .label { border-top-color: var(--milestone); }
+  .gantt-row.epic.delivery .label { border-top-color: var(--launch); }
+
+  .gantt-row .chart {
+    flex: 1; position: relative;
+    background:
+      linear-gradient(to right,
+        transparent calc((22 / 83) * 100% - 1px), rgba(91,91,214,.15) calc((22 / 83) * 100% - 1px), rgba(91,91,214,.15) calc((22 / 83) * 100%), transparent calc((22 / 83) * 100%),
+        transparent calc((43 / 83) * 100% - 1px), rgba(91,91,214,.15) calc((43 / 83) * 100% - 1px), rgba(91,91,214,.15) calc((43 / 83) * 100%), transparent calc((43 / 83) * 100%),
+        transparent calc((64 / 83) * 100% - 1px), rgba(91,91,214,.15) calc((64 / 83) * 100% - 1px), rgba(91,91,214,.15) calc((64 / 83) * 100%), transparent calc((64 / 83) * 100%)
+      ),
+      repeating-linear-gradient(to right, transparent 0, transparent calc(100%/12 - 1px), #eef0f6 calc(100%/12 - 1px), #eef0f6 calc(100%/12));
+    min-height: 28px;
+  }
+  .gantt-row.epic .chart { background-color: #fbfbfd; }
+  .bar {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    height: 14px;
+    border-radius: 3px;
+    display: flex; align-items: center;
+    padding: 0 7px;
+    font-size: 10px; color: #fff;
+    font-weight: 600;
+    letter-spacing: .01em;
+    white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 1px 2px rgba(20,22,30,.1);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .bar:hover { transform: translateY(-50%) scale(1.02); box-shadow: 0 2px 6px rgba(20,22,30,.18); z-index: 5; }
+  .bar.frontend    { background: linear-gradient(180deg, #ea8275, #d96658); }
+  .bar.backend     { background: linear-gradient(180deg, #b394e0, #9b78d2); }
+  .bar.qa          { background: linear-gradient(180deg, #4fc09e, #38a584); }
+  .bar.integration { background: linear-gradient(180deg, #5ba8d0, #3e88b0); }
+  .bar.uat         { background: linear-gradient(180deg, #e8a64a, #cf8f30); }
+  .bar.delivery    { background: linear-gradient(180deg, #db4d4d, #c33333); }
+  /* Epic bar 改成 swimlane 樣式：淡化背景 + 左邊厚色條 */
+  .bar.epic {
+    height: 22px;
+    background: linear-gradient(90deg, rgba(229,122,108,.22), rgba(229,122,108,.06));
+    border-left: 3px solid var(--frontend);
+    border-radius: 0 4px 4px 0;
+    color: #7a3c33;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.4);
+  }
+  .bar.epic:hover { transform: translateY(-50%); }
+  .bar.epic.backend {
+    background: linear-gradient(90deg, rgba(169,137,216,.22), rgba(169,137,216,.06));
+    border-left-color: var(--backend);
+    color: #4d3878;
+  }
+  .bar.epic.qa {
+    background: linear-gradient(90deg, rgba(62,181,145,.22), rgba(62,181,145,.06));
+    border-left-color: var(--qa);
+    color: #0e6a4d;
+  }
+  .bar.unassigned {
+    background: transparent;
+    border: 1.5px dashed var(--ink-faint);
+    color: var(--ink-soft);
+    box-shadow: none;
+  }
+  .bar.risk { box-shadow: 0 0 0 2px rgba(219,64,85,.32), 0 1px 2px rgba(20,22,30,.1); }
+
+  /* "需求設計中" 半透明斜紋效果（用 ::after overlay 不蓋掉原本顏色）*/
+  .bar.design-pending {
+    opacity: .75;
+    position: relative;
+  }
+  .bar.design-pending::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.3) 0, rgba(255,255,255,.3) 4px, transparent 4px, transparent 8px);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  /* ====== Gantt Header ====== */
+  .gantt-header {
+    border-bottom: 2px solid var(--border);
+    background: #f9fafd;
+  }
+  .gantt-header .month-row,
+  .gantt-header .band-row {
+    display: flex;
+  }
+  .gantt-header .label-spacer {
+    width: 780px; min-width: 780px;
+    border-right: 1px solid var(--border);
+    background: #fafbfd;
+  }
+  .gantt-header .month-row .label-spacer {
+    padding: 8px 12px;
+    font-size: 11.5px; color: var(--ink-soft);
+    font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase;
+    display: flex; align-items: center;
+  }
+  .gantt-header .chart-area {
+    flex: 1; position: relative; min-height: 32px;
+  }
+  .month-cell {
+    position: absolute; top: 0; bottom: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: var(--ink-soft);
+    border-right: 1px solid var(--border);
+  }
+  .month-cell:last-child { border-right: 0; }
+  .band-bar {
+    position: absolute;
+    top: 5px; bottom: 5px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center; justify-content: center;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: .02em;
+    overflow: hidden;
+    line-height: 1;
+    padding: 0 8px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    box-shadow: 0 1px 2px rgba(20,22,30,.08);
+    font-size: 11px;
+  }
+  .band-bar .ttl { font-weight: 700; }
+  .band-bar .sub { font-weight: 500; opacity: .8; font-size: 10px; margin-left: 6px; }
+  /* 窄 bar（UAT、Delivery）只顯示標題、不顯示日期 */
+  .band-bar.narrow .sub { display: none; }
+  .band-bar.narrow { font-size: 10.5px; padding: 0 4px; }
+  /* 用更精緻的漸層 */
+  .band-bar.s1       { background: linear-gradient(180deg, #7a7ad8, #6464c8); }
+  .band-bar.s2       { background: linear-gradient(180deg, #9779d6, #8767c8); }
+  .band-bar.s3       { background: linear-gradient(180deg, #b67ad6, #a766c8); }
+  .band-bar.qa       { background: linear-gradient(180deg, #4fc09e, #38a584); }
+  .band-bar.uat      { background: linear-gradient(180deg, #e8a64a, #cf8f30); }
+  .band-bar.delivery { background: linear-gradient(180deg, #db4d4d, #c33333); }
+
+  /* ====== Legend ====== */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    font-size: 12px; color: var(--ink-soft);
+    margin-top: 14px;
+  }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .legend .sw {
+    display: inline-block; width: 16px; height: 11px; border-radius: 2px;
+  }
+  .legend .sw.frontend { background: var(--frontend); }
+  .legend .sw.backend { background: var(--backend); }
+  .legend .sw.qa { background: var(--qa); }
+  .legend .sw.uat { background: var(--milestone); }
+  .legend .sw.delivery { background: var(--launch); }
+  .legend .sw.risk { background: var(--frontend); box-shadow: 0 0 0 2px rgba(226,61,82,.35);}
+  .legend .sw.design {
+    background: var(--frontend);
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.5) 0, rgba(255,255,255,.5) 3px, transparent 3px, transparent 6px);
+    opacity: .65;
+  }
+
+  /* ====== Risk & Decisions cards (Section D) ====== */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .risk-col {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .risk-col h3 {
+    font-size: 14px; font-weight: 700;
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .risk-col.high h3 { color: var(--bug); }
+  .risk-col.med h3 { color: var(--milestone); }
+  .risk-col.dec h3 { color: var(--accent); }
+  .risk-item {
+    background: #f9fafd; border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .risk-item:last-child { margin-bottom: 0; }
+  .risk-item .title {
+    font-weight: 700; color: var(--ink);
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .risk-item .title .key {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px; color: var(--ink-faint);
+    background: #fff; border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 3px;
+  }
+  .risk-item .body { color: var(--ink-soft); }
+  .risk-item .body strong { color: var(--ink); }
+  .risk-item .actions {
+    font-size: 11.5px; color: var(--accent);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+  }
+  .risk-col.high .risk-item { border-left: 3px solid var(--bug); }
+  .risk-col.med .risk-item { border-left: 3px solid var(--milestone); }
+  .risk-col.dec .risk-item { border-left: 3px solid var(--accent); }
+
+  /* ====== Resource Load (Section C) ====== */
+  .resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .resource-list { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .resource-list h3 { font-size: 13px; margin: 0 0 14px; color: var(--ink-soft); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .resource-list h3 .role-tag {
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    background: #f1f3f9; color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .person-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 32px;
+    align-items: center; gap: 10px;
+    padding: 6px 0;
+  }
+  .person-row .name { font-size: 12.5px; font-weight: 500; }
+  .person-row .count {
+    text-align: right; font-size: 12px; color: var(--ink-soft);
+    font-variant-numeric: tabular-nums; font-weight: 600;
+  }
+  .load-bar {
+    height: 8px; background: #eef0f6; border-radius: 4px; overflow: hidden;
+  }
+  .load-bar .fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #7d6fe0);
+    border-radius: 4px;
+  }
+  .load-bar.qa .fill { background: linear-gradient(90deg, var(--qa), #4dd6a8); }
+  .load-bar.over .fill { background: linear-gradient(90deg, var(--bug), #f56c7c); }
+
+  .chart-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-top: 16px; }
+  .chart-box h3 { font-size: 13px; margin: 0 0 12px; color: var(--ink-soft); font-weight: 600; }
+  .chart-box .canvas-wrap { position: relative; height: 200px; }
+
+  .notice {
+    background: #fff7e8; border: 1px solid #f6e3b9;
+    border-radius: 8px;
+    padding: 10px 14px; font-size: 12px; color: #7a5a00;
+    margin-bottom: 14px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .notice .icon { font-size: 14px; line-height: 1; margin-top: 1px; }
+
+  /* ====== Sub-task Modal ====== */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(20,22,30,.45);
+    z-index: 100;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 50px 20px;
+    overflow-y: auto;
+    backdrop-filter: blur(2px);
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 960px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    overflow: hidden;
+    margin: auto;
+  }
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .modal-header .modal-key {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11px; font-weight: 700;
+    background: var(--accent); color: #fff;
+    padding: 4px 8px; border-radius: 4px;
+    text-decoration: none; flex-shrink: 0;
+  }
+  .modal-header .modal-key:hover { background: #4a4ac0; }
+  .modal-header #modal-title { font-size: 14px; font-weight: 700; color: var(--ink); flex: 1; line-height: 1.4; }
+  .modal-close {
+    background: none; border: 0;
+    font-size: 26px; line-height: 1;
+    cursor: pointer; color: var(--ink-faint);
+    padding: 0 8px;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal-meta {
+    padding: 8px 20px;
+    background: #fafbfd;
+    border-bottom: 1px solid var(--border);
+    font-size: 11.5px; color: var(--ink-soft);
+  }
+  .subtask-table {
+    width: 100%; border-collapse: collapse; font-size: 12.5px;
+  }
+  .subtask-table th {
+    background: #fafbfd; text-align: left;
+    padding: 8px 12px; font-size: 11px;
+    color: var(--ink-faint); font-weight: 600;
+    letter-spacing: .04em;
+    border-bottom: 1px solid var(--border);
+  }
+  .subtask-table tr { border-bottom: 1px solid var(--border-soft); }
+  .subtask-table tr:last-child { border-bottom: 0; }
+  .subtask-table tr:hover td { background: #fafbfd; }
+  .subtask-table td { padding: 10px 12px; vertical-align: top; line-height: 1.45; }
+  .subtask-table td.k a {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px; color: var(--accent);
+    text-decoration: none;
+    background: #fff; border: 1px solid var(--border);
+    padding: 3px 7px; border-radius: 4px;
+    white-space: nowrap; display: inline-block;
+    transition: all .15s;
+  }
+  .subtask-table td.k a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .subtask-table td.t,
+  .subtask-table td.s,
+  .subtask-table td.a { white-space: nowrap; }
+  .subtask-table td.a { color: var(--ink-soft); font-size: 11.5px; }
+  .subtask-table td.m { color: var(--ink); }
+  .type-pill, .status-pill {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px; border-radius: 3px;
+    display: inline-block; line-height: 1.3;
+  }
+  .type-pill.task    { background: #f1e0f9; color: #7733aa; }
+  .type-pill.sub     { background: #e8e6f9; color: #5b4ec0; }
+  .type-pill.qa      { background: #d6f1e7; color: #2e7d4a; }
+  .type-pill.bug     { background: #fde2dd; color: #b03e3e; }
+  .status-pill.open       { background: #f1f3f9; color: var(--ink-soft); }
+  .status-pill.待開發     { background: #f1f3f9; color: var(--ink-soft); }
+  .status-pill.in-dev     { background: #dde9fa; color: #2c5fa8; }
+  .status-pill.review     { background: #fef0d6; color: #a06e1e; }
+  .status-pill.resolved   { background: #dcf2e0; color: #2e7d4a; }
+  .status-pill.需求設計   { background: #fef0d6; color: #a06e1e; }
+  .status-pill.problem    { background: #fee5e0; color: #b94432; }
+  .status-pill.test-dev   { background: #d6efed; color: #207b73; }
+  /* clickable row */
+  .gantt-row.clickable { cursor: pointer; }
+  .gantt-row.clickable:hover .label { background: #f3f1fb; }
+  .gantt-row.clickable .label .name::after {
+    content: ' ›';
+    color: var(--accent);
+    font-size: 14px; font-weight: 700;
+    margin-left: 2px;
+    opacity: .55;
+  }
+
+  footer.footnote {
+    margin-top: 32px;
+    font-size: 11.5px; color: var(--ink-faint);
+    text-align: center; line-height: 1.7;
+  }
+  footer.footnote .src {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    background: #eef0f6; padding: 1px 6px; border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="hero">
+    <div class="eyebrow">NWC Launch Plan · v2.0 (Jira-synced)</div>
+    <h1>NWC H5/APP 上線專案 — 時程規劃</h1>
+    <div class="meta-row">
+      <div class="item"><span class="label">Kick-off</span><span class="value">2026-05-10</span></div>
+      <div class="item"><span class="label">交付業主測試</span><span class="value accent">2026-07-31</span></div>
+    </div>
+  </header>
+
+  <!-- ========== Section A: Milestones ========== -->
+  <section>
+    <h2><span class="badge">A</span>關鍵里程碑 <span class="desc">Sprint Dev 收斂 / QA 完成 / 整合測試 / 交付業主</span></h2>
+    <div class="card">
+      <div class="notice">
+        <span class="icon">📌</span>
+        <div>
+          <strong>Sprint Dev 收斂日</strong>（5/29、6/19、7/10）為 Jira 上 Sprint 真實設定的結束日；
+          <strong>QA 完成日</strong>（6/12、7/3、7/24）為「Dev 結束後 + 2 週 QA」的合理推估；
+          <strong>整合測試 / 交付業主</strong>為對外承諾日。
+        </div>
+      </div>
+      <!-- 關鍵里程碑：Gantt 形式，3 色 -->
+      <div class="mini-gantt">
+        <!-- Month header -->
+        <div class="mini-gantt-row header">
+          <div class="mini-label">月份</div>
+          <div class="mini-chart">
+            <div class="month-tag" style="left: 0%;">May (5/10–5/31)</div>
+            <div class="month-tag" style="left: 26.51%;">June</div>
+            <div class="month-tag" style="left: 61.45%;">July (–7/31)</div>
+          </div>
+        </div>
+
+        <!-- Row 1: 開發 -->
+        <div class="mini-gantt-row">
+          <div class="mini-label">
+            <span class="swatch dev"></span>開發
+          </div>
+          <div class="mini-chart">
+            <div class="mini-bar dev" style="left: 1.20%;  width: 22.89%;">Sprint 1 · 5/11–5/29</div>
+            <div class="mini-bar dev" style="left: 26.51%; width: 22.89%;">Sprint 2 · 6/1–6/19</div>
+            <div class="mini-bar dev" style="left: 51.81%; width: 22.89%;">Sprint 3 · 6/22–7/10</div>
+          </div>
+        </div>
+
+        <!-- Row 2: QA -->
+        <div class="mini-gantt-row">
+          <div class="mini-label">
+            <span class="swatch qa"></span>QA
+          </div>
+          <div class="mini-chart">
+            <div class="mini-bar qa" style="left: 26.51%; width: 14.46%;">S1 QA · 6/1–6/12</div>
+            <div class="mini-bar qa" style="left: 51.81%; width: 14.46%;">S2 QA · 6/22–7/3</div>
+            <div class="mini-bar qa" style="left: 77.11%; width: 14.46%;">S3 QA · 7/13–7/24</div>
+          </div>
+        </div>
+
+        <!-- Row 3: 整合測試（7/20–7/31）-->
+        <div class="mini-gantt-row">
+          <div class="mini-label">
+            <span class="swatch qa"></span>整合測試
+          </div>
+          <div class="mini-chart">
+            <div class="mini-bar qa" style="left: 85.54%; width: 14.46%;">整合測試 · 7/20–7/31</div>
+          </div>
+        </div>
+
+        <!-- Row 4: 里程碑 -->
+        <div class="mini-gantt-row">
+          <div class="mini-label">
+            <span class="swatch milestone"></span>里程碑
+          </div>
+          <div class="mini-chart">
+            <div class="ms-marker" style="left: 0%;">
+              <span class="diamond"></span>
+              <span class="text">🚀 Kick-off · 5/10</span>
+            </div>
+            <div class="ms-marker right" style="left: 100%;">
+              <span class="text">✅ 交付業主測試 · 7/31</span>
+              <span class="diamond"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Section B: Gantt ========== -->
+  <section>
+    <h2>整體時程甘特圖 <span class="desc">Sprint 起訖日來自 Jira；QA 為 Dev 結束 +2 週推估</span></h2>
+    <div class="card" style="padding: 14px 14px 18px;">
+      <div class="gantt-wrap">
+        <div class="gantt-container" id="gantt-root">
+          <!-- header injected by JS -->
+          <!-- rows injected by JS -->
+        </div>
+      </div>
+      <div class="legend">
+        <div class="item"><span class="sw frontend"></span>前端開發</div>
+        <div class="item"><span class="sw backend"></span>後端重構 / 環境</div>
+        <div class="item"><span class="sw qa"></span>QA 測試</div>
+        <div class="item"><span class="sw design"></span>需求設計中（規格未鎖）</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footnote">
+    資料來源：<span class="src">Jira / Project NWC</span>（撈取於 2026-05-15，共 100 張 ticket）<br>
+    Sprint 起訖日：Jira customfield_10020 · QA 期間為 2 週推估 · 風險清單為人工分析<br>
+    本文件為對外時程承諾版本；個別 ticket 工時請於 Sprint Planning 後在 Jira 補上 Start / DEV / CQA Date 以提高精度。
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   每個 parent ticket 的 sub-task 列表（撈自 Jira，119 張單）
+   點 row 會打開 Modal 顯示
+   ============================================================ */
+const SUBTASKS = {"NWC-1022":[{"k":"NWC-1023","t":"Sub-task","s":"OPEN","a":"Charles Chen TPE","m":"[後端] unify 整併"},{"k":"NWC-1025","t":"Sub-task","s":"Closed","a":"Gerry Lin","m":"[前端][H5/APP] 文件整理"},{"k":"NWC-1092","t":"Sub-task","s":"In Development","a":"Zayn Yang TXG","m":"[後端] 遊戲端跟著 unify 整併的調整"},{"k":"NWC-1105","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 雲平台跟著 unify 需要調整的部分 - 直播推單 & 曬單"},{"k":"NWC-1215","t":"Sub-task","s":"In Development","a":"Snw TPE","m":"後端] 雲平台跟著 unify 需要調整的部分 - 平台有打 unify/baldur"}],"NWC-1035":[{"k":"NWC-1120","t":"QA Sub-Task","s":"OPEN","a":"Elsa Hsu TXG","m":"[QA][H5/APP] 弹窗"},{"k":"NWC-1256","t":"Sub-task","s":"In Development","a":"Jay Lee TPE","m":"[前端][H5][系統] 弹窗 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1257","t":"Sub-task","s":"OPEN","a":"Onion Zhang","m":"[前端][APP][系統] 弹窗 - 功能確認 + 對齊"},{"k":"NWC-1284","t":"QAT Bug Sub-Task","s":"To Do","a":"Onion Zhang","m":"[APP][彈窗][重要公告] 內容應只顯示 \"重要公告\""}],"NWC-1036":[{"k":"NWC-1180","t":"Sub-task","s":"OPEN","a":"Onion Zhang","m":"[前端][APP][系統] 推送通知 - 功能確認 + 對齊"},{"k":"NWC-1210","t":"Sub-task","s":"OPEN","a":"Joe Wu TPE","m":"[前端][H5][系統] 推送通知 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1242","t":"Sub-task","s":"OPEN","a":"Onion Zhang","m":"[前端][APP][系統] 極光 / engagelab 推播 SDK - 整合"}],"NWC-1037":[{"k":"NWC-1179","t":"Sub-task","s":"In Development","a":"Ivy ","m":"[前端][H5][系統] 注册 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1264","t":"Sub-task","s":"In Development","a":"Onion Zhang","m":"[前端][APP][系統] 注册 - 功能確認 + 對齊"}],"NWC-1038":[{"k":"NWC-1178","t":"Sub-task","s":"In Development","a":"Ivy ","m":"[前端][H5][系統] 登录 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1265","t":"Sub-task","s":"OPEN","a":"Onion Zhang","m":"[前端][APP][系統] 登录 - 功能確認 + 對齊"}],"NWC-1039":[{"k":"NWC-1251","t":"Sub-task","s":"OPEN","a":"Ivy ","m":"[前端][H5][系統] 全站维护/访问受限页 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1252","t":"Sub-task","s":"OPEN","a":"Onion Zhang","m":"[前端][APP][系統] 全站维护/访问受限页 - 功能確認 + 對齊"}],"NWC-1041":[{"k":"NWC-1177","t":"Sub-task","s":"OPEN","a":"Onion Zhang","m":"[前端][APP][系統] APP启动页/游戏loading图 - 功能確認 + 對齊"}],"NWC-1042":[{"k":"NWC-1109","t":"QA Sub-Task","s":"OPEN","a":"Kerr Hsieh TPE","m":"[QA][H5/APP] 体育首页"},{"k":"NWC-1212","t":"Sub-task","s":"OPEN","a":"deri chen","m":"[前端][H5][体育] 体育首页 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1214","t":"Sub-task","s":"OPEN","a":"Gerry Lin","m":"[前端][APP][体育] 体育首页 - 功能確認 + 對齊"},{"k":"NWC-1258","t":"Sub-task","s":"OPEN","a":"Nigel Li TPE","m":"[前端][H5][体育] 推广模式 - NWC 換皮 + 對齊 APP（H5 改 tabbar 組合）"},{"k":"NWC-1260","t":"Sub-task","s":"OPEN","a":"deri chen","m":"[前端][H5][体育] Unify 重構 - 聯調 BE + 對齊 APP"},{"k":"NWC-1261","t":"Sub-task","s":"OPEN","a":"Gerry Lin","m":"[前端][APP][体育] Unify 重構 - 聯調 BE"},{"k":"NWC-1275","t":"QAT Bug Sub-Task","s":"To Do","a":"Gerry Lin","m":"[APP][体育首页][單場][篩選聯賽] 移除此icon"}],"NWC-1043":[{"k":"NWC-1110","t":"QA Sub-Task","s":"OPEN","a":"Kerr Hsieh TPE","m":"[QA][H5/APP] 侧边栏"},{"k":"NWC-1211","t":"Sub-task","s":"OPEN","a":"deri chen","m":"[前端][H5][体育] 侧边栏 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1213","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][体育] 侧边栏 - 功能確認 + 對齊"},{"k":"NWC-1266","t":"Sub-task","s":"OPEN","a":"Joe Wu TPE","m":"[前端][H5][体育] 侧边栏 - 消息中心 - NWC 換皮 + 對齊 APP"}],"NWC-1046":[{"k":"NWC-1132","t":"QA Sub-Task","s":"OPEN","a":"Ethan Chiu TXG","m":"[QA][H5/APP] 娱乐页面"}],"NWC-1047":[{"k":"NWC-1133","t":"QA Sub-Task","s":"OPEN","a":"Monica Wu TXG","m":"[QA][H5/APP] 活动列表"},{"k":"NWC-1207","t":"Sub-task","s":"In Development","a":"Jay Lee TPE","m":"[前端][H5][活動] 活动列表 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1209","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 活动列表 - 功能確認 + 對齊"},{"k":"NWC-1255","t":"QAT Bug Sub-Task","s":"問題釐清","a":"Monica Wu TXG","m":"[App][活動列表][活動大廳] 頁面顯示內容異常"},{"k":"NWC-1262","t":"QAT Bug Sub-Task","s":"To Do","a":"Ethan Lin TPE","m":"[App][活動列表][標題名稱] 名稱顯示異常"},{"k":"NWC-1271","t":"QAT Bug Sub-Task","s":"To Do","a":"Ethan Lin TPE","m":"[App][活動列表] 點擊活動，無法進入活動詳情頁"},{"k":"NWC-1274","t":"QAT Bug Sub-Task","s":"To Do","a":"Ethan Lin TPE","m":"[App][活動列表]未顯示活動領獎入口"},{"k":"NWC-1276","t":"QAT Bug Sub-Task","s":"To Do","a":"Ethan Lin TPE","m":"[App][活動列表][活動週期] 文案顯示異常"}],"NWC-1048":[{"k":"NWC-1137","t":"QA Sub-Task","s":"OPEN","a":"Steven Tseng TXG","m":"[QA][H5/APP] 纯展示页"},{"k":"NWC-1206","t":"Sub-task","s":"Test in DEV","a":"Jay Lee TPE","m":"[前端][H5][活動] 纯展示页 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1208","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 纯展示页 - 功能確認 + 對齊"}],"NWC-1049":[{"k":"NWC-1253","t":"Sub-task","s":"OPEN","a":"Onion Zhang","m":"[前端][APP][支付] 转账 - 功能確認 + 對齊"},{"k":"NWC-1254","t":"Sub-task","s":"In Development","a":"Alice Lee TPE","m":"[前端][H5][支付] 转账 - NWC 換皮 + 對齊 APP"}],"NWC-1050":[{"k":"NWC-1204","t":"Sub-task","s":"OPEN","a":"Gerry Lin","m":"[前端][APP][活動] 新版赛事分页 - 新做"},{"k":"NWC-1205","t":"Sub-task","s":"In Development","a":"Jay Lee TPE","m":"[前端][H5][活動] 新版赛事分页 - NWC 換皮"}],"NWC-1051":[{"k":"NWC-1216","t":"Sub-task","s":"OPEN","a":"Ray Lin TPE","m":"[前端][APP][活動] 转盘系统 - 新做"},{"k":"NWC-1217","t":"Sub-task","s":"OPEN","a":"deri chen","m":"[前端][H5][活動] 转盘系统 - NWC 換皮"}],"NWC-1052":[{"k":"NWC-1222","t":"Sub-task","s":"OPEN","a":"Jay Lee TPE","m":"[前端][H5][活動] 邀请好友＿首存/等级/排行榜 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1223","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 邀请好友＿首存/等级/排行榜 - 功能確認 + 對齊"}],"NWC-1053":[{"k":"NWC-1219","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 邀请好友转盘 - 功能確認 + 對齊"},{"k":"NWC-1221","t":"Sub-task","s":"OPEN","a":"Jay Lee TPE","m":"[前端][H5][活動] 邀请好友转盘 - NWC 換皮 + 對齊 APP"}],"NWC-1054":[{"k":"NWC-1139","t":"QA Sub-Task","s":"OPEN","a":"Monica Wu TXG","m":"[QA][H5/APP] 返水"},{"k":"NWC-1228","t":"Sub-task","s":"OPEN","a":"Jay Lee TPE","m":"[前端][H5][活動] 返水 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1232","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 返水 - 功能確認 + 對齊"}],"NWC-1055":[{"k":"NWC-1140","t":"QA Sub-Task","s":"OPEN","a":"Steven Tseng TXG","m":"[QA][H5/APP] 首存"},{"k":"NWC-1227","t":"Sub-task","s":"OPEN","a":"Jay Lee TPE","m":"[前端][H5][活動] 首存 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1231","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 首存 - 功能確認 + 對齊"}],"NWC-1056":[{"k":"NWC-1141","t":"QA Sub-Task","s":"OPEN","a":"Steven Tseng TXG","m":"[QA][H5/APP] 新手任务(新手四重奏）"},{"k":"NWC-1226","t":"Sub-task","s":"OPEN","a":"Jay Lee TPE","m":"[前端][H5][活動] 新手任务(新手四重奏) - NWC 換皮 + 對齊 APP"},{"k":"NWC-1230","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 新手任务(新手四重奏) - 功能確認 + 對齊"}],"NWC-1057":[{"k":"NWC-1142","t":"QA Sub-Task","s":"OPEN","a":"Monica Wu TXG","m":"[QA][H5/APP] 场管存款"},{"k":"NWC-1225","t":"Sub-task","s":"OPEN","a":"Jay Lee TPE","m":"[前端][H5][活動] 场馆存款 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1229","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 场馆存款 - 功能確認 + 對齊"}],"NWC-1058":[{"k":"NWC-1218","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][活動] 新手转盘 - 功能確認 + 對齊"},{"k":"NWC-1220","t":"Sub-task","s":"OPEN","a":"Jay Lee TPE","m":"[前端][H5][活動] 新手转盘 - NWC 換皮 + 對齊 APP"}],"NWC-1059":[{"k":"NWC-1143","t":"QA Sub-Task","s":"OPEN","a":"未指派","m":"[H5/APP] 全活动打点"}],"NWC-1060":[{"k":"NWC-1128","t":"QA Sub-Task","s":"OPEN","a":"Mia Chen TPE","m":"[QA][H5/APP] 广场＿热门"},{"k":"NWC-1147","t":"QAT Bug Sub-Task","s":"OPEN","a":"Charles Chen TPE","m":"[APP][廣場_熱門] 投注項一律封盤"},{"k":"NWC-1181","t":"QAT Bug Sub-Task","s":"Development Review","a":"Dino Ni TPE","m":"[APP][廣場] 雲平台設置頁籤顯示，遊戲端一律顯示體育/競猜"},{"k":"NWC-1195","t":"QAT Bug Sub-Task","s":"OPEN","a":"Jerry ","m":"[APP][廣場_體育] 雲平台修改直播類型名稱，遊戲端一律無直播間"},{"k":"NWC-1196","t":"QAT Bug Sub-Task","s":"Development Review","a":"Dino Ni TPE","m":"[APP][廣場] 賽事搜尋的文案有誤"},{"k":"NWC-1199","t":"QAT Bug Sub-Task","s":"Development Review","a":"Dino Ni TPE","m":"[APP][廣場] 點賽事搜尋，前往主播搜尋功能"},{"k":"NWC-1200","t":"Sub-task","s":"In Development","a":"Dino Ni TPE","m":"[前端][APP][广场] 广场 - 功能確認 + 對齊"},{"k":"NWC-1201","t":"Sub-task","s":"OPEN","a":"Joe Wu TPE","m":"[前端][H5][广场] 广场 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1269","t":"QAT Bug Sub-Task","s":"Resolved","a":"Mia Chen TPE","m":"[APP][廣場_熱門] 無一起嘮嗑區塊"},{"k":"NWC-1270","t":"QAT Bug Sub-Task","s":"Resolved","a":"Mia Chen TPE","m":"[APP][廣場_熱門] 現正熱播/人氣最高，排版有誤"},{"k":"NWC-1272","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][廣場_熱門] 現正熱播，一律未顯示紅包雨/PK icon"},{"k":"NWC-1273","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][廣場_熱門] 現正熱播，直播間名稱顯示有誤"},{"k":"NWC-1277","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][廣場_關注/主播列表] 未依照主播擅長項目隱藏命中率"},{"k":"NWC-1278","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][主播列表] 直播中卡片，直播狀態未顯示"},{"k":"NWC-1279","t":"QAT Bug Sub-Task","s":"Development Review","a":"Dino Ni TPE","m":"[APP][廣場_關注/主播列表] 點主播卡片，一律進入主播主頁"},{"k":"NWC-1280","t":"QAT Bug Sub-Task","s":"Resolved","a":"Mia Chen TPE","m":"[APP][廣場_關注] 無主播/賽事切換按鈕"},{"k":"NWC-1281","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][主播列表] 頁籤切到全部，列表未刷新"},{"k":"NWC-1282","t":"QAT Bug Sub-Task","s":"OPEN","a":"Mina Wang TPE","m":"[APP][主播列表] 未依照雲平台設置顯示頁籤入口/名稱"},{"k":"NWC-1283","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][主播列表] 雲平台修改直播類型名稱，遊戲端一律無主播"},{"k":"NWC-1285","t":"QAT Bug Sub-Task","s":"OPEN","a":"未指派","m":"[APP][廣場_體育] 拖曳至底部沒有更多影片時，未顯示文字"}],"NWC-1061":[{"k":"NWC-1129","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][廣播_熱門/直式半屏直播間] 串流視頻無法顯示"},{"k":"NWC-1130","t":"QA Sub-Task","s":"OPEN","a":"Mia Chen TPE","m":"[QA][H5/APP] 直式半屏直播间"},{"k":"NWC-1135","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][直式半屏直播間] 比分板點未關注/已關注，無作用"},{"k":"NWC-1197","t":"Sub-task","s":"OPEN","a":"Dino Ni TPE","m":"[前端][APP][广场] 直式半屏直播间 - 功能確認 + 對齊"},{"k":"NWC-1198","t":"Sub-task","s":"OPEN","a":"Nigel Li TPE","m":"[前端][H5][广场] 直式半屏直播间 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1268","t":"QAT Bug Sub-Task","s":"OPEN","a":"Dino Ni TPE","m":"[APP][廣播/直式半屏直播間] 雲平台設置曬單排行總榜功能開關，入口一律顯示"}],"NWC-1062":[{"k":"NWC-1136","t":"QA Sub-Task","s":"OPEN","a":"Ethan Chiu TXG","m":"[QA][H5/APP] 我的(版面)/称号总览/交易记录/投注记录/VIP"},{"k":"NWC-1233","t":"Sub-task","s":"OPEN","a":"Joe Wu TPE","m":"[前端][H5][我的] 我的(版面)/投注记录 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1234","t":"Sub-task","s":"OPEN","a":"Ivy ","m":"[前端][H5][我的] 称号总览/交易记录 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1235","t":"Sub-task","s":"In Development","a":"Alice Lee TPE","m":"[前端][H5][我的] VIP - NWC 換皮 + 對齊 APP"},{"k":"NWC-1236","t":"Sub-task","s":"OPEN","a":"Ray Lin TPE","m":"[前端][APP][我的] 我的(版面)/称号总览/交易记录/VIP - 功能確認 + 對齊"},{"k":"NWC-1237","t":"Sub-task","s":"OPEN","a":"Gerry Lin","m":"[前端][APP][我的] 投注记录 - 功能確認 + 對齊"}],"NWC-1063":[{"k":"NWC-1138","t":"QA Sub-Task","s":"OPEN","a":"Ethan Chiu TXG","m":"[QA][H5/APP] 个人资料(全)/收件地址/福利专员/加入我们/福利中心/背包中心/赠礼记录"},{"k":"NWC-1238","t":"Sub-task","s":"OPEN","a":"Ivy ","m":"[前端][H5][我的] 背包中心 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1239","t":"Sub-task","s":"In Development","a":"Alice Lee TPE","m":"[前端][H5][我的] 个人资料(全)/收件地址/福利专员/加入我们/福利中心/赠礼记录 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1240","t":"Sub-task","s":"OPEN","a":"Ray Lin TPE","m":"[前端][APP][我的] 个人资料(全)/收件地址/福利专员/加入我们/福利中心/背包中心/赠礼记录 - 功能確認 + 對齊"}],"NWC-1064":[{"k":"NWC-1145","t":"QA Sub-Task","s":"OPEN","a":"Ethan Chiu TXG","m":"[QA][H5/APP] 赛事赛果"}],"NWC-1065":[{"k":"NWC-1144","t":"QA Sub-Task","s":"OPEN","a":"Ethan Chiu TXG","m":"[QA][H5/APP] 任务与签到"},{"k":"NWC-1202","t":"Sub-task","s":"OPEN","a":"Ray Lin TPE","m":"[前端][APP][活動] 任务与签到 - 功能確認 + 對齊（第二階段）"},{"k":"NWC-1203","t":"Sub-task","s":"OPEN","a":"Joe Wu TPE","m":"[前端][H5][活動] 任务与签到 - NWC 換皮 + 對齊 APP"}],"NWC-1068":[{"k":"NWC-1083","t":"Sub-task","s":"Test in DEV","a":"Iron Cheng","m":"[後端] 整理環境 - 新環境需要同步的資料結構"},{"k":"NWC-1089","t":"Sub-task","s":"In Development","a":"Lily Shen TPE","m":"[後端] 新的測試環境新業主 UGS 設定"},{"k":"NWC-1090","t":"Sub-task","s":"Closed","a":"Colin Lee","m":"[後端] fork cloud & game project"},{"k":"NWC-1096","t":"Sub-task","s":"In Development","a":"Ben Tseng","m":"[後端] 建置環境 - 整理 properties 有哪些設定需要調整"},{"k":"NWC-1097","t":"Sub-task","s":"Closed","a":"Zayn Yang TXG","m":"[後端] 建置環境 - 整理 nacos 有哪些設定需要調整"},{"k":"NWC-1100","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] dev/cqa 拆開 cloud, game 的 mongo"},{"k":"NWC-1121","t":"Sub-task","s":"OPEN","a":"Austin Lin TXG","m":"[後端] 建置環境 - 確認活動功能 sprint1"},{"k":"NWC-1123","t":"Sub-task","s":"OPEN","a":"Austin Lin TXG","m":"[後端] 建置環境 - 確認手機號驗證碼功能"},{"k":"NWC-1126","t":"Sub-task","s":"OPEN","a":"Snw TPE","m":"[後端] 建置環境 - 確認廣告管理功能 - part1"},{"k":"NWC-1153","t":"Sub-task","s":"In Development","a":"Zayn Yang TXG","m":"[後端] 建置環境 - 確認背包功能"},{"k":"NWC-1267","t":"Sub-task","s":"OPEN","a":"Iron Cheng","m":"[後端] 建置環境 - 確認廣告管理功能 - part2"}],"NWC-1102":[{"k":"NWC-1071","t":"Sub-task","s":"OPEN","a":"Snw TPE","m":"[後端] 遊戲端修改會員中心錢包的資料結構"},{"k":"NWC-1073","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 雲平台服務，全面改用 std-library v2"},{"k":"NWC-1075","t":"Sub-task","s":"OPEN","a":"Austin Lin TXG","m":"[後端] 移除 nacos 設定: GateInternalHost & 改用 grpc 呼叫"},{"k":"NWC-1101","t":"Sub-task","s":"OPEN","a":"Iron Cheng","m":"[後端] 修改存取會員 token 的位置"},{"k":"NWC-1246","t":"Sub-task","s":"OPEN","a":"Zayn Yang TXG","m":"[後端] 移除 1.0 轉移會員的邏輯"},{"k":"NWC-1249","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 程式內建立時間，要指定時區"}],"NWC-1103":[{"k":"NWC-1069","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 棄用 遊戲端 -> 雲平台舊的溝通方式"},{"k":"NWC-1070","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 好友邀請 recommendId & friendId 全面改用 referenceId"},{"k":"NWC-1072","t":"Sub-task","s":"Backlog","a":"Sean Cheng TPE","m":"[後端][直播] 直播後台導入 swagger "},{"k":"NWC-1074","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 處理雲管理菜單路由權限的問題"},{"k":"NWC-1076","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 統整福利中心模組的行為 & 套用到反水"},{"k":"NWC-1077","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 統整福利中心模組的行為 & 套用到福利管理"},{"k":"NWC-1078","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 統整福利中心模組的行為 & 套用到 VIP"},{"k":"NWC-1079","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 統整福利中心模組的行為 & 套用到轉盤落地頁"},{"k":"NWC-1080","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 統整福利中心模組的行為 & 套用到邀請好友紅利模式"},{"k":"NWC-1081","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 統整福利中心模組的行為 & 套用到首存包賠"},{"k":"NWC-1082","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 統整福利中心模組的行為 & 套用到紅利調整"},{"k":"NWC-1084","t":"Sub-task","s":"OPEN","a":"Ben Tseng","m":"[後端] 修改打包機的資料結構"},{"k":"NWC-1086","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 把 micro-gametimer 的排程從 mongo 改到 local properties"},{"k":"NWC-1087","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 整理還有在使用的 nacos 設定"},{"k":"NWC-1091","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 移除秘密數據的功能"},{"k":"NWC-1094","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 遊戲端 redis 增加防止雪崩 & 擊穿的機制"},{"k":"NWC-1245","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 遊戲端 mongo 資料加密處理"},{"k":"NWC-1247","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 修改雲平台資料加密處理方式"},{"k":"NWC-1248","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 升級 token 套件"}],"NWC-1108":[{"k":"NWC-1093","t":"Sub-task","s":"OPEN","a":"Ben Tseng","m":"[後端] flutter 熱更機制"},{"k":"NWC-1098","t":"Sub-task","s":"OPEN","a":"Ben Tseng","m":"[後端] 建置環境 - 確認 flutter 打包功能"},{"k":"NWC-1107","t":"Sub-task","s":"OPEN","a":"Colin Lee","m":"[後端] 建置環境 - 確認直播功能"},{"k":"NWC-1122","t":"Sub-task","s":"OPEN","a":"Snw TPE","m":"[後端] 建置環境 - 確認任務系統功能"},{"k":"NWC-1124","t":"Sub-task","s":"OPEN","a":"Zayn Yang TXG","m":"[後端] 建置環境 - 確認返水功能"},{"k":"NWC-1125","t":"Sub-task","s":"OPEN","a":"Lily Shen TPE","m":"[後端] 建置環境 - 確認 VIP 功能"},{"k":"NWC-1127","t":"Sub-task","s":"OPEN","a":"Iron Cheng","m":"[後端] 建置環境 - 確認代理功能"},{"k":"NWC-1151","t":"Sub-task","s":"OPEN","a":"Zayn Yang TXG","m":"[後端] 建置環境 - 確認邀請好友功能"},{"k":"NWC-1152","t":"Sub-task","s":"OPEN","a":"Ben Tseng","m":"[後端] 建置環境 - 確認轉盤功能"},{"k":"NWC-1224","t":"Sub-task","s":"OPEN","a":"Austin Lin TXG","m":"[後端] 建置環境 - 確認活動功能 sprint2"},{"k":"NWC-1241","t":"Sub-task","s":"OPEN","a":"Austin Lin TXG","m":"[後端] 建置環境 - 確認稱號功能"}],"NWC-1131":[{"k":"NWC-1146","t":"Sub-task","s":"OPEN","a":"Nigel Li TPE","m":"[前端][H5][前置] 開發分支準備 + CI 環境建置"}],"NWC-1134":[{"k":"NWC-1175","t":"Sub-task","s":"OPEN","a":"Nigel Li TPE","m":"[前端][H5][通則] 时间筛选功能 - NWC 換皮 + 對齊 APP"},{"k":"NWC-1176","t":"Sub-task","s":"OPEN","a":"Ethan Lin TPE","m":"[前端][APP][通則] 时间筛选功能 - 功能確認 + 對齊"}]};
+
+/* ============================================================
+   Modal 設定（點 row 顯示子單列表）
+   ============================================================ */
+function setupModal() {
+  const m = document.createElement('div');
+  m.className = 'modal-backdrop';
+  m.id = 'subtask-modal';
+  m.innerHTML = `
+    <div class="modal-box" id="modal-box">
+      <div class="modal-header">
+        <a class="modal-key" id="modal-key" target="_blank" rel="noopener"></a>
+        <span id="modal-title"></span>
+        <button class="modal-close" id="modal-close" aria-label="關閉">&times;</button>
+      </div>
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-body">
+        <table class="subtask-table">
+          <thead><tr>
+            <th style="width:100px;">Ticket</th>
+            <th style="width:90px;">類型</th>
+            <th style="width:120px;">狀態</th>
+            <th style="width:110px;">負責人</th>
+            <th>說明</th>
+          </tr></thead>
+          <tbody id="modal-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(m);
+  // 點背景關閉
+  m.addEventListener('click', e => {
+    if (e.target.id === 'subtask-modal') m.classList.remove('open');
+  });
+  document.getElementById('modal-close').addEventListener('click', () => m.classList.remove('open'));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') m.classList.remove('open');
+  });
+}
+setupModal();
+
+function typeClass(t) {
+  if (t === 'Task') return 'task';
+  if (t === 'Sub-task') return 'sub';
+  if (t === 'QA Sub-Task') return 'qa';
+  if (t === 'QAT Bug Sub-Task') return 'bug';
+  return 'sub';
+}
+function typeLabel(t) {
+  if (t === 'Task') return '主單';
+  if (t === 'Sub-task') return '子單';
+  if (t === 'QA Sub-Task') return 'QA 單';
+  if (t === 'QAT Bug Sub-Task') return 'Bug';
+  return t;
+}
+function statusClass(s) {
+  if (s === 'OPEN' || s === 'To Do') return 'open';
+  if (s === '待開發') return '待開發';
+  if (s === 'In Development') return 'in-dev';
+  if (s === 'Development Review') return 'review';
+  if (s === 'Resolved') return 'resolved';
+  if (s === '需求設計') return '需求設計';
+  if (s === '問題釐清') return 'problem';
+  if (s === 'Test in DEV') return 'test-dev';
+  return 'open';
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+function openSubtaskModal(parentKey, parentName) {
+  const subs = SUBTASKS[parentKey] || [];
+  document.getElementById('modal-key').textContent = parentKey;
+  document.getElementById('modal-key').href = `https://mgbilibili.atlassian.net/browse/${parentKey}`;
+  document.getElementById('modal-title').textContent = parentName;
+  document.getElementById('modal-meta').textContent = `共 ${subs.length} 張子單`;
+  document.getElementById('modal-tbody').innerHTML = subs.map(s => `
+    <tr>
+      <td class="k"><a href="https://mgbilibili.atlassian.net/browse/${s.k}" target="_blank" rel="noopener">${s.k}</a></td>
+      <td class="t"><span class="type-pill ${typeClass(s.t)}">${typeLabel(s.t)}</span></td>
+      <td class="s"><span class="status-pill ${statusClass(s.s)}">${escapeHtml(s.s)}</span></td>
+      <td class="a">${escapeHtml(s.a)}</td>
+      <td class="m">${escapeHtml(s.m)}</td>
+    </tr>
+  `).join('');
+  document.getElementById('subtask-modal').classList.add('open');
+}
+
+/* ============================================================
+   日期軸：5/10 (day 0) → 7/31 (day 82)，共 83 天
+   ============================================================ */
+const TOTAL_DAYS = 83;
+const D = {
+  '5/10': 0,  '5/11': 1,  '5/29': 19, '5/30': 20, '5/31': 21,
+  '6/1':  22, '6/12': 33, '6/13': 34, '6/19': 40, '6/20': 41,
+  '6/22': 43, '7/3':  54, '7/10': 61, '7/11': 62, '7/13': 64,
+  '7/20': 71, '7/24': 75, '7/25': 76, '7/31': 82,
+};
+
+function pct(day) { return (day / TOTAL_DAYS) * 100; }
+
+/* Sprint 期間 */
+const PERIODS = {
+  s1Dev: { start: D['5/11'], end: D['5/29'] },
+  s2Dev: { start: D['6/1'],  end: D['6/19'] },
+  s3Dev: { start: D['6/22'], end: D['7/10'] },
+  s1Qa:  { start: D['6/1'],  end: D['6/12'] },
+  s2Qa:  { start: D['6/22'], end: D['7/3']  },
+  s3Qa:  { start: D['7/13'], end: D['7/24'] },
+  intTest: { start: D['7/20'], end: D['7/31'] },
+  delivery: { start: D['7/31'], end: D['7/31'] }
+};
+
+function periodFor(sprint, kind = 'dev') {
+  if (sprint === 'S1') return kind === 'qa' ? PERIODS.s1Qa : PERIODS.s1Dev;
+  if (sprint === 'S2') return kind === 'qa' ? PERIODS.s2Qa : PERIODS.s2Dev;
+  if (sprint === 'S3') return kind === 'qa' ? PERIODS.s3Qa : PERIODS.s3Dev;
+  return null;
+}
+
+/* ============================================================
+   資料 — 每個 parent ticket 屬於哪個 Sprint
+   ============================================================ */
+/* 每筆 row 帶 start / end（Jira Start date / DEV Date 真實值）
+   sprint 仍保留以顯示「承諾在哪個 Sprint 交付」
+   crossSprint = true 表示工作期間跨越 Sprint 邊界，會加標記 */
+const rows = [
+  // ============= Epic: 前端 NWC-1026 =============
+  { type: 'epic', kind: 'frontend', key: 'NWC-1026', name: 'Game/Cloud 上线前范围', owner: 'Mina',
+    start: '5/11', end: '7/10' },
+
+  // ----- 純粹 S1 工作（Start→DEV 都在 5/11 - 5/29） -----
+  { type: 'task', kind: 'frontend', key: 'NWC-1131', name: '[前端] 环境建置',                                       owner: 'Nigel',                   subs: 1, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1037', name: '[H5/APP] 注册',                                          owner: 'Ivy / Onion',             subs: 2, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1038', name: '[H5/APP] 登录',                                          owner: 'Ivy / Onion',             subs: 2, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1041', name: '[H5/APP] APP启动页/游戏loading图',                        owner: 'Onion',                   subs: 1, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1134', name: '[H5/APP] 时间筛选功能',                                   owner: 'Nigel / Ethan',           subs: 2, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1047', name: '[H5/APP] 活动列表',                                       owner: 'Jay / Ethan',             subs: 8, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1048', name: '[H5/APP] 纯展示页',                                       owner: 'Jay / Ethan',             subs: 3, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1049', name: '[H5/APP] 转账',                                           owner: 'Alice / Onion',           subs: 2, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1050', name: '[H5/APP] 新版赛事分页',                                   owner: 'Jay / Gerry',             subs: 2, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1055', name: '[H5/APP] 首存',                                           owner: 'Jay / Ethan',             subs: 3, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1056', name: '[H5/APP] 新手任务(新手四重奏）',                           owner: 'Jay / Ethan',             subs: 3, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1063', name: '[H5/APP] 个人资料(全)/收件地址/福利专员/加入我们/福利中心/背包中心/赠礼记录', owner: 'Alice / Ray / Ivy',       subs: 4, sprint: 'S1', start: '5/11', end: '5/29' },
+
+  // ----- 跨 S1+S2 的 ticket（Sprint=S1 但 DEV 延到 6/19） -----
+  { type: 'task', kind: 'frontend', key: 'NWC-1035', name: '[H5/APP] 弹窗',                                          owner: 'Jay / Onion',             subs: 4, sprint: 'S1', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1039', name: '[H5/APP] 全站维护/访问受限页',                            owner: 'Ivy / Onion',             subs: 2, sprint: 'S1', start: '5/11', end: '6/19', crossSprint: true },
+
+  // ----- Sprint=S2 但工作從 S1 開始（跨 S1+S2）-----
+  { type: 'task', kind: 'frontend', key: 'NWC-1036', name: '[H5/APP] 提醒',                                           owner: 'Onion / Joe',             subs: 3, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1042', name: '[H5/APP] 体育首页',                                       owner: 'Gerry / deri / Nigel',    subs: 7, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1043', name: '[H5/APP] 侧边栏',                                         owner: 'Gerry / deri',            subs: 4, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1051', name: '[H5/APP] 转盘系统',                                       owner: 'deri / Ray',              subs: 2, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true, design: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1052', name: '[H5/APP] 邀请好友＿首存/等级/排行榜',                      owner: 'Jay / Ethan',             subs: 2, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1053', name: '[H5/APP] 邀请好友转盘',                                   owner: 'Jay / Ethan',             subs: 2, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1058', name: '[H5/APP] 新手转盘',                                       owner: 'Jay / Ethan',             subs: 2, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1065', name: '[H5/APP] 任务与签到',                                     owner: 'Joe / Ray',               subs: 3, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true, design: true },
+
+  // ----- Sprint=S2 但 DEV 在 5/29 結束（工作整段在 S1 內）-----
+  { type: 'task', kind: 'frontend', key: 'NWC-1054', name: '[H5/APP] 返水',                                           owner: 'Jay / Ethan',             subs: 3, sprint: 'S2', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1060', name: '[H5/APP] 广场＿热门',                                     owner: 'Dino / Joe / Colin',      subs: 20, sprint: 'S2', start: '5/11', end: '5/29', risk: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1061', name: '[H5/APP] 直式半屏直播间',                                 owner: 'Dino / Nigel',            subs: 6, sprint: 'S2', start: '5/11', end: '5/29', risk: true },
+
+  // ----- 純粹 S2 工作（Start=6/1, DEV=6/19）-----
+  { type: 'task', kind: 'frontend', key: 'NWC-1057', name: '[H5/APP] 场馆存款',                                       owner: 'Jay / Ethan',             subs: 3, sprint: 'S2', start: '6/1',  end: '6/19' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1059', name: '[H5/APP] 全活动打点',                                     owner: 'QA',                      subs: 1, sprint: 'S2', start: '6/1',  end: '6/19' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1062', name: '[H5/APP] 我的(版面)/称号总览/交易记录/投注记录/VIP',         owner: 'Alice / Ray / Ivy / Joe', subs: 6, sprint: 'S2', start: '6/1',  end: '6/19', design: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1044', name: '[H5/APP] 体育购物车',                                     owner: 'Mina',                    subs: 0, sprint: 'S2', start: '6/1',  end: '6/19' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1045', name: '[H5/APP] 赛事详情',                                       owner: 'Mina',                    subs: 0, sprint: 'S2', start: '6/1',  end: '6/19' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1149', name: '[H5/APP] 下单(总盘）',                                     owner: 'Mina',                    subs: 0, sprint: 'S2', start: '6/1',  end: '6/19' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1150', name: '[H5/APP] 賽況',                                           owner: 'Mina',                    subs: 0, sprint: 'S2', start: '6/1',  end: '6/19', design: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1243', name: '[直播后台] 上线前范围',                                    owner: 'Mina',                    subs: 0, sprint: 'S2', start: '6/1',  end: '6/19' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1250', name: '[H5/APP] 母包更新/子包更新/上架包引导 弹窗',                 owner: 'Mina',                    subs: 0, sprint: 'S2', start: '6/1',  end: '6/19' },
+
+  // ----- Sprint 3 -----
+  { type: 'task', kind: 'frontend', key: 'NWC-1046', name: '[H5/APP] 娱乐页面',                                       owner: 'Ethan Chiu',              subs: 1, sprint: 'S3', start: '6/22', end: '7/10' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1064', name: '[H5/APP] 赛事赛果',                                       owner: 'Ethan Chiu',              subs: 1, sprint: 'S3', start: '6/22', end: '7/10' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1154', name: '[H5/APP] 直播横式全屏',                                   owner: 'Mina',                    subs: 0, sprint: 'S3', start: '6/1',  end: '7/10', crossSprint: true, design: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1244', name: '[代理后台] 上线前范围',                                    owner: 'Mina',                    subs: 0, sprint: 'S3', start: '6/22', end: '7/10' },
+  { type: 'task', kind: 'frontend', key: 'NWC-1034', name: '[H5/APP] 加载通则/下拉刷新/跳转参数',                       owner: 'Mina',                    subs: 0, sprint: 'S3', start: '6/1',  end: '7/10', crossSprint: true, design: true },
+  { type: 'task', kind: 'frontend', key: 'NWC-1040', name: '[H5/APP] 产品数据埋点',                                   owner: 'Mina',                    subs: 0, sprint: 'S3', start: '6/22', end: '7/10', design: true },
+
+  // ============= Epic: 後端 NWC-1067 =============
+  { type: 'epic', kind: 'backend', key: 'NWC-1067', name: '后端架构优化 上线前范围', owner: 'Claire / Colin',
+    start: '5/11', end: '7/10' },
+
+  { type: 'task', kind: 'backend', key: 'NWC-1068', name: '[后端] NWC建置环境 Sprint 1', owner: 'Colin / Iron', subs: 11, sprint: 'S1', start: '5/11', end: '5/29' },
+  { type: 'task', kind: 'backend', key: 'NWC-1022', name: '[后端] unify优化',                       owner: 'Claire', subs: 5, sprint: 'S2', start: '5/11', end: '6/12', crossSprint: true },
+  { type: 'task', kind: 'backend', key: 'NWC-1102', name: '[后端] sprint2-其它重构',      owner: 'Colin',  subs: 6, sprint: 'S2', start: '6/1',  end: '6/19' },
+  { type: 'task', kind: 'backend', key: 'NWC-1108', name: '[后端] NWC建置环境 Sprint 2', owner: 'Colin',  subs: 11, sprint: 'S2', start: '5/11', end: '6/19', crossSprint: true },
+  { type: 'task', kind: 'backend', key: 'NWC-1021', name: '[后端] baldur弃用',             owner: 'Claire', subs: 0, sprint: 'S3', start: '6/1',  end: '7/10', crossSprint: true },
+  { type: 'task', kind: 'backend', key: 'NWC-1103', name: '[后端] sprint3-其它重构',      owner: 'Colin',  subs: 19, sprint: 'S3', start: '6/22', end: '7/10', design: true },
+  { type: 'task', kind: 'backend', key: 'NWC-1104', name: '[后端] 取代 UGS',               owner: 'Claire', subs: 0, sprint: 'S3', start: '6/1',  end: '7/10', crossSprint: true },
+
+  // ============= 未排 Sprint =============
+  { type: 'task', kind: 'backend', key: 'NWC-1263', name: '[後端] 計算中心外部對接',                  owner: 'Colin', subs: 0, sprint: null, start: null, end: null },
+
+  // ============= QA 階段 =============
+  { type: 'epic', kind: 'qa', key: 'QA', name: 'QA 測試 · 每 Sprint Dev 後 2 週', owner: 'Ethan C. / Mia',
+    span: { start: PERIODS.s1Qa.start, end: PERIODS.s3Qa.end } },
+  { type: 'phase', kind: 'qa', key: 'S1-QA', name: 'Sprint 1 QA · 環境 / 登入 / 註冊 / 活動列表 / 個人資料',
+    owner: 'Ethan / Mia', period: PERIODS.s1Qa },
+  { type: 'phase', kind: 'qa', key: 'S2-QA', name: 'Sprint 2 QA · 體育 / 廣場 / 直播 / 我的 / 各活動 ⚠',
+    owner: 'Ethan / Mia', period: PERIODS.s2Qa, risk: true },
+  { type: 'phase', kind: 'qa', key: 'S3-QA', name: 'Sprint 3 QA · 賽事賽果 / 娛樂 / 直播全屏 / 代理後台',
+    owner: 'Ethan / Mia', period: PERIODS.s3Qa },
+
+  // ============= 整合測試（含交付前驗證）=============
+  { type: 'phase', kind: 'integration', key: 'INT', name: '整合測試（端對端 · 7/20–7/31）', owner: 'QA 全員', period: PERIODS.intTest }
+];
+
+/* ============================================================
+   渲染 Gantt
+   ============================================================ */
+const root = document.getElementById('gantt-root');
+
+// ---- 1. Header ----
+function renderHeader() {
+  const head = document.createElement('div');
+  head.className = 'gantt-header';
+
+  // Month row
+  const monthRow = document.createElement('div');
+  monthRow.className = 'month-row';
+  monthRow.innerHTML = '<div class="label-spacer">工作項目 / 模組</div><div class="chart-area" id="month-chart"></div>';
+  head.appendChild(monthRow);
+
+  // Sprint Dev band row (縮小)
+  const devRow = document.createElement('div');
+  devRow.className = 'band-row';
+  devRow.style.height = '24px';
+  devRow.innerHTML = '<div class="label-spacer" style="display:flex;align-items:center;padding:0 12px;font-size:10px;color:var(--ink-faint);font-weight:500;letter-spacing:.03em;">Sprint Dev</div><div class="chart-area" id="dev-chart"></div>';
+  head.appendChild(devRow);
+
+  // QA band row (縮小)
+  const qaRow = document.createElement('div');
+  qaRow.className = 'band-row';
+  qaRow.style.height = '24px';
+  qaRow.innerHTML = '<div class="label-spacer" style="display:flex;align-items:center;padding:0 12px;font-size:10px;color:var(--ink-faint);font-weight:500;letter-spacing:.03em;">QA 階段</div><div class="chart-area" id="qa-chart"></div>';
+  head.appendChild(qaRow);
+
+  root.appendChild(head);
+
+  // Months
+  const months = [
+    { name: 'May (5/10–5/31)', start: 0, end: 21 },
+    { name: 'June',            start: 22, end: 51 },
+    { name: 'July (–7/31)',    start: 52, end: 82 }
+  ];
+  const monthChart = document.getElementById('month-chart');
+  months.forEach(m => {
+    const c = document.createElement('div');
+    c.className = 'month-cell';
+    c.style.left = pct(m.start) + '%';
+    c.style.width = pct(m.end - m.start + 1) + '%';
+    c.textContent = m.name;
+    monthChart.appendChild(c);
+  });
+
+  // 共用渲染函式：單行排版，窄 bar（<6%）只顯示標題、不顯示日期
+  function makeBand(parent, cls, title, sub, period) {
+    const widthPct = pct(period.end - period.start + 1);
+    const el = document.createElement('div');
+    el.className = 'band-bar ' + cls + (widthPct < 7 ? ' narrow' : '');
+    let leftPct = pct(period.start);
+    let w = Math.max(widthPct, 2);
+    // 防止超出右邊界
+    if (leftPct + w > 100) w = 100 - leftPct;
+    el.style.left = leftPct + '%';
+    el.style.width = w + '%';
+    el.title = title + (sub ? ' · ' + sub : '');
+    el.innerHTML = `<span class="ttl">${title}</span>` + (sub ? `<span class="sub">${sub}</span>` : '');
+    parent.appendChild(el);
+  }
+
+  // Sprint Dev bars — 只顯示標題、不顯示日期
+  const devChart = document.getElementById('dev-chart');
+  makeBand(devChart, 's1', 'Sprint 1', '', PERIODS.s1Dev);
+  makeBand(devChart, 's2', 'Sprint 2', '', PERIODS.s2Dev);
+  makeBand(devChart, 's3', 'Sprint 3', '', PERIODS.s3Dev);
+
+  // QA bars — 只顯示標題、不顯示日期、不畫 UAT/交付（body 內仍有單獨列）
+  const qaChart = document.getElementById('qa-chart');
+  makeBand(qaChart, 'qa', 'S1 QA', '', PERIODS.s1Qa);
+  makeBand(qaChart, 'qa', 'S2 QA', '', PERIODS.s2Qa);
+  makeBand(qaChart, 'qa', 'S3 QA', '', PERIODS.s3Qa);
+}
+
+renderHeader();
+
+// ---- helper：名字首字大寫 ----
+function capitalize(s) {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// ---- helper：每位成員 hash 出穩定顏色（深色文字 + 淺色背景）----
+const OWNER_PALETTE = [
+  { bg: '#fee5e0', fg: '#b94432', border: '#fbc9c0' }, // 紅
+  { bg: '#fef0d6', fg: '#a06e1e', border: '#f5dca0' }, // 橙
+  { bg: '#fef9c3', fg: '#8a6d10', border: '#f0e480' }, // 黃
+  { bg: '#dcf2e0', fg: '#2e7d4a', border: '#aedbb8' }, // 綠
+  { bg: '#d6efed', fg: '#207b73', border: '#a8d8d2' }, // 青
+  { bg: '#dde9fa', fg: '#2c5fa8', border: '#aac7ee' }, // 藍
+  { bg: '#e3dafa', fg: '#5640a6', border: '#bca8ea' }, // 紫
+  { bg: '#fadaee', fg: '#9a3173', border: '#eeb6d6' }, // 粉
+  { bg: '#e9e7e1', fg: '#5e564a', border: '#cbc7bc' }, // 灰棕
+  { bg: '#daeaf2', fg: '#23627d', border: '#aacbdc' }, // 海藍
+];
+function colorForOwner(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
+  return OWNER_PALETTE[Math.abs(h) % OWNER_PALETTE.length];
+}
+
+function renderOwners(ownerStr) {
+  if (!ownerStr || ownerStr === '—') return '<div class="owners"></div>';
+  // split by " / " 或 "/"，並依字母排序（不分大小寫）
+  const parts = ownerStr.split(/\s*\/\s*/).map(s => s.trim()).filter(Boolean);
+  // 抽掉括號內備註，如 "Mina (待派 Dev)" → tag 顯示 "Mina"，但 title 保留完整
+  const cleanedParts = parts.map(p => ({
+    raw: p,
+    cleaned: capitalize(p.replace(/\s*\(.*?\)\s*/g, '').trim())
+  }));
+  cleanedParts.sort((a, b) => a.cleaned.toLowerCase().localeCompare(b.cleaned.toLowerCase()));
+  const tags = cleanedParts.map(({ raw, cleaned }) => {
+    const c = colorForOwner(cleaned);
+    return `<span class="owner-tag" title="${raw}" style="--owner-bg:${c.bg};--owner-color:${c.fg};--owner-border:${c.border};">${cleaned}</span>`;
+  });
+  return `<div class="owners">${tags.join('')}</div>`;
+}
+
+// ---- 2. Body rows ----
+function renderRow(r) {
+  const row = document.createElement('div');
+  row.className = 'gantt-row' + (r.type === 'epic' ? ' epic ' + r.kind : '');
+
+  // 若有 sub-task 資料 → 整行可點擊打開 Modal
+  if (r.type === 'task' && SUBTASKS[r.key]) {
+    row.classList.add('clickable');
+    row.addEventListener('click', (e) => {
+      // 點到 Jira key 連結時不開 Modal（讓它跳轉到 Jira）
+      if (e.target.closest('a.key')) return;
+      openSubtaskModal(r.key, r.name);
+    });
+  }
+
+  // label
+  const label = document.createElement('div');
+  label.className = 'label';
+  // sub 計數 — 沒有時用 empty 保持對齊位置
+  const subsHtml = (typeof r.subs === 'number' && r.subs > 0)
+    ? `<span class="subcount">${r.subs} sub</span>`
+    : `<span class="subcount empty">0</span>`;
+  // key 變超連結（除了像 'QA' / '✅' / 'S1-QA' 等非 Jira-key 的 phase 標籤）
+  const isJiraKey = /^NWC-\d+$/.test(r.key);
+  const keyHtml = isJiraKey
+    ? `<a class="key" href="https://mgbilibili.atlassian.net/browse/${r.key}" target="_blank" rel="noopener" title="在 Jira 開啟 ${r.key}">${r.key}</a>`
+    : `<span class="key" style="color:var(--ink-faint);">${r.key}</span>`;
+  let nameWithBadges = r.name;
+  if (r.design) nameWithBadges += ' <span class="badge-warn">⌛ 需求設計中</span>';
+  label.innerHTML = `
+    ${keyHtml}
+    <span class="name ${r.type === 'epic' ? 'epic' : ''}" title="${r.name}">${nameWithBadges}</span>
+    ${subsHtml}
+    ${renderOwners(r.owner)}`;
+  row.appendChild(label);
+
+  // chart
+  const chart = document.createElement('div');
+  chart.className = 'chart';
+
+  // determine bar period
+  // 新邏輯：task/epic 使用 r.start / r.end (Jira Start/DEV date string，e.g. '5/11')
+  //         phase 仍使用 r.period（day numbers）
+  let p = null;
+  if (r.type === 'phase') {
+    p = r.period;
+  } else if (r.start && r.end && D[r.start] !== undefined && D[r.end] !== undefined) {
+    p = { start: D[r.start], end: D[r.end] };
+  }
+
+  if (p) {
+    const bar = document.createElement('div');
+    bar.className = 'bar ' + (r.type === 'epic' ? 'epic ' : '') + r.kind +
+      (r.risk ? ' risk' : '') + (r.design ? ' design-pending' : '');
+    bar.style.left = pct(p.start) + '%';
+    bar.style.width = Math.max(pct(p.end - p.start + 1), 1.5) + '%';
+    bar.style.minWidth = '20px';
+    bar.title = `${r.key} · ${r.name}\n起 ${r.start || '-'} 訖 ${r.end || '-'}` + (r.sprint ? ` · ${r.sprint}` : '');
+    if (r.type === 'epic') {
+      bar.textContent = r.name;
+    } else if (r.kind === 'delivery') {
+      bar.textContent = '✅ 7/31';
+    } else if (r.kind === 'uat') {
+      bar.textContent = 'UAT';
+    } else if (r.kind === 'qa' && r.type === 'phase') {
+      bar.textContent = r.name;
+    } else {
+      // task bar：顯示「Start - DEV」日期
+      bar.textContent = (r.start && r.end) ? `${r.start} → ${r.end}` : (r.sprint || '');
+    }
+    chart.appendChild(bar);
+  } else if (r.type === 'task' && !r.sprint) {
+    // Unassigned: show a dashed bar marker in the middle
+    const bar = document.createElement('div');
+    bar.className = 'bar unassigned';
+    bar.style.left = pct(40) + '%';
+    bar.style.width = '12%';
+    bar.textContent = '? 未排 Sprint';
+    chart.appendChild(bar);
+  }
+
+  row.appendChild(chart);
+  return row;
+}
+
+rows.forEach(r => root.appendChild(renderRow(r)));
+</script>
+</body>
+</html>
