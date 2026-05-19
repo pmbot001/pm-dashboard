@@ -69,6 +69,43 @@ function buildArchiveLink(channelId, ts, threadTs) {
   return url;
 }
 
+const TOPIC_KEYWORDS = {
+  '註冊/登入': ['註冊', '登入', '一鍵註冊', '手機號', '密碼', '驗證碼', '簡訊'],
+  '直播間': ['直播間', 'PK', '紅包雨', '直播間禮物'],
+  '直播大廳': ['直播大廳'],
+  '直播全屏': ['直播全屏', '全屏', '橫屏', '轉橫'],
+  '主播列表': ['主播列表'],
+  '主播關注': ['關注人數', '關注主播', '已關注', '未關注'],
+  '廣場/類別': ['廣場', '類別', '頁籤', '熱門', '體育', '競猜'],
+  '宣傳圖': ['宣傳圖'],
+  '充值/禮金': ['充值', '存款', '禮包', '禮金', '首存', '回饋'],
+  '禮物/送禮': ['送禮', '送禮物', '禮物'],
+  '任務/簽到': ['任務系統', '簽到', '日常任務'],
+  '個人中心': ['個人中心', '錢包', '我的頁面', '我的帳號'],
+  '客服': ['客服'],
+  '排程/人力': ['人力安排', 'Sprint', '排程', '派單', '工單'],
+};
+
+function extractTopics(text) {
+  if (!text) return [];
+  const hits = new Set();
+  for (const [topic, kws] of Object.entries(TOPIC_KEYWORDS)) {
+    for (const kw of kws) {
+      if (text.includes(kw)) {
+        hits.add(topic);
+        break;
+      }
+    }
+  }
+  return [...hits];
+}
+
+function extractJiraTickets(text) {
+  if (!text) return [];
+  const matches = text.matchAll(/\b((?:NWC|GOR|TSD|MGYY|SA)-\d+)\b/g);
+  return [...new Set([...matches].map(m => m[1]))];
+}
+
 function extractFiles(slackFiles) {
   if (!Array.isArray(slackFiles)) return [];
   return slackFiles.filter(f => f && f.id).map(f => ({
@@ -170,6 +207,8 @@ async function collectMentions() {
     const asker = users[msg.user] || { id: msg.user, name: msg.user || 'Unknown', avatar: '' };
     const fullText = resolveMentions(msg.text || '', users);
 
+    const allText = fullText + '\n' + replies.map(r => r.text).join('\n');
+
     mentions.push({
       ts: msg.ts,
       tsIso: new Date(tsNum * 1000).toISOString(),
@@ -184,6 +223,8 @@ async function collectMentions() {
       minaReplyTs,
       minaReplyAgeHours: minaReplyTs ? Math.round((Date.now() / 1000 - Number(minaReplyTs)) / 3600 * 10) / 10 : null,
       permalink: buildArchiveLink(NWC_CHANNEL_ID, msg.ts),
+      topics: extractTopics(allText),
+      jiraTickets: extractJiraTickets(allText),
     });
   }
 
@@ -193,6 +234,16 @@ async function collectMentions() {
   mentions.splice(0, mentions.length, ...classified);
 
   const needsReply = m => m.aiJudgment?.needsReply !== false;
+  const byAsker = {};
+  const byTopic = {};
+  for (const m of mentions) {
+    const k = m.asker.id || m.asker.name;
+    byAsker[k] = byAsker[k] || { id: k, name: m.asker.name, avatar: m.asker.avatar, count: 0 };
+    byAsker[k].count++;
+    for (const t of m.topics || []) {
+      byTopic[t] = (byTopic[t] || 0) + 1;
+    }
+  }
   const stats = {
     pending: mentions.filter(m => m.status === 'pending').length,
     overdue: mentions.filter(m => m.status === 'overdue').length,
@@ -200,6 +251,8 @@ async function collectMentions() {
     total: mentions.length,
     actionable: mentions.filter(m => m.status !== 'closed' && needsReply(m)).length,
     skippable: mentions.filter(m => m.status !== 'closed' && !needsReply(m)).length,
+    byAsker: Object.values(byAsker).sort((a, b) => b.count - a.count),
+    byTopic: Object.entries(byTopic).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
   };
 
   return {

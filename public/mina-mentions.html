@@ -320,6 +320,42 @@
     .ai-modal-block .ai-tag { font-size:11px; }
     .ai-modal-block .ai-reason { color:#94a3b8; margin-left:8px; }
 
+    /* Topic / Jira chips on cards */
+    .card-chips {
+      display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;
+    }
+    .chip-topic {
+      font-size:11px; padding:2px 8px; border-radius:8px;
+      background:rgba(96,165,250,0.12); color:#93c5fd;
+      border:1px solid rgba(96,165,250,0.25);
+    }
+    .chip-jira {
+      font-size:11px; padding:2px 8px; border-radius:8px;
+      background:rgba(167,139,250,0.12); color:#c4b5fd;
+      border:1px solid rgba(167,139,250,0.25);
+      text-decoration:none; font-family:ui-monospace,monospace;
+    }
+    .chip-jira:hover { background:rgba(167,139,250,0.25); color:#fff; }
+
+    /* Filter selects */
+    .filter-select {
+      background:#1e293b; color:#cbd5e1; border:1px solid #334155;
+      border-radius:8px; padding:8px 12px; font-size:13px;
+      cursor:pointer; font-family:inherit;
+      appearance:none; -webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M6 8L0 0h12z' fill='%2394a3b8'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 10px center;
+      background-size:8px;
+      padding-right:28px;
+    }
+    .filter-select:hover { background-color:#334155; }
+    .filter-select.active {
+      background-color:rgba(96,165,250,0.15);
+      border-color:rgba(96,165,250,0.4);
+      color:#93c5fd;
+    }
+
     /* Code blocks */
     .modal-message pre, .reply-text pre {
       background:#020617; border:1px solid #1e293b;
@@ -377,6 +413,8 @@
 
 <div class="toolbar" id="toolbar" style="display:none;">
   <div class="left">
+    <select class="filter-select" id="askerFilter" title="按發問者篩選"><option value="">👤 全部發問者</option></select>
+    <select class="filter-select" id="topicFilter" title="按主題篩選"><option value="">🏷 全部主題</option></select>
     <button class="filter-toggle" id="filterToggle" title="只看 AI 判斷為需處理的訊息"><span class="dot"></span>只看需處理</button>
     <button class="primary" id="refreshBtn">🔄 立即刷新</button>
     <button id="backBtn" onclick="location.href='/'">← 回首頁</button>
@@ -536,12 +574,20 @@ function renderCard(m) {
   }
   const skipClass = (j && !j.needsReply) ? ' skip' : '';
   const dataSkip = (j && !j.needsReply) ? ' data-skip="1"' : '';
-  return `<div class="card${skipClass}" data-ts="${escapeHtml(m.ts)}"${dataSkip} role="button" tabindex="0">
+  const dataAsker = m.asker?.id ? ` data-asker="${escapeHtml(m.asker.id)}"` : '';
+  const dataTopics = (m.topics && m.topics.length) ? ` data-topics="${escapeHtml(m.topics.join('|'))}"` : '';
+  const topicChips = (m.topics || []).map(t => `<span class="chip-topic">${escapeHtml(t)}</span>`).join('');
+  const jiraChips = (m.jiraTickets || []).map(k =>
+    `<a class="chip-jira" href="https://mgbilibili.atlassian.net/browse/${escapeHtml(k)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${escapeHtml(k)}</a>`
+  ).join('');
+  const chipsRow = (topicChips || jiraChips) ? `<div class="card-chips">${topicChips}${jiraChips}</div>` : '';
+  return `<div class="card${skipClass}" data-ts="${escapeHtml(m.ts)}"${dataSkip}${dataAsker}${dataTopics} role="button" tabindex="0">
     <div class="card-head">
       <div class="asker">${avatar}<div class="asker-name">${escapeHtml(m.asker.name)}</div></div>
       <div class="card-age">${fmtAge(m.ageHours)}</div>
     </div>
     <div class="card-text">${escapeHtml(m.text)}</div>
+    ${chipsRow}
     ${foot}
   </div>`;
 }
@@ -595,9 +641,11 @@ function openModal(ts) {
         <div class="modal-asker-time">發問時間：${tagDateStr}</div>
       </div>
     </div>
-    ${m.aiJudgment ? `<div class="ai-modal-block">
-      <span class="ai-tag ${m.aiJudgment.needsReply ? 'needs' : 'skip'}">${m.aiJudgment.needsReply ? '✓' : '⏸'} ${escapeHtml(m.aiJudgment.category)}</span>
-      <span class="ai-reason">${escapeHtml(m.aiJudgment.reason || '')}</span>
+    ${m.aiJudgment || (m.topics && m.topics.length) || (m.jiraTickets && m.jiraTickets.length) ? `<div class="ai-modal-block">
+      ${m.aiJudgment ? `<span class="ai-tag ${m.aiJudgment.needsReply ? 'needs' : 'skip'}">${m.aiJudgment.needsReply ? '✓' : '⏸'} ${escapeHtml(m.aiJudgment.category)}</span>` : ''}
+      ${(m.topics || []).map(t => `<span class="chip-topic" style="margin-left:6px;">${escapeHtml(t)}</span>`).join('')}
+      ${(m.jiraTickets || []).map(k => `<a class="chip-jira" style="margin-left:6px;" href="https://mgbilibili.atlassian.net/browse/${escapeHtml(k)}" target="_blank" rel="noopener">${escapeHtml(k)}</a>`).join('')}
+      ${m.aiJudgment ? `<div class="ai-reason" style="margin-top:6px;">${escapeHtml(m.aiJudgment.reason || '')}</div>` : ''}
     </div>` : ''}
     <div class="modal-message">${renderMrkdwn(m.fullText || m.text)}</div>
     ${m.files && m.files.length ? `<div style="padding:0 24px 16px; background:#0f172a; border-bottom:1px solid #1e293b;">${renderAttachments(m.files)}</div>` : ''}
@@ -645,6 +693,7 @@ function renderBoard(data) {
   document.getElementById('overdueHrs').textContent = data.meta.overdueHours;
   document.getElementById('stats').style.display = 'flex';
   document.getElementById('toolbar').style.display = 'flex';
+  populateFilters(data.stats);
   applyFilter();
 
   const channelId = data.meta.channel || CHANNEL_ID_FALLBACK;
@@ -679,12 +728,23 @@ async function load(force = false) {
 document.getElementById('refreshBtn').addEventListener('click', () => load(true));
 
 let onlyActionable = localStorage.getItem('mina_only_actionable') === '1';
+let filterAsker = localStorage.getItem('mina_filter_asker') || '';
+let filterTopic = localStorage.getItem('mina_filter_topic') || '';
+
 function applyFilter() {
-  document.body.classList.toggle('filter-on', onlyActionable);
-  const toggle = document.getElementById('filterToggle');
-  toggle.classList.toggle('active', onlyActionable);
-  document.querySelectorAll('.card[data-skip="1"]').forEach(el => {
-    el.style.display = onlyActionable ? 'none' : '';
+  document.getElementById('filterToggle').classList.toggle('active', onlyActionable);
+  document.getElementById('askerFilter').classList.toggle('active', !!filterAsker);
+  document.getElementById('topicFilter').classList.toggle('active', !!filterTopic);
+
+  document.querySelectorAll('.card').forEach(el => {
+    let show = true;
+    if (onlyActionable && el.dataset.skip === '1') show = false;
+    if (filterAsker && el.dataset.asker !== filterAsker) show = false;
+    if (filterTopic) {
+      const topics = (el.dataset.topics || '').split('|').filter(Boolean);
+      if (!topics.includes(filterTopic)) show = false;
+    }
+    el.style.display = show ? '' : 'none';
   });
   document.querySelectorAll('.col').forEach(col => {
     const visible = [...col.querySelectorAll('.card')].filter(c => c.style.display !== 'none').length;
@@ -694,9 +754,32 @@ function applyFilter() {
     if (empty) empty.style.display = visible === 0 ? '' : 'none';
   });
 }
+
+function populateFilters(stats) {
+  const askerSel = document.getElementById('askerFilter');
+  askerSel.innerHTML = `<option value="">👤 全部發問者 (${stats.total})</option>` +
+    (stats.byAsker || []).map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)} (${a.count})</option>`).join('');
+  askerSel.value = filterAsker;
+
+  const topicSel = document.getElementById('topicFilter');
+  topicSel.innerHTML = `<option value="">🏷 全部主題 (${stats.total})</option>` +
+    (stats.byTopic || []).map(t => `<option value="${escapeHtml(t.name)}">${escapeHtml(t.name)} (${t.count})</option>`).join('');
+  topicSel.value = filterTopic;
+}
+
 document.getElementById('filterToggle').addEventListener('click', () => {
   onlyActionable = !onlyActionable;
   localStorage.setItem('mina_only_actionable', onlyActionable ? '1' : '0');
+  applyFilter();
+});
+document.getElementById('askerFilter').addEventListener('change', (e) => {
+  filterAsker = e.target.value;
+  localStorage.setItem('mina_filter_asker', filterAsker);
+  applyFilter();
+});
+document.getElementById('topicFilter').addEventListener('change', (e) => {
+  filterTopic = e.target.value;
+  localStorage.setItem('mina_filter_topic', filterTopic);
   applyFilter();
 });
 
