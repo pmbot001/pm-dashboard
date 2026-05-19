@@ -356,6 +356,39 @@
       color:#93c5fd;
     }
 
+    /* Skippable section */
+    .skippable-section {
+      max-width:1400px; margin:8px auto 60px; padding:0 20px;
+    }
+    .skippable-section summary {
+      cursor:pointer; padding:14px 18px;
+      background:#0b1220; border:1px solid #1e293b;
+      border-radius:12px;
+      font-size:13px; color:#94a3b8; font-weight:500;
+      list-style:none; display:flex; align-items:center; gap:8px;
+      transition:background 0.15s;
+    }
+    .skippable-section summary:hover { background:#152033; color:#cbd5e1; }
+    .skippable-section summary::-webkit-details-marker { display:none; }
+    .skippable-section summary::before {
+      content:'▶'; font-size:10px; transition:transform 0.2s; display:inline-block;
+    }
+    .skippable-section[open] summary::before { transform:rotate(90deg); }
+    .skippable-section[open] summary {
+      border-radius:12px 12px 0 0; border-bottom:none;
+    }
+    .skippable-section .skip-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+      padding:14px;
+      background:#0b1220; border:1px solid #1e293b; border-top:none;
+      border-radius:0 0 12px 12px;
+    }
+    @media (max-width:900px) { .skippable-section .skip-grid { grid-template-columns:1fr; } }
+    .skippable-section .skip-grid .card { opacity:0.7; }
+    .skippable-section .skip-grid .card:hover { opacity:1; }
+    .skippable-empty { padding:14px; color:#475569; font-size:13px; font-style:italic;
+      background:#0b1220; border:1px solid #1e293b; border-top:none; border-radius:0 0 12px 12px; text-align:center; }
+
     /* Code blocks */
     .modal-message pre, .reply-text pre {
       background:#020617; border:1px solid #1e293b;
@@ -409,13 +442,13 @@
   <div class="stat pending"><div class="stat-num" id="cntPending">0</div><div class="stat-label">🟡 待回覆</div></div>
   <div class="stat overdue"><div class="stat-num" id="cntOverdue">0</div><div class="stat-label">🔴 超時</div></div>
   <div class="stat closed"><div class="stat-num" id="cntClosed">0</div><div class="stat-label">⚪️ 已關閉</div></div>
+  <div class="stat skip" style="border-top-color:#64748b;"><div class="stat-num" id="cntSkip" style="color:#94a3b8;">0</div><div class="stat-label">📥 不需處理</div></div>
 </div>
 
 <div class="toolbar" id="toolbar" style="display:none;">
   <div class="left">
     <select class="filter-select" id="askerFilter" title="按發問者篩選"><option value="">👤 全部發問者</option></select>
     <select class="filter-select" id="topicFilter" title="按主題篩選"><option value="">🏷 全部主題</option></select>
-    <button class="filter-toggle" id="filterToggle" title="只看 AI 判斷為需處理的訊息"><span class="dot"></span>只看需處理</button>
     <button class="primary" id="refreshBtn">🔄 立即刷新</button>
     <button id="backBtn" onclick="location.href='/'">← 回首頁</button>
   </div>
@@ -665,16 +698,25 @@ function closeModal() {
 
 function renderBoard(data) {
   currentMentions = data.mentions;
-  const groups = { pending: [], overdue: [], closed: [] };
-  for (const m of data.mentions) groups[m.status]?.push(m);
+  const isSkip = m => m.aiJudgment && !m.aiJudgment.needsReply;
+
+  const board = { pending: [], overdue: [], closed: [] };
+  const skippable = [];
+  for (const m of data.mentions) {
+    if (m.status !== 'closed' && isSkip(m)) {
+      skippable.push(m);
+    } else {
+      board[m.status]?.push(m);
+    }
+  }
 
   const colDef = [
-    { key: 'pending', label: '🟡 待回覆', list: groups.pending },
-    { key: 'overdue', label: '🔴 超時（>' + data.meta.overdueHours + 'h）', list: groups.overdue },
-    { key: 'closed', label: '⚪️ 已關閉', list: groups.closed },
+    { key: 'pending', label: '🟡 待回覆', list: board.pending },
+    { key: 'overdue', label: '🔴 超時（>' + data.meta.overdueHours + 'h）', list: board.overdue },
+    { key: 'closed', label: '⚪️ 已關閉', list: board.closed },
   ];
 
-  const html = `<div class="board">${colDef.map(c => `
+  const boardHtml = `<div class="board">${colDef.map(c => `
     <div class="col ${c.key}">
       <div class="col-header">
         <div class="col-title">${c.label}</div>
@@ -686,10 +728,18 @@ function renderBoard(data) {
     </div>
   `).join('')}</div>`;
 
-  document.getElementById('content').innerHTML = html;
-  document.getElementById('cntPending').textContent = data.stats.pending;
-  document.getElementById('cntOverdue').textContent = data.stats.overdue;
-  document.getElementById('cntClosed').textContent = data.stats.closed;
+  const skipHtml = `<details class="skippable-section" id="skipSection"${skippable.length === 0 ? ' style="display:none;"' : ''}>
+    <summary>📥 AI 判定不需處理（${skippable.length}）— 點開檢視</summary>
+    ${skippable.length === 0
+      ? `<div class="skippable-empty">沒有判定為不需處理的訊息</div>`
+      : `<div class="skip-grid">${skippable.map(renderCard).join('')}</div>`}
+  </details>`;
+
+  document.getElementById('content').innerHTML = boardHtml + skipHtml;
+  document.getElementById('cntPending').textContent = board.pending.length;
+  document.getElementById('cntOverdue').textContent = board.overdue.length;
+  document.getElementById('cntClosed').textContent = board.closed.length;
+  document.getElementById('cntSkip').textContent = skippable.length;
   document.getElementById('overdueHrs').textContent = data.meta.overdueHours;
   document.getElementById('stats').style.display = 'flex';
   document.getElementById('toolbar').style.display = 'flex';
@@ -727,18 +777,15 @@ async function load(force = false) {
 
 document.getElementById('refreshBtn').addEventListener('click', () => load(true));
 
-let onlyActionable = localStorage.getItem('mina_only_actionable') === '1';
 let filterAsker = localStorage.getItem('mina_filter_asker') || '';
 let filterTopic = localStorage.getItem('mina_filter_topic') || '';
 
 function applyFilter() {
-  document.getElementById('filterToggle').classList.toggle('active', onlyActionable);
   document.getElementById('askerFilter').classList.toggle('active', !!filterAsker);
   document.getElementById('topicFilter').classList.toggle('active', !!filterTopic);
 
   document.querySelectorAll('.card').forEach(el => {
     let show = true;
-    if (onlyActionable && el.dataset.skip === '1') show = false;
     if (filterAsker && el.dataset.asker !== filterAsker) show = false;
     if (filterTopic) {
       const topics = (el.dataset.topics || '').split('|').filter(Boolean);
@@ -753,6 +800,14 @@ function applyFilter() {
     const empty = col.querySelector('.empty');
     if (empty) empty.style.display = visible === 0 ? '' : 'none';
   });
+  // Update skippable section count
+  const skipSection = document.getElementById('skipSection');
+  if (skipSection) {
+    const visibleSkip = [...skipSection.querySelectorAll('.card')].filter(c => c.style.display !== 'none').length;
+    const summary = skipSection.querySelector('summary');
+    if (summary) summary.firstChild.nodeValue = '';
+    if (summary) summary.innerHTML = `📥 AI 判定不需處理（${visibleSkip}）— 點開檢視`;
+  }
 }
 
 function populateFilters(stats) {
@@ -767,11 +822,6 @@ function populateFilters(stats) {
   topicSel.value = filterTopic;
 }
 
-document.getElementById('filterToggle').addEventListener('click', () => {
-  onlyActionable = !onlyActionable;
-  localStorage.setItem('mina_only_actionable', onlyActionable ? '1' : '0');
-  applyFilter();
-});
 document.getElementById('askerFilter').addEventListener('change', (e) => {
   filterAsker = e.target.value;
   localStorage.setItem('mina_filter_asker', filterAsker);
