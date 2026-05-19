@@ -1,4 +1,5 @@
 const express = require('express');
+const { classifyMentions } = require('./mention-classifier');
 
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || '';
 const MINA_USER_ID = process.env.MINA_USER_ID || 'U0AR8CE8KCG';
@@ -188,11 +189,17 @@ async function collectMentions() {
 
   mentions.sort((a, b) => Number(b.ts) - Number(a.ts));
 
+  const classified = await classifyMentions(mentions);
+  mentions.splice(0, mentions.length, ...classified);
+
+  const needsReply = m => m.aiJudgment?.needsReply !== false;
   const stats = {
     pending: mentions.filter(m => m.status === 'pending').length,
     overdue: mentions.filter(m => m.status === 'overdue').length,
     closed: mentions.filter(m => m.status === 'closed').length,
     total: mentions.length,
+    actionable: mentions.filter(m => m.status !== 'closed' && needsReply(m)).length,
+    skippable: mentions.filter(m => m.status !== 'closed' && !needsReply(m)).length,
   };
 
   return {

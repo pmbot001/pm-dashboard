@@ -281,6 +281,45 @@
     }
     .modal-footer .slack-btn:hover { background:#5e1c5f; }
 
+    /* AI judgment tag */
+    .ai-tag {
+      display:inline-flex; align-items:center; gap:4px;
+      font-size:11px; padding:2px 8px; border-radius:8px;
+      font-weight:500; line-height:1.5;
+    }
+    .ai-tag.needs {
+      background:rgba(34,197,94,0.12); color:#86efac;
+      border:1px solid rgba(34,197,94,0.25);
+    }
+    .ai-tag.skip {
+      background:rgba(148,163,184,0.1); color:#94a3b8;
+      border:1px solid rgba(148,163,184,0.2);
+    }
+    .card.skip { opacity:0.55; }
+    .card.skip:hover { opacity:0.85; }
+    .filter-toggle {
+      background:#1e293b; color:#cbd5e1; border:1px solid #334155;
+      border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer;
+      transition:all 0.15s; display:flex; gap:6px; align-items:center;
+    }
+    .filter-toggle:hover { background:#334155; }
+    .filter-toggle.active {
+      background:rgba(34,197,94,0.15); border-color:rgba(34,197,94,0.4);
+      color:#86efac;
+    }
+    .filter-toggle .dot {
+      width:8px; height:8px; border-radius:50%;
+      background:#475569; transition:background 0.15s;
+    }
+    .filter-toggle.active .dot { background:#22c55e; }
+
+    .ai-modal-block {
+      padding:10px 24px; background:#0f172a;
+      border-bottom:1px solid #1e293b; font-size:12px;
+    }
+    .ai-modal-block .ai-tag { font-size:11px; }
+    .ai-modal-block .ai-reason { color:#94a3b8; margin-left:8px; }
+
     /* Code blocks */
     .modal-message pre, .reply-text pre {
       background:#020617; border:1px solid #1e293b;
@@ -338,6 +377,7 @@
 
 <div class="toolbar" id="toolbar" style="display:none;">
   <div class="left">
+    <button class="filter-toggle" id="filterToggle" title="只看 AI 判斷為需處理的訊息"><span class="dot"></span>只看需處理</button>
     <button class="primary" id="refreshBtn">🔄 立即刷新</button>
     <button id="backBtn" onclick="location.href='/'">← 回首頁</button>
   </div>
@@ -476,6 +516,13 @@ function statusLabel(s) {
 
 function renderCard(m) {
   const avatar = avatarTag(m.asker.avatar, 'asker-avatar');
+  const j = m.aiJudgment;
+  const aiTag = j ? (
+    j.needsReply
+      ? `<span class="ai-tag needs" title="${escapeHtml(j.reason || '')}">✓ ${escapeHtml(j.category)}</span>`
+      : `<span class="ai-tag skip" title="${escapeHtml(j.reason || '')}">⏸ ${escapeHtml(j.category)}</span>`
+  ) : '';
+
   let foot = '';
   if (m.status === 'closed' && m.minaReplyAgeHours != null) {
     const respondHours = Math.round((m.ageHours - m.minaReplyAgeHours) * 10) / 10;
@@ -483,10 +530,13 @@ function renderCard(m) {
       <span class="replies">💬 ${m.replyCount}</span>
       <span class="closed-info">✅ Mina ${respondHours < 1 ? Math.max(1,Math.round(respondHours*60))+'分鐘' : respondHours+'h'}內回覆</span>
     </div>`;
-  } else if (m.replyCount > 0) {
-    foot = `<div class="card-foot"><span class="replies">💬 ${m.replyCount} 則回覆（Mina 未回）</span></div>`;
+  } else if (aiTag || m.replyCount > 0) {
+    const replyPart = m.replyCount > 0 ? `<span class="replies">💬 ${m.replyCount}</span>` : '<span></span>';
+    foot = `<div class="card-foot">${replyPart}${aiTag}</div>`;
   }
-  return `<div class="card" data-ts="${escapeHtml(m.ts)}" role="button" tabindex="0">
+  const skipClass = (j && !j.needsReply) ? ' skip' : '';
+  const dataSkip = (j && !j.needsReply) ? ' data-skip="1"' : '';
+  return `<div class="card${skipClass}" data-ts="${escapeHtml(m.ts)}"${dataSkip} role="button" tabindex="0">
     <div class="card-head">
       <div class="asker">${avatar}<div class="asker-name">${escapeHtml(m.asker.name)}</div></div>
       <div class="card-age">${fmtAge(m.ageHours)}</div>
@@ -545,6 +595,10 @@ function openModal(ts) {
         <div class="modal-asker-time">發問時間：${tagDateStr}</div>
       </div>
     </div>
+    ${m.aiJudgment ? `<div class="ai-modal-block">
+      <span class="ai-tag ${m.aiJudgment.needsReply ? 'needs' : 'skip'}">${m.aiJudgment.needsReply ? '✓' : '⏸'} ${escapeHtml(m.aiJudgment.category)}</span>
+      <span class="ai-reason">${escapeHtml(m.aiJudgment.reason || '')}</span>
+    </div>` : ''}
     <div class="modal-message">${renderMrkdwn(m.fullText || m.text)}</div>
     ${m.files && m.files.length ? `<div style="padding:0 24px 16px; background:#0f172a; border-bottom:1px solid #1e293b;">${renderAttachments(m.files)}</div>` : ''}
     ${threadBlock}
@@ -591,6 +645,7 @@ function renderBoard(data) {
   document.getElementById('overdueHrs').textContent = data.meta.overdueHours;
   document.getElementById('stats').style.display = 'flex';
   document.getElementById('toolbar').style.display = 'flex';
+  applyFilter();
 
   const channelId = data.meta.channel || CHANNEL_ID_FALLBACK;
   document.getElementById('channelLink').href = `https://app.slack.com/client/-/${channelId}`;
@@ -622,6 +677,28 @@ async function load(force = false) {
 }
 
 document.getElementById('refreshBtn').addEventListener('click', () => load(true));
+
+let onlyActionable = localStorage.getItem('mina_only_actionable') === '1';
+function applyFilter() {
+  document.body.classList.toggle('filter-on', onlyActionable);
+  const toggle = document.getElementById('filterToggle');
+  toggle.classList.toggle('active', onlyActionable);
+  document.querySelectorAll('.card[data-skip="1"]').forEach(el => {
+    el.style.display = onlyActionable ? 'none' : '';
+  });
+  document.querySelectorAll('.col').forEach(col => {
+    const visible = [...col.querySelectorAll('.card')].filter(c => c.style.display !== 'none').length;
+    const count = col.querySelector('.col-count');
+    if (count) count.textContent = visible;
+    const empty = col.querySelector('.empty');
+    if (empty) empty.style.display = visible === 0 ? '' : 'none';
+  });
+}
+document.getElementById('filterToggle').addEventListener('click', () => {
+  onlyActionable = !onlyActionable;
+  localStorage.setItem('mina_only_actionable', onlyActionable ? '1' : '0');
+  applyFilter();
+});
 
 // Modal interactions
 document.addEventListener('click', (e) => {
