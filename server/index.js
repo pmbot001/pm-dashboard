@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const { loadAllData } = require('./data-loader');
 const { createSearchRouter } = require('./search');
+const { createMinaMentionsRouter } = require('./mina-mentions');
 
 const app = express();
 const PORT = process.env.PORT || 3210;
@@ -16,6 +17,7 @@ console.log(`Loaded: ${data.rpPages.length} RP pages, ${data.knowledgeBase.lengt
 
 // API routes
 app.use('/api', createSearchRouter(data));
+app.use('/api', createMinaMentionsRouter());
 
 // SPA fallback
 app.get('*', (req, res) => {

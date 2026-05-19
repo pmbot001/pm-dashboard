@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mina Slack 待回覆看板 — NWC 專案群</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background:#0f172a; color:#e2e8f0;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang TC','Microsoft JhengHei',sans-serif;
+      line-height:1.6; min-height:100vh;
+    }
+    a { color:inherit; text-decoration:none; }
+
+    /* Header */
+    .header {
+      background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);
+      padding:32px 24px 24px; text-align:center;
+    }
+    .header h1 {
+      font-size:28px;
+      background:linear-gradient(90deg,#fbbf24,#f59e0b);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      margin-bottom:8px;
+    }
+    .header p { color:#94a3b8; font-size:14px; }
+    .meta-row {
+      margin-top:14px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+      font-size:12px; color:#64748b;
+    }
+    .meta-row span { background:#1e293b; border-radius:12px; padding:4px 12px; }
+    .meta-row a { color:#60a5fa; text-decoration:underline; }
+
+    /* Stats */
+    .stats {
+      display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+      margin:24px auto 0; max-width:780px; padding:0 16px;
+    }
+    .stat {
+      background:#1e293b; border-radius:12px; padding:14px 22px;
+      text-align:center; flex:1; min-width:120px;
+      border-top:3px solid transparent;
+    }
+    .stat-num { font-size:26px; font-weight:700; }
+    .stat-label { font-size:12px; color:#94a3b8; margin-top:4px; }
+    .stat.pending { border-top-color:#fbbf24; }
+    .stat.pending .stat-num { color:#fbbf24; }
+    .stat.overdue { border-top-color:#ef4444; }
+    .stat.overdue .stat-num { color:#ef4444; }
+    .stat.closed { border-top-color:#64748b; }
+    .stat.closed .stat-num { color:#94a3b8; }
+
+    /* Toolbar */
+    .toolbar {
+      max-width:1400px; margin:24px auto 0; padding:0 20px;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      flex-wrap:wrap;
+    }
+    .toolbar .left { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .toolbar button {
+      background:#1e293b; color:#e2e8f0; border:1px solid #334155;
+      border-radius:8px; padding:8px 16px; font-size:13px; cursor:pointer;
+      transition:all 0.15s;
+    }
+    .toolbar button:hover { background:#334155; border-color:#475569; }
+    .toolbar button.primary { background:#2563eb; border-color:#2563eb; }
+    .toolbar button.primary:hover { background:#1d4ed8; }
+    .toolbar .updated { font-size:12px; color:#64748b; }
+
+    /* Board */
+    .board {
+      max-width:1400px; margin:20px auto; padding:0 20px 60px;
+      display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+    }
+    @media (max-width:900px) { .board { grid-template-columns:1fr; } }
+    .col {
+      background:#0b1220; border:1px solid #1e293b;
+      border-radius:14px; padding:14px; min-height:200px;
+    }
+    .col-header {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0 4px 12px; border-bottom:1px solid #1e293b; margin-bottom:12px;
+    }
+    .col-title { font-size:14px; font-weight:600; display:flex; gap:8px; align-items:center; }
+    .col-count { background:#334155; color:#cbd5e1; font-size:12px; padding:2px 10px; border-radius:10px; }
+    .col.pending .col-title { color:#fbbf24; }
+    .col.pending .col-count { background:#78350f; color:#fcd34d; }
+    .col.overdue .col-title { color:#ef4444; }
+    .col.overdue .col-count { background:#7f1d1d; color:#fca5a5; }
+    .col.closed .col-title { color:#94a3b8; }
+
+    /* Card */
+    .card {
+      background:#1e293b; border:1px solid #334155; border-radius:10px;
+      padding:12px 14px; margin-bottom:10px;
+      transition:transform 0.15s, border-color 0.15s, background 0.15s;
+      cursor:pointer; display:block;
+    }
+    .card:hover { transform:translateY(-1px); border-color:#475569; background:#243044; }
+    .col.pending .card { border-left:3px solid #fbbf24; }
+    .col.overdue .card { border-left:3px solid #ef4444; }
+    .col.closed .card { border-left:3px solid #64748b; opacity:0.85; }
+    .col.closed .card:hover { opacity:1; }
+
+    .card-head {
+      display:flex; justify-content:space-between; align-items:center;
+      gap:8px; margin-bottom:8px;
+    }
+    .asker {
+      display:flex; gap:8px; align-items:center; min-width:0; flex:1;
+    }
+    .asker-avatar {
+      width:24px; height:24px; border-radius:50%;
+      background:#334155; flex-shrink:0;
+    }
+    .asker-name {
+      font-size:13px; font-weight:600; color:#cbd5e1;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .card-age {
+      font-size:11px; color:#64748b; flex-shrink:0;
+      background:#0f172a; padding:2px 8px; border-radius:8px;
+    }
+    .col.overdue .card-age { color:#fca5a5; background:#450a0a; }
+
+    .card-text {
+      font-size:13px; color:#cbd5e1; line-height:1.55;
+      overflow:hidden; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical;
+      word-break:break-word;
+    }
+    .card-foot {
+      margin-top:8px; padding-top:8px; border-top:1px solid #334155;
+      display:flex; justify-content:space-between; font-size:11px; color:#64748b;
+    }
+    .card-foot .replies { display:flex; align-items:center; gap:4px; }
+    .closed-info { color:#86efac; }
+
+    .empty {
+      text-align:center; color:#475569; font-size:13px;
+      padding:24px 12px; font-style:italic;
+    }
+
+    /* States */
+    .loading, .error {
+      max-width:600px; margin:60px auto; padding:24px;
+      background:#1e293b; border-radius:12px; text-align:center;
+    }
+    .error { border-left:4px solid #ef4444; color:#fca5a5; text-align:left; }
+    .error code { background:#0f172a; padding:2px 6px; border-radius:4px; font-size:12px; }
+    .spinner {
+      display:inline-block; width:18px; height:18px;
+      border:2px solid #334155; border-top-color:#60a5fa;
+      border-radius:50%; animation:spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📋 Mina Slack 待回覆看板</h1>
+  <p>NWC 專案群 · 過去 14 天的 @Mina mentions</p>
+  <div class="meta-row">
+    <span>頻道：<a id="channelLink" href="#" target="_blank">#NWC 專案群</a></span>
+    <span>超時門檻：<span id="overdueHrs">24</span>h</span>
+    <span>每 60 秒自動更新</span>
+  </div>
+</div>
+
+<div class="stats" id="stats" style="display:none;">
+  <div class="stat pending"><div class="stat-num" id="cntPending">0</div><div class="stat-label">🟡 待回覆</div></div>
+  <div class="stat overdue"><div class="stat-num" id="cntOverdue">0</div><div class="stat-label">🔴 超時</div></div>
+  <div class="stat closed"><div class="stat-num" id="cntClosed">0</div><div class="stat-label">⚪️ 已關閉</div></div>
+</div>
+
+<div class="toolbar" id="toolbar" style="display:none;">
+  <div class="left">
+    <button class="primary" id="refreshBtn">🔄 立即刷新</button>
+    <button id="backBtn" onclick="location.href='/'">← 回首頁</button>
+  </div>
+  <div class="updated" id="updated"></div>
+</div>
+
+<div id="content">
+  <div class="loading"><div class="spinner"></div><div style="margin-top:12px;color:#94a3b8;">載入中…</div></div>
+</div>
+
+<script>
+const CHANNEL_ID_FALLBACK = 'C0B0RK6J962';
+
+function fmtAge(hours) {
+  if (hours == null) return '—';
+  if (hours < 1) return Math.max(1, Math.round(hours * 60)) + ' 分鐘前';
+  if (hours < 24) return Math.round(hours * 10) / 10 + ' 小時前';
+  const days = hours / 24;
+  return Math.round(days * 10) / 10 + ' 天前';
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+function renderCard(m) {
+  const avatar = m.asker.avatar
+    ? `<img class="asker-avatar" src="${escapeHtml(m.asker.avatar)}" alt="">`
+    : `<div class="asker-avatar"></div>`;
+  let foot = '';
+  if (m.status === 'closed' && m.minaReplyAgeHours != null) {
+    const respondHours = Math.round((m.ageHours - m.minaReplyAgeHours) * 10) / 10;
+    foot = `<div class="card-foot">
+      <span class="replies">💬 ${m.replyCount}</span>
+      <span class="closed-info">✅ Mina ${respondHours < 1 ? Math.max(1,Math.round(respondHours*60))+'分鐘' : respondHours+'h'}內回覆</span>
+    </div>`;
+  } else if (m.replyCount > 0) {
+    foot = `<div class="card-foot"><span class="replies">💬 ${m.replyCount} 則回覆（Mina 未回）</span></div>`;
+  }
+  return `<a class="card" href="${escapeHtml(m.permalink)}" target="_blank" rel="noopener">
+    <div class="card-head">
+      <div class="asker">${avatar}<div class="asker-name">${escapeHtml(m.asker.name)}</div></div>
+      <div class="card-age">${fmtAge(m.ageHours)}</div>
+    </div>
+    <div class="card-text">${escapeHtml(m.text)}</div>
+    ${foot}
+  </a>`;
+}
+
+function renderBoard(data) {
+  const groups = { pending: [], overdue: [], closed: [] };
+  for (const m of data.mentions) groups[m.status]?.push(m);
+
+  const colDef = [
+    { key: 'pending', label: '🟡 待回覆', list: groups.pending },
+    { key: 'overdue', label: '🔴 超時（>' + data.meta.overdueHours + 'h）', list: groups.overdue },
+    { key: 'closed', label: '⚪️ 已關閉', list: groups.closed },
+  ];
+
+  const html = `<div class="board">${colDef.map(c => `
+    <div class="col ${c.key}">
+      <div class="col-header">
+        <div class="col-title">${c.label}</div>
+        <div class="col-count">${c.list.length}</div>
+      </div>
+      ${c.list.length === 0
+        ? `<div class="empty">— 無 —</div>`
+        : c.list.map(renderCard).join('')}
+    </div>
+  `).join('')}</div>`;
+
+  document.getElementById('content').innerHTML = html;
+  document.getElementById('cntPending').textContent = data.stats.pending;
+  document.getElementById('cntOverdue').textContent = data.stats.overdue;
+  document.getElementById('cntClosed').textContent = data.stats.closed;
+  document.getElementById('overdueHrs').textContent = data.meta.overdueHours;
+  document.getElementById('stats').style.display = 'flex';
+  document.getElementById('toolbar').style.display = 'flex';
+
+  const channelId = data.meta.channel || CHANNEL_ID_FALLBACK;
+  document.getElementById('channelLink').href = `https://app.slack.com/client/-/${channelId}`;
+
+  const t = new Date(data.meta.generatedAt);
+  const cached = data.cached ? `（cache ${Math.round((data.cacheAgeMs||0)/1000)}s）` : '';
+  document.getElementById('updated').textContent = `更新於 ${t.toLocaleTimeString('zh-TW',{hour12:false})} ${cached}`;
+}
+
+async function load(force = false) {
+  try {
+    const url = force ? '/api/mina-mentions?refresh=1' : '/api/mina-mentions';
+    const res = await fetch(url);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      document.getElementById('content').innerHTML = `<div class="error">
+        <strong>載入失敗</strong><br>${escapeHtml(err.error || res.statusText)}
+        ${err.slackError ? `<br>Slack 錯誤：<code>${escapeHtml(err.slackError)}</code>` : ''}
+      </div>`;
+      return;
+    }
+    const data = await res.json();
+    renderBoard(data);
+  } catch (e) {
+    document.getElementById('content').innerHTML = `<div class="error">
+      <strong>網路錯誤</strong><br>${escapeHtml(e.message)}
+    </div>`;
+  }
+}
+
+document.getElementById('refreshBtn').addEventListener('click', () => load(true));
+load();
+setInterval(() => load(false), 60000);
+</script>
+
+</body>
+</html>
