@@ -280,6 +280,42 @@
       text-decoration:none; transition:background 0.15s;
     }
     .modal-footer .slack-btn:hover { background:#5e1c5f; }
+
+    /* Code blocks */
+    .modal-message pre, .reply-text pre {
+      background:#020617; border:1px solid #1e293b;
+      border-radius:8px; padding:10px 12px; margin:6px 0;
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:12px; color:#cbd5e1; line-height:1.5;
+      overflow-x:auto; white-space:pre;
+    }
+    .modal-message pre code, .reply-text pre code {
+      background:transparent; color:inherit; padding:0; font-size:inherit;
+    }
+
+    /* Attachments */
+    .attachments {
+      display:flex; flex-wrap:wrap; gap:8px;
+      padding:6px 0 4px;
+    }
+    .att-image {
+      display:block; border-radius:8px; overflow:hidden;
+      border:1px solid #334155; transition:transform 0.15s, border-color 0.15s;
+    }
+    .att-image:hover { border-color:#60a5fa; transform:translateY(-1px); }
+    .att-image img {
+      display:block; max-width:240px; max-height:180px;
+      object-fit:cover; background:#1e293b;
+    }
+    .att-file {
+      display:inline-flex; gap:6px; align-items:center;
+      padding:6px 12px; background:#1e293b; border:1px solid #334155;
+      border-radius:8px; font-size:12px; color:#cbd5e1; text-decoration:none;
+      transition:background 0.15s;
+    }
+    .att-file:hover { background:#334155; }
+    .modal-message + .attachments,
+    .reply-text + .attachments { margin-top:8px; }
   </style>
 </head>
 <body>
@@ -339,40 +375,95 @@ function escapeHtml(s) {
   })[c]);
 }
 
+const EMOJI_MAP = {
+  smile:'😄', grinning:'😀', grin:'😁', laughing:'😆', sweat_smile:'😅',
+  joy:'😂', rofl:'🤣', slightly_smiling_face:'🙂', upside_down_face:'🙃',
+  wink:'😉', blush:'😊', innocent:'😇', heart_eyes:'😍',
+  thinking_face:'🤔', neutral_face:'😐', unamused:'😒', sweat:'😓',
+  pensive:'😔', confused:'😕', cry:'😢', sob:'😭',
+  angry:'😠', rage:'😡', tired_face:'😩', sleeping:'😴',
+  sunglasses:'😎', star_struck:'🤩', partying_face:'🥳',
+  thumbsup:'👍', '+1':'👍', thumbsdown:'👎', '-1':'👎',
+  ok_hand:'👌', clap:'👏', pray:'🙏', folded_hands:'🙏',
+  raised_hands:'🙌', wave:'👋', muscle:'💪', point_up:'☝️',
+  point_right:'👉', point_left:'👈', point_down:'👇',
+  heart:'❤️', red_heart:'❤️', broken_heart:'💔',
+  star:'⭐', fire:'🔥', sparkles:'✨', tada:'🎉', rocket:'🚀',
+  eyes:'👀', boom:'💥', zap:'⚡',
+  warning:'⚠️', no_entry:'⛔', x:'❌',
+  white_check_mark:'✅', heavy_check_mark:'✔️',
+  question:'❓', exclamation:'❗', bulb:'💡', dart:'🎯',
+  memo:'📝', pencil:'✏️', clipboard:'📋',
+  calendar:'📅', alarm_clock:'⏰', hourglass:'⏳',
+  mag:'🔍', lock:'🔒', key:'🔑', computer:'💻', iphone:'📱',
+  envelope:'✉️', speech_balloon:'💬', loudspeaker:'📢',
+  bell:'🔔', link:'🔗', paperclip:'📎',
+  inbox_tray:'📥', outbox_tray:'📤', package:'📦',
+  gear:'⚙️', wrench:'🔧', hammer:'🔨', bug:'🐛',
+  arrows_counterclockwise:'🔄', recycle:'♻️',
+};
+
+function replaceEmoji(s) {
+  return s.replace(/:([a-z0-9_+-]+):/gi, (full, name) => EMOJI_MAP[name.toLowerCase()] || full);
+}
+
+function renderAttachments(files) {
+  if (!files || files.length === 0) return '';
+  const items = files.map(f => {
+    if (f.isImage && f.thumbUrl) {
+      const proxy = '/api/slack-file?url=' + encodeURIComponent(f.thumbUrl);
+      const href = f.permalink || '#';
+      return `<a class="att-image" href="${escapeHtml(href)}" target="_blank" rel="noopener" title="${escapeHtml(f.name)}">
+        <img src="${proxy}" alt="${escapeHtml(f.name)}" loading="lazy">
+      </a>`;
+    }
+    return `<a class="att-file" href="${escapeHtml(f.permalink || '#')}" target="_blank" rel="noopener">📎 ${escapeHtml(f.name)}</a>`;
+  }).join('');
+  return `<div class="attachments">${items}</div>`;
+}
+
 function renderMrkdwn(text) {
   if (!text) return '';
   let s = String(text);
-
-  // 1. Extract Slack links <url|label> and <url> before HTML escape
   const tokens = [];
+  const ph = i => `__TOK${i}__`;
+
+  // Code blocks first (```...```)
+  s = s.replace(/```([\s\S]*?)```/g, (_, code) => {
+    tokens.push({ type: 'codeblock', code });
+    return ph(tokens.length - 1);
+  });
+
+  // Slack links <url|label> and <url>
   s = s.replace(/<((?:https?:|mailto:|tel:)[^|>]+)\|([^>]+)>/g, (_, url, label) => {
-    tokens.push({ url, label });
-    return ` T${tokens.length - 1} `;
+    tokens.push({ type: 'link', url, label });
+    return ph(tokens.length - 1);
   });
   s = s.replace(/<((?:https?:|mailto:|tel:)[^>]+)>/g, (_, url) => {
-    tokens.push({ url, label: url });
-    return ` T${tokens.length - 1} `;
+    tokens.push({ type: 'link', url, label: url });
+    return ph(tokens.length - 1);
   });
 
-  // 2. HTML escape everything else
+  // HTML escape, then emoji + inline mrkdwn
   s = escapeHtml(s);
-
-  // 3. Apply mrkdwn (escape-safe because we already escaped)
+  s = replaceEmoji(s);
   s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
   s = s.replace(/\*([^*\n]+?)\*/g, '<strong>$1</strong>');
   s = s.replace(/(^|[\s(])_([^_\n]+?)_(?=$|[\s).,!?:;])/g, '$1<em>$2</em>');
   s = s.replace(/~([^~\n]+?)~/g, '<s>$1</s>');
 
-  // 4. Restore link tokens
-  s = s.replace(/ T(\d+) /g, (_, i) => {
-    const { url, label } = tokens[parseInt(i, 10)];
-    const safeUrl = url.replace(/"/g, '%22').replace(/</g, '%3C').replace(/>/g, '%3E');
-    return `<a href="${safeUrl}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`;
+  // Restore tokens
+  s = s.replace(/__TOK(\d+)__/g, (_, i) => {
+    const tok = tokens[parseInt(i, 10)];
+    if (tok.type === 'codeblock') {
+      return `<pre><code>${escapeHtml(tok.code.replace(/^\n+|\n+$/g, ''))}</code></pre>`;
+    }
+    const safeUrl = tok.url.replace(/"/g, '%22').replace(/</g, '%3C').replace(/>/g, '%3E');
+    return `<a href="${safeUrl}" target="_blank" rel="noopener">${escapeHtml(tok.label)}</a>`;
   });
 
   return s;
 }
-
 function avatarTag(url, cls) {
   return url
     ? `<img class="${cls}" src="${escapeHtml(url)}" alt="">`
@@ -432,6 +523,7 @@ function openModal(ts) {
         <div class="reply-content">
           <div class="reply-meta"><span class="name">${escapeHtml(r.user.name)}</span><span class="time">${rTime}</span></div>
           <div class="reply-text">${renderMrkdwn(r.text)}</div>
+          ${renderAttachments(r.files)}
         </div>
       </div>`;
     }).join('');
@@ -454,6 +546,7 @@ function openModal(ts) {
       </div>
     </div>
     <div class="modal-message">${renderMrkdwn(m.fullText || m.text)}</div>
+    ${m.files && m.files.length ? `<div style="padding:0 24px 16px; background:#0f172a; border-bottom:1px solid #1e293b;">${renderAttachments(m.files)}</div>` : ''}
     ${threadBlock}
     <div class="modal-footer">
       <a class="slack-btn" href="${escapeHtml(m.permalink)}" target="_blank" rel="noopener">在 Slack 打開 ↗</a>

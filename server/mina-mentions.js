@@ -68,6 +68,20 @@ function buildArchiveLink(channelId, ts, threadTs) {
   return url;
 }
 
+function extractFiles(slackFiles) {
+  if (!Array.isArray(slackFiles)) return [];
+  return slackFiles.filter(f => f && f.id).map(f => ({
+    id: f.id,
+    name: f.name || f.title || 'file',
+    mimetype: f.mimetype || '',
+    isImage: (f.mimetype || '').startsWith('image/'),
+    thumbUrl: f.thumb_360 || f.thumb_480 || f.thumb_720 || null,
+    originalUrl: f.url_private || null,
+    permalink: f.permalink || null,
+    size: f.size || null,
+  }));
+}
+
 function resolveMentions(text, users) {
   if (!text) return '';
   return text.replace(/<@([A-Z0-9]+)>/g, (_, uid) => {
@@ -131,6 +145,7 @@ async function collectMentions() {
             user: { id: ru.id, name: ru.name, avatar: ru.avatar },
             isMina,
             text: resolveMentions(r.text || '', users),
+            files: extractFiles(r.files),
           });
           if (isMina) {
             minaReplied = true;
@@ -162,6 +177,7 @@ async function collectMentions() {
       asker: { id: asker.id, name: asker.name, avatar: asker.avatar },
       text: preview(fullText),
       fullText,
+      files: extractFiles(msg.files),
       replyCount,
       replies,
       minaReplyTs,
@@ -207,6 +223,38 @@ function createMinaMentionsRouter() {
     } catch (e) {
       console.error('mina-mentions error:', e);
       res.status(500).json({ error: e.message, slackError: e.slackError });
+    }
+  });
+
+  router.get('/slack-file', async (req, res) => {
+    const { url } = req.query;
+    if (!url || typeof url !== 'string') {
+      return res.status(400).json({ error: 'missing url param' });
+    }
+    if (!url.startsWith('https://files.slack.com/') && !url.startsWith('https://slack.com/')) {
+      return res.status(403).json({ error: 'forbidden host' });
+    }
+    if (!SLACK_BOT_TOKEN) {
+      return res.status(500).json({ error: 'SLACK_BOT_TOKEN not configured' });
+    }
+    try {
+      const upstream = await fetch(url, {
+        headers: { Authorization: `Bearer ${SLACK_BOT_TOKEN}` },
+      });
+      if (!upstream.ok) {
+        return res.status(upstream.status).send(`upstream ${upstream.status}`);
+      }
+      const ct = upstream.headers.get('content-type') || 'application/octet-stream';
+      if (ct.startsWith('text/html')) {
+        return res.status(502).json({ error: 'upstream returned HTML (auth issue?)' });
+      }
+      res.setHeader('Content-Type', ct);
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+      const buf = Buffer.from(await upstream.arrayBuffer());
+      res.send(buf);
+    } catch (e) {
+      console.error('slack-file proxy error:', e);
+      res.status(500).json({ error: e.message });
     }
   });
 
