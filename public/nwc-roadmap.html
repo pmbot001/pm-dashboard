@@ -801,7 +801,7 @@
   </section>
 
   <footer class="footnote">
-    <div style="opacity:.5;font-size:11px;margin-bottom:6px;">Last updated: 2026-05-19 10:07 · 47 tasks</div>
+    <div style="opacity:.5;font-size:11px;margin-bottom:6px;">Last updated: 2026-05-19 15:19 · 47 tasks</div>
     資料來源：<span class="src">Jira / Project NWC</span>（撈取於 2026-05-15，共 100 張 ticket）<br>
     Sprint 起訖日：Jira customfield_10020 · QA 期間為 2 週推估 · 風險清單為人工分析<br>
     本文件為對外時程承諾版本；個別 ticket 工時請於 Sprint Planning 後在 Jira 補上 Start / DEV / CQA Date 以提高精度。
@@ -946,8 +946,6 @@ const rows = [
   { type: 'epic', kind: 'frontend', key: 'NWC-1026', name: 'Game/Cloud 上线前范围', owner: 'Mina',
     start: '5/11', end: '7/10' },
 
-  { type: 'task', kind: 'backend', key: 'NWC-1021', name: "[后端] baldur弃用", owner: "Charles", subs: 1, sprint: "S3", start: "6/1", end: "7/10", crossSprint: true },
-  { type: 'task', kind: 'backend', key: 'NWC-1022', name: "[后端] unify优化", owner: "Charles / Gerry / Iron / Snw / Zayn", subs: 5, sprint: "S2", start: "5/11", end: "6/12", crossSprint: true },
   { type: 'task', kind: 'frontend', key: 'NWC-1034', name: "[H5/APP] 加载通则/下拉刷新/跳转参数", owner: "Nigel", subs: 1, sprint: "S3", start: "6/1", end: "7/10", crossSprint: true, design: true },
   { type: 'task', kind: 'frontend', key: 'NWC-1035', name: "[H5/APP] 弹窗", owner: "Jay / Onion", subs: 4, sprint: "S1", start: "5/11", end: "5/29" },
   { type: 'task', kind: 'frontend', key: 'NWC-1036', name: "[H5/APP] 提醒", owner: "Joe / Onion", subs: 3, sprint: "S2", start: "5/11", end: "6/19", crossSprint: true },
@@ -980,11 +978,6 @@ const rows = [
   { type: 'task', kind: 'frontend', key: 'NWC-1063', name: "[H5/APP] 个人资料(全)/收件地址/福利专员/加入我们/福利中心/背包中心/赠礼记录", owner: "Alice / Ivy / Ray", subs: 4, sprint: "S1", start: "5/11", end: "5/29" },
   { type: 'task', kind: 'frontend', key: 'NWC-1064', name: "[H5/APP] 赛事赛果", owner: "Mina", subs: 1, sprint: "S3", start: "6/22", end: "7/10" },
   { type: 'task', kind: 'frontend', key: 'NWC-1065', name: "[H5/APP] 任务与签到", owner: "Joe / Ray", subs: 3, sprint: "S2", start: "5/11", end: "6/19", crossSprint: true, design: true },
-  { type: 'task', kind: 'backend', key: 'NWC-1068', name: "[后端] NWC建置环境 Sprint 1", owner: "Austin / Ben / Colin / Iron / Lily / Snw / Zayn", subs: 11, sprint: "S1", start: "5/11", end: "5/29" },
-  { type: 'task', kind: 'backend', key: 'NWC-1102', name: "[后端] sprint2-其它重构", owner: "Austin / Ben / Colin / Lily / Snw / Zayn", subs: 10, sprint: "S2", start: "6/1", end: "6/19" },
-  { type: 'task', kind: 'backend', key: 'NWC-1103', name: "[后端] sprint3-其它重构", owner: "Colin / Sean", subs: 16, sprint: "S3", start: "6/22", end: "7/10" },
-  { type: 'task', kind: 'backend', key: 'NWC-1104', name: "[后端] 取代UGS", owner: "Lily", subs: 1, sprint: "S3", start: "6/1", end: "7/10", crossSprint: true },
-  { type: 'task', kind: 'backend', key: 'NWC-1108', name: "[后端] NWC建置环境 Sprint 2", owner: "Austin / Ben / Iron / Lily / Snw / Zayn", subs: 11, sprint: "S2", start: "5/11", end: "6/19", crossSprint: true },
   { type: 'task', kind: 'frontend', key: 'NWC-1131', name: "[前端] 环境建置", owner: "Deri / Nigel", subs: 2, sprint: "S1", start: "5/11", end: "5/29" },
   { type: 'task', kind: 'frontend', key: 'NWC-1134', name: "[H5/APP] 时间筛选功能", owner: "Ethan / Nigel", subs: 2, sprint: "S1", start: "5/11", end: "5/29" },
   { type: 'task', kind: 'frontend', key: 'NWC-1149', name: "[H5/APP] 下单(总盘）", owner: "Mina", subs: 0, sprint: "S2", start: "6/1", end: "6/19" },
@@ -1044,6 +1037,14 @@ const rows = [
   // ============= Epic: 後端 NWC-1067 =============
   { type: 'epic', kind: 'backend', key: 'NWC-1067', name: '后端架构优化 上线前范围', owner: 'Claire / Colin',
     start: '5/11', end: '7/10' },
+
+  { type: 'task', kind: 'backend', key: 'NWC-1021', name: "[后端] baldur弃用", owner: "Charles", subs: 1, sprint: "S3", start: "6/1", end: "7/10", crossSprint: true },
+  { type: 'task', kind: 'backend', key: 'NWC-1022', name: "[后端] unify优化", owner: "Charles / Gerry / Iron / Snw / Zayn", subs: 5, sprint: "S2", start: "5/11", end: "6/12", crossSprint: true },
+  { type: 'task', kind: 'backend', key: 'NWC-1068', name: "[后端] NWC建置环境 Sprint 1", owner: "Austin / Ben / Colin / Iron / Lily / Snw / Zayn", subs: 11, sprint: "S1", start: "5/11", end: "5/29" },
+  { type: 'task', kind: 'backend', key: 'NWC-1102', name: "[后端] sprint2-其它重构", owner: "Austin / Ben / Colin / Lily / Snw / Zayn", subs: 10, sprint: "S2", start: "6/1", end: "6/19" },
+  { type: 'task', kind: 'backend', key: 'NWC-1103', name: "[后端] sprint3-其它重构", owner: "Colin / Sean", subs: 16, sprint: "S3", start: "6/22", end: "7/10" },
+  { type: 'task', kind: 'backend', key: 'NWC-1104', name: "[后端] 取代UGS", owner: "Lily", subs: 1, sprint: "S3", start: "6/1", end: "7/10", crossSprint: true },
+  { type: 'task', kind: 'backend', key: 'NWC-1108', name: "[后端] NWC建置环境 Sprint 2", owner: "Austin / Ben / Iron / Lily / Snw / Zayn", subs: 11, sprint: "S2", start: "5/11", end: "6/19", crossSprint: true },
 
 
 
