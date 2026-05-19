@@ -68,19 +68,19 @@ function buildArchiveLink(channelId, ts, threadTs) {
   return url;
 }
 
-function stripMentions(text, users) {
+function resolveMentions(text, users) {
   if (!text) return '';
   return text.replace(/<@([A-Z0-9]+)>/g, (_, uid) => {
     const u = users[uid];
     return u ? `@${u.name}` : `@${uid}`;
-  }).replace(/<#[A-Z0-9]+\|([^>]+)>/g, '#$1')
-    .replace(/<([^|>]+)\|([^>]+)>/g, '$2')
-    .replace(/<([^>]+)>/g, '$1');
+  }).replace(/<#[A-Z0-9]+\|([^>]+)>/g, '#$1');
 }
 
 function preview(text, maxLen = 240) {
   if (!text) return '';
-  const cleaned = text.replace(/\s+/g, ' ').trim();
+  const cleaned = text.replace(/<[^|>]+\|([^>]+)>/g, '$2')
+    .replace(/<([^>]+)>/g, '$1')
+    .replace(/\s+/g, ' ').trim();
   return cleaned.length > maxLen ? cleaned.slice(0, maxLen) + '…' : cleaned;
 }
 
@@ -110,19 +110,29 @@ async function collectMentions() {
     let minaReplied = false;
     let minaReplyTs = null;
     let replyCount = 0;
+    let replies = [];
 
     if (msg.thread_ts || msg.reply_count) {
       try {
-        const replies = await slackApi('conversations.replies', {
+        const data = await slackApi('conversations.replies', {
           channel: NWC_CHANNEL_ID,
           ts: msg.thread_ts || msg.ts,
           limit: 100,
         });
-        const all = replies.messages || [];
+        const all = data.messages || [];
         replyCount = Math.max(0, all.length - 1);
         for (const r of all) {
           if (r.ts === msg.ts) continue;
-          if (r.user === MINA_USER_ID) {
+          const ru = users[r.user] || { id: r.user, name: r.user || 'Unknown', avatar: '' };
+          const isMina = r.user === MINA_USER_ID;
+          replies.push({
+            ts: r.ts,
+            tsIso: new Date(Number(r.ts) * 1000).toISOString(),
+            user: { id: ru.id, name: ru.name, avatar: ru.avatar },
+            isMina,
+            text: resolveMentions(r.text || '', users),
+          });
+          if (isMina) {
             minaReplied = true;
             if (!minaReplyTs || Number(r.ts) < Number(minaReplyTs)) {
               minaReplyTs = r.ts;
@@ -142,6 +152,7 @@ async function collectMentions() {
     else status = 'pending';
 
     const asker = users[msg.user] || { id: msg.user, name: msg.user || 'Unknown', avatar: '' };
+    const fullText = resolveMentions(msg.text || '', users);
 
     mentions.push({
       ts: msg.ts,
@@ -149,8 +160,10 @@ async function collectMentions() {
       ageHours: Math.round(ageHours * 10) / 10,
       status,
       asker: { id: asker.id, name: asker.name, avatar: asker.avatar },
-      text: preview(stripMentions(msg.text, users)),
+      text: preview(fullText),
+      fullText,
       replyCount,
+      replies,
       minaReplyTs,
       minaReplyAgeHours: minaReplyTs ? Math.round((Date.now() / 1000 - Number(minaReplyTs)) / 3600 * 10) / 10 : null,
       permalink: buildArchiveLink(NWC_CHANNEL_ID, msg.ts),

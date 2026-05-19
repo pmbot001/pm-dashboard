@@ -154,6 +154,132 @@
       border-radius:50%; animation:spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* Modal */
+    .modal {
+      position:fixed; inset:0; z-index:50; display:none;
+      align-items:flex-start; justify-content:center;
+      padding:40px 16px; overflow-y:auto;
+    }
+    .modal.open { display:flex; }
+    .modal-backdrop {
+      position:fixed; inset:0; background:rgba(2,6,23,0.78); backdrop-filter:blur(4px);
+    }
+    .modal-content {
+      position:relative; z-index:1;
+      width:100%; max-width:780px;
+      background:#0f172a; border:1px solid #334155;
+      border-radius:14px; overflow:hidden;
+      box-shadow:0 24px 64px rgba(0,0,0,0.5);
+      animation:slideIn 0.2s ease-out;
+    }
+    @keyframes slideIn {
+      from { opacity:0; transform:translateY(-8px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+    .modal-close {
+      position:absolute; top:14px; right:14px; z-index:2;
+      width:32px; height:32px; border:none; cursor:pointer;
+      background:#1e293b; color:#94a3b8; border-radius:8px;
+      font-size:20px; line-height:1; display:flex; align-items:center; justify-content:center;
+      transition:all 0.15s;
+    }
+    .modal-close:hover { background:#334155; color:#fff; }
+
+    .modal-header {
+      padding:20px 24px 16px; border-bottom:1px solid #1e293b;
+      display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+    }
+    .status-badge {
+      font-size:12px; padding:4px 12px; border-radius:12px; font-weight:600;
+    }
+    .status-badge.pending { background:#78350f; color:#fcd34d; }
+    .status-badge.overdue { background:#7f1d1d; color:#fca5a5; }
+    .status-badge.closed { background:#14532d; color:#86efac; }
+    .timing-info { font-size:13px; color:#94a3b8; }
+    .timing-info .closed-tag { color:#86efac; margin-left:8px; }
+
+    .modal-asker {
+      padding:14px 24px; display:flex; gap:12px; align-items:center;
+      border-bottom:1px solid #1e293b;
+    }
+    .modal-avatar {
+      width:40px; height:40px; border-radius:50%; background:#334155;
+    }
+    .modal-asker-name { font-size:15px; font-weight:600; color:#e2e8f0; }
+    .modal-asker-time { font-size:12px; color:#64748b; margin-top:2px; }
+
+    .modal-message {
+      padding:18px 24px; font-size:14px; line-height:1.7; color:#e2e8f0;
+      max-height:300px; overflow-y:auto;
+      border-bottom:1px solid #1e293b;
+      word-break:break-word; white-space:pre-wrap;
+    }
+    .modal-message a { color:#60a5fa; text-decoration:underline; }
+    .modal-message strong { color:#fff; }
+    .modal-message code {
+      background:#1e293b; padding:1px 6px; border-radius:4px;
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+      color:#fbbf24;
+    }
+
+    .modal-thread-divider {
+      padding:14px 24px 8px; font-size:13px; color:#94a3b8; font-weight:600;
+      background:#0b1220;
+    }
+    .modal-replies {
+      padding:0 24px 8px; background:#0b1220;
+      max-height:400px; overflow-y:auto;
+    }
+    .reply {
+      display:flex; gap:10px; padding:12px 0; border-bottom:1px solid #1e293b;
+    }
+    .reply:last-child { border-bottom:none; }
+    .reply-avatar {
+      width:32px; height:32px; border-radius:50%; background:#334155; flex-shrink:0;
+    }
+    .reply-content { flex:1; min-width:0; }
+    .reply-meta {
+      font-size:12px; color:#94a3b8; margin-bottom:4px;
+      display:flex; gap:8px; align-items:center;
+    }
+    .reply-meta .name { font-weight:600; color:#cbd5e1; }
+    .reply-meta .time { color:#64748b; }
+    .reply-text {
+      font-size:13.5px; line-height:1.65; color:#cbd5e1;
+      word-break:break-word; white-space:pre-wrap;
+    }
+    .reply-text a { color:#60a5fa; text-decoration:underline; }
+    .reply-text strong { color:#fff; }
+    .reply-text code {
+      background:#1e293b; padding:1px 6px; border-radius:4px;
+      font-family:ui-monospace,monospace; font-size:12px; color:#fbbf24;
+    }
+    .reply.is-mina {
+      border-left:3px solid #22c55e;
+      background:linear-gradient(90deg,rgba(34,197,94,0.06),transparent 50%);
+      margin-left:-12px; padding-left:12px; padding-right:8px;
+    }
+    .reply.is-mina .reply-meta .name { color:#86efac; }
+    .reply.is-mina .reply-meta::after {
+      content:'✅ Mina 回覆'; font-size:10px; padding:1px 8px;
+      background:#14532d; color:#86efac; border-radius:8px;
+    }
+    .modal-no-thread {
+      padding:16px 24px 8px; color:#64748b; font-size:13px; font-style:italic;
+      background:#0b1220;
+    }
+
+    .modal-footer {
+      padding:14px 24px; border-top:1px solid #1e293b;
+      display:flex; justify-content:flex-end; gap:10px;
+    }
+    .modal-footer .slack-btn {
+      background:#4a154b; color:#fff; padding:8px 16px;
+      border-radius:8px; font-size:13px; font-weight:500;
+      text-decoration:none; transition:background 0.15s;
+    }
+    .modal-footer .slack-btn:hover { background:#5e1c5f; }
   </style>
 </head>
 <body>
@@ -186,6 +312,15 @@
   <div class="loading"><div class="spinner"></div><div style="margin-top:12px;color:#94a3b8;">載入中…</div></div>
 </div>
 
+<!-- Modal -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-content">
+    <button class="modal-close" data-close aria-label="關閉">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
 <script>
 const CHANNEL_ID_FALLBACK = 'C0B0RK6J962';
 
@@ -204,10 +339,52 @@ function escapeHtml(s) {
   })[c]);
 }
 
+function renderMrkdwn(text) {
+  if (!text) return '';
+  let s = String(text);
+
+  // 1. Extract Slack links <url|label> and <url> before HTML escape
+  const tokens = [];
+  s = s.replace(/<((?:https?:|mailto:|tel:)[^|>]+)\|([^>]+)>/g, (_, url, label) => {
+    tokens.push({ url, label });
+    return ` T${tokens.length - 1} `;
+  });
+  s = s.replace(/<((?:https?:|mailto:|tel:)[^>]+)>/g, (_, url) => {
+    tokens.push({ url, label: url });
+    return ` T${tokens.length - 1} `;
+  });
+
+  // 2. HTML escape everything else
+  s = escapeHtml(s);
+
+  // 3. Apply mrkdwn (escape-safe because we already escaped)
+  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  s = s.replace(/\*([^*\n]+?)\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[\s(])_([^_\n]+?)_(?=$|[\s).,!?:;])/g, '$1<em>$2</em>');
+  s = s.replace(/~([^~\n]+?)~/g, '<s>$1</s>');
+
+  // 4. Restore link tokens
+  s = s.replace(/ T(\d+) /g, (_, i) => {
+    const { url, label } = tokens[parseInt(i, 10)];
+    const safeUrl = url.replace(/"/g, '%22').replace(/</g, '%3C').replace(/>/g, '%3E');
+    return `<a href="${safeUrl}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`;
+  });
+
+  return s;
+}
+
+function avatarTag(url, cls) {
+  return url
+    ? `<img class="${cls}" src="${escapeHtml(url)}" alt="">`
+    : `<div class="${cls}"></div>`;
+}
+
+function statusLabel(s) {
+  return { pending: '🟡 待回覆', overdue: '🔴 超時', closed: '⚪️ 已關閉' }[s] || s;
+}
+
 function renderCard(m) {
-  const avatar = m.asker.avatar
-    ? `<img class="asker-avatar" src="${escapeHtml(m.asker.avatar)}" alt="">`
-    : `<div class="asker-avatar"></div>`;
+  const avatar = avatarTag(m.asker.avatar, 'asker-avatar');
   let foot = '';
   if (m.status === 'closed' && m.minaReplyAgeHours != null) {
     const respondHours = Math.round((m.ageHours - m.minaReplyAgeHours) * 10) / 10;
@@ -218,17 +395,81 @@ function renderCard(m) {
   } else if (m.replyCount > 0) {
     foot = `<div class="card-foot"><span class="replies">💬 ${m.replyCount} 則回覆（Mina 未回）</span></div>`;
   }
-  return `<a class="card" href="${escapeHtml(m.permalink)}" target="_blank" rel="noopener">
+  return `<div class="card" data-ts="${escapeHtml(m.ts)}" role="button" tabindex="0">
     <div class="card-head">
       <div class="asker">${avatar}<div class="asker-name">${escapeHtml(m.asker.name)}</div></div>
       <div class="card-age">${fmtAge(m.ageHours)}</div>
     </div>
     <div class="card-text">${escapeHtml(m.text)}</div>
     ${foot}
-  </a>`;
+  </div>`;
+}
+
+let currentMentions = [];
+
+function openModal(ts) {
+  const m = currentMentions.find(x => x.ts === ts);
+  if (!m) return;
+
+  const askerAvatar = avatarTag(m.asker.avatar, 'modal-avatar');
+  const tagDate = new Date(m.tsIso);
+  const tagDateStr = tagDate.toLocaleString('zh-TW', { hour12: false, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+  let timingExtra = '';
+  if (m.status === 'closed' && m.minaReplyAgeHours != null) {
+    const respondHours = Math.round((m.ageHours - m.minaReplyAgeHours) * 10) / 10;
+    const respondStr = respondHours < 1 ? Math.max(1, Math.round(respondHours * 60)) + ' 分鐘' : respondHours + ' 小時';
+    timingExtra = `<span class="closed-tag">✅ Mina ${respondStr}內回覆</span>`;
+  }
+
+  let threadBlock;
+  if (m.replies && m.replies.length > 0) {
+    const replyHtml = m.replies.map(r => {
+      const ra = avatarTag(r.user.avatar, 'reply-avatar');
+      const rTime = new Date(r.tsIso).toLocaleString('zh-TW', { hour12: false, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+      return `<div class="reply ${r.isMina ? 'is-mina' : ''}">
+        ${ra}
+        <div class="reply-content">
+          <div class="reply-meta"><span class="name">${escapeHtml(r.user.name)}</span><span class="time">${rTime}</span></div>
+          <div class="reply-text">${renderMrkdwn(r.text)}</div>
+        </div>
+      </div>`;
+    }).join('');
+    threadBlock = `<div class="modal-thread-divider">💬 Thread（${m.replies.length} 則回覆）</div>
+      <div class="modal-replies">${replyHtml}</div>`;
+  } else {
+    threadBlock = `<div class="modal-no-thread">尚無 thread 回覆</div>`;
+  }
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-header">
+      <span class="status-badge ${m.status}">${statusLabel(m.status)}</span>
+      <span class="timing-info">${tagDateStr} · ${fmtAge(m.ageHours)}${timingExtra}</span>
+    </div>
+    <div class="modal-asker">
+      ${askerAvatar}
+      <div>
+        <div class="modal-asker-name">${escapeHtml(m.asker.name)}</div>
+        <div class="modal-asker-time">發問時間：${tagDateStr}</div>
+      </div>
+    </div>
+    <div class="modal-message">${renderMrkdwn(m.fullText || m.text)}</div>
+    ${threadBlock}
+    <div class="modal-footer">
+      <a class="slack-btn" href="${escapeHtml(m.permalink)}" target="_blank" rel="noopener">在 Slack 打開 ↗</a>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function renderBoard(data) {
+  currentMentions = data.mentions;
   const groups = { pending: [], overdue: [], closed: [] };
   for (const m of data.mentions) groups[m.status]?.push(m);
 
@@ -288,6 +529,26 @@ async function load(force = false) {
 }
 
 document.getElementById('refreshBtn').addEventListener('click', () => load(true));
+
+// Modal interactions
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('.card[data-ts]');
+  if (card) {
+    openModal(card.dataset.ts);
+    return;
+  }
+  if (e.target.matches('[data-close]')) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter') {
+    const focused = document.activeElement;
+    if (focused?.classList.contains('card') && focused.dataset.ts) {
+      openModal(focused.dataset.ts);
+    }
+  }
+});
+
 load();
 setInterval(() => load(false), 60000);
 </script>
