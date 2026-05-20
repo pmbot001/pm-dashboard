@@ -3,9 +3,22 @@ const { classifyMentions } = require('./mention-classifier');
 
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || '';
 const MINA_USER_ID = process.env.MINA_USER_ID || 'U0AR8CE8KCG';
+const CLAIRE_USER_ID = process.env.CLAIRE_USER_ID || 'U0AQSMGSFTK';
+const HANNIBER_USER_ID = process.env.HANNIBER_USER_ID || 'U0AQ79MHYRZ';
 const NWC_CHANNEL_ID = process.env.NWC_CHANNEL_ID || 'C0B0RK6J962';
 const OVERDUE_HOURS = parseInt(process.env.MINA_OVERDUE_HOURS || '24', 10);
 const LOOKBACK_DAYS = parseInt(process.env.MINA_LOOKBACK_DAYS || '14', 10);
+
+const DONE_BY_NAME = {
+  [MINA_USER_ID]: 'Mina',
+  [CLAIRE_USER_ID]: 'Claire',
+  [HANNIBER_USER_ID]: 'Hanniber',
+};
+
+const CHECK_RE = /✅|✔️?|☑️?|:white_check_mark:|:heavy_check_mark:|:ballot_box_with_check:|:check:|:done:/;
+function hasCheckMark(text) {
+  return text ? CHECK_RE.test(text) : false;
+}
 
 const CACHE_TTL_MS = 60 * 1000;
 let cache = { data: null, ts: 0 };
@@ -177,12 +190,15 @@ async function collectMentions() {
           if (r.ts === msg.ts) continue;
           const ru = users[r.user] || { id: r.user, name: r.user || 'Unknown', avatar: '' };
           const isMina = r.user === MINA_USER_ID;
+          const resolvedText = resolveMentions(r.text || '', users);
+          const isCheckmark = hasCheckMark(resolvedText);
           replies.push({
             ts: r.ts,
             tsIso: new Date(Number(r.ts) * 1000).toISOString(),
             user: { id: ru.id, name: ru.name, avatar: ru.avatar },
             isMina,
-            text: resolveMentions(r.text || '', users),
+            isCheckmark,
+            text: resolvedText,
             files: extractFiles(r.files),
           });
           if (isMina) {
@@ -199,27 +215,21 @@ async function collectMentions() {
 
     const tsNum = Number(msg.ts);
     const ageHours = (Date.now() / 1000 - tsNum) / 3600;
-    let status;
-    if (minaReplied) status = 'closed';
-    else if (ageHours >= OVERDUE_HOURS) status = 'overdue';
-    else status = 'pending';
-
     const asker = users[msg.user] || { id: msg.user, name: msg.user || 'Unknown', avatar: '' };
     const fullText = resolveMentions(msg.text || '', users);
-
     const allText = fullText + '\n' + replies.map(r => r.text).join('\n');
 
     mentions.push({
       ts: msg.ts,
       tsIso: new Date(tsNum * 1000).toISOString(),
       ageHours: Math.round(ageHours * 10) / 10,
-      status,
       asker: { id: asker.id, name: asker.name, avatar: asker.avatar },
       text: preview(fullText),
       fullText,
       files: extractFiles(msg.files),
       replyCount,
       replies,
+      minaReplied,
       minaReplyTs,
       minaReplyAgeHours: minaReplyTs ? Math.round((Date.now() / 1000 - Number(minaReplyTs)) / 3600 * 10) / 10 : null,
       permalink: buildArchiveLink(NWC_CHANNEL_ID, msg.ts),
@@ -233,7 +243,27 @@ async function collectMentions() {
   const classified = await classifyMentions(mentions);
   mentions.splice(0, mentions.length, ...classified);
 
-  const needsReply = m => m.aiJudgment?.needsReply !== false;
+  // Determine status (unconfirmed / replied / done) after AI category is known
+  for (const m of mentions) {
+    const isRequirement = m.aiJudgment?.category === '需求問題';
+    const doneByUserIds = isRequirement
+      ? [MINA_USER_ID]
+      : [MINA_USER_ID, CLAIRE_USER_ID, HANNIBER_USER_ID];
+
+    const doneReply = (m.replies || []).find(r => doneByUserIds.includes(r.user.id) && r.isCheckmark);
+
+    if (doneReply) {
+      m.status = 'done';
+      m.doneBy = DONE_BY_NAME[doneReply.user.id] || doneReply.user.name;
+      m.doneAtTs = doneReply.ts;
+    } else if (m.minaReplied) {
+      m.status = 'replied';
+    } else {
+      m.status = 'unconfirmed';
+    }
+    m.isOverdue = m.status === 'unconfirmed' && m.ageHours >= OVERDUE_HOURS;
+  }
+
   const byAsker = {};
   const byTopic = {};
   for (const m of mentions) {
@@ -245,12 +275,11 @@ async function collectMentions() {
     }
   }
   const stats = {
-    pending: mentions.filter(m => m.status === 'pending').length,
-    overdue: mentions.filter(m => m.status === 'overdue').length,
-    closed: mentions.filter(m => m.status === 'closed').length,
+    unconfirmed: mentions.filter(m => m.status === 'unconfirmed').length,
+    overdue: mentions.filter(m => m.isOverdue).length,
+    replied: mentions.filter(m => m.status === 'replied').length,
+    done: mentions.filter(m => m.status === 'done').length,
     total: mentions.length,
-    actionable: mentions.filter(m => m.status !== 'closed' && needsReply(m)).length,
-    skippable: mentions.filter(m => m.status !== 'closed' && !needsReply(m)).length,
     byAsker: Object.values(byAsker).sort((a, b) => b.count - a.count),
     byTopic: Object.entries(byTopic).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
   };

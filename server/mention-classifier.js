@@ -30,54 +30,39 @@ function heuristicJudgment(mention) {
   const text = mention.fullText || mention.text || '';
   const askerName = mention.asker?.name || '';
 
+  // 「其他問題」的訊號優先判斷（high confidence first）
   if (KW_BROADCAST.test(text)) {
-    return { needsReply: false, category: '排程廣播', reason: '含 !channel 廣播', confidence: 'high', source: 'heuristic' };
+    return { category: '其他問題', reason: '含 !channel 廣播', confidence: 'high', source: 'heuristic' };
   }
-
   const tagMatches = text.match(/@TPE[^\s@,，。]+/g) || [];
   const uniqueTags = [...new Set(tagMatches.map(t => t.replace(/[.,，。!?]+$/, '')))];
   if (uniqueTags.length >= 4) {
-    return { needsReply: false, category: '排程廣播', reason: `多人 tag (${uniqueTags.length} 位)`, confidence: 'medium', source: 'heuristic' };
+    return { category: '其他問題', reason: `多人 tag (${uniqueTags.length} 位）`, confidence: 'medium', source: 'heuristic' };
   }
-
   if (KW_SCHEDULE.test(text)) {
-    return { needsReply: false, category: '排程/人力', reason: '排程/人力相關（PM 主管領域）', confidence: 'medium', source: 'heuristic' };
+    return { category: '其他問題', reason: '排程 / 人力相關', confidence: 'medium', source: 'heuristic' };
   }
-
   if (askerName.includes('Claire')) {
-    return { needsReply: false, category: '排程廣播', reason: 'Claire（PM 主管）通常為廣播', confidence: 'medium', source: 'heuristic' };
+    return { category: '其他問題', reason: 'Claire 發起，多為 PM 內部協調', confidence: 'medium', source: 'heuristic' };
   }
-
-  if (KW_REQUIREMENT.test(text)) {
-    return { needsReply: true, category: '需求問題', reason: '含需求 / RP / Figma 等關鍵字', confidence: 'medium', source: 'heuristic' };
-  }
-
-  if (KW_QUESTION.test(text)) {
-    return { needsReply: true, category: '需求問題', reason: '疑問句，預設視為需求確認', confidence: 'low', source: 'heuristic' };
-  }
-
   if (KW_TECH.test(text) && !KW_REQUIREMENT.test(text)) {
-    return { needsReply: false, category: '技術問題', reason: '純技術用語、無需求關鍵字', confidence: 'low', source: 'heuristic' };
+    return { category: '其他問題', reason: '純技術用語、無業務關鍵字', confidence: 'low', source: 'heuristic' };
   }
 
-  return { needsReply: true, category: '其他', reason: '無明確訊號，保守視為需處理', confidence: 'low', source: 'heuristic' };
+  // 預設「需求問題」（給 Mina 看到再判斷較保守）
+  if (KW_REQUIREMENT.test(text)) {
+    return { category: '需求問題', reason: '含需求 / RP / Figma 等關鍵字', confidence: 'medium', source: 'heuristic' };
+  }
+  return { category: '需求問題', reason: '預設視為需求確認', confidence: 'low', source: 'heuristic' };
 }
 
 // ---------- LLM classifier (optional, off by default) ----------
 
-const PROMPT = `你的任務：判斷一則 Slack 訊息是否需要 Mina（NWC 專案 PM）親自處理。
+const PROMPT = `你的任務：把一則 Slack 訊息分類為「需求問題」或「其他問題」。
 
-Mina 職責：
-- ✅ 需求 / RP / Figma / 規格 / 業務邏輯
-- ❌ 不負責：Sprint 排程、人力安排（那是 Claire 的事）
-- ❌ 不負責：技術實作細節
-
-規則：
-1. 訊息問需求 / 規格 / RP / 邏輯 → needsReply=true
-2. !channel / 廣播且 Mina 只是 cc → needsReply=false
-3. 排程 / 人力 / PM 內部協調 → needsReply=false
-4. 純技術問題 → needsReply=false
-5. 不明確時保守 → needsReply=true
+定義：
+- 需求問題 = 在問規格 / RP / Figma / 業務邏輯 / 文案 / UI 樣式（Mina 的領域）
+- 其他問題 = 其他全部（廣播、排程、人力、技術實作、純通知）
 
 發問者：{ASKER}
 訊息：
@@ -86,17 +71,17 @@ Mina 職責：
 """
 
 只回 JSON：
-{"needsReply":true|false,"category":"需求問題|RP/Figma|排程廣播|人力安排|技術問題|其他","reason":"20字內","confidence":"high|medium|low"}`;
+{"category":"需求問題|其他問題","reason":"20字內","confidence":"high|medium|low"}`;
 
 function parseLlmResponse(raw) {
   const m = raw.match(/\{[\s\S]*?\}/);
   if (!m) return null;
   try {
     const o = JSON.parse(m[0]);
-    if (typeof o.needsReply !== 'boolean') return null;
+    const cat = String(o.category || '其他問題');
+    if (cat !== '需求問題' && cat !== '其他問題') return null;
     return {
-      needsReply: o.needsReply,
-      category: String(o.category || '其他'),
+      category: cat,
       reason: String(o.reason || '').slice(0, 60),
       confidence: ['high', 'medium', 'low'].includes(o.confidence) ? o.confidence : 'medium',
       source: 'llm',
@@ -135,11 +120,10 @@ async function classifyOne(mention) {
 }
 
 async function classifyMentions(mentions) {
-  const targets = mentions.filter(m => m.status !== 'closed');
-  await Promise.all(targets.map(m => classifyOne(m)));
+  await Promise.all(mentions.map(m => classifyOne(m)));
   return mentions.map(m => ({
     ...m,
-    aiJudgment: m.status === 'closed' ? null : (judgmentCache.get(m.ts) || null),
+    aiJudgment: judgmentCache.get(m.ts) || null,
   }));
 }
 
