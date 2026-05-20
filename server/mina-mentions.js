@@ -1,4 +1,3 @@
-// Build tag: 2026-05-20T03:30Z — retry after Railway GCP outage
 const express = require('express');
 const { classifyMentions } = require('./mention-classifier');
 
@@ -19,6 +18,20 @@ const DONE_BY_NAME = {
 const CHECK_RE = /✅|✔️?|☑️?|:white_check_mark:|:heavy_check_mark:|:ballot_box_with_check:|:check:|:done:/;
 function hasCheckMark(text) {
   return text ? CHECK_RE.test(text) : false;
+}
+
+const CHECK_EMOJI_NAMES = new Set([
+  'white_check_mark', 'heavy_check_mark', 'ballot_box_with_check',
+  'check', 'done', 'check_mark', 'checkmark', 'green_check',
+]);
+function findDoneReaction(reactions, qualifiedUserIds) {
+  if (!Array.isArray(reactions)) return null;
+  for (const r of reactions) {
+    if (!CHECK_EMOJI_NAMES.has(r.name)) continue;
+    const userId = (r.users || []).find(uid => qualifiedUserIds.includes(uid));
+    if (userId) return { name: r.name, userId };
+  }
+  return null;
 }
 
 const CACHE_TTL_MS = 60 * 1000;
@@ -230,6 +243,7 @@ async function collectMentions() {
       files: extractFiles(msg.files),
       replyCount,
       replies,
+      reactions: msg.reactions || [],
       minaReplied,
       minaReplyTs,
       minaReplyAgeHours: minaReplyTs ? Math.round((Date.now() / 1000 - Number(minaReplyTs)) / 3600 * 10) / 10 : null,
@@ -252,11 +266,14 @@ async function collectMentions() {
       : [MINA_USER_ID, CLAIRE_USER_ID, HANNIBER_USER_ID];
 
     const doneReply = (m.replies || []).find(r => doneByUserIds.includes(r.user.id) && r.isCheckmark);
+    const doneReaction = findDoneReaction(m.reactions, doneByUserIds);
 
-    if (doneReply) {
+    if (doneReply || doneReaction) {
       m.status = 'done';
-      m.doneBy = DONE_BY_NAME[doneReply.user.id] || doneReply.user.name;
-      m.doneAtTs = doneReply.ts;
+      const doneUserId = doneReply ? doneReply.user.id : doneReaction.userId;
+      m.doneBy = DONE_BY_NAME[doneUserId] || doneUserId;
+      m.doneVia = doneReply ? 'reply' : 'reaction';
+      m.doneAtTs = doneReply ? doneReply.ts : null;
     } else if (m.minaReplied) {
       m.status = 'replied';
     } else {
