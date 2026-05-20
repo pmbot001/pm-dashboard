@@ -1,25 +1,14 @@
 const express = require('express');
 const path = require('path');
-const { loadAllData } = require('./data-loader');
-const { createSearchRouter } = require('./search');
 const { createMinaMentionsRouter } = require('./mina-mentions');
 
 const app = express();
 const PORT = process.env.PORT || 3210;
 
-// Static files
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Load data
-console.log('Loading data...');
-const data = loadAllData();
-console.log(`Loaded: ${data.rpPages.length} RP pages, ${data.knowledgeBase.length} KB entries, ${data.designRules.length} rules`);
-
-// API routes
-app.use('/api', createSearchRouter(data));
 app.use('/api', createMinaMentionsRouter());
 
-// SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });

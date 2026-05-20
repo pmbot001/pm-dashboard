@@ -3,56 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PM Dashboard — 需求資料庫</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>PM Dashboard</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background:#0f172a;
+      color:#e2e8f0;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',Roboto,sans-serif;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    a { color:inherit; text-decoration:none; }
+
+    .header {
+      background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);
+      padding:64px 24px 40px;
+      text-align:center;
+    }
+    .header h1 {
+      font-size:36px;
+      background:linear-gradient(90deg,#60a5fa,#a78bfa);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:10px;
+      letter-spacing:1px;
+    }
+    .header p { color:#94a3b8; font-size:15px; }
+
+    .grid {
+      flex:1;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:24px;
+      max-width:1080px;
+      width:100%;
+      margin:48px auto;
+      padding:0 24px;
+    }
+
+    .card {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      background:#1e293b;
+      border:1px solid #334155;
+      border-radius:20px;
+      padding:48px 24px;
+      transition:all .25s;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      min-height:260px;
+      text-align:center;
+    }
+    .card::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0;
+      height:4px;
+    }
+    .card[data-accent="blue"]::before   { background:linear-gradient(90deg,#3b82f6,#60a5fa); }
+    .card[data-accent="purple"]::before { background:linear-gradient(90deg,#8b5cf6,#a78bfa); }
+    .card[data-accent="orange"]::before { background:linear-gradient(90deg,#f97316,#fbbf24); }
+
+    .card:hover {
+      border-color:#60a5fa;
+      transform:translateY(-4px);
+      box-shadow:0 18px 48px rgba(0,0,0,.4);
+    }
+    .card-icon { font-size:64px; margin-bottom:18px; line-height:1; }
+    .card-title { font-size:22px; font-weight:700; margin-bottom:10px; }
+    .card-desc  { font-size:13px; color:#94a3b8; line-height:1.6; max-width:240px; }
+    .card-tag {
+      position:absolute;
+      top:14px;
+      right:14px;
+      background:#334155;
+      color:#cbd5e1;
+      font-size:10.5px;
+      padding:3px 8px;
+      border-radius:6px;
+      font-weight:500;
+    }
+    .card-tag.local { background:#3b2f1a; color:#fbbf24; }
+
+    .footer {
+      text-align:center;
+      padding:24px 16px 36px;
+      color:#475569;
+      font-size:12.5px;
+    }
+
+    @media (max-width:680px) {
+      .header h1 { font-size:26px; }
+      .grid { margin:32px auto; padding:0 16px; gap:16px; }
+      .card { padding:36px 20px; min-height:220px; }
+      .card-icon { font-size:52px; }
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <h1 class="logo">📋 PM Dashboard</h1>
-        <span class="subtitle">需求資料庫查詢工具</span>
-      </div>
-      <div class="header-right">
-        <a href="/mina-mentions.html" style="background:rgba(255,255,255,0.15);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;margin-right:12px;text-decoration:none;font-weight:500;" title="NWC 專案群中 @Mina 的訊息看板">📋 NWC 待回覆需求看板</a>
-        <div id="stats" class="stats"></div>
-      </div>
-    </header>
 
-    <!-- Search Bar -->
-    <div class="search-section">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="輸入功能名稱、GOR 編號、通則名稱..." autocomplete="off">
-        <button id="searchBtn" class="search-btn">搜尋</button>
-      </div>
-      <div class="mode-tabs">
-        <button class="mode-tab active" data-mode="logic">核心邏輯</button>
-        <button class="mode-tab" data-mode="feature">功能查詢</button>
-        <button class="mode-tab" data-mode="impact">影響範圍</button>
-        <button class="mode-tab" data-mode="rules">通則速查</button>
-      </div>
-    </div>
-
-    <!-- Results -->
-    <div id="results" class="results">
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <p>輸入關鍵字開始查詢</p>
-        <div class="quick-tags">
-          <span class="tag" data-query="轉盤" data-mode="logic">轉盤系統</span>
-          <span class="tag" data-query="佣金" data-mode="logic">佣金</span>
-          <span class="tag" data-query="篩選條件" data-mode="rules">篩選條件通則</span>
-          <span class="tag" data-query="多語言" data-mode="rules">多語言通則</span>
-          <span class="tag" data-query="代理充值" data-mode="feature">代理充值</span>
-          <span class="tag" data-query="返水" data-mode="impact">返水影響範圍</span>
-        </div>
-      </div>
-    </div>
+  <div class="header">
+    <h1>📋 PM Dashboard</h1>
+    <p>需求看板 · 路線圖 · 上版工具</p>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-  <script>mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose' });</script>
-  <script src="/js/app.js"></script>
+  <div class="grid">
+
+    <a href="/mina-mentions.html" class="card" data-accent="blue">
+      <div class="card-icon">📥</div>
+      <div class="card-title">NWC 待回覆看板</div>
+      <div class="card-desc">NWC 專案群中 @Mina 的訊息分類追蹤</div>
+    </a>
+
+    <a href="/nwc-roadmap.html" class="card" data-accent="purple">
+      <div class="card-icon">🗺️</div>
+      <div class="card-title">NWC Roadmap</div>
+      <div class="card-desc">NWC 版本時程與需求路線圖</div>
+    </a>
+
+    <a href="http://localhost:3000/release_notifier.html" class="card" data-accent="orange">
+      <span class="card-tag local">本機</span>
+      <div class="card-icon">🚀</div>
+      <div class="card-title">上版通知產生器</div>
+      <div class="card-desc">產出版本上線通知（需本機開啟 release-tool）</div>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    PM Dashboard · 最後更新 2026-05-20
+  </div>
+
 </body>
 </html>
