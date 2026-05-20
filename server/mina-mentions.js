@@ -1,4 +1,4 @@
-// Build tag: 2026-05-20 — force Railway rebuild
+// Build tag: 2026-05-20T03:30Z — retry after Railway GCP outage
 const express = require('express');
 const { classifyMentions } = require('./mention-classifier');
 
