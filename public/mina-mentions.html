@@ -828,7 +828,18 @@ async function load(force = false) {
   }
 }
 
-document.getElementById('refreshBtn').addEventListener('click', () => load(true));
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  // 立即刷新時順便重置 filter 為「全部」
+  filterAsker = '';
+  filterTopic = '';
+  localStorage.removeItem('mina_filter_asker');
+  localStorage.removeItem('mina_filter_topic');
+  const askerEl = document.getElementById('askerFilter');
+  const topicEl = document.getElementById('topicFilter');
+  if (askerEl) askerEl.value = '';
+  if (topicEl) topicEl.value = '';
+  load(true);
+});
 
 let filterAsker = localStorage.getItem('mina_filter_asker') || '';
 let filterTopic = localStorage.getItem('mina_filter_topic') || '';
