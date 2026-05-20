@@ -3,6 +3,7 @@ const { classifyMentions } = require('./mention-classifier');
 
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN || '';
 const MINA_USER_ID = process.env.MINA_USER_ID || 'U0AR8CE8KCG';
+const LYNN_USER_ID = process.env.LYNN_USER_ID || 'U0AQT5SCACR';
 const CLAIRE_USER_ID = process.env.CLAIRE_USER_ID || 'U0AQSMGSFTK';
 const HANNIBER_USER_ID = process.env.HANNIBER_USER_ID || 'U0AQ79MHYRZ';
 const NWC_CHANNEL_ID = process.env.NWC_CHANNEL_ID || 'C0B0RK6J962';
@@ -11,9 +12,13 @@ const LOOKBACK_DAYS = parseInt(process.env.MINA_LOOKBACK_DAYS || '14', 10);
 
 const DONE_BY_NAME = {
   [MINA_USER_ID]: 'Mina',
+  [LYNN_USER_ID]: 'Lynn',
   [CLAIRE_USER_ID]: 'Claire',
   [HANNIBER_USER_ID]: 'Hanniber',
 };
+
+// 需求問題 的 done 授權人：Mina 與 Lynn（PM Team）
+const PM_OWNER_IDS = [MINA_USER_ID, LYNN_USER_ID];
 
 const CHECK_RE = /✅|✔️?|☑️?|:white_check_mark:|:heavy_check_mark:|:ballot_box_with_check:|:check:|:done:/;
 function hasCheckMark(text) {
@@ -199,8 +204,7 @@ async function collectMentions() {
 
   const mentions = [];
   for (const msg of candidates) {
-    let minaReplied = false;
-    let minaReplyTs = null;
+    let ownerReplied = false;
     let replyCount = 0;
     let replies = [];
 
@@ -217,6 +221,7 @@ async function collectMentions() {
           if (r.ts === msg.ts) continue;
           const ru = users[r.user] || { id: r.user, name: r.user || 'Unknown', avatar: '' };
           const isMina = r.user === MINA_USER_ID;
+          const isOwner = PM_OWNER_IDS.includes(r.user);
           const resolvedText = resolveMentions(r.text || '', users);
           const isCheckmark = hasCheckMark(resolvedText);
           replies.push({
@@ -224,16 +229,12 @@ async function collectMentions() {
             tsIso: new Date(Number(r.ts) * 1000).toISOString(),
             user: { id: ru.id, name: ru.name, avatar: ru.avatar },
             isMina,
+            isOwner,
             isCheckmark,
             text: resolvedText,
             files: extractFiles(r.files),
           });
-          if (isMina) {
-            minaReplied = true;
-            if (!minaReplyTs || Number(r.ts) < Number(minaReplyTs)) {
-              minaReplyTs = r.ts;
-            }
-          }
+          if (isOwner) ownerReplied = true;
         }
       } catch (e) {
         console.error(`Failed to fetch replies for ${msg.ts}:`, e.slackError || e.message);
@@ -257,9 +258,7 @@ async function collectMentions() {
       replyCount,
       replies,
       reactions: msg.reactions || [],
-      minaReplied,
-      minaReplyTs,
-      minaReplyAgeHours: minaReplyTs ? Math.round((Date.now() / 1000 - Number(minaReplyTs)) / 3600 * 10) / 10 : null,
+      ownerReplied,
       permalink: buildArchiveLink(NWC_CHANNEL_ID, msg.ts),
       topics: extractTopics(allText),
       jiraTickets: extractJiraTickets(allText),
@@ -275,8 +274,8 @@ async function collectMentions() {
   for (const m of mentions) {
     const isRequirement = m.aiJudgment?.category === '需求問題';
     const doneByUserIds = isRequirement
-      ? [MINA_USER_ID]
-      : [MINA_USER_ID, CLAIRE_USER_ID, HANNIBER_USER_ID];
+      ? PM_OWNER_IDS
+      : [...PM_OWNER_IDS, CLAIRE_USER_ID, HANNIBER_USER_ID];
 
     const doneReply = (m.replies || []).find(r => doneByUserIds.includes(r.user.id) && r.isCheckmark);
     const doneReaction = findDoneReaction(m.reactions, doneByUserIds);
@@ -293,7 +292,7 @@ async function collectMentions() {
       m.doneBy = DONE_BY_NAME[doneUserId] || doneUserId;
       m.doneVia = doneReply ? 'reply' : 'reaction';
       m.doneAtTs = doneReply ? doneReply.ts : null;
-    } else if (m.minaReplied) {
+    } else if (m.ownerReplied) {
       m.status = 'replied';
     } else {
       m.status = 'unconfirmed';

@@ -636,10 +636,7 @@ function statusLabel(s) {
 
 function renderCard(m) {
   const avatar = avatarTag(m.asker.avatar, 'asker-avatar');
-  const j = m.aiJudgment;
-  const cat = j?.category || '其他問題';
-  const catClass = cat === '需求問題' ? 'need' : 'other';
-  const catChip = `<span class="chip-cat ${catClass}" title="${escapeHtml(j?.reason || '')}">${escapeHtml(cat)}</span>`;
+  // (category chip removed — all are 需求問題 now)
 
   const overdueTag = m.isOverdue ? '<span class="overdue-tag">超時</span>' : '';
   const doneBadge = m.status === 'done'
@@ -653,12 +650,12 @@ function renderCard(m) {
 
   const dataAsker = m.asker?.id ? ` data-asker="${escapeHtml(m.asker.id)}"` : '';
   const dataTopics = (m.topics && m.topics.length) ? ` data-topics="${escapeHtml(m.topics.join('|'))}"` : '';
-  const dataCat = ` data-cat="${escapeHtml(cat)}"`;
+  const dataCat = '';
   const topicChips = (m.topics || []).map(t => `<span class="chip-topic">${escapeHtml(t)}</span>`).join('');
   const jiraChips = (m.jiraTickets || []).map(k =>
     `<a class="chip-jira" href="https://mgbilibili.atlassian.net/browse/${escapeHtml(k)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${escapeHtml(k)}</a>`
   ).join('');
-  const chipsRow = `<div class="card-chips">${catChip}${topicChips}${jiraChips}</div>`;
+  const chipsRow = (topicChips || jiraChips) ? `<div class="card-chips">${topicChips}${jiraChips}</div>` : '';
 
   return `<div class="card" data-ts="${escapeHtml(m.ts)}"${dataAsker}${dataTopics}${dataCat} role="button" tabindex="0">
     <div class="card-head">
@@ -717,11 +714,9 @@ function openModal(ts) {
         <div class="modal-asker-time">發問時間：${tagDateStr}</div>
       </div>
     </div>
-    ${m.aiJudgment || (m.topics && m.topics.length) || (m.jiraTickets && m.jiraTickets.length) ? `<div class="ai-modal-block">
-      ${m.aiJudgment ? `<span class="chip-cat ${m.aiJudgment.category === '需求問題' ? 'need' : 'other'}">${escapeHtml(m.aiJudgment.category)}</span>` : ''}
-      ${(m.topics || []).map(t => `<span class="chip-topic" style="margin-left:6px;">${escapeHtml(t)}</span>`).join('')}
+    ${(m.topics && m.topics.length) || (m.jiraTickets && m.jiraTickets.length) ? `<div class="ai-modal-block">
+      ${(m.topics || []).map(t => `<span class="chip-topic">${escapeHtml(t)}</span>`).join(' ')}
       ${(m.jiraTickets || []).map(k => `<a class="chip-jira" style="margin-left:6px;" href="https://mgbilibili.atlassian.net/browse/${escapeHtml(k)}" target="_blank" rel="noopener">${escapeHtml(k)}</a>`).join('')}
-      ${m.aiJudgment ? `<div class="ai-reason" style="margin-top:6px;">${escapeHtml(m.aiJudgment.reason || '')}</div>` : ''}
     </div>` : ''}
     <div class="modal-message">${renderMrkdwn(m.fullText || m.text)}</div>
     ${m.files && m.files.length ? `<div style="padding:0 24px 16px; background:#0f172a; border-bottom:1px solid #1e293b;">${renderAttachments(m.files)}</div>` : ''}
