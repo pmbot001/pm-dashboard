@@ -102,8 +102,23 @@ async function llmJudgment(mention) {
 
 // ---------- Public API ----------
 
+const HAS_MINA_RE = /<@U0AR8CE8KCG>|@TPE.?Mina|@Mina(?![a-zA-Z])/i;
+
 async function classifyOne(mention) {
   if (judgmentCache.has(mention.ts)) return judgmentCache.get(mention.ts);
+
+  // Override rule: 訊息有 tag @Mina 一律歸為需求問題
+  const text = mention.fullText || mention.text || '';
+  if (HAS_MINA_RE.test(text)) {
+    const judgment = {
+      category: '需求問題',
+      reason: '訊息有 tag @Mina',
+      confidence: 'high',
+      source: 'mention-rule',
+    };
+    judgmentCache.set(mention.ts, judgment);
+    return judgment;
+  }
 
   let judgment = null;
   if (llmClient) {

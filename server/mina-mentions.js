@@ -24,12 +24,25 @@ const CHECK_EMOJI_NAMES = new Set([
   'white_check_mark', 'heavy_check_mark', 'ballot_box_with_check',
   'check', 'done', 'check_mark', 'checkmark', 'green_check',
 ]);
+const DISMISS_EMOJI_NAMES = new Set(['no_bell', 'mute', 'see_no_evil']);
+const DISMISS_EMOJI = 'no_bell';
+
 function findDoneReaction(reactions, qualifiedUserIds) {
   if (!Array.isArray(reactions)) return null;
   for (const r of reactions) {
     if (!CHECK_EMOJI_NAMES.has(r.name)) continue;
     const userId = (r.users || []).find(uid => qualifiedUserIds.includes(uid));
     if (userId) return { name: r.name, userId };
+  }
+  return null;
+}
+
+function findDismissReaction(reactions) {
+  if (!Array.isArray(reactions)) return null;
+  for (const r of reactions) {
+    if (DISMISS_EMOJI_NAMES.has(r.name)) {
+      return { name: r.name, userId: r.users?.[0] || null };
+    }
   }
   return null;
 }
@@ -267,8 +280,14 @@ async function collectMentions() {
 
     const doneReply = (m.replies || []).find(r => doneByUserIds.includes(r.user.id) && r.isCheckmark);
     const doneReaction = findDoneReaction(m.reactions, doneByUserIds);
+    const dismiss = findDismissReaction(m.reactions);
 
-    if (doneReply || doneReaction) {
+    if (dismiss) {
+      m.status = 'done';
+      m.doneBy = DONE_BY_NAME[dismiss.userId] || null;
+      m.doneVia = 'dismiss';
+      m.isDismissed = true;
+    } else if (doneReply || doneReaction) {
       m.status = 'done';
       const doneUserId = doneReply ? doneReply.user.id : doneReaction.userId;
       m.doneBy = DONE_BY_NAME[doneUserId] || doneUserId;
@@ -330,6 +349,63 @@ function createMinaMentionsRouter() {
     } catch (e) {
       console.error('mina-mentions error:', e);
       res.status(500).json({ error: e.message, slackError: e.slackError });
+    }
+  });
+
+  router.post('/mina-mentions/:ts/dismiss', express.json(), async (req, res) => {
+    const ts = req.params.ts;
+    if (!ts) return res.status(400).json({ error: 'missing ts' });
+    if (!SLACK_BOT_TOKEN) return res.status(500).json({ error: 'SLACK_BOT_TOKEN not configured' });
+    try {
+      const r = await fetch('https://slack.com/api/reactions.add', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify({
+          channel: NWC_CHANNEL_ID,
+          name: DISMISS_EMOJI,
+          timestamp: ts,
+        }),
+      });
+      const data = await r.json();
+      if (!data.ok && data.error !== 'already_reacted') {
+        return res.status(500).json({ error: data.error });
+      }
+      cache = { data: null, ts: 0 };
+      res.json({ ok: true, alreadyReacted: data.error === 'already_reacted' });
+    } catch (e) {
+      console.error('dismiss error:', e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  router.post('/mina-mentions/:ts/undismiss', express.json(), async (req, res) => {
+    const ts = req.params.ts;
+    if (!ts) return res.status(400).json({ error: 'missing ts' });
+    if (!SLACK_BOT_TOKEN) return res.status(500).json({ error: 'SLACK_BOT_TOKEN not configured' });
+    try {
+      const r = await fetch('https://slack.com/api/reactions.remove', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify({
+          channel: NWC_CHANNEL_ID,
+          name: DISMISS_EMOJI,
+          timestamp: ts,
+        }),
+      });
+      const data = await r.json();
+      if (!data.ok && data.error !== 'no_reaction') {
+        return res.status(500).json({ error: data.error });
+      }
+      cache = { data: null, ts: 0 };
+      res.json({ ok: true });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
     }
   });
 

@@ -305,7 +305,7 @@
 
     .modal-footer {
       padding:14px 24px; border-top:1px solid #1e293b;
-      display:flex; justify-content:flex-end; gap:10px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
     .modal-footer .slack-btn {
       background:#4a154b; color:#fff; padding:8px 16px;
@@ -313,6 +313,23 @@
       text-decoration:none; transition:background 0.15s;
     }
     .modal-footer .slack-btn:hover { background:#5e1c5f; }
+    .modal-footer .dismiss-btn {
+      background:#7c2d12; color:#fed7aa;
+      border:1px solid #9a3412;
+      padding:8px 14px; border-radius:8px; font-size:13px;
+      cursor:pointer; transition:background 0.15s;
+    }
+    .modal-footer .dismiss-btn:hover { background:#9a3412; color:#fff; }
+    .modal-footer .dismiss-btn.undo {
+      background:transparent; color:#94a3b8; border-color:#475569;
+    }
+    .modal-footer .dismiss-btn.undo:hover { background:#1e293b; color:#cbd5e1; }
+
+    /* Dismiss badge on card */
+    .done-by.dismissed {
+      background:rgba(251,146,60,0.15); color:#fdba74;
+      border:1px solid rgba(251,146,60,0.3);
+    }
 
     /* AI judgment tag */
     .ai-tag {
@@ -625,8 +642,11 @@ function renderCard(m) {
   const catChip = `<span class="chip-cat ${catClass}" title="${escapeHtml(j?.reason || '')}">${escapeHtml(cat)}</span>`;
 
   const overdueTag = m.isOverdue ? '<span class="overdue-tag">超時</span>' : '';
-  const doneBadge = m.status === 'done' && m.doneBy
-    ? `<span class="done-by">✅ by ${escapeHtml(m.doneBy)}</span>` : '';
+  const doneBadge = m.status === 'done'
+    ? (m.isDismissed
+        ? `<span class="done-by dismissed">🔕 不再關注${m.doneBy ? ' by ' + escapeHtml(m.doneBy) : ''}</span>`
+        : (m.doneBy ? `<span class="done-by">✅ by ${escapeHtml(m.doneBy)}</span>` : ''))
+    : '';
 
   const replyPart = m.replyCount > 0 ? `<span class="replies">💬 ${m.replyCount}</span>` : '<span></span>';
   const foot = `<div class="card-foot">${replyPart}${doneBadge}</div>`;
@@ -685,7 +705,9 @@ function openModal(ts) {
     <div class="modal-header">
       <span class="status-badge ${m.status}">${statusLabel(m.status)}</span>
       ${m.isOverdue ? '<span class="overdue-tag">超時</span>' : ''}
-      ${m.status === 'done' && m.doneBy ? `<span class="done-by">✅ by ${escapeHtml(m.doneBy)}</span>` : ''}
+      ${m.status === 'done' ? (m.isDismissed
+        ? `<span class="done-by dismissed">🔕 不再關注${m.doneBy ? ' by ' + escapeHtml(m.doneBy) : ''}</span>`
+        : (m.doneBy ? `<span class="done-by">✅ by ${escapeHtml(m.doneBy)}</span>` : '')) : ''}
       <span class="timing-info">${tagDateStr} · ${fmtAge(m.ageHours)}</span>
     </div>
     <div class="modal-asker">
@@ -705,6 +727,9 @@ function openModal(ts) {
     ${m.files && m.files.length ? `<div style="padding:0 24px 16px; background:#0f172a; border-bottom:1px solid #1e293b;">${renderAttachments(m.files)}</div>` : ''}
     ${threadBlock}
     <div class="modal-footer">
+      ${m.isDismissed
+        ? `<button class="dismiss-btn undo" onclick="undismissMention('${escapeHtml(m.ts)}')">↩️ 撤銷不再關注</button>`
+        : `<button class="dismiss-btn" onclick="dismissMention('${escapeHtml(m.ts)}')">🔕 不再關注</button>`}
       <a class="slack-btn" href="${escapeHtml(m.permalink)}" target="_blank" rel="noopener">在 Slack 打開 ↗</a>
     </div>
   `;
@@ -715,6 +740,32 @@ function openModal(ts) {
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+async function dismissMention(ts) {
+  if (!confirm('將此訊息標為「不再關注」？\n會自動結案並加上 🔕 tag。可以隨時撤銷。')) return;
+  try {
+    const r = await fetch(`/api/mina-mentions/${encodeURIComponent(ts)}/dismiss`, { method: 'POST' });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) { alert('失敗：' + (data.error || r.statusText)); return; }
+    closeModal();
+    load(true);
+  } catch (e) {
+    alert('失敗：' + e.message);
+  }
+}
+
+async function undismissMention(ts) {
+  if (!confirm('撤銷「不再關注」標記？\n此訊息會回到待確認 / 已回覆狀態。')) return;
+  try {
+    const r = await fetch(`/api/mina-mentions/${encodeURIComponent(ts)}/undismiss`, { method: 'POST' });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) { alert('失敗：' + (data.error || r.statusText)); return; }
+    closeModal();
+    load(true);
+  } catch (e) {
+    alert('失敗：' + e.message);
+  }
 }
 
 function renderBoard(data) {
