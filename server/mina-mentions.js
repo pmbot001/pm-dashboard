@@ -1,3 +1,4 @@
+// Build tag: 2026-05-20 — force Railway rebuild
 const express = require('express');
 const { classifyMentions } = require('./mention-classifier');
 
