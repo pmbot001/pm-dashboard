@@ -165,12 +165,20 @@ function extractFiles(slackFiles) {
   }));
 }
 
+function decodeSlackEntities(text) {
+  // Slack pre-encodes &, <, > as &amp; &lt; &gt; in message text.
+  // Decode them so the frontend can escape properly later.
+  return text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+}
+
 function resolveMentions(text, users) {
   if (!text) return '';
-  return text.replace(/<@([A-Z0-9]+)>/g, (_, uid) => {
-    const u = users[uid];
-    return u ? `@${u.name}` : `@${uid}`;
-  }).replace(/<#[A-Z0-9]+\|([^>]+)>/g, '#$1');
+  return decodeSlackEntities(
+    text.replace(/<@([A-Z0-9]+)>/g, (_, uid) => {
+      const u = users[uid];
+      return u ? `@${u.name}` : `@${uid}`;
+    }).replace(/<#[A-Z0-9]+\|([^>]+)>/g, '#$1')
+  );
 }
 
 function preview(text, maxLen = 240) {
